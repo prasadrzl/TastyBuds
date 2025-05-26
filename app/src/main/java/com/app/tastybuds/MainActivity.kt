@@ -4,14 +4,21 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import com.app.tastybuds.ui.favorites.FavoriteScreen
+import com.app.tastybuds.ui.home.HomeScreen
+import com.app.tastybuds.ui.inbox.ChatBoxScreen
+import com.app.tastybuds.ui.orders.OrderScreen
 import com.app.tastybuds.ui.theme.TastyBudsTheme
+import com.app.tastybuds.util.BottomNavBar
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,10 +27,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             TastyBudsTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    BottomNavBar("home", {})
                 }
             }
         }
@@ -31,17 +35,25 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "More time come back to $name!",
-        modifier = modifier
-    )
-}
+fun TastyBuddyMainScreen() {
+    var selectedRoute by rememberSaveable { mutableStateOf("home") }
 
-@Preview(showBackground = false)
-@Composable
-fun GreetingPreview() {
-    TastyBudsTheme {
-        Greeting("Android")
+    Scaffold(
+        bottomBar = {
+            BottomNavBar(
+                selectedRoute = selectedRoute,
+                onItemClick = { selectedRoute = it }
+            )
+        }
+    ) { padding ->
+        Box(modifier = Modifier.padding(padding)) {
+            when (selectedRoute) {
+                "home" -> HomeScreen()
+                "orders" -> OrderScreen()
+                "favorites" -> FavoriteScreen()
+                "inbox" -> ChatBoxScreen()
+            }
+        }
     }
 }
+
