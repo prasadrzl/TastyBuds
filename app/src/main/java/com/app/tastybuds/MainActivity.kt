@@ -3,31 +3,30 @@ package com.app.tastybuds
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import com.app.tastybuds.ui.favorites.FavoriteScreen
-import com.app.tastybuds.ui.home.HomeScreen
-import com.app.tastybuds.ui.inbox.ChatBoxScreen
-import com.app.tastybuds.ui.orders.OrderScreen
+import androidx.navigation.compose.*
 import com.app.tastybuds.ui.theme.TastyBudsTheme
-import com.app.tastybuds.util.BottomNavBar
+import com.app.tastybuds.util.AppNavGraph
+import com.app.tastybuds.util.BottomBar
+import com.app.tastybuds.util.HomeSearchBar
+import com.app.tastybuds.util.HomeTopBar
+
+data class BottomNavItem(val route: String, val label: String, val iconRes: Int)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             TastyBudsTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    BottomNavBar("home", {})
+                Column {
+                    HomeTopBar()
+                    HomeSearchBar()
+                    TastyBuddyMainScreen()
                 }
             }
         }
@@ -36,24 +35,14 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun TastyBuddyMainScreen() {
-    var selectedRoute by rememberSaveable { mutableStateOf("home") }
-
+    val navController = rememberNavController()
     Scaffold(
         bottomBar = {
-            BottomNavBar(
-                selectedRoute = selectedRoute,
-                onItemClick = { selectedRoute = it }
-            )
+            BottomBar(navController = navController)
         }
     ) { padding ->
         Box(modifier = Modifier.padding(padding)) {
-            when (selectedRoute) {
-                "home" -> HomeScreen()
-                "orders" -> OrderScreen()
-                "favorites" -> FavoriteScreen()
-                "inbox" -> ChatBoxScreen()
-            }
+            AppNavGraph(navController = navController)
         }
     }
 }
-
