@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import com.app.tastybuds.ui.theme.TastyBudsTheme
 import com.app.tastybuds.util.AppNavGraph
@@ -22,23 +24,39 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            TastyBudsTheme {
-                Column {
-                    HomeTopBar()
-                    HomeSearchBar()
-                    TastyBuddyMainScreen()
-                }
+            TastyBudsTheme(darkTheme = false) {
+                val navController = rememberNavController()
+                TastyBuddyMainScreen(navController)
             }
         }
     }
 }
 
 @Composable
-fun TastyBuddyMainScreen() {
-    val navController = rememberNavController()
+fun TastyBuddyMainScreen(navController: NavHostController) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    var searchText by rememberSaveable { mutableStateOf("") }
+
     Scaffold(
+        topBar = {
+            if (currentRoute != "profile") {
+                Column {
+                    HomeTopBar(onProfileClick = {
+                        navController.navigate("profile")
+                    })
+                    HomeSearchBar(
+                        value = searchText,
+                        onValueChange = { newText -> searchText = newText }
+                    )
+                }
+            }
+        },
         bottomBar = {
-            BottomBar(navController = navController)
+            if (currentRoute != "profile") {
+                BottomBar(navController = navController)
+            }
         }
     ) { padding ->
         Box(modifier = Modifier.padding(padding)) {
@@ -46,3 +64,4 @@ fun TastyBuddyMainScreen() {
         }
     }
 }
+

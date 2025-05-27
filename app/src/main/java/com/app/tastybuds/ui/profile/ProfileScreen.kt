@@ -45,7 +45,9 @@ fun ProfileScreen(
     onToggleDarkMode: (Boolean) -> Unit = {},
     onSignOut: () -> Unit = {}
 ) {
-    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .background(Color.White)) {
         AppTopBar(title = "Profile", onBackClick = onBackClick)
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -90,14 +92,21 @@ fun ProfileScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(loadVector(R.drawable.ic_night_mode), contentDescription = null, tint = Color.DarkGray)
+                Icon(
+                    loadVector(R.drawable.ic_night_mode),
+                    contentDescription = null,
+                    tint = Color.DarkGray
+                )
                 Spacer(modifier = Modifier.width(16.dp))
                 Text("Night mode", fontSize = 16.sp)
             }
             Switch(
                 checked = isDarkMode,
                 onCheckedChange = onToggleDarkMode,
-                colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = Color(0xFFFF7700))
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = Color.White,
+                    checkedTrackColor = Color(0xFFFF7700)
+                )
             )
         }
 
@@ -108,7 +117,11 @@ fun ProfileScreen(
 
         Divider(color = Color(0xFFE0E0E0))
 
-        ProfileOption(icon = loadVector(R.drawable.ic_logout), label = "Sign out", onClick = onSignOut)
+        ProfileOption(
+            icon = loadVector(R.drawable.ic_logout),
+            label = "Sign out",
+            onClick = onSignOut
+        )
     }
 }
 

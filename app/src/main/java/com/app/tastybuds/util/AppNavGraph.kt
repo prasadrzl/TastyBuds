@@ -12,6 +12,7 @@ import com.app.tastybuds.ui.favorites.FavoriteScreen
 import com.app.tastybuds.ui.home.HomeScreen
 import com.app.tastybuds.ui.inbox.ChatBoxScreen
 import com.app.tastybuds.ui.orders.OrderScreen
+import com.app.tastybuds.ui.profile.ProfileScreen
 
 val items = listOf(
     BottomNavItem("home", "Home", R.drawable.ic_bn_home),
@@ -27,6 +28,12 @@ fun AppNavGraph(navController: NavHostController) {
         composable("orders") { OrderScreen() }
         composable("favorites") { FavoriteScreen() }
         composable("inbox") { ChatBoxScreen() }
+        composable("profile") {
+            ProfileScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                })
+        }
     }
 }
 
