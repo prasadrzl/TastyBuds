@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.tastybuds.R
+import com.app.tastybuds.ui.theme.PrimaryColor
 import com.app.tastybuds.util.AppTopBar
 
 @Preview
@@ -105,7 +106,7 @@ fun ProfileScreen(
                 onCheckedChange = onToggleDarkMode,
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = Color.White,
-                    checkedTrackColor = Color(0xFFFF7700)
+                    checkedTrackColor = PrimaryColor
                 )
             )
         }

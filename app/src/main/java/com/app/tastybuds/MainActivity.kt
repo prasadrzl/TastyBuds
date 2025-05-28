@@ -10,13 +10,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
+import com.app.tastybuds.ui.theme.PrimaryColor
 import com.app.tastybuds.ui.theme.TastyBudsTheme
 import com.app.tastybuds.util.AppNavGraph
 import com.app.tastybuds.util.BottomBar
 import com.app.tastybuds.util.HomeSearchBar
 import com.app.tastybuds.util.HomeTopBar
+import com.app.tastybuds.util.SetSystemBarColor
 
 data class BottomNavItem(val route: String, val label: String, val iconRes: Int)
 
@@ -25,6 +28,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             TastyBudsTheme(darkTheme = false) {
+                SetSystemBarColor(PrimaryColor)
                 val navController = rememberNavController()
                 TastyBuddyMainScreen(navController)
             }

@@ -45,6 +45,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.tastybuds.R
+import com.app.tastybuds.ui.theme.PrimaryColor
 
 @Preview
 @Composable
@@ -72,7 +73,7 @@ fun RatingScreen() {
                 modifier = Modifier
                     .size(100.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFFF7700)),
+                    .background(PrimaryColor),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -139,7 +140,7 @@ fun RatingScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7700))
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
             ) {
                 Text("Submit", color = Color.White)
             }
@@ -172,7 +173,7 @@ fun FeedbackChipGroup() {
                     Text(
                         text = tag,
                         color = if (isSelected && tag != "Supportive" && tag != "Contactless")
-                            Color(0xFFFF7700) else Color.DarkGray,
+                            PrimaryColor else Color.DarkGray,
                         fontSize = 14.sp
                     )
                 },
@@ -181,7 +182,7 @@ fun FeedbackChipGroup() {
                         imageVector = Icons.Default.Check,
                         contentDescription = null,
                         tint = if (isSelected && tag != "Supportive" && tag != "Contactless")
-                            Color(0xFFFF7700) else Color.DarkGray,
+                            PrimaryColor else Color.DarkGray,
                         modifier = Modifier.size(16.dp)
                     )
                 },
