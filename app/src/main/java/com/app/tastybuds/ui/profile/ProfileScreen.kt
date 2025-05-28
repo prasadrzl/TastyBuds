@@ -14,9 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -78,12 +77,12 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Divider(color = Color(0xFFE0E0E0))
+        HorizontalDivider(color = Color(0xFFE0E0E0))
 
         ProfileOption(icon = loadVector(R.drawable.ic_profile_setting), label = "Edit profile")
         ProfileOption(icon = loadVector(R.drawable.ic_settings), label = "Preferences")
 
-        Divider(color = Color(0xFFE0E0E0))
+        HorizontalDivider(color = Color(0xFFE0E0E0))
         // Night Mode Toggle
         Row(
             modifier = Modifier
@@ -111,12 +110,12 @@ fun ProfileScreen(
             )
         }
 
-        Divider(color = Color(0xFFE0E0E0))
+        HorizontalDivider(color = Color(0xFFE0E0E0))
 
         ProfileOption(icon = loadVector(R.drawable.ic_go_pro), label = "Go Pro")
         ProfileOption(icon = loadVector(R.drawable.ic_help), label = "Help center")
 
-        Divider(color = Color(0xFFE0E0E0))
+        HorizontalDivider(color = Color(0xFFE0E0E0))
 
         ProfileOption(
             icon = loadVector(R.drawable.ic_logout),
