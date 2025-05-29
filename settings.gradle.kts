@@ -21,3 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "TastyBuds"
 include(":app")
+include(":chat")
+include(":chatlib")

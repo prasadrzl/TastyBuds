@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Divider
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -51,7 +51,7 @@ fun AppTopBar(
                 modifier = Modifier.align(Alignment.CenterStart)
             ) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
                     tint = Color.Gray
                 )
@@ -65,9 +65,9 @@ fun AppTopBar(
         }
 
         // Divider underline
-        Divider(
-            color = Color(0xFFE0E0E0),
-            thickness = 1.dp
+        HorizontalDivider(
+            thickness = 1.dp,
+            color = Color(0xFFE0E0E0)
         )
     }
 }

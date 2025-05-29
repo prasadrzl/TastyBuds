@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
+import com.app.chat.ChatScreen
 import com.app.tastybuds.BottomNavItem
 import com.app.tastybuds.R
 import com.app.tastybuds.ui.favorites.FavoriteScreen
@@ -29,10 +30,7 @@ fun AppNavGraph(navController: NavHostController) {
         composable("favorites") { FavoriteScreen() }
         composable("inbox") { ChatBoxScreen() }
         composable("profile") {
-            ProfileScreen(
-                onBackClick = {
-                    navController.popBackStack()
-                })
+            //ChatScreen()
         }
     }
 }

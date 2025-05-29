@@ -18,10 +18,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders["MAPS_API_KEY"] = project.findProperty("MAPS_API_KEY") ?: ""
         vectorDrawables {
             useSupportLibrary = true
         }
     }
+    dynamicFeatures += listOf(":chat")
 
     buildTypes {
         release {
@@ -53,6 +55,8 @@ android {
 }
 
 dependencies {
+
+    implementation(project(":chat"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -101,6 +105,12 @@ dependencies {
     implementation(libs.retrofit.rxjava)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
+    implementation(libs.maps.compose)
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.location)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.coroutines.play.services)
+
 
     // Glide
     implementation(libs.glide)

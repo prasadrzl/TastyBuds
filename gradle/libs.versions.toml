@@ -19,6 +19,13 @@ coroutinesTest = "1.8.0"
 turbine = "1.1.0"
 accompanist = "0.32.0"
 composeFoundation = "1.8.2"
+maps_compose = "4.3.3"
+play_services_maps = "19.2.0"
+play_services_location = "21.3.0"
+coroutinesPlayServices = "1.8.0"
+junit = "4.13.2"
+junitVersion = "1.1.5"
+material = "1.10.0"
 
 
 [libraries]
@@ -70,8 +77,14 @@ turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine
 junit5-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit5" }
 accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "composeFoundation" }
-
-
+maps-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "maps_compose" }
+play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "play_services_maps" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "play_services_location" }
+accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
+coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "coroutinesPlayServices" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 
 [plugins]
@@ -79,4 +92,5 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+android-library = { id = "com.android.library", version.ref = "agp" }
 
