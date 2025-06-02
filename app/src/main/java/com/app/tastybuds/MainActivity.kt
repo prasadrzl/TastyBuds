@@ -1,3 +1,4 @@
+// Updated MainActivity.kt - Fix Orange Header Issue
 package com.app.tastybuds
 
 import AudioCallScreen
@@ -29,6 +30,7 @@ import com.app.tastybuds.util.BottomBar
 import com.app.tastybuds.util.HomeSearchBar
 import com.app.tastybuds.util.HomeTopBar
 import com.app.tastybuds.util.SetSystemBarColor
+import com.app.tastybuds.util.shouldHideTopBar
 
 data class BottomNavItem(val route: String, val label: String, val iconRes: Int)
 
@@ -54,20 +56,41 @@ fun TastyBuddyMainScreen(navController: NavHostController) {
 
     Scaffold(
         topBar = {
-            if (currentRoute != "profile") {
+            // Hide top bar for specific screens
+            val hideTopBar = currentRoute == "profile" ||
+                    currentRoute?.startsWith("food_listing/") == true ||
+                    currentRoute?.startsWith("search_results/") == true ||
+                    currentRoute?.startsWith("restaurant_details/") == true
+
+            if (!hideTopBar) {
                 Column {
                     HomeTopBar(onProfileClick = {
                         navController.navigate("profile")
                     })
                     HomeSearchBar(
                         value = searchText,
-                        onValueChange = { newText -> searchText = newText }
+                        onValueChange = { newText -> searchText = newText },
+                        onSearchClick = { searchTerm ->
+                            if (searchTerm.isNotBlank()) {
+                                navController.navigate("search_results/$searchTerm")
+                            }
+                        },
+                        onSearchBarClick = {
+                            // Navigate to search screen even with empty search
+                            navController.navigate("search_results/${searchText.ifBlank { "food" }}")
+                        }
                     )
                 }
             }
         },
         bottomBar = {
-            if (currentRoute != "profile") {
+            // Hide bottom bar for specific screens
+            val hideBottomBar = currentRoute == "profile" ||
+                    currentRoute?.startsWith("food_listing/") == true ||
+                    currentRoute?.startsWith("search_results/") == true ||
+                    currentRoute?.startsWith("restaurant_details/") == true
+
+            if (!hideBottomBar) {
                 BottomBar(navController = navController)
             }
         }
@@ -77,5 +100,3 @@ fun TastyBuddyMainScreen(navController: NavHostController) {
         }
     }
 }
-
-

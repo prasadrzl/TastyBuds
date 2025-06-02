@@ -1,5 +1,7 @@
 package com.app.tastybuds.data
 
+import javax.inject.Inject
+
 interface ProfileRepository {
 }
 

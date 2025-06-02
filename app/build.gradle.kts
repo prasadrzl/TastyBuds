@@ -23,8 +23,7 @@ android {
             useSupportLibrary = true
         }
     }
-    dynamicFeatures += listOf(":chat")
-
+    
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -56,7 +55,6 @@ android {
 
 dependencies {
 
-    implementation(project(":chat"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
