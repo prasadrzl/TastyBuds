@@ -82,7 +82,8 @@ data class RestaurantItem(
 fun HomeScreen(
     onCategoryClick: (String, String) -> Unit = { _, _ -> },
     onProfileClick: () -> Unit = {},
-    onSearchClick: (String) -> Unit = {}
+    onSearchClick: (String) -> Unit = {},
+    onRestaurantClick: (String) -> Unit = {} // ADD THIS LINE
 ) {
     LazyColumn(
         modifier = Modifier
@@ -113,7 +114,7 @@ fun HomeScreen(
 
         // Recommended Section
         item {
-            RecommendedSection()
+            RecommendedSection(onRestaurantClick = onRestaurantClick)
         }
 
         // Sale Section
@@ -498,7 +499,7 @@ fun StaticCollectionCard(
 }
 
 @Composable
-fun RecommendedSection() {
+fun RecommendedSection(onRestaurantClick: (String) -> Unit = {}) {
     Column {
         Row(
             modifier = Modifier
@@ -531,7 +532,7 @@ fun RecommendedSection() {
             items(getDummyRestaurants()) { restaurant ->
                 RestaurantCard(
                     restaurant = restaurant,
-                    onClick = { /* Handle restaurant click */ }
+                    onClick = { onRestaurantClick(restaurant.id) } // CHANGE THIS LINE
                 )
             }
         }

@@ -1,4 +1,4 @@
-package com.app.tastybuds.util
+package com.app.tastybuds.ui.theme
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect

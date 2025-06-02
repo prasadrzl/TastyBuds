@@ -23,7 +23,7 @@ android {
             useSupportLibrary = true
         }
     }
-    
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -49,13 +49,17 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/LICENSE-notice.md"   // Add this to fix the JUnit conflict
+            excludes += "META-INF/LICENSE.md"
+            excludes += "META-INF/LICENSE"
+            excludes += "META-INF/NOTICE"
+            excludes += "META-INF/NOTICE.txt"
+
         }
     }
 }
 
 dependencies {
-
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -70,20 +74,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-
-
-    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
-
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.tooling)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.androidx.compose.foundation)
@@ -109,21 +102,23 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.coroutines.play.services)
 
-
     // Glide
     implementation(libs.glide)
     implementation(libs.glide.compose)
     kapt(libs.glide.compiler)
 
-    // Testing
+    // Testing - FIXED
+    testImplementation(libs.junit)                    // JUnit 4 for unit tests
     testImplementation(libs.coroutines.test)
     testImplementation(libs.turbine)
-    testImplementation(libs.junit5.api)
+    testImplementation(libs.junit5.api)              // JUnit 5 for unit tests only
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.agent)
     testImplementation(libs.mockk.android)
 
+    // Android Testing - Use Android-specific testing libraries
+    androidTestImplementation(libs.androidx.junit)   // Use androidx.junit instead of JUnit 5
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.junit5.api)
     androidTestImplementation(libs.coroutines.test)
+    // REMOVED: androidTestImplementation(libs.junit5.api) - This was causing the conflict
 }

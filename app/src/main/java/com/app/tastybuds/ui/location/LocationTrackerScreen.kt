@@ -42,7 +42,7 @@ import java.util.Locale
 
 @Preview
 @Composable
-fun LocationScreen(onConfirm: () -> Unit = {}) {
+fun LocationTrackerScreen(onConfirm: () -> Unit = {}) {
     UserLocationMapView(onConfirm)
 }
 
