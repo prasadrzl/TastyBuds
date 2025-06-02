@@ -1,4 +1,4 @@
-package com.app.tastybuds.util
+package com.app.tastybuds.ui.orders
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.tastybuds.R
 import com.app.tastybuds.ui.theme.PrimaryColor
+import com.app.tastybuds.util.AppTopBar
 
 @Preview
 @Composable
