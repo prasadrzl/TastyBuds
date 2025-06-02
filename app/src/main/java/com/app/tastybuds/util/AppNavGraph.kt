@@ -72,8 +72,7 @@ fun AppNavGraph(navController: NavHostController) {
         composable("search_results/{searchTerm}") { backStackEntry ->
             val searchTerm = backStackEntry.arguments?.getString("searchTerm") ?: ""
             SearchResultsScreen(
-                searchTerm = searchTerm,
-                resultsCount = 359, // This would come from actual search results
+                initialSearchTerm = searchTerm,
                 onBackClick = {
                     navController.popBackStack()
                 },
