@@ -1,4 +1,4 @@
-// Updated AppNavGraph.kt - Add Search Results Navigation
+// Updated AppNavGraph.kt - Add Navigation for Location and Restaurant Details
 package com.app.tastybuds.util
 
 import androidx.compose.material3.*
@@ -12,11 +12,15 @@ import com.app.tastybuds.R
 import com.app.tastybuds.ui.favorites.FavoriteScreen
 import com.app.tastybuds.ui.home.HomeScreen
 import com.app.tastybuds.ui.inbox.ChatBoxScreen
-import com.app.tastybuds.ui.orders.OrderScreen
 import com.app.tastybuds.ui.profile.ProfileScreen
 import com.app.tastybuds.ui.foodlisting.FoodListingScreen
 import com.app.tastybuds.ui.home.SearchResultType
 import com.app.tastybuds.ui.home.SearchResultsScreen
+import com.app.tastybuds.ui.restaurant.RestaurantDetailsScreen
+import com.app.tastybuds.ui.orders.FoodDetailsScreen
+import com.app.tastybuds.ui.location.LocationTrackerScreen
+import com.app.tastybuds.ui.location.OrderTrackingScreen
+import com.app.tastybuds.ui.orders.OrderReviewScreen
 
 val items = listOf(
     BottomNavItem("home", "Home", R.drawable.ic_bn_home),
@@ -40,12 +44,18 @@ fun AppNavGraph(navController: NavHostController) {
                     if (searchTerm.isNotBlank()) {
                         navController.navigate("search_results/$searchTerm")
                     }
+                },
+                // NEW: Add restaurant click handler for "Recommended for you" section
+                onRestaurantClick = { restaurantId ->
+                    navController.navigate("restaurant_details/$restaurantId")
                 }
             )
         }
-        composable("orders") { OrderScreen() }
+
+        composable("orders") { OrderTrackingScreen() }
         composable("favorites") { FavoriteScreen() }
         composable("inbox") { ChatBoxScreen() }
+
         composable("profile") {
             ProfileScreen(
                 onBackClick = {
@@ -95,17 +105,73 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
 
-        // Future screens to be added
-        composable("restaurant_details/{restaurantId}") { backStackEntry ->
-            val restaurantId = backStackEntry.arguments?.getString("restaurantId") ?: ""
-            // RestaurantDetailsScreen will be implemented next
-            // Placeholder for now
+        // NEW: Location Tracker Screen
+        composable("location") {
+            LocationTrackerScreen(
+                onConfirm = {
+                    // After location is confirmed, go back to home
+                    navController.popBackStack()
+                }
+            )
         }
 
+        // NEW: Restaurant Details Screen
+        composable("restaurant_details/{restaurantId}") { backStackEntry ->
+            val restaurantId = backStackEntry.arguments?.getString("restaurantId") ?: ""
+            RestaurantDetailsScreen(
+                restaurantId = restaurantId,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onFoodItemClick = { foodItemId ->
+                    navController.navigate("food_details/$foodItemId")
+                },
+                onComboClick = { comboId ->
+                    navController.navigate("food_details/$comboId")
+                }
+            )
+        }
+
+        // Food Details Screen (for customization)
         composable("food_details/{foodId}") { backStackEntry ->
             val foodId = backStackEntry.arguments?.getString("foodId") ?: ""
-            // FoodDetailsScreen will be implemented later
-            // Placeholder for now
+            FoodDetailsScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onAddToCart = { totalPrice, quantity ->
+                    // Navigate to order review or show success message
+                    navController.navigate("order_review")
+                }
+            )
+        }
+
+        // NEW: Order Review Screen
+        composable("order_review") {
+            OrderReviewScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onChangeAddress = {
+                    navController.navigate("location")
+                },
+                onAddMore = {
+                    navController.popBackStack()
+                },
+                onEditItem = { itemId ->
+                    navController.navigate("food_details/$itemId")
+                },
+                onAlsoOrderedClick = { itemId ->
+                    navController.navigate("food_details/$itemId")
+                },
+                onOrderNow = {
+                    // TODO: Navigate to payment or order confirmation
+                    // For now, go back to home
+                    navController.navigate("home") {
+                        popUpTo("home") { inclusive = true }
+                    }
+                }
+            )
         }
     }
 }
@@ -121,7 +187,9 @@ fun BottomBar(navController: NavHostController) {
         "food_listing/",
         "search_results/",
         "restaurant_details/",
-        "food_details/"
+        "food_details/",
+        "location",
+        "order_review"
     )
     val shouldShowBottomBar = !screensWithoutBottomBar.any { route ->
         currentRoute?.startsWith(route) == true
@@ -161,7 +229,10 @@ fun shouldHideTopBar(currentRoute: String?): Boolean {
     val screensWithoutTopBar = listOf(
         "profile",
         "food_listing/",
-        "restaurant_details/"
+        "restaurant_details/",
+        "food_details/",
+        "location",
+        "order_review"
     )
     return screensWithoutTopBar.any { route ->
         currentRoute?.startsWith(route) == true
