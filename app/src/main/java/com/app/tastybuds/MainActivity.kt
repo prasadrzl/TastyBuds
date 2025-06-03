@@ -1,4 +1,3 @@
-// Updated MainActivity.kt - Fix Location Navigation
 package com.app.tastybuds
 
 import android.os.Bundle

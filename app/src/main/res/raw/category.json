@@ -1,0 +1,341 @@
+{
+  "success": true,
+  "message": "Category food listing retrieved successfully",
+  "data": {
+    "category": {
+      "id": "cat_004",
+      "name": "Fast Food",
+      "description": "Quick and delicious fast food options",
+      "total_restaurants": 67
+    },
+    "filters": {
+      "sort_options": [
+        {
+          "id": "relevance",
+          "name": "Sort by",
+          "is_selected": true
+        },
+        {
+          "id": "rating",
+          "name": "Rating"
+        },
+        {
+          "id": "delivery_time",
+          "name": "Delivery Time"
+        },
+        {
+          "id": "distance",
+          "name": "Distance"
+        },
+        {
+          "id": "price_low_high",
+          "name": "Price: Low to High"
+        },
+        {
+          "id": "price_high_low",
+          "name": "Price: High to Low"
+        }
+      ],
+      "filter_options": [
+        {
+          "id": "freeship",
+          "name": "Freeship",
+          "is_selected": false,
+          "type": "delivery"
+        },
+        {
+          "id": "favorite",
+          "name": "Favorite",
+          "is_selected": false,
+          "type": "preference"
+        },
+        {
+          "id": "near_you",
+          "name": "Near you",
+          "is_selected": false,
+          "type": "location"
+        },
+        {
+          "id": "partner",
+          "name": "Partner",
+          "is_selected": false,
+          "type": "partnership"
+        }
+      ]
+    },
+    "restaurants": [
+      {
+        "id": "rest_001",
+        "name": "Hana Chicken",
+        "description": "Fried Chicken",
+        "cuisine": ["Korean", "Fried Chicken", "Fast Food"],
+        "rating": 4.8,
+        "review_count": 289,
+        "delivery_time": "15 mins",
+        "delivery_fee": 2.0,
+        "distance": "2 km",
+        "price_range": "$5 - $25",
+        "image": "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=300&h=200&fit=crop",
+        "badges": [
+          {
+            "text": "Freeship",
+            "type": "free_delivery",
+            "background_color": "#4CAF50"
+          },
+          {
+            "text": "Near you",
+            "type": "location",
+            "background_color": "#FF6F00"
+          }
+        ],
+        "is_open": true,
+        "is_favorite": false,
+        "estimated_delivery": "15-25 mins"
+      },
+      {
+        "id": "rest_002",
+        "name": "Bamsu Restaurant",
+        "description": "Chicken Salad, Sandwich & Desserts",
+        "cuisine": ["Chicken", "Sandwich", "Desserts", "Fast Food"],
+        "rating": 4.1,
+        "review_count": 156,
+        "delivery_time": "35 mins",
+        "delivery_fee": 1.5,
+        "distance": "3.2 km",
+        "price_range": "$8 - $30",
+        "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop",
+        "badges": [
+          {
+            "text": "Freeship",
+            "type": "free_delivery",
+            "background_color": "#4CAF50"
+          }
+        ],
+        "is_open": true,
+        "is_favorite": true,
+        "estimated_delivery": "35-45 mins"
+      },
+      {
+        "id": "rest_003",
+        "name": "Neighbor Milk",
+        "description": "Dairy Drinks & Smoothies",
+        "cuisine": ["Drinks", "Smoothies", "Dairy"],
+        "rating": 4.1,
+        "review_count": 98,
+        "delivery_time": "35 mins",
+        "delivery_fee": 2.5,
+        "distance": "4.1 km",
+        "price_range": "$3 - $15",
+        "image": "https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=300&h=200&fit=crop",
+        "badges": [
+          {
+            "text": "Freeship",
+            "type": "free_delivery",
+            "background_color": "#4CAF50"
+          }
+        ],
+        "is_open": true,
+        "is_favorite": false,
+        "estimated_delivery": "35-45 mins"
+      }
+    ],
+    "featured_banners": [
+      {
+        "id": "featured_001",
+        "title": "Tasty",
+        "subtitle": "Dishes",
+        "image": "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=600&h=300&fit=crop",
+        "action_type": "featured_deals",
+        "action_id": "deal_featured_001"
+      },
+      {
+        "id": "featured_002",
+        "title": "Special",
+        "subtitle": "Offers",
+        "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=600&h=300&fit=crop",
+        "action_type": "special_offers",
+        "action_id": "offer_special_001"
+      },
+      {
+        "id": "featured_003",
+        "title": "Fresh",
+        "subtitle": "Ingredients",
+        "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&h=300&fit=crop",
+        "action_type": "fresh_category",
+        "action_id": "cat_002"
+      },
+      {
+        "id": "featured_004",
+        "title": "Best",
+        "subtitle": "Quality",
+        "image": "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=600&h=300&fit=crop",
+        "action_type": "quality_restaurants",
+        "action_id": "collection_quality"
+      },
+      {
+        "id": "featured_005",
+        "title": "Fast",
+        "subtitle": "Delivery",
+        "image": "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=600&h=300&fit=crop",
+        "action_type": "fast_delivery",
+        "action_id": "filter_fast_delivery"
+      }
+    ],
+    "recommended_restaurants": [
+      {
+        "id": "rest_004",
+        "name": "Mr. John Tapas",
+        "description": "Best Tapas in Town",
+        "cuisine": ["Spanish", "Tapas", "Mediterranean"],
+        "rating": 4.1,
+        "review_count": 87,
+        "delivery_time": "35 mins",
+        "delivery_fee": 2.0,
+        "distance": "3.8 km",
+        "price_range": "$12 - $40",
+        "image": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=300&h=200&fit=crop",
+        "badges": [
+          {
+            "text": "Freeship",
+            "type": "free_delivery",
+            "background_color": "#4CAF50"
+          }
+        ],
+        "is_open": true,
+        "is_favorite": false,
+        "estimated_delivery": "35-45 mins"
+      },
+      {
+        "id": "rest_005",
+        "name": "Pasta Paradise",
+        "description": "Italian Cuisine & Pizza",
+        "cuisine": ["Italian", "Pasta", "Pizza"],
+        "rating": 4.5,
+        "review_count": 203,
+        "delivery_time": "25 mins",
+        "delivery_fee": 1.5,
+        "distance": "2.8 km",
+        "price_range": "$10 - $35",
+        "image": "https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5?w=300&h=200&fit=crop",
+        "badges": [
+          {
+            "text": "Freeship",
+            "type": "free_delivery",
+            "background_color": "#4CAF50"
+          },
+          {
+            "text": "Popular",
+            "type": "trending",
+            "background_color": "#9C27B0"
+          }
+        ],
+        "is_open": true,
+        "is_favorite": true,
+        "estimated_delivery": "25-35 mins"
+      },
+      {
+        "id": "rest_006",
+        "name": "Burger King Supreme",
+        "description": "Classic American Burgers",
+        "cuisine": ["American", "Burgers", "Fast Food"],
+        "rating": 4.3,
+        "review_count": 445,
+        "delivery_time": "20 mins",
+        "delivery_fee": 1.0,
+        "distance": "1.5 km",
+        "price_range": "$6 - $25",
+        "image": "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=300&h=200&fit=crop",
+        "badges": [
+          {
+            "text": "Near you",
+            "type": "location",
+            "background_color": "#FF6F00"
+          },
+          {
+            "text": "Deal $1",
+            "type": "deal",
+            "background_color": "#4CAF50"
+          }
+        ],
+        "is_open": true,
+        "is_favorite": false,
+        "estimated_delivery": "20-30 mins"
+      },
+      {
+        "id": "rest_007",
+        "name": "Pizza Corner",
+        "description": "Wood-fired Pizza & Sides",
+        "cuisine": ["Italian", "Pizza", "Fast Food"],
+        "rating": 4.6,
+        "review_count": 312,
+        "delivery_time": "30 mins",
+        "delivery_fee": 2.5,
+        "distance": "4.2 km",
+        "price_range": "$8 - $35",
+        "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop",
+        "badges": [
+          {
+            "text": "Popular",
+            "type": "trending",
+            "background_color": "#9C27B0"
+          }
+        ],
+        "is_open": true,
+        "is_favorite": true,
+        "estimated_delivery": "30-40 mins"
+      },
+      {
+        "id": "rest_008",
+        "name": "Taco Fiesta",
+        "description": "Mexican Street Food",
+        "cuisine": ["Mexican", "Tacos", "Fast Food"],
+        "rating": 4.4,
+        "review_count": 198,
+        "delivery_time": "25 mins",
+        "delivery_fee": 1.5,
+        "distance": "3.0 km",
+        "price_range": "$5 - $20",
+        "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop",
+        "badges": [
+          {
+            "text": "Freeship",
+            "type": "free_delivery",
+            "background_color": "#4CAF50"
+          },
+          {
+            "text": "Spicy",
+            "type": "cuisine",
+            "background_color": "#FF5722"
+          }
+        ],
+        "is_open": true,
+        "is_favorite": false,
+        "estimated_delivery": "25-35 mins"
+      }
+    ],
+    "pagination": {
+      "current_page": 1,
+      "total_pages": 4,
+      "total_results": 67,
+      "results_per_page": 20,
+      "has_more": true
+    },
+    "meta": {
+      "search_suggestions": [
+        "chicken burger",
+        "fried chicken",
+        "chicken sandwich",
+        "spicy chicken",
+        "grilled chicken"
+      ],
+      "popular_in_category": [
+        "Fried Chicken",
+        "Burger",
+        "Sandwich",
+        "Pizza",
+        "Hot Dog"
+      ]
+    }
+  },
+  "timestamp": 1703772000000
+}

@@ -1,0 +1,354 @@
+{
+  "success": true,
+  "message": "Restaurant details retrieved successfully",
+  "data": {
+    "restaurant": {
+      "id": "rest_001",
+      "name": "Hana Chicken",
+      "description": "Authentic Korean fried chicken with secret spices and traditional recipes",
+      "cuisine": ["Korean", "Chicken", "Asian"],
+      "rating": 4.5,
+      "review_count": 289,
+      "delivery_time": "20 mins",
+      "delivery_fee": 2.0,
+      "min_order": 15.0,
+      "distance": "2 km",
+      "price_range": "$5 - $50",
+      "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=600&h=400&fit=crop",
+      "cover_images": [
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=600&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=600&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=600&h=400&fit=crop"
+      ],
+      "badges": [
+        {
+          "text": "Deal $1",
+          "type": "deal",
+          "background_color": "#4CAF50"
+        },
+        {
+          "text": "Near you",
+          "type": "location",
+          "background_color": "#FF6F00"
+        }
+      ],
+      "opening_hours": {
+        "monday": "6am - 9pm",
+        "tuesday": "6am - 9pm",
+        "wednesday": "6am - 9pm",
+        "thursday": "6am - 9pm",
+        "friday": "6am - 11pm",
+        "saturday": "6am - 11pm",
+        "sunday": "8am - 9pm"
+      },
+      "coordinates": {
+        "latitude": 1.3521,
+        "longitude": 103.8198
+      },
+      "address": "123 Food Street, Downtown District",
+      "phone": "+65 6123 4567",
+      "is_open": true,
+      "is_favorite": false,
+      "accepts_vouchers": true,
+      "voucher_info": {
+        "count": 2,
+        "description": "2 discount voucher for restaurant",
+        "vouchers": [
+          {
+            "id": "voucher_001",
+            "title": "10% off",
+            "description": "Get 10% off on orders above $30",
+            "discount_percentage": 10,
+            "min_order": 30.0,
+            "max_discount": 10.0,
+            "expiry_date": "2024-12-31"
+          },
+          {
+            "id": "voucher_002",
+            "title": "Free Delivery",
+            "description": "Free delivery on orders above $25",
+            "discount_type": "free_delivery",
+            "min_order": 25.0,
+            "expiry_date": "2024-12-31"
+          }
+        ]
+      }
+    },
+    "for_you_items": [
+      {
+        "id": "menu_001",
+        "name": "Fried Chicken",
+        "description": "Crispy fried wings and thighs with secret marinade",
+        "base_price": 15.0,
+        "image": "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=300&h=200&fit=crop",
+        "category": "Main Course",
+        "rating": 4.5,
+        "review_count": 99,
+        "is_popular": true,
+        "is_vegetarian": false,
+        "is_spicy": false,
+        "prep_time": "15-20 mins",
+        "restaurant_id": "rest_001"
+      },
+      {
+        "id": "menu_002",
+        "name": "Chicken Salad",
+        "description": "Fresh greens with grilled chicken and special dressing",
+        "base_price": 15.0,
+        "image": "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=300&h=200&fit=crop",
+        "category": "Salads",
+        "rating": 4.5,
+        "review_count": 99,
+        "is_popular": false,
+        "is_vegetarian": false,
+        "is_spicy": false,
+        "prep_time": "10-15 mins",
+        "restaurant_id": "rest_001"
+      },
+      {
+        "id": "menu_003",
+        "name": "Spicy Chicken",
+        "description": "Korean-style spicy chicken with gochujang glaze",
+        "base_price": 15.0,
+        "image": "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=300&h=200&fit=crop",
+        "category": "Main Course",
+        "rating": 4.5,
+        "review_count": 99,
+        "is_popular": true,
+        "is_vegetarian": false,
+        "is_spicy": true,
+        "prep_time": "15-20 mins",
+        "restaurant_id": "rest_001"
+      },
+      {
+        "id": "menu_004",
+        "name": "Fried Potatos",
+        "description": "Crispy seasoned potato wedges with herbs",
+        "base_price": 15.0,
+        "image": "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=300&h=200&fit=crop",
+        "category": "Sides",
+        "rating": 4.5,
+        "review_count": 99,
+        "is_popular": false,
+        "is_vegetarian": true,
+        "is_spicy": false,
+        "prep_time": "10-15 mins",
+        "restaurant_id": "rest_001"
+      }
+    ],
+    "menu_items": [
+      {
+        "id": "menu_005",
+        "name": "Sauté Chicken Rice",
+        "description": "Sauté chicken, Rice",
+        "base_price": 15.0,
+        "image": "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=300&h=200&fit=crop",
+        "category": "Main Course",
+        "rating": 4.5,
+        "review_count": 99,
+        "is_popular": true,
+        "is_vegetarian": false,
+        "is_spicy": false,
+        "prep_time": "15-20 mins",
+        "restaurant_id": "rest_001"
+      },
+      {
+        "id": "menu_006",
+        "name": "Chicken Burger",
+        "description": "Fried chicken, Cheese & Burger",
+        "base_price": 15.0,
+        "image": "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=300&h=200&fit=crop",
+        "category": "Burgers",
+        "rating": 4.5,
+        "review_count": 99,
+        "is_popular": false,
+        "is_vegetarian": false,
+        "is_spicy": false,
+        "prep_time": "12-18 mins",
+        "restaurant_id": "rest_001"
+      },
+      {
+        "id": "menu_007",
+        "name": "Korean Chicken Wings",
+        "description": "Traditional Korean style chicken wings with soy glaze",
+        "base_price": 18.0,
+        "image": "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=300&h=200&fit=crop",
+        "category": "Appetizers",
+        "rating": 4.7,
+        "review_count": 156,
+        "is_popular": true,
+        "is_vegetarian": false,
+        "is_spicy": true,
+        "prep_time": "15-20 mins",
+        "restaurant_id": "rest_001"
+      }
+    ],
+    "reviews": [
+      {
+        "id": "review_001",
+        "user_id": "user_002",
+        "user_name": "Jinny Oslin",
+        "user_avatar": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop",
+        "rating": 5.0,
+        "comment": "Quick delivery, good dishes. I love the chicken burger.",
+        "date": "A day ago",
+        "helpful_count": 12,
+        "images": [
+          "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=200&h=150&fit=crop"
+        ],
+        "order_items": ["Chicken Burger", "Fried Chicken"]
+      },
+      {
+        "id": "review_002",
+        "user_id": "user_003",
+        "user_name": "Ji Won",
+        "user_avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop",
+        "rating": 4.0,
+        "comment": "Fresh ingredients and great taste! Authentic Korean flavors.",
+        "date": "2 days ago",
+        "helpful_count": 8,
+        "images": [],
+        "order_items": ["Spicy Chicken", "Chicken Rice"]
+      },
+      {
+        "id": "review_003",
+        "user_id": "user_004",
+        "user_name": "Sarah Kim",
+        "user_avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop",
+        "rating": 5.0,
+        "comment": "Best Korean fried chicken in town! Always crispy and flavorful.",
+        "date": "3 days ago",
+        "helpful_count": 15,
+        "images": [
+          "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=200&h=150&fit=crop",
+          "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=200&h=150&fit=crop"
+        ],
+        "order_items": ["Fried Chicken", "Korean Wings"]
+      }
+    ],
+    "combos": [
+      {
+        "id": "combo_001",
+        "name": "Combo B",
+        "description": "Fried Chicken, Chicken Rice & Salad",
+        "items": [
+          {
+            "menu_item_id": "menu_001",
+            "name": "Fried Chicken",
+            "quantity": 1
+          },
+          {
+            "menu_item_id": "menu_005",
+            "name": "Chicken Rice",
+            "quantity": 1
+          },
+          {
+            "menu_item_id": "menu_002",
+            "name": "Chicken Salad",
+            "quantity": 1
+          }
+        ],
+        "original_price": 35.0,
+        "combo_price": 25.0,
+        "savings": 10.0,
+        "discount_percentage": 28,
+        "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop",
+        "rating": 4.5,
+        "review_count": 60,
+        "is_popular": true
+      },
+      {
+        "id": "combo_002",
+        "name": "Combo B",
+        "description": "Fried Chicken (Small) & Potatos",
+        "items": [
+          {
+            "menu_item_id": "menu_001",
+            "name": "Fried Chicken (Small)",
+            "quantity": 1
+          },
+          {
+            "menu_item_id": "menu_004",
+            "name": "Fried Potatos",
+            "quantity": 1
+          }
+        ],
+        "original_price": 25.0,
+        "combo_price": 19.0,
+        "savings": 6.0,
+        "discount_percentage": 24,
+        "image": "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=300&h=200&fit=crop",
+        "rating": 4.6,
+        "review_count": 76,
+        "is_popular": false
+      },
+      {
+        "id": "combo_003",
+        "name": "Family Feast",
+        "description": "2x Fried Chicken, Korean Wings & 2x Rice",
+        "items": [
+          {
+            "menu_item_id": "menu_001",
+            "name": "Fried Chicken",
+            "quantity": 2
+          },
+          {
+            "menu_item_id": "menu_007",
+            "name": "Korean Wings",
+            "quantity": 1
+          },
+          {
+            "menu_item_id": "menu_005",
+            "name": "Chicken Rice",
+            "quantity": 2
+          }
+        ],
+        "original_price": 78.0,
+        "combo_price": 65.0,
+        "savings": 13.0,
+        "discount_percentage": 17,
+        "image": "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=300&h=200&fit=crop",
+        "rating": 4.8,
+        "review_count": 124,
+        "is_popular": true
+      }
+    ],
+    "categories": [
+      {
+        "id": "cat_main",
+        "name": "Main Course",
+        "item_count": 8
+      },
+      {
+        "id": "cat_appetizers",
+        "name": "Appetizers",
+        "item_count": 5
+      },
+      {
+        "id": "cat_sides",
+        "name": "Sides",
+        "item_count": 6
+      },
+      {
+        "id": "cat_drinks",
+        "name": "Drinks",
+        "item_count": 4
+      },
+      {
+        "id": "cat_desserts",
+        "name": "Desserts",
+        "item_count": 3
+      }
+    ],
+    "operational_info": {
+      "estimated_prep_time": "15-25 mins",
+      "min_order_amount": 15.0,
+      "delivery_radius": "5 km",
+      "payment_methods": ["cash", "card", "ewallet", "online"],
+      "special_instructions_allowed": true,
+      "bulk_order_available": true,
+      "catering_available": false
+    }
+  },
+  "timestamp": 1703772000000
+}

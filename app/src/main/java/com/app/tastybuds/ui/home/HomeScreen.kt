@@ -238,8 +238,8 @@ fun DealBannerCard(
 fun CategoriesSection(onCategoryClick: (String, String) -> Unit = { _, _ -> }) {
     val categories = remember {
         listOf(
-            CategoryItem("1", "Rice", R.drawable.ic_bn_home, Color(0xFFFFF3E0)),
-            CategoryItem("2", "Healthy", R.drawable.ic_bn_favorite, Color(0xFFE8F5E8)),
+            CategoryItem("1", "Rice", R.drawable.ic_rice, Color(0xFFFFF3E0)),
+            CategoryItem("2", "Healthy", R.drawable.ic_healthy, Color(0xFFE8F5E8)),
             CategoryItem("3", "Drink", R.drawable.ic_bn_inbox, Color(0xFFE3F2FD)),
             CategoryItem("4", "Fastfood", R.drawable.ic_bn_order, Color(0xFFFFF3E0)),
             CategoryItem("5", "Pizza", R.drawable.ic_offer_percentage, Color(0xFFFFEBEE)),
@@ -286,8 +286,7 @@ fun CategoryCard(
             Icon(
                 painter = painterResource(id = category.iconRes),
                 contentDescription = category.name,
-                modifier = Modifier.size(32.dp),
-                tint = PrimaryColor
+                modifier = Modifier.size(32.dp)
             )
         }
 

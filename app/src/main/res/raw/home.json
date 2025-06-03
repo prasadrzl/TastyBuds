@@ -1,0 +1,286 @@
+{
+  "success": true,
+  "message": "Home data retrieved successfully",
+  "data": {
+    "user": {
+      "id": "user_001",
+      "name": "John Doe",
+      "current_location": {
+        "id": "loc_001",
+        "name": "Home",
+        "address": "201 Katlian No.21 Street",
+        "latitude": 1.3521,
+        "longitude": 103.8198
+      }
+    },
+    "deal_banners": [
+      {
+        "id": "banner_001",
+        "title": "Join Party",
+        "discount": "$1",
+        "description": "off $20",
+        "background_color": "#FFD54F",
+        "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=200&fit=crop",
+        "cta_text": "SEE MORE",
+        "action_type": "deal",
+        "action_id": "deal_001"
+      },
+      {
+        "id": "banner_002",
+        "title": "Super Deal",
+        "discount": "$5",
+        "description": "off $50",
+        "background_color": "#FF6B35",
+        "image": "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=200&fit=crop",
+        "cta_text": "SEE MORE",
+        "action_type": "category",
+        "action_id": "cat_001"
+      },
+      {
+        "id": "banner_003",
+        "title": "Free Delivery",
+        "discount": "FREE",
+        "description": "on orders over $30",
+        "background_color": "#4CAF50",
+        "image": "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&h=200&fit=crop",
+        "cta_text": "ORDER NOW",
+        "action_type": "free_delivery",
+        "action_id": "promo_001"
+      }
+    ],
+    "categories": [
+      {
+        "id": "cat_001",
+        "name": "Rice",
+        "icon": "🍚",
+        "background_color": "#FFF3E0",
+        "restaurant_count": 45,
+        "is_popular": true
+      },
+      {
+        "id": "cat_002",
+        "name": "Healthy",
+        "icon": "🥗",
+        "background_color": "#E8F5E8",
+        "restaurant_count": 32,
+        "is_popular": true
+      },
+      {
+        "id": "cat_003",
+        "name": "Drink",
+        "icon": "🥤",
+        "background_color": "#E3F2FD",
+        "restaurant_count": 28,
+        "is_popular": false
+      },
+      {
+        "id": "cat_004",
+        "name": "Fastfood",
+        "icon": "🍔",
+        "background_color": "#E8F5E8",
+        "restaurant_count": 67,
+        "is_popular": true
+      },
+      {
+        "id": "cat_005",
+        "name": "Pizza",
+        "icon": "🍕",
+        "background_color": "#E3F2FD",
+        "restaurant_count": 23,
+        "is_popular": false
+      },
+      {
+        "id": "cat_006",
+        "name": "Burger",
+        "icon": "🍔",
+        "background_color": "#FFF3E0",
+        "restaurant_count": 41,
+        "is_popular": false
+      }
+    ],
+    "vouchers": {
+      "count": 5,
+      "total_value": 25.0,
+      "message": "You have 5 voucher here",
+      "action_text": "View all"
+    },
+    "collections": [
+      {
+        "id": "col_001",
+        "title": "FREESHIP",
+        "subtitle": "18 Places • 4.8",
+        "image": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=150&h=150&fit=crop",
+        "badge": null,
+        "restaurant_count": 18,
+        "average_rating": 4.8,
+        "restaurant_ids": ["rest_001", "rest_002", "rest_003"]
+      },
+      {
+        "id": "col_002",
+        "title": "DEAL $1",
+        "subtitle": "8 Places • 4.3",
+        "image": "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=150&h=150&fit=crop",
+        "badge": null,
+        "restaurant_count": 8,
+        "average_rating": 4.3,
+        "restaurant_ids": ["rest_004", "rest_005"]
+      },
+      {
+        "id": "col_003",
+        "title": "NEAR YOU",
+        "subtitle": "12 Places • 4.2",
+        "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=150&h=150&fit=crop",
+        "badge": null,
+        "restaurant_count": 12,
+        "average_rating": 4.2,
+        "restaurant_ids": ["rest_006", "rest_007", "rest_008"]
+      },
+      {
+        "id": "col_004",
+        "title": "POPULAR",
+        "subtitle": "25 Places • 4.5",
+        "image": "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=150&h=150&fit=crop",
+        "badge": null,
+        "restaurant_count": 25,
+        "average_rating": 4.5,
+        "restaurant_ids": ["rest_009", "rest_010"]
+      }
+    ],
+    "recommended_restaurants": [
+      {
+        "id": "rest_001",
+        "name": "Bamsu Restaurant",
+        "description": "Korean • Asian Fusion",
+        "cuisine": ["Korean", "Asian Fusion"],
+        "rating": 4.1,
+        "review_count": 156,
+        "delivery_time": "20 mins",
+        "delivery_fee": 2.0,
+        "distance": "2.1 km",
+        "price_range": "$8 - $35",
+        "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop",
+        "badges": [],
+        "is_open": true,
+        "is_favorite": false
+      },
+      {
+        "id": "rest_002",
+        "name": "B'Fresh Coffee",
+        "description": "Coffee • Drinks • Desserts",
+        "cuisine": ["Coffee", "Drinks", "Desserts"],
+        "rating": 4.5,
+        "review_count": 203,
+        "delivery_time": "30 mins",
+        "delivery_fee": 1.5,
+        "distance": "3.2 km",
+        "price_range": "$3 - $20",
+        "image": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300&h=200&fit=crop",
+        "badges": [
+          {
+            "text": "Freeship",
+            "type": "free_delivery",
+            "background_color": "#4CAF50"
+          },
+          {
+            "text": "Near you",
+            "type": "location",
+            "background_color": "#FF6F00"
+          }
+        ],
+        "is_open": true,
+        "is_favorite": true
+      },
+      {
+        "id": "rest_003",
+        "name": "Loran Salad",
+        "description": "Healthy • Vegetarian • Salads",
+        "cuisine": ["Healthy", "Vegetarian", "Salads"],
+        "rating": 4.3,
+        "review_count": 89,
+        "delivery_time": "30 mins",
+        "delivery_fee": 2.5,
+        "distance": "4.1 km",
+        "price_range": "$6 - $25",
+        "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=300&h=200&fit=crop",
+        "badges": [
+          {
+            "text": "Deal $1",
+            "type": "deal",
+            "background_color": "#4CAF50"
+          }
+        ],
+        "is_open": true,
+        "is_favorite": false
+      }
+    ],
+    "sale_items": [
+      {
+        "id": "sale_001",
+        "name": "Laura Green",
+        "description": "Fresh salad bowl with mixed greens",
+        "original_price": 12.0,
+        "sale_price": 9.0,
+        "discount_percent": 25,
+        "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=300&h=200&fit=crop",
+        "restaurant_id": "rest_003",
+        "restaurant_name": "Loran Salad",
+        "delivery_time": "30 mins",
+        "rating": 4.2,
+        "badges": [
+          {
+            "text": "Deal $1",
+            "type": "deal",
+            "background_color": "#4CAF50"
+          }
+        ]
+      },
+      {
+        "id": "sale_002",
+        "name": "Little Milk",
+        "description": "Premium coffee with fresh milk",
+        "original_price": 8.0,
+        "sale_price": 6.0,
+        "discount_percent": 25,
+        "image": "https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=300&h=200&fit=crop",
+        "restaurant_id": "rest_002",
+        "restaurant_name": "B'Fresh Coffee",
+        "delivery_time": "15 mins",
+        "rating": 4.8,
+        "badges": [
+          {
+            "text": "Freeship",
+            "type": "free_delivery",
+            "background_color": "#4CAF50"
+          }
+        ]
+      },
+      {
+        "id": "sale_003",
+        "name": "Pasta Express",
+        "description": "Creamy pasta with special sauce",
+        "original_price": 15.0,
+        "sale_price": 11.25,
+        "discount_percent": 25,
+        "image": "https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5?w=300&h=200&fit=crop",
+        "restaurant_id": "rest_004",
+        "restaurant_name": "Italian Corner",
+        "delivery_time": "30 mins",
+        "rating": 4.4,
+        "badges": [
+          {
+            "text": "Deal $1",
+            "type": "deal",
+            "background_color": "#4CAF50"
+          }
+        ]
+      }
+    ],
+    "meta": {
+      "total_restaurants": 150,
+      "total_categories": 12,
+      "user_favorites_count": 8,
+      "active_promotions": 15
+    }
+  },
+  "timestamp": 1703772000000
+}

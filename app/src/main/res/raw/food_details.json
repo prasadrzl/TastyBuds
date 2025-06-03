@@ -1,0 +1,280 @@
+{
+  "success": true,
+  "message": "Food item details retrieved successfully",
+  "data": {
+    "menu_item": {
+      "id": "menu_001",
+      "name": "Fried Chicken",
+      "description": "Crispy fried wings, thigh",
+      "base_price": 15.0,
+      "image": "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=600&h=400&fit=crop",
+      "category": "Main Course",
+      "rating": 4.5,
+      "review_count": 99,
+      "restaurant_id": "rest_001",
+      "restaurant_name": "Hana Chicken",
+      "is_vegetarian": false,
+      "is_spicy": false,
+      "allergens": ["gluten", "soy"],
+      "prep_time": "15-20 mins",
+      "calories": 450,
+      "nutrition_info": {
+        "calories": 450,
+        "protein": "25g",
+        "carbs": "15g",
+        "fat": "35g",
+        "sodium": "850mg",
+        "cholesterol": "95mg"
+      },
+      "ingredients": [
+        "Chicken wings",
+        "Chicken thigh",
+        "Flour",
+        "Korean spices",
+        "Soy sauce",
+        "Garlic",
+        "Ginger"
+      ]
+    },
+    "customizations": {
+      "sizes": {
+        "section_name": "Size",
+        "section_type": "required",
+        "pick_count": 1,
+        "pick_text": "(Pick 1)",
+        "options": [
+          {
+            "id": "size_s",
+            "name": "S",
+            "additional_price": 0.0,
+            "is_default": false,
+            "is_available": true,
+            "description": "Small portion (2-3 pieces)"
+          },
+          {
+            "id": "size_m",
+            "name": "M",
+            "additional_price": 5.0,
+            "is_default": false,
+            "is_available": true,
+            "description": "Medium portion (4-5 pieces)"
+          },
+          {
+            "id": "size_l",
+            "name": "L",
+            "additional_price": 10.0,
+            "is_default": true,
+            "is_available": true,
+            "description": "Large portion (6-8 pieces)"
+          }
+        ]
+      },
+      "toppings": {
+        "section_name": "Topping",
+        "section_type": "optional",
+        "pick_count": null,
+        "pick_text": "(Optional)",
+        "options": [
+          {
+            "id": "topping_corn",
+            "name": "Corn",
+            "price": 2.0,
+            "is_available": true,
+            "is_default": true,
+            "description": "Sweet corn kernels"
+          },
+          {
+            "id": "topping_cheese",
+            "name": "Cheese Cheddar",
+            "price": 5.0,
+            "is_available": true,
+            "is_default": true,
+            "description": "Melted cheddar cheese"
+          },
+          {
+            "id": "topping_egg",
+            "name": "Salted egg",
+            "price": 10.0,
+            "is_available": true,
+            "is_default": false,
+            "description": "Salted egg yolk sauce"
+          },
+          {
+            "id": "topping_onion",
+            "name": "Green onion",
+            "price": 1.0,
+            "is_available": true,
+            "is_default": false,
+            "description": "Fresh chopped green onions"
+          },
+          {
+            "id": "topping_sesame",
+            "name": "Sesame seeds",
+            "price": 1.5,
+            "is_available": true,
+            "is_default": false,
+            "description": "Toasted sesame seeds"
+          }
+        ]
+      },
+      "spice_levels": {
+        "section_name": "Spiciness",
+        "section_type": "required",
+        "pick_count": 1,
+        "pick_text": "(Pick 1)",
+        "options": [
+          {
+            "id": "spice_no",
+            "name": "No",
+            "level": 0,
+            "is_default": false,
+            "is_available": true,
+            "description": "No spice, mild flavor"
+          },
+          {
+            "id": "spice_hot",
+            "name": "Hot",
+            "level": 3,
+            "is_default": true,
+            "is_available": true,
+            "description": "Medium spice level"
+          },
+          {
+            "id": "spice_very_hot",
+            "name": "Very hot",
+            "level": 5,
+            "is_default": false,
+            "is_available": true,
+            "description": "Very spicy, Korean chili paste"
+          }
+        ]
+      },
+      "sauces": {
+        "section_name": "Sauce",
+        "section_type": "optional",
+        "pick_count": 1,
+        "pick_text": "(Optional)",
+        "options": [
+          {
+            "id": "sauce_soy",
+            "name": "Soy garlic",
+            "price": 0.0,
+            "is_available": true,
+            "is_default": false,
+            "description": "Sweet soy garlic glaze"
+          },
+          {
+            "id": "sauce_honey",
+            "name": "Honey mustard",
+            "price": 1.0,
+            "is_available": true,
+            "is_default": false,
+            "description": "Sweet honey mustard dip"
+          },
+          {
+            "id": "sauce_buffalo",
+            "name": "Buffalo sauce",
+            "price": 1.5,
+            "is_available": true,
+            "is_default": false,
+            "description": "Spicy buffalo wing sauce"
+          }
+        ]
+      }
+    },
+    "default_selections": {
+      "size": "size_l",
+      "toppings": ["topping_corn", "topping_cheese"],
+      "spice_level": "spice_hot",
+      "sauce": null,
+      "quantity": 1,
+      "special_note": ""
+    },
+    "price_calculation": {
+      "base_price": 15.0,
+      "size_price": 10.0,
+      "toppings_price": 7.0,
+      "sauce_price": 0.0,
+      "subtotal": 32.0,
+      "quantity": 1,
+      "total": 32.0
+    },
+    "related_items": [
+      {
+        "id": "menu_003",
+        "name": "Spicy Chicken",
+        "description": "Korean-style spicy chicken",
+        "base_price": 18.0,
+        "image": "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=200&h=150&fit=crop",
+        "rating": 4.6,
+        "is_popular": true
+      },
+      {
+        "id": "menu_007",
+        "name": "Korean Wings",
+        "description": "Traditional Korean chicken wings",
+        "base_price": 16.0,
+        "image": "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=200&h=150&fit=crop",
+        "rating": 4.7,
+        "is_popular": true
+      },
+      {
+        "id": "menu_004",
+        "name": "Fried Potatos",
+        "description": "Crispy seasoned potato wedges",
+        "base_price": 8.0,
+        "image": "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=200&h=150&fit=crop",
+        "rating": 4.3,
+        "is_popular": false
+      }
+    ],
+    "reviews_summary": {
+      "total_reviews": 99,
+      "average_rating": 4.5,
+      "rating_distribution": {
+        "5_star": 65,
+        "4_star": 28,
+        "3_star": 4,
+        "2_star": 1,
+        "1_star": 1
+      },
+      "top_mentions": [
+        "crispy",
+        "delicious",
+        "well-seasoned",
+        "good portion",
+        "fresh"
+      ]
+    },
+    "availability": {
+      "is_available": true,
+      "estimated_prep_time": "15-20 mins",
+      "stock_status": "in_stock",
+      "last_updated": "2024-01-01T10:30:00Z"
+    },
+    "recommendations": {
+      "frequently_bought_together": [
+        {
+          "id": "menu_004",
+          "name": "Fried Potatos",
+          "price": 8.0
+        },
+        {
+          "id": "drink_001",
+          "name": "Korean Soda",
+          "price": 3.0
+        }
+      ],
+      "combo_suggestions": [
+        {
+          "id": "combo_001",
+          "name": "Chicken Combo",
+          "description": "Fried Chicken + Fries + Drink",
+          "price": 25.0,
+          "savings": 3.0
+        }
+      ]
+    }
+  },
+  "timestamp": 1703772000000
+}

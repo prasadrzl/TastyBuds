@@ -1,0 +1,270 @@
+{
+  "success": true,
+  "message": "Order review retrieved successfully",
+  "data": {
+    "order_id": "order_001",
+    "order_status": "draft",
+    "delivery_address": {
+      "id": "loc_001",
+      "type": "home",
+      "name": "Home",
+      "address": "201 Katlian No.21 Street",
+      "city": "Singapore",
+      "postal_code": "123456",
+      "coordinates": {
+        "latitude": 1.3521,
+        "longitude": 103.8198
+      },
+      "delivery_instructions": "",
+      "estimated_delivery_time": "20 mins",
+      "is_default": true
+    },
+    "restaurant": {
+      "id": "rest_001",
+      "name": "Hana Chicken",
+      "address": "123 Food Street, Downtown District",
+      "phone": "+65 6123 4567",
+      "estimated_prep_time": "15-20 mins"
+    },
+    "order_items": [
+      {
+        "id": "cart_001",
+        "menu_item_id": "menu_001",
+        "name": "Fried Chicken",
+        "description": "Crispy fried wings, thigh",
+        "image": "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=300&h=200&fit=crop",
+        "base_price": 15.0,
+        "quantity": 1,
+        "customizations": {
+          "size": {
+            "id": "size_l",
+            "name": "L",
+            "additional_price": 10.0
+          },
+          "toppings": [
+            {
+              "id": "topping_corn",
+              "name": "Corn",
+              "price": 2.0
+            },
+            {
+              "id": "topping_cheese",
+              "name": "Cheese Cheddar",
+              "price": 5.0
+            }
+          ],
+          "spice_level": {
+            "id": "spice_hot",
+            "name": "Hot",
+            "level": 3
+          },
+          "sauce": null,
+          "special_note": ""
+        },
+        "item_subtotal": 32.0,
+        "item_total": 32.0,
+        "is_editable": true
+      },
+      {
+        "id": "cart_002",
+        "menu_item_id": "menu_002",
+        "name": "Chicken Salad",
+        "description": "Fresh greens with grilled chicken",
+        "image": "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=300&h=200&fit=crop",
+        "base_price": 8.0,
+        "quantity": 1,
+        "customizations": {
+          "size": {
+            "id": "size_m",
+            "name": "M",
+            "additional_price": 2.0
+          },
+          "toppings": [],
+          "spice_level": {
+            "id": "spice_no",
+            "name": "No",
+            "level": 0
+          },
+          "sauce": {
+            "id": "sauce_sesame",
+            "name": "Roasted Sesame",
+            "price": 0.0
+          },
+          "special_note": ""
+        },
+        "item_subtotal": 10.0,
+        "item_total": 10.0,
+        "is_editable": true
+      }
+    ],
+    "also_ordered": [
+      {
+        "id": "menu_005",
+        "name": "Sauté Chicken Rice",
+        "description": "Sauté chicken with steamed rice",
+        "image": "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=200&h=150&fit=crop",
+        "base_price": 15.0,
+        "rating": 4.5,
+        "review_count": 99,
+        "is_popular": true,
+        "restaurant_id": "rest_001"
+      },
+      {
+        "id": "menu_008",
+        "name": "Spicy Noodles",
+        "description": "Korean spicy ramen noodles",
+        "image": "https://images.unsplash.com/photo-1555126634-323283e090fa?w=200&h=150&fit=crop",
+        "base_price": 12.0,
+        "rating": 4.3,
+        "review_count": 76,
+        "is_popular": false,
+        "restaurant_id": "rest_001"
+      },
+      {
+        "id": "menu_009",
+        "name": "Korean BBQ Bowl",
+        "description": "Marinated beef with rice and vegetables",
+        "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200&h=150&fit=crop",
+        "base_price": 18.0,
+        "rating": 4.7,
+        "review_count": 134,
+        "is_popular": true,
+        "restaurant_id": "rest_001"
+      }
+    ],
+    "payment_details": {
+      "subtotal": 42.0,
+      "delivery_fee": 2.0,
+      "service_fee": 0.0,
+      "taxes": 0.0,
+      "total_before_discounts": 44.0,
+      "discounts": [
+        {
+          "id": "promo_001",
+          "name": "30% for bill over $50",
+          "description": "Get 30% off when you spend over $50",
+          "discount_type": "percentage",
+          "discount_value": 30,
+          "min_order": 50.0,
+          "max_discount": 15.0,
+          "applied_amount": 0.0,
+          "is_applicable": false,
+          "reason": "Minimum order amount not reached"
+        }
+      ],
+      "promotion_discount": 3.2,
+      "promotion_details": {
+        "id": "auto_promo_001",
+        "name": "Restaurant Discount",
+        "description": "Automatic 10% discount",
+        "discount_type": "percentage",
+        "discount_value": 10,
+        "applied_amount": 3.2,
+        "is_auto_applied": true
+      },
+      "final_total": 30.8,
+      "currency": "SGD",
+      "payment_method": {
+        "id": "payment_ewallet_001",
+        "type": "ewallet",
+        "name": "E-wallet",
+        "icon": "💳",
+        "provider": "GrabPay",
+        "account_info": "****1234",
+        "is_default": true
+      },
+      "available_payment_methods": [
+        {
+          "id": "payment_ewallet_001",
+          "type": "ewallet",
+          "name": "E-wallet",
+          "icon": "💳",
+          "provider": "GrabPay",
+          "is_available": true
+        },
+        {
+          "id": "payment_card_001",
+          "type": "credit_card",
+          "name": "Credit Card",
+          "icon": "💳",
+          "provider": "Visa",
+          "is_available": true
+        },
+        {
+          "id": "payment_cash_001",
+          "type": "cash",
+          "name": "Cash on Delivery",
+          "icon": "💵",
+          "provider": "COD",
+          "is_available": true
+        }
+      ]
+    },
+    "vouchers_and_promos": {
+      "available_vouchers": [
+        {
+          "id": "voucher_001",
+          "title": "Free Delivery",
+          "description": "Free delivery on orders above $25",
+          "discount_type": "free_delivery",
+          "min_order": 25.0,
+          "is_applicable": true,
+          "expiry_date": "2024-12-31"
+        },
+        {
+          "id": "voucher_002",
+          "title": "10% Off",
+          "description": "Get 10% off on orders above $30",
+          "discount_type": "percentage",
+          "discount_value": 10,
+          "min_order": 30.0,
+          "max_discount": 8.0,
+          "is_applicable": true,
+          "expiry_date": "2024-12-31"
+        }
+      ],
+      "applied_vouchers": [],
+      "promo_codes": {
+        "can_apply": true,
+        "input_placeholder": "Enter promo code"
+      }
+    },
+    "delivery_options": [
+      {
+        "id": "delivery_standard",
+        "name": "Standard Delivery",
+        "estimated_time": "20-30 mins",
+        "fee": 2.0,
+        "is_selected": true,
+        "description": "Regular delivery timing"
+      },
+      {
+        "id": "delivery_express",
+        "name": "Express Delivery",
+        "estimated_time": "10-15 mins",
+        "fee": 5.0,
+        "is_selected": false,
+        "description": "Priority delivery for faster service"
+      }
+    ],
+    "order_summary": {
+      "total_items": 2,
+      "total_quantity": 2,
+      "estimated_total_time": "35-40 mins",
+      "order_type": "delivery",
+      "special_instructions": "",
+      "can_edit_items": true,
+      "can_add_items": true,
+      "minimum_order_met": true,
+      "minimum_order_amount": 15.0
+    },
+    "actions": {
+      "can_proceed_to_payment": true,
+      "can_modify_order": true,
+      "can_change_address": true,
+      "can_apply_vouchers": true,
+      "order_cutoff_time": null
+    }
+  },
+  "timestamp": 1703772000000
+}

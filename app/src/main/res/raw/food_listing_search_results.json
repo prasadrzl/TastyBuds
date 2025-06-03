@@ -1,0 +1,293 @@
+{
+  "success": true,
+  "message": "Search results retrieved successfully",
+  "data": {
+    "search_query": "Fried Chicken",
+    "total_results": 359,
+    "search_type": "mixed",
+    "filters": {
+      "sort_options": [
+        {
+          "id": "relevance",
+          "name": "Sort by",
+          "is_selected": true
+        },
+        {
+          "id": "rating",
+          "name": "Rating"
+        },
+        {
+          "id": "delivery_time",
+          "name": "Delivery Time"
+        },
+        {
+          "id": "distance",
+          "name": "Distance"
+        },
+        {
+          "id": "price_low_high",
+          "name": "Price: Low to High"
+        }
+      ],
+      "filter_options": [
+        {
+          "id": "freeship",
+          "name": "Freeship",
+          "is_selected": false,
+          "type": "delivery"
+        },
+        {
+          "id": "favorite",
+          "name": "Favorite",
+          "is_selected": false,
+          "type": "preference"
+        },
+        {
+          "id": "near_you",
+          "name": "Near you",
+          "is_selected": false,
+          "type": "location"
+        },
+        {
+          "id": "partner",
+          "name": "Partner",
+          "is_selected": false,
+          "type": "partnership"
+        }
+      ]
+    },
+    "results": [
+      {
+        "id": "result_001",
+        "type": "restaurant",
+        "restaurant": {
+          "id": "rest_001",
+          "name": "Hana Chicken",
+          "description": "Fried Chicken",
+          "cuisine": ["Korean", "Fried Chicken"],
+          "rating": 4.8,
+          "review_count": 289,
+          "delivery_time": "15 mins",
+          "delivery_fee": 2.0,
+          "distance": "2 km",
+          "price_range": "$5 - $25",
+          "image": "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=300&h=200&fit=crop",
+          "badges": [
+            {
+              "text": "Freeship",
+              "type": "free_delivery",
+              "background_color": "#4CAF50"
+            },
+            {
+              "text": "Near you",
+              "type": "location",
+              "background_color": "#FF6F00"
+            }
+          ],
+          "is_open": true,
+          "is_favorite": false
+        },
+        "menu_items": [
+          {
+            "id": "menu_001",
+            "name": "Fried Chicken",
+            "description": "Crispy fried chicken pieces",
+            "price": 10.0,
+            "image": "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=200&h=150&fit=crop",
+            "is_popular": true,
+            "restaurant_id": "rest_001"
+          },
+          {
+            "id": "menu_002",
+            "name": "Fried Chicken & Potatos",
+            "description": "Fried chicken with crispy potato wedges",
+            "price": 26.0,
+            "image": "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=200&h=150&fit=crop",
+            "is_popular": false,
+            "restaurant_id": "rest_001"
+          }
+        ]
+      },
+      {
+        "id": "result_002",
+        "type": "restaurant",
+        "restaurant": {
+          "id": "rest_002",
+          "name": "Bamsu Restaurant",
+          "description": "Chicken Salad & Sandwich",
+          "cuisine": ["Korean", "Chicken", "Sandwich"],
+          "rating": 4.1,
+          "review_count": 156,
+          "delivery_time": "35 mins",
+          "delivery_fee": 1.5,
+          "distance": "3.2 km",
+          "price_range": "$8 - $30",
+          "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop",
+          "badges": [
+            {
+              "text": "Freeship",
+              "type": "free_delivery",
+              "background_color": "#4CAF50"
+            },
+            {
+              "text": "Near you",
+              "type": "location",
+              "background_color": "#FF6F00"
+            }
+          ],
+          "is_open": true,
+          "is_favorite": true
+        },
+        "menu_items": [
+          {
+            "id": "menu_003",
+            "name": "Chicken Sandwich",
+            "description": "Grilled chicken sandwich with fresh vegetables",
+            "price": 26.0,
+            "image": "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=200&h=150&fit=crop",
+            "is_popular": true,
+            "restaurant_id": "rest_002"
+          },
+          {
+            "id": "menu_004",
+            "name": "Crunchy Fried Chicken Balls",
+            "description": "Bite-sized crispy chicken balls",
+            "price": 30.0,
+            "image": "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=200&h=150&fit=crop",
+            "is_popular": false,
+            "restaurant_id": "rest_002"
+          }
+        ]
+      },
+      {
+        "id": "result_003",
+        "type": "restaurant",
+        "restaurant": {
+          "id": "rest_003",
+          "name": "Crispy Delight",
+          "description": "Specialty Fried Chicken",
+          "cuisine": ["American", "Fried Chicken"],
+          "rating": 4.6,
+          "review_count": 203,
+          "delivery_time": "20 mins",
+          "delivery_fee": 2.5,
+          "distance": "1.8 km",
+          "price_range": "$6 - $28",
+          "image": "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=300&h=200&fit=crop",
+          "badges": [
+            {
+              "text": "Popular",
+              "type": "trending",
+              "background_color": "#9C27B0"
+            }
+          ],
+          "is_open": true,
+          "is_favorite": false
+        },
+        "menu_items": [
+          {
+            "id": "menu_005",
+            "name": "Original Fried Chicken",
+            "description": "Classic recipe fried chicken",
+            "price": 12.0,
+            "image": "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=200&h=150&fit=crop",
+            "is_popular": true,
+            "restaurant_id": "rest_003"
+          },
+          {
+            "id": "menu_006",
+            "name": "Spicy Fried Chicken Wings",
+            "description": "Hot and spicy chicken wings",
+            "price": 18.0,
+            "image": "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=200&h=150&fit=crop",
+            "is_popular": false,
+            "restaurant_id": "rest_003"
+          }
+        ]
+      },
+      {
+        "id": "result_004",
+        "type": "menu_item",
+        "menu_item": {
+          "id": "menu_007",
+          "name": "Buffalo Fried Chicken",
+          "description": "Spicy buffalo style fried chicken",
+          "price": 22.0,
+          "image": "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=200&h=150&fit=crop",
+          "rating": 4.7,
+          "review_count": 89,
+          "restaurant_id": "rest_004",
+          "restaurant_name": "Wing Stop Express",
+          "delivery_time": "25 mins",
+          "is_popular": true,
+          "badges": [
+            {
+              "text": "Spicy",
+              "type": "cuisine",
+              "background_color": "#FF5722"
+            }
+          ]
+        }
+      },
+      {
+        "id": "result_005",
+        "type": "menu_item",
+        "menu_item": {
+          "id": "menu_008",
+          "name": "Korean Fried Chicken",
+          "description": "Double-fried Korean style chicken",
+          "price": 28.0,
+          "image": "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=200&h=150&fit=crop",
+          "rating": 4.9,
+          "review_count": 145,
+          "restaurant_id": "rest_005",
+          "restaurant_name": "Seoul Kitchen",
+          "delivery_time": "30 mins",
+          "is_popular": true,
+          "badges": [
+            {
+              "text": "Authentic",
+              "type": "cuisine",
+              "background_color": "#FF6F00"
+            }
+          ]
+        }
+      }
+    ],
+    "suggestions": [
+      "fried chicken wings",
+      "fried chicken burger",
+      "korean fried chicken",
+      "spicy fried chicken",
+      "fried chicken rice",
+      "chicken and waffles",
+      "buffalo chicken",
+      "crispy chicken"
+    ],
+    "related_searches": [
+      "chicken wings",
+      "chicken burger",
+      "grilled chicken",
+      "chicken sandwich",
+      "chicken rice",
+      "hot wings",
+      "chicken tenders"
+    ],
+    "pagination": {
+      "current_page": 1,
+      "total_pages": 18,
+      "total_results": 359,
+      "results_per_page": 20,
+      "has_more": true
+    },
+    "meta": {
+      "search_time_ms": 156,
+      "location_based": true,
+      "user_location": {
+        "latitude": 1.3521,
+        "longitude": 103.8198
+      }
+    }
+  },
+  "timestamp": 1703772000000
+}
