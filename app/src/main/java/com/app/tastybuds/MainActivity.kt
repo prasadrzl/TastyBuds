@@ -19,9 +19,11 @@ import com.app.tastybuds.util.AppNavGraph
 import com.app.tastybuds.util.BottomBar
 import com.app.tastybuds.util.HomeSearchBar
 import com.app.tastybuds.util.HomeTopBar
+import dagger.hilt.android.AndroidEntryPoint
 
 data class BottomNavItem(val route: String, val label: String, val iconRes: Int)
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

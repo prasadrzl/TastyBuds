@@ -105,7 +105,7 @@ fun TrackingBottomSheet(modifier: Modifier = Modifier) {
                 }
             }
 
-            Divider(Modifier.padding(vertical = 16.dp))
+            HorizontalDivider(Modifier.padding(vertical = 16.dp))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,

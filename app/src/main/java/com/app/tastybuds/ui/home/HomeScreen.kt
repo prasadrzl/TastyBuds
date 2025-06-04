@@ -1,16 +1,11 @@
-// HomeScreen.kt - Replace your existing HomeScreen
 package com.app.tastybuds.ui.home
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -26,64 +21,126 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.tastybuds.R
+import com.app.tastybuds.data.model.*
+import com.app.tastybuds.domain.model.Banner
+import com.app.tastybuds.domain.model.Category
+import com.app.tastybuds.domain.model.Deal
+import com.app.tastybuds.domain.model.Restaurant
+import com.app.tastybuds.ui.home.state.HomeUiState
 import com.app.tastybuds.ui.theme.PrimaryColor
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
 import kotlinx.coroutines.delay
-
-// Data Models
-data class DealBannerItem(
-    val id: String,
-    val title: String,
-    val price: String,
-    val description: String,
-    val imageRes: Int,
-    val backgroundColor: Color = PrimaryColor
-)
-
-data class DealItem(
-    val id: String,
-    val title: String,
-    val price: String,
-    val originalPrice: String? = null,
-    val imageRes: Int,
-    val badgeText: String? = null
-)
-
-data class CategoryItem(
-    val id: String,
-    val name: String,
-    val iconRes: Int,
-    val backgroundColor: Color
-)
-
-data class CollectionItem(
-    val id: String,
-    val title: String,
-    val subtitle: String,
-    val imageRes: Int,
-    val badgeText: String? = null
-)
-
-data class RestaurantItem(
-    val id: String,
-    val name: String,
-    val cuisine: String,
-    val rating: Float,
-    val deliveryTime: String,
-    val imageRes: Int,
-    val badgeText: String? = null,
-    val isFavorite: Boolean = false
-)
+import com.app.tastybuds.domain.model.Collection as FoodCollection
 
 @Composable
 fun HomeScreen(
     onCategoryClick: (String, String) -> Unit = { _, _ -> },
     onProfileClick: () -> Unit = {},
     onSearchClick: (String) -> Unit = {},
-    onRestaurantClick: (String) -> Unit = {} // ADD THIS LINE
+    onRestaurantClick: (String) -> Unit = {},
+    viewModel: HomeViewModel = viewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    when {
+        uiState.isLoading -> {
+            LoadingScreen()
+        }
+        uiState.error != null -> {
+            ErrorScreen(
+                error = uiState.error ?: "Unknown error",
+                onRetry = { viewModel.retry() }
+            )
+        }
+        else -> {
+            HomeContent(
+                uiState = uiState,
+                onCategoryClick = onCategoryClick,
+                onSearchClick = onSearchClick,
+                onRestaurantClick = onRestaurantClick
+            )
+        }
+    }
+}
+
+@Composable
+fun LoadingScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            color = PrimaryColor,
+            modifier = Modifier.size(48.dp)
+        )
+    }
+}
+
+@Composable
+fun ErrorScreen(error: String, onRetry: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_help),
+            contentDescription = "Error",
+            tint = PrimaryColor,
+            modifier = Modifier.size(64.dp)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Oops! Something went wrong",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = error,
+            fontSize = 14.sp,
+            color = Color.Gray,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = onRetry,
+            colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
+            shape = RoundedCornerShape(24.dp)
+        ) {
+            Text(
+                text = "Try Again",
+                color = Color.White,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun HomeContent(
+    uiState: HomeUiState,
+    onCategoryClick: (String, String) -> Unit,
+    onSearchClick: (String) -> Unit,
+    onRestaurantClick: (String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -91,55 +148,64 @@ fun HomeScreen(
             .background(Color.White),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Deal Banner Section
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-            DealBannerSection()
+        if (uiState.banners.isNotEmpty()) {
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                DealBannerSection(banners = uiState.banners)
+            }
         }
 
-        // Categories Section
-        item {
-            CategoriesSection(onCategoryClick = onCategoryClick)
+        if (uiState.categories.isNotEmpty()) {
+            item {
+                CategoriesSection(
+                    categories = uiState.categories,
+                    onCategoryClick = onCategoryClick
+                )
+            }
         }
 
-        // Voucher Section
         item {
-            VoucherSection()
+            VoucherSection(voucherCount = uiState.voucherCount)
         }
 
-        // Collections Section
-        item {
-            CollectionsSection()
+        if (uiState.collections.isNotEmpty()) {
+            item {
+                CollectionsSection(collections = uiState.collections)
+            }
+        }
+        
+        if (uiState.recommendedRestaurants.isNotEmpty()) {
+            item {
+                RecommendedSection(
+                    restaurants = uiState.recommendedRestaurants,
+                    onRestaurantClick = onRestaurantClick
+                )
+            }
         }
 
-        // Recommended Section
-        item {
-            RecommendedSection(onRestaurantClick = onRestaurantClick)
+        if (uiState.deals.isNotEmpty()) {
+            item {
+                SaleSection(deals = uiState.deals)
+            }
         }
 
-        // Sale Section
         item {
-            SaleSection()
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
 
 @Composable
-fun DealBannerSection() {
-    val dealBanners = remember {
-        getDealBanners()
-    }
-
+fun DealBannerSection(banners: List<Banner>) {
     val pagerState = rememberPagerState(
         initialPage = 0,
-        pageCount = { dealBanners.size }
+        pageCount = { banners.size }
     )
 
-    // Auto-scroll effect
     LaunchedEffect(pagerState) {
         while (true) {
             delay(3000) // 3 seconds delay
-            val nextPage = (pagerState.currentPage + 1) % dealBanners.size
+            val nextPage = (pagerState.currentPage + 1) % banners.size
             pagerState.animateScrollToPage(nextPage)
         }
     }
@@ -151,21 +217,21 @@ fun DealBannerSection() {
             state = pagerState,
             modifier = Modifier.fillMaxWidth()
         ) { page ->
+            val banner = banners[page]
             DealBannerCard(
-                dealBanner = dealBanners[page],
+                banner = banner,
                 onClick = { /* Handle banner click */ }
             )
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Page indicators
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            repeat(dealBanners.size) { index ->
+            repeat(banners.size) { index ->
                 val isSelected = pagerState.currentPage == index
                 Box(
                     modifier = Modifier
@@ -175,7 +241,7 @@ fun DealBannerSection() {
                             if (isSelected) PrimaryColor else Color.Gray.copy(alpha = 0.5f)
                         )
                 )
-                if (index < dealBanners.size - 1) {
+                if (index < banners.size - 1) {
                     Spacer(modifier = Modifier.width(6.dp))
                 }
             }
@@ -183,9 +249,10 @@ fun DealBannerSection() {
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun DealBannerCard(
-    dealBanner: DealBannerItem,
+    banner: Banner,
     onClick: () -> Unit
 ) {
     Card(
@@ -194,7 +261,7 @@ fun DealBannerCard(
             .height(120.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = dealBanner.backgroundColor)
+        colors = CardDefaults.cardColors(containerColor = banner.backgroundColor)
     ) {
         Row(
             modifier = Modifier
@@ -206,51 +273,41 @@ fun DealBannerCard(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = dealBanner.title,
+                    text = banner.title,
                     color = Color.White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = dealBanner.price,
+                    text = banner.price,
                     color = Color.White,
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = dealBanner.description,
+                    text = banner.description,
                     color = Color.White,
                     fontSize = 14.sp
                 )
             }
 
-            Image(
-                painter = painterResource(id = dealBanner.imageRes),
-                contentDescription = dealBanner.title,
+            GlideImage(
+                model = banner.imageUrl,
+                contentDescription = banner.title,
                 modifier = Modifier.size(80.dp),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                failure = placeholder(R.drawable.profile_img),
+                loading = placeholder(R.drawable.profile_img)
             )
         }
     }
 }
 
 @Composable
-fun CategoriesSection(onCategoryClick: (String, String) -> Unit = { _, _ -> }) {
-    val categories = remember {
-        listOf(
-            CategoryItem("1", "Rice", R.drawable.ic_rice, Color(0xFFFFF3E0)),
-            CategoryItem("2", "Healthy", R.drawable.ic_healthy, Color(0xFFE8F5E8)),
-            CategoryItem("3", "Drink", R.drawable.ic_bn_inbox, Color(0xFFE3F2FD)),
-            CategoryItem("4", "Fastfood", R.drawable.ic_bn_order, Color(0xFFFFF3E0)),
-            CategoryItem("5", "Pizza", R.drawable.ic_offer_percentage, Color(0xFFFFEBEE)),
-            CategoryItem("6", "Burger", R.drawable.ic_ewallet, Color(0xFFF3E5F5)),
-            CategoryItem("7", "Dessert", R.drawable.ic_help, Color(0xFFE8F5E8)),
-            CategoryItem("8", "Salad", R.drawable.ic_settings, Color(0xFFE1F5FE)),
-            CategoryItem("9", "Coffee", R.drawable.ic_search, Color(0xFFFFF8E1)),
-            CategoryItem("10", "Soup", R.drawable.ic_user_location, Color(0xFFEDE7F6))
-        )
-    }
-
+fun CategoriesSection(
+    categories: List<Category>,
+    onCategoryClick: (String, String) -> Unit
+) {
     LazyRow(
         modifier = Modifier.padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -265,16 +322,17 @@ fun CategoriesSection(onCategoryClick: (String, String) -> Unit = { _, _ -> }) {
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun CategoryCard(
-    category: CategoryItem,
+    category: Category,
     onClick: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .clickable { onClick() }
-            .width(64.dp) // Fixed width for consistent spacing
+            .width(64.dp)
     ) {
         Box(
             modifier = Modifier
@@ -283,10 +341,12 @@ fun CategoryCard(
                 .background(category.backgroundColor),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                painter = painterResource(id = category.iconRes),
+            GlideImage(
+                model = category.imageUrl,
                 contentDescription = category.name,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(32.dp),
+                failure = placeholder(R.drawable.ic_rice),
+                loading = placeholder(R.drawable.ic_rice)
             )
         }
 
@@ -304,7 +364,7 @@ fun CategoryCard(
 }
 
 @Composable
-fun VoucherSection() {
+fun VoucherSection(voucherCount: Int) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -328,7 +388,7 @@ fun VoucherSection() {
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
-                text = "You have 5 voucher here",
+                text = "You have $voucherCount voucher here",
                 fontSize = 14.sp,
                 color = Color.Black,
                 modifier = Modifier.weight(1f)
@@ -344,10 +404,9 @@ fun VoucherSection() {
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun CollectionsSection() {
-    val collections = getDummyCollections()
-
+fun CollectionsSection(collections: List<com.app.tastybuds.domain.model.Collection>) {
     Column {
         Row(
             modifier = Modifier
@@ -373,57 +432,63 @@ fun CollectionsSection() {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Static 2x2 Grid using Column and Rows
         Column(
             modifier = Modifier.padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // First Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                StaticCollectionCard(
-                    collection = collections[0],
-                    onClick = { /* Handle collection click */ },
-                    modifier = Modifier.weight(1f)
-                )
-                StaticCollectionCard(
-                    collection = collections[1],
-                    onClick = { /* Handle collection click */ },
-                    modifier = Modifier.weight(1f)
-                )
+                if (collections.size > 0) {
+                    StaticCollectionCard(
+                        collection = collections[0],
+                        onClick = { /* Handle collection click */ },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                if (collections.size > 1) {
+                    StaticCollectionCard(
+                        collection = collections[1],
+                        onClick = { /* Handle collection click */ },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
 
-            // Second Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                StaticCollectionCard(
-                    collection = collections[2],
-                    onClick = { /* Handle collection click */ },
-                    modifier = Modifier.weight(1f)
-                )
-                StaticCollectionCard(
-                    collection = collections[3],
-                    onClick = { /* Handle collection click */ },
-                    modifier = Modifier.weight(1f)
-                )
+                if (collections.size > 2) {
+                    StaticCollectionCard(
+                        collection = collections[2],
+                        onClick = { /* Handle collection click */ },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                if (collections.size > 3) {
+                    StaticCollectionCard(
+                        collection = collections[3],
+                        onClick = { /* Handle collection click */ },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
         }
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun StaticCollectionCard(
-    collection: CollectionItem,
+    collection: FoodCollection,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
-            .height(80.dp) // Reduced height to match design
+            .height(80.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -436,19 +501,19 @@ fun StaticCollectionCard(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Left side - Small square image
             Box {
-                Image(
-                    painter = painterResource(id = collection.imageRes),
+                GlideImage(
+                    model = collection.imageUrl,
                     contentDescription = collection.title,
                     modifier = Modifier
                         .size(56.dp)
                         .clip(RoundedCornerShape(8.dp)),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    failure = placeholder(R.drawable.profile_img),
+                    loading = placeholder(R.drawable.profile_img)
                 )
 
-                // Badge on top-left of image
-                collection.badgeText?.let { badge ->
+                collection.badge?.let { badge ->
                     Card(
                         modifier = Modifier
                             .padding(4.dp)
@@ -468,8 +533,6 @@ fun StaticCollectionCard(
             }
 
             Spacer(modifier = Modifier.width(12.dp))
-
-            // Right side - Text content
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.Center
@@ -498,7 +561,10 @@ fun StaticCollectionCard(
 }
 
 @Composable
-fun RecommendedSection(onRestaurantClick: (String) -> Unit = {}) {
+fun RecommendedSection(
+    restaurants: List<Restaurant>,
+    onRestaurantClick: (String) -> Unit
+) {
     Column {
         Row(
             modifier = Modifier
@@ -528,19 +594,20 @@ fun RecommendedSection(onRestaurantClick: (String) -> Unit = {}) {
             modifier = Modifier.padding(start = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(getDummyRestaurants()) { restaurant ->
+            items(restaurants) { restaurant ->
                 RestaurantCard(
                     restaurant = restaurant,
-                    onClick = { onRestaurantClick(restaurant.id) } // CHANGE THIS LINE
+                    onClick = { onRestaurantClick(restaurant.id) }
                 )
             }
         }
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun RestaurantCard(
-    restaurant: RestaurantItem,
+    restaurant: Restaurant,
     onClick: () -> Unit
 ) {
     Card(
@@ -553,16 +620,19 @@ fun RestaurantCard(
     ) {
         Column {
             Box {
-                Image(
-                    painter = painterResource(id = restaurant.imageRes),
+                // Use Glide for restaurant image
+                GlideImage(
+                    model = restaurant.imageUrl,
                     contentDescription = restaurant.name,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(100.dp),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    failure = placeholder(R.drawable.profile_img),
+                    loading = placeholder(R.drawable.profile_img)
                 )
 
-                restaurant.badgeText?.let { badge ->
+                restaurant.badge?.let { badge ->
                     Card(
                         modifier = Modifier
                             .padding(8.dp)
@@ -635,7 +705,7 @@ fun RestaurantCard(
 }
 
 @Composable
-fun SaleSection() {
+fun SaleSection(deals: List<Deal>) {
     Column {
         Row(
             modifier = Modifier
@@ -665,7 +735,7 @@ fun SaleSection() {
             modifier = Modifier.padding(start = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(getDummySaleItems()) { deal ->
+            items(deals) { deal ->
                 SaleCard(
                     deal = deal,
                     onClick = { /* Handle deal click */ }
@@ -675,9 +745,10 @@ fun SaleSection() {
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun SaleCard(
-    deal: DealItem,
+    deal: Deal,
     onClick: () -> Unit
 ) {
     Card(
@@ -690,16 +761,19 @@ fun SaleCard(
     ) {
         Column {
             Box {
-                Image(
-                    painter = painterResource(id = deal.imageRes),
+                // Use Glide for deal image
+                GlideImage(
+                    model = deal.imageUrl,
                     contentDescription = deal.title,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(100.dp),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    failure = placeholder(R.drawable.profile_img),
+                    loading = placeholder(R.drawable.profile_img)
                 )
 
-                deal.badgeText?.let { badge ->
+                deal.badge?.let { badge ->
                     Card(
                         modifier = Modifier
                             .padding(8.dp)
@@ -709,6 +783,25 @@ fun SaleCard(
                     ) {
                         Text(
                             text = badge,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            fontSize = 10.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+
+                // Discount percentage badge if available
+                deal.discountPercentage?.let { percentage ->
+                    Card(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .align(Alignment.TopStart),
+                        shape = RoundedCornerShape(4.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF4CAF50))
+                    ) {
+                        Text(
+                            text = "-$percentage%",
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                             fontSize = 10.sp,
                             color = Color.White,
@@ -753,73 +846,4 @@ fun SaleCard(
             }
         }
     }
-}
-
-// Dummy Data Functions
-private fun getDealBanners(): List<DealBannerItem> {
-    return listOf(
-        DealBannerItem(
-            id = "1",
-            title = "Join Party",
-            price = "$1",
-            description = "off $20",
-            imageRes = R.drawable.profile_img,
-            backgroundColor = PrimaryColor
-        ),
-        DealBannerItem(
-            id = "2",
-            title = "Super Deal",
-            price = "$5",
-            description = "off $50",
-            imageRes = R.drawable.profile_img,
-            backgroundColor = Color(0xFF4CAF50)
-        ),
-        DealBannerItem(
-            id = "3",
-            title = "Flash Sale",
-            price = "50%",
-            description = "off selected items",
-            imageRes = R.drawable.profile_img,
-            backgroundColor = Color(0xFF9C27B0)
-        ),
-        DealBannerItem(
-            id = "4",
-            title = "Free Delivery",
-            price = "$0",
-            description = "delivery fee",
-            imageRes = R.drawable.profile_img,
-            backgroundColor = Color(0xFF2196F3)
-        )
-    )
-}
-
-private fun getDummyCollections(): List<CollectionItem> {
-    return listOf(
-        CollectionItem("1", "FREESHIP", "18 Places • 4.8", R.drawable.profile_img, "Free"),
-        CollectionItem("2", "DEAL $1", "8 Places • 4.3", R.drawable.profile_img, "Deal $1"),
-        CollectionItem("3", "NEAR YOU", "12 Places • 4.2", R.drawable.profile_img),
-        CollectionItem("4", "POPULAR", "25 Places • 4.5", R.drawable.profile_img, "Popular")
-    )
-}
-
-private fun getDummyRestaurants(): List<RestaurantItem> {
-    return listOf(
-        RestaurantItem("1", "Bomua Restaurant", "Chinese, Spicy • Desserts", 4.5f, "25 mins • 4.1 km", R.drawable.profile_img, "Popular"),
-        RestaurantItem("2", "PT Wen Coffee", "Coffee, Drinks", 4.2f, "15 mins • 2.8 km", R.drawable.profile_img),
-        RestaurantItem("3", "Green Salad", "Healthy, Vegetarian", 4.8f, "20 mins • 3.2 km", R.drawable.profile_img, "Healthy")
-    )
-}
-
-private fun getDummySaleItems(): List<DealItem> {
-    return listOf(
-        DealItem("1", "Green Salad", "Deal $5", "$8", R.drawable.profile_img, "Deal $5"),
-        DealItem("2", "Little Milk", "Deal $3", "$6", R.drawable.profile_img, "Popular"),
-        DealItem("3", "Potato Chips", "Deal $1", "$4", R.drawable.profile_img, "Deal $1")
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    HomeScreen()
 }
