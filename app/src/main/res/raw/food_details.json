@@ -98,22 +98,6 @@
             "is_available": true,
             "is_default": false,
             "description": "Salted egg yolk sauce"
-          },
-          {
-            "id": "topping_onion",
-            "name": "Green onion",
-            "price": 1.0,
-            "is_available": true,
-            "is_default": false,
-            "description": "Fresh chopped green onions"
-          },
-          {
-            "id": "topping_sesame",
-            "name": "Sesame seeds",
-            "price": 1.5,
-            "is_available": true,
-            "is_default": false,
-            "description": "Toasted sesame seeds"
           }
         ]
       },
@@ -148,45 +132,12 @@
             "description": "Very spicy, Korean chili paste"
           }
         ]
-      },
-      "sauces": {
-        "section_name": "Sauce",
-        "section_type": "optional",
-        "pick_count": 1,
-        "pick_text": "(Optional)",
-        "options": [
-          {
-            "id": "sauce_soy",
-            "name": "Soy garlic",
-            "price": 0.0,
-            "is_available": true,
-            "is_default": false,
-            "description": "Sweet soy garlic glaze"
-          },
-          {
-            "id": "sauce_honey",
-            "name": "Honey mustard",
-            "price": 1.0,
-            "is_available": true,
-            "is_default": false,
-            "description": "Sweet honey mustard dip"
-          },
-          {
-            "id": "sauce_buffalo",
-            "name": "Buffalo sauce",
-            "price": 1.5,
-            "is_available": true,
-            "is_default": false,
-            "description": "Spicy buffalo wing sauce"
-          }
-        ]
       }
     },
     "default_selections": {
       "size": "size_l",
       "toppings": ["topping_corn", "topping_cheese"],
       "spice_level": "spice_hot",
-      "sauce": null,
       "quantity": 1,
       "special_note": ""
     },
@@ -194,7 +145,6 @@
       "base_price": 15.0,
       "size_price": 10.0,
       "toppings_price": 7.0,
-      "sauce_price": 0.0,
       "subtotal": 32.0,
       "quantity": 1,
       "total": 32.0
@@ -207,16 +157,8 @@
         "base_price": 18.0,
         "image": "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=200&h=150&fit=crop",
         "rating": 4.6,
-        "is_popular": true
-      },
-      {
-        "id": "menu_007",
-        "name": "Korean Wings",
-        "description": "Traditional Korean chicken wings",
-        "base_price": 16.0,
-        "image": "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=200&h=150&fit=crop",
-        "rating": 4.7,
-        "is_popular": true
+        "is_popular": true,
+        "restaurant_id": "rest_001"
       },
       {
         "id": "menu_004",
@@ -225,7 +167,8 @@
         "base_price": 8.0,
         "image": "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=200&h=150&fit=crop",
         "rating": 4.3,
-        "is_popular": false
+        "is_popular": false,
+        "restaurant_id": "rest_001"
       }
     ],
     "reviews_summary": {
@@ -257,12 +200,14 @@
         {
           "id": "menu_004",
           "name": "Fried Potatos",
-          "price": 8.0
+          "price": 8.0,
+          "restaurant_id": "rest_001"
         },
         {
-          "id": "drink_001",
+          "id": "menu_007",
           "name": "Korean Soda",
-          "price": 3.0
+          "price": 3.0,
+          "restaurant_id": "rest_001"
         }
       ],
       "combo_suggestions": [
@@ -271,7 +216,8 @@
           "name": "Chicken Combo",
           "description": "Fried Chicken + Fries + Drink",
           "price": 25.0,
-          "savings": 3.0
+          "savings": 3.0,
+          "restaurant_id": "rest_001"
         }
       ]
     }

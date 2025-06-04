@@ -85,12 +85,27 @@
           {
             "text": "Near you",
             "type": "location",
-            "background_color": "#FF6F00"
+            "background_color": "#FF7700"
           }
         ],
         "is_open": true,
         "is_favorite": false,
-        "estimated_delivery": "15-25 mins"
+        "estimated_delivery": "15-25 mins",
+        "category_ids": ["cat_004"],
+        "featured_menu_items": [
+          {
+            "id": "menu_001",
+            "name": "Fried Chicken",
+            "price": 15.0,
+            "image": "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=200&h=150&fit=crop"
+          },
+          {
+            "id": "menu_002",
+            "name": "Fried Chicken & Potatos",
+            "price": 26.0,
+            "image": "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=200&h=150&fit=crop"
+          }
+        ]
       },
       {
         "id": "rest_002",
@@ -113,7 +128,22 @@
         ],
         "is_open": true,
         "is_favorite": true,
-        "estimated_delivery": "35-45 mins"
+        "estimated_delivery": "35-45 mins",
+        "category_ids": ["cat_004"],
+        "featured_menu_items": [
+          {
+            "id": "menu_011",
+            "name": "Chicken Sandwich",
+            "price": 26.0,
+            "image": "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=200&h=150&fit=crop"
+          },
+          {
+            "id": "menu_012",
+            "name": "Crunchy Fried Chicken Balls",
+            "price": 30.0,
+            "image": "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=200&h=150&fit=crop"
+          }
+        ]
       },
       {
         "id": "rest_003",
@@ -136,7 +166,16 @@
         ],
         "is_open": true,
         "is_favorite": false,
-        "estimated_delivery": "35-45 mins"
+        "estimated_delivery": "35-45 mins",
+        "category_ids": ["cat_003"],
+        "featured_menu_items": [
+          {
+            "id": "menu_013",
+            "name": "Fresh Milk Shake",
+            "price": 8.0,
+            "image": "https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=200&h=150&fit=crop"
+          }
+        ]
       }
     ],
     "featured_banners": [
@@ -171,14 +210,6 @@
         "image": "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=600&h=300&fit=crop",
         "action_type": "quality_restaurants",
         "action_id": "collection_quality"
-      },
-      {
-        "id": "featured_005",
-        "title": "Fast",
-        "subtitle": "Delivery",
-        "image": "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=600&h=300&fit=crop",
-        "action_type": "fast_delivery",
-        "action_id": "filter_fast_delivery"
       }
     ],
     "recommended_restaurants": [
@@ -203,7 +234,8 @@
         ],
         "is_open": true,
         "is_favorite": false,
-        "estimated_delivery": "35-45 mins"
+        "estimated_delivery": "35-45 mins",
+        "category_ids": ["cat_004"]
       },
       {
         "id": "rest_005",
@@ -231,86 +263,8 @@
         ],
         "is_open": true,
         "is_favorite": true,
-        "estimated_delivery": "25-35 mins"
-      },
-      {
-        "id": "rest_006",
-        "name": "Burger King Supreme",
-        "description": "Classic American Burgers",
-        "cuisine": ["American", "Burgers", "Fast Food"],
-        "rating": 4.3,
-        "review_count": 445,
-        "delivery_time": "20 mins",
-        "delivery_fee": 1.0,
-        "distance": "1.5 km",
-        "price_range": "$6 - $25",
-        "image": "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=300&h=200&fit=crop",
-        "badges": [
-          {
-            "text": "Near you",
-            "type": "location",
-            "background_color": "#FF6F00"
-          },
-          {
-            "text": "Deal $1",
-            "type": "deal",
-            "background_color": "#4CAF50"
-          }
-        ],
-        "is_open": true,
-        "is_favorite": false,
-        "estimated_delivery": "20-30 mins"
-      },
-      {
-        "id": "rest_007",
-        "name": "Pizza Corner",
-        "description": "Wood-fired Pizza & Sides",
-        "cuisine": ["Italian", "Pizza", "Fast Food"],
-        "rating": 4.6,
-        "review_count": 312,
-        "delivery_time": "30 mins",
-        "delivery_fee": 2.5,
-        "distance": "4.2 km",
-        "price_range": "$8 - $35",
-        "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop",
-        "badges": [
-          {
-            "text": "Popular",
-            "type": "trending",
-            "background_color": "#9C27B0"
-          }
-        ],
-        "is_open": true,
-        "is_favorite": true,
-        "estimated_delivery": "30-40 mins"
-      },
-      {
-        "id": "rest_008",
-        "name": "Taco Fiesta",
-        "description": "Mexican Street Food",
-        "cuisine": ["Mexican", "Tacos", "Fast Food"],
-        "rating": 4.4,
-        "review_count": 198,
-        "delivery_time": "25 mins",
-        "delivery_fee": 1.5,
-        "distance": "3.0 km",
-        "price_range": "$5 - $20",
-        "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop",
-        "badges": [
-          {
-            "text": "Freeship",
-            "type": "free_delivery",
-            "background_color": "#4CAF50"
-          },
-          {
-            "text": "Spicy",
-            "type": "cuisine",
-            "background_color": "#FF5722"
-          }
-        ],
-        "is_open": true,
-        "is_favorite": false,
-        "estimated_delivery": "25-35 mins"
+        "estimated_delivery": "25-35 mins",
+        "category_ids": ["cat_004", "cat_005"]
       }
     ],
     "pagination": {

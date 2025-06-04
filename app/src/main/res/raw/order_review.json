@@ -58,7 +58,6 @@
             "name": "Hot",
             "level": 3
           },
-          "sauce": null,
           "special_note": ""
         },
         "item_subtotal": 32.0,
@@ -110,7 +109,7 @@
         "restaurant_id": "rest_001"
       },
       {
-        "id": "menu_008",
+        "id": "menu_006",
         "name": "Spicy Noodles",
         "description": "Korean spicy ramen noodles",
         "image": "https://images.unsplash.com/photo-1555126634-323283e090fa?w=200&h=150&fit=crop",
@@ -118,17 +117,6 @@
         "rating": 4.3,
         "review_count": 76,
         "is_popular": false,
-        "restaurant_id": "rest_001"
-      },
-      {
-        "id": "menu_009",
-        "name": "Korean BBQ Bowl",
-        "description": "Marinated beef with rice and vegetables",
-        "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200&h=150&fit=crop",
-        "base_price": 18.0,
-        "rating": 4.7,
-        "review_count": 134,
-        "is_popular": true,
         "restaurant_id": "rest_001"
       }
     ],

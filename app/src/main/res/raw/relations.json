@@ -1,0 +1,329 @@
+{
+  "master_data_relationships": {
+    "note": "This file defines all IDs and relationships that must be consistent across all JSON files",
+
+    "users": {
+      "user_001": {
+        "name": "John Doe",
+        "email": "john.doe@example.com",
+        "default_location": "loc_001"
+      }
+    },
+
+    "locations": {
+      "loc_001": {
+        "name": "Home",
+        "address": "201 Katlian No.21 Street",
+        "type": "home",
+        "coordinates": {"latitude": 1.3521, "longitude": 103.8198}
+      }
+    },
+
+    "categories": {
+      "cat_001": {"name": "Rice", "icon": "🍚"},
+      "cat_002": {"name": "Healthy", "icon": "🥗"},
+      "cat_003": {"name": "Drink", "icon": "🥤"},
+      "cat_004": {"name": "Fastfood", "icon": "🍔"},
+      "cat_005": {"name": "Pizza", "icon": "🍕"},
+      "cat_006": {"name": "Burger", "icon": "🍔"},
+      "cat_007": {"name": "Dessert", "icon": "🍰"},
+      "cat_008": {"name": "Salad", "icon": "🥗"},
+      "cat_009": {"name": "Coffee", "icon": "☕"},
+      "cat_010": {"name": "Soup", "icon": "🍲"}
+    },
+
+    "restaurants": {
+      "rest_001": {
+        "name": "Hana Chicken",
+        "cuisine": ["Korean", "Chicken", "Asian"],
+        "category_ids": ["cat_004", "cat_001"],
+        "rating": 4.8,
+        "review_count": 289,
+        "delivery_time": "15 mins",
+        "distance": "2 km",
+        "badges": ["freeship", "near_you"],
+        "menu_item_ids": ["menu_001", "menu_002", "menu_003", "menu_004", "menu_005", "menu_006"],
+        "combo_ids": ["combo_001", "combo_002"],
+        "voucher_ids": ["voucher_rest_001_01", "voucher_rest_001_02"]
+      },
+      "rest_002": {
+        "name": "Bamsu Restaurant",
+        "cuisine": ["Korean", "Chicken", "Sandwich"],
+        "category_ids": ["cat_004"],
+        "rating": 4.1,
+        "review_count": 156,
+        "delivery_time": "35 mins",
+        "distance": "3.2 km",
+        "badges": ["freeship"],
+        "menu_item_ids": ["menu_011", "menu_012"],
+        "combo_ids": [],
+        "voucher_ids": []
+      },
+      "rest_003": {
+        "name": "Green Salad",
+        "cuisine": ["Healthy", "Vegetarian", "Salads"],
+        "category_ids": ["cat_002", "cat_008"],
+        "rating": 4.8,
+        "review_count": 203,
+        "delivery_time": "20 mins",
+        "distance": "3.2 km",
+        "badges": ["healthy"],
+        "menu_item_ids": ["menu_008"],
+        "combo_ids": [],
+        "voucher_ids": []
+      }
+    },
+
+    "menu_items": {
+      "menu_001": {
+        "name": "Fried Chicken",
+        "restaurant_id": "rest_001",
+        "base_price": 15.0,
+        "category": "Main Course",
+        "rating": 4.5,
+        "review_count": 99,
+        "is_popular": true,
+        "customization_sections": ["sizes", "toppings", "spice_levels"]
+      },
+      "menu_002": {
+        "name": "Chicken Salad",
+        "restaurant_id": "rest_001",
+        "base_price": 8.0,
+        "category": "Salads",
+        "rating": 4.5,
+        "review_count": 99,
+        "is_popular": false,
+        "customization_sections": ["sizes", "spice_levels", "sauces"]
+      },
+      "menu_003": {
+        "name": "Spicy Chicken",
+        "restaurant_id": "rest_001",
+        "base_price": 18.0,
+        "category": "Main Course",
+        "rating": 4.6,
+        "review_count": 156,
+        "is_popular": true,
+        "is_spicy": true
+      },
+      "menu_004": {
+        "name": "Fried Potatos",
+        "restaurant_id": "rest_001",
+        "base_price": 8.0,
+        "category": "Sides",
+        "rating": 4.3,
+        "review_count": 99,
+        "is_popular": false,
+        "is_vegetarian": true
+      },
+      "menu_005": {
+        "name": "Sauté Chicken Rice",
+        "restaurant_id": "rest_001",
+        "base_price": 15.0,
+        "category": "Main Course",
+        "rating": 4.5,
+        "review_count": 99,
+        "is_popular": true
+      },
+      "menu_006": {
+        "name": "Chicken Burger",
+        "restaurant_id": "rest_001",
+        "base_price": 15.0,
+        "category": "Burgers",
+        "rating": 4.5,
+        "review_count": 99,
+        "is_popular": false
+      },
+      "menu_008": {
+        "name": "Green Salad",
+        "restaurant_id": "rest_003",
+        "base_price": 8.0,
+        "category": "Salads",
+        "rating": 4.2,
+        "review_count": 89,
+        "is_popular": true,
+        "is_vegetarian": true
+      },
+      "menu_009": {
+        "name": "Little Milk",
+        "restaurant_id": "rest_002",
+        "base_price": 6.0,
+        "category": "Drinks",
+        "rating": 4.8,
+        "review_count": 134,
+        "is_popular": true
+      },
+      "menu_010": {
+        "name": "Potato Chips",
+        "restaurant_id": "rest_004",
+        "base_price": 4.0,
+        "category": "Snacks",
+        "rating": 4.0,
+        "review_count": 45,
+        "is_popular": false
+      },
+      "menu_011": {
+        "name": "Chicken Sandwich",
+        "restaurant_id": "rest_002",
+        "base_price": 26.0,
+        "category": "Sandwiches",
+        "rating": 4.3,
+        "review_count": 76,
+        "is_popular": true
+      },
+      "menu_012": {
+        "name": "Crunchy Fried Chicken Balls",
+        "restaurant_id": "rest_002",
+        "base_price": 30.0,
+        "category": "Appetizers",
+        "rating": 4.1,
+        "review_count": 89,
+        "is_popular": false
+      }
+    },
+
+    "combos": {
+      "combo_001": {
+        "name": "Combo B",
+        "restaurant_id": "rest_001",
+        "menu_item_ids": ["menu_001", "menu_005", "menu_002"],
+        "original_price": 45.0,
+        "combo_price": 25.0,
+        "savings": 20.0
+      },
+      "combo_002": {
+        "name": "Combo B Small",
+        "restaurant_id": "rest_001",
+        "menu_item_ids": ["menu_001", "menu_004"],
+        "original_price": 30.0,
+        "combo_price": 19.0,
+        "savings": 11.0
+      }
+    },
+
+    "reviews": {
+      "review_001": {
+        "user_id": "user_002",
+        "user_name": "Jinny Oslin",
+        "restaurant_id": "rest_001",
+        "rating": 5.0,
+        "menu_item_ids": ["menu_006", "menu_001"],
+        "comment": "Quick delivery, good dishes. I love the chicken burger."
+      },
+      "review_002": {
+        "user_id": "user_003",
+        "user_name": "Ji Won",
+        "restaurant_id": "rest_001",
+        "rating": 4.0,
+        "menu_item_ids": ["menu_003", "menu_005"],
+        "comment": "Fresh ingredients and great taste! Authentic Korean flavors."
+      }
+    },
+
+    "vouchers": {
+      "voucher_001": {
+        "title": "Free Delivery",
+        "discount_type": "free_delivery",
+        "min_order": 25.0,
+        "applicable_restaurant_ids": ["rest_001", "rest_002", "rest_003"]
+      },
+      "voucher_002": {
+        "title": "10% Off",
+        "discount_type": "percentage",
+        "discount_value": 10,
+        "min_order": 30.0,
+        "max_discount": 8.0,
+        "applicable_restaurant_ids": ["rest_001", "rest_002"]
+      },
+      "voucher_rest_001_01": {
+        "title": "10% off",
+        "restaurant_id": "rest_001",
+        "discount_type": "percentage",
+        "discount_value": 10,
+        "min_order": 30.0
+      },
+      "voucher_rest_001_02": {
+        "title": "Free Delivery",
+        "restaurant_id": "rest_001",
+        "discount_type": "free_delivery",
+        "min_order": 25.0
+      }
+    },
+
+    "collections": {
+      "col_001": {
+        "title": "FREESHIP",
+        "restaurant_ids": ["rest_001", "rest_002", "rest_003"],
+        "filter_type": "freeship"
+      },
+      "col_002": {
+        "title": "DEAL $1",
+        "restaurant_ids": ["rest_004", "rest_005"],
+        "filter_type": "deal"
+      },
+      "col_003": {
+        "title": "NEAR YOU",
+        "restaurant_ids": ["rest_001", "rest_002"],
+        "filter_type": "near_you"
+      },
+      "col_004": {
+        "title": "POPULAR",
+        "restaurant_ids": ["rest_003", "rest_005", "rest_006"],
+        "filter_type": "popular"
+      }
+    },
+
+    "customization_options": {
+      "sizes": {
+        "size_s": {"name": "S", "additional_price": 0.0},
+        "size_m": {"name": "M", "additional_price": 5.0},
+        "size_l": {"name": "L", "additional_price": 10.0}
+      },
+      "toppings": {
+        "topping_corn": {"name": "Corn", "price": 2.0},
+        "topping_cheese": {"name": "Cheese Cheddar", "price": 5.0},
+        "topping_egg": {"name": "Salted egg", "price": 10.0}
+      },
+      "spice_levels": {
+        "spice_no": {"name": "No", "level": 0},
+        "spice_hot": {"name": "Hot", "level": 3},
+        "spice_very_hot": {"name": "Very hot", "level": 5}
+      },
+      "sauces": {
+        "sauce_sesame": {"name": "Roasted Sesame", "price": 0.0},
+        "sauce_honey": {"name": "Honey mustard", "price": 1.0},
+        "sauce_buffalo": {"name": "Buffalo sauce", "price": 1.5}
+      }
+    },
+
+    "payment_methods": {
+      "payment_ewallet_001": {
+        "type": "ewallet",
+        "name": "E-wallet",
+        "provider": "GrabPay"
+      },
+      "payment_card_001": {
+        "type": "credit_card",
+        "name": "Credit Card",
+        "provider": "Visa"
+      },
+      "payment_cash_001": {
+        "type": "cash",
+        "name": "Cash on Delivery"
+      }
+    },
+
+    "relationship_rules": {
+      "menu_items_must_belong_to_restaurant": "Each menu_item must have valid restaurant_id",
+      "reviews_must_reference_valid_entities": "Reviews must reference valid user_id, restaurant_id, and menu_item_ids",
+      "combos_must_contain_valid_menu_items": "Combo menu_item_ids must exist in menu_items",
+      "restaurants_must_have_valid_categories": "Restaurant category_ids must exist in categories",
+      "collections_must_contain_valid_restaurants": "Collection restaurant_ids must exist in restaurants",
+      "vouchers_restaurant_specific_must_have_valid_restaurant": "Restaurant-specific vouchers must reference valid restaurant_id",
+      "order_items_must_reference_valid_menu_items": "Order items must reference valid menu_item_id",
+      "customizations_must_use_valid_options": "Customizations must use IDs from customization_options",
+      "sale_items_must_reference_valid_menu_items": "Sale items must reference valid menu_item_id and restaurant_id",
+      "search_results_must_reference_valid_entities": "Search results must reference valid restaurant_id and menu_item_id",
+      "also_ordered_must_be_from_same_restaurant": "Also ordered items should be from the same restaurant as main order"
+    }
+  }
+}

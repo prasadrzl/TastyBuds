@@ -7,13 +7,14 @@
       "name": "Hana Chicken",
       "description": "Authentic Korean fried chicken with secret spices and traditional recipes",
       "cuisine": ["Korean", "Chicken", "Asian"],
-      "rating": 4.5,
+      "rating": 4.8,
       "review_count": 289,
-      "delivery_time": "20 mins",
+      "delivery_time": "15 mins",
       "delivery_fee": 2.0,
       "min_order": 15.0,
       "distance": "2 km",
       "price_range": "$5 - $50",
+      "opening_hours": "6am - 9pm",
       "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=600&h=400&fit=crop",
       "cover_images": [
         "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=600&h=400&fit=crop",
@@ -22,25 +23,16 @@
       ],
       "badges": [
         {
-          "text": "Deal $1",
-          "type": "deal",
+          "text": "Freeship",
+          "type": "free_delivery",
           "background_color": "#4CAF50"
         },
         {
           "text": "Near you",
           "type": "location",
-          "background_color": "#FF6F00"
+          "background_color": "#FF7700"
         }
       ],
-      "opening_hours": {
-        "monday": "6am - 9pm",
-        "tuesday": "6am - 9pm",
-        "wednesday": "6am - 9pm",
-        "thursday": "6am - 9pm",
-        "friday": "6am - 11pm",
-        "saturday": "6am - 11pm",
-        "sunday": "8am - 9pm"
-      },
       "coordinates": {
         "latitude": 1.3521,
         "longitude": 103.8198
@@ -49,13 +41,14 @@
       "phone": "+65 6123 4567",
       "is_open": true,
       "is_favorite": false,
+      "category_ids": ["cat_004", "cat_001"],
       "accepts_vouchers": true,
       "voucher_info": {
         "count": 2,
         "description": "2 discount voucher for restaurant",
         "vouchers": [
           {
-            "id": "voucher_001",
+            "id": "voucher_rest_001_01",
             "title": "10% off",
             "description": "Get 10% off on orders above $30",
             "discount_percentage": 10,
@@ -64,7 +57,7 @@
             "expiry_date": "2024-12-31"
           },
           {
-            "id": "voucher_002",
+            "id": "voucher_rest_001_02",
             "title": "Free Delivery",
             "description": "Free delivery on orders above $25",
             "discount_type": "free_delivery",
@@ -166,21 +159,6 @@
         "is_spicy": false,
         "prep_time": "12-18 mins",
         "restaurant_id": "rest_001"
-      },
-      {
-        "id": "menu_007",
-        "name": "Korean Chicken Wings",
-        "description": "Traditional Korean style chicken wings with soy glaze",
-        "base_price": 18.0,
-        "image": "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=300&h=200&fit=crop",
-        "category": "Appetizers",
-        "rating": 4.7,
-        "review_count": 156,
-        "is_popular": true,
-        "is_vegetarian": false,
-        "is_spicy": true,
-        "prep_time": "15-20 mins",
-        "restaurant_id": "rest_001"
       }
     ],
     "reviews": [
@@ -196,7 +174,8 @@
         "images": [
           "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=200&h=150&fit=crop"
         ],
-        "order_items": ["Chicken Burger", "Fried Chicken"]
+        "order_items": ["menu_006", "menu_001"],
+        "restaurant_id": "rest_001"
       },
       {
         "id": "review_002",
@@ -208,22 +187,8 @@
         "date": "2 days ago",
         "helpful_count": 8,
         "images": [],
-        "order_items": ["Spicy Chicken", "Chicken Rice"]
-      },
-      {
-        "id": "review_003",
-        "user_id": "user_004",
-        "user_name": "Sarah Kim",
-        "user_avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop",
-        "rating": 5.0,
-        "comment": "Best Korean fried chicken in town! Always crispy and flavorful.",
-        "date": "3 days ago",
-        "helpful_count": 15,
-        "images": [
-          "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=200&h=150&fit=crop",
-          "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=200&h=150&fit=crop"
-        ],
-        "order_items": ["Fried Chicken", "Korean Wings"]
+        "order_items": ["menu_003", "menu_005"],
+        "restaurant_id": "rest_001"
       }
     ],
     "combos": [
@@ -248,14 +213,15 @@
             "quantity": 1
           }
         ],
-        "original_price": 35.0,
+        "original_price": 45.0,
         "combo_price": 25.0,
-        "savings": 10.0,
-        "discount_percentage": 28,
+        "savings": 20.0,
+        "discount_percentage": 44,
         "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop",
         "rating": 4.5,
         "review_count": 60,
-        "is_popular": true
+        "is_popular": true,
+        "restaurant_id": "rest_001"
       },
       {
         "id": "combo_002",
@@ -273,71 +239,15 @@
             "quantity": 1
           }
         ],
-        "original_price": 25.0,
+        "original_price": 30.0,
         "combo_price": 19.0,
-        "savings": 6.0,
-        "discount_percentage": 24,
+        "savings": 11.0,
+        "discount_percentage": 37,
         "image": "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=300&h=200&fit=crop",
         "rating": 4.6,
         "review_count": 76,
-        "is_popular": false
-      },
-      {
-        "id": "combo_003",
-        "name": "Family Feast",
-        "description": "2x Fried Chicken, Korean Wings & 2x Rice",
-        "items": [
-          {
-            "menu_item_id": "menu_001",
-            "name": "Fried Chicken",
-            "quantity": 2
-          },
-          {
-            "menu_item_id": "menu_007",
-            "name": "Korean Wings",
-            "quantity": 1
-          },
-          {
-            "menu_item_id": "menu_005",
-            "name": "Chicken Rice",
-            "quantity": 2
-          }
-        ],
-        "original_price": 78.0,
-        "combo_price": 65.0,
-        "savings": 13.0,
-        "discount_percentage": 17,
-        "image": "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=300&h=200&fit=crop",
-        "rating": 4.8,
-        "review_count": 124,
-        "is_popular": true
-      }
-    ],
-    "categories": [
-      {
-        "id": "cat_main",
-        "name": "Main Course",
-        "item_count": 8
-      },
-      {
-        "id": "cat_appetizers",
-        "name": "Appetizers",
-        "item_count": 5
-      },
-      {
-        "id": "cat_sides",
-        "name": "Sides",
-        "item_count": 6
-      },
-      {
-        "id": "cat_drinks",
-        "name": "Drinks",
-        "item_count": 4
-      },
-      {
-        "id": "cat_desserts",
-        "name": "Desserts",
-        "item_count": 3
+        "is_popular": false,
+        "restaurant_id": "rest_001"
       }
     ],
     "operational_info": {
