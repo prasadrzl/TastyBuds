@@ -1,4 +1,3 @@
-// Updated AppNavGraph.kt - Add Navigation for Location and Restaurant Details
 package com.app.tastybuds.util
 
 import androidx.compose.material3.*
@@ -13,7 +12,7 @@ import com.app.tastybuds.ui.favorites.FavoriteScreen
 import com.app.tastybuds.ui.home.HomeScreen
 import com.app.tastybuds.ui.inbox.ChatBoxScreen
 import com.app.tastybuds.ui.profile.ProfileScreen
-import com.app.tastybuds.ui.foodlisting.FoodListingScreen
+import com.app.tastybuds.ui.home.FoodListingScreen
 import com.app.tastybuds.ui.home.SearchResultType
 import com.app.tastybuds.ui.home.SearchResultsScreen
 import com.app.tastybuds.ui.restaurant.RestaurantDetailsScreen
@@ -45,7 +44,6 @@ fun AppNavGraph(navController: NavHostController) {
                         navController.navigate("search_results/$searchTerm")
                     }
                 },
-                // NEW: Add restaurant click handler for "Recommended for you" section
                 onRestaurantClick = { restaurantId ->
                     navController.navigate("restaurant_details/$restaurantId")
                 }
@@ -64,7 +62,6 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
 
-        // Food Listing Screen
         composable("food_listing/{categoryName}") { backStackEntry ->
             val categoryName = backStackEntry.arguments?.getString("categoryName") ?: "Food"
             FoodListingScreen(
@@ -78,7 +75,6 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
 
-        // Search Results Screen
         composable("search_results/{searchTerm}") { backStackEntry ->
             val searchTerm = backStackEntry.arguments?.getString("searchTerm") ?: ""
             SearchResultsScreen(
@@ -97,6 +93,7 @@ fun AppNavGraph(navController: NavHostController) {
                         SearchResultType.RESTAURANT -> {
                             navController.navigate("restaurant_details/$resultId")
                         }
+
                         SearchResultType.FOOD_ITEM -> {
                             navController.navigate("food_details/$resultId")
                         }
@@ -105,7 +102,6 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
 
-        // NEW: Location Tracker Screen
         composable("location") {
             LocationTrackerScreen(
                 onConfirm = {
@@ -115,7 +111,6 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
 
-        // NEW: Restaurant Details Screen
         composable("restaurant_details/{restaurantId}") { backStackEntry ->
             val restaurantId = backStackEntry.arguments?.getString("restaurantId") ?: ""
             RestaurantDetailsScreen(
@@ -132,7 +127,6 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
 
-        // Food Details Screen (for customization)
         composable("food_details/{foodId}") { backStackEntry ->
             val foodId = backStackEntry.arguments?.getString("foodId") ?: ""
             FoodDetailsScreen(
@@ -146,7 +140,6 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
 
-        // NEW: Order Review Screen
         composable("order_review") {
             OrderReviewScreen(
                 onBackClick = {
@@ -165,8 +158,6 @@ fun AppNavGraph(navController: NavHostController) {
                     navController.navigate("food_details/$itemId")
                 },
                 onOrderNow = {
-                    // TODO: Navigate to payment or order confirmation
-                    // For now, go back to home
                     navController.navigate("home") {
                         popUpTo("home") { inclusive = true }
                     }
@@ -181,7 +172,6 @@ fun BottomBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    // Don't show bottom bar on certain screens
     val screensWithoutBottomBar = listOf(
         "profile",
         "food_listing/",
@@ -224,7 +214,6 @@ fun BottomBar(navController: NavHostController) {
     }
 }
 
-// Helper function to check if screen should hide top bar
 fun shouldHideTopBar(currentRoute: String?): Boolean {
     val screensWithoutTopBar = listOf(
         "profile",

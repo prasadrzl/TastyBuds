@@ -1,6 +1,7 @@
 package com.app.tastybuds.ui.home
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.tastybuds.R
 import com.app.tastybuds.data.model.*
@@ -44,7 +46,7 @@ fun HomeScreen(
     onProfileClick: () -> Unit = {},
     onSearchClick: (String) -> Unit = {},
     onRestaurantClick: (String) -> Unit = {},
-    viewModel: HomeViewModel = viewModel()
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -195,6 +197,7 @@ fun HomeContent(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DealBannerSection(banners: List<Banner>) {
     val pagerState = rememberPagerState(
@@ -296,8 +299,8 @@ fun DealBannerCard(
                 contentDescription = banner.title,
                 modifier = Modifier.size(80.dp),
                 contentScale = ContentScale.Crop,
-                failure = placeholder(R.drawable.profile_img),
-                loading = placeholder(R.drawable.profile_img)
+                failure = placeholder(R.drawable.default_food),
+                loading = placeholder(R.drawable.default_food)
             )
         }
     }
@@ -509,8 +512,8 @@ fun StaticCollectionCard(
                         .size(56.dp)
                         .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop,
-                    failure = placeholder(R.drawable.profile_img),
-                    loading = placeholder(R.drawable.profile_img)
+                    failure = placeholder(R.drawable.default_food),
+                    loading = placeholder(R.drawable.default_food)
                 )
 
                 collection.badge?.let { badge ->
@@ -628,8 +631,8 @@ fun RestaurantCard(
                         .fillMaxWidth()
                         .height(100.dp),
                     contentScale = ContentScale.Crop,
-                    failure = placeholder(R.drawable.profile_img),
-                    loading = placeholder(R.drawable.profile_img)
+                    failure = placeholder(R.drawable.default_food),
+                    loading = placeholder(R.drawable.default_food)
                 )
 
                 restaurant.badge?.let { badge ->
@@ -761,7 +764,6 @@ fun SaleCard(
     ) {
         Column {
             Box {
-                // Use Glide for deal image
                 GlideImage(
                     model = deal.imageUrl,
                     contentDescription = deal.title,
@@ -769,8 +771,8 @@ fun SaleCard(
                         .fillMaxWidth()
                         .height(100.dp),
                     contentScale = ContentScale.Crop,
-                    failure = placeholder(R.drawable.profile_img),
-                    loading = placeholder(R.drawable.profile_img)
+                    failure = placeholder(R.drawable.default_food),
+                    loading = placeholder(R.drawable.default_food)
                 )
 
                 deal.badge?.let { badge ->
@@ -791,7 +793,6 @@ fun SaleCard(
                     }
                 }
 
-                // Discount percentage badge if available
                 deal.discountPercentage?.let { percentage ->
                     Card(
                         modifier = Modifier

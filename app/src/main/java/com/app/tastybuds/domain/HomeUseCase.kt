@@ -12,24 +12,23 @@ import javax.inject.Inject
 import com.app.tastybuds.domain.model.Collection as FoodCollection
 
 class HomeUseCase @Inject constructor(private val repository: HomeRepository) {
-    fun getBanners(): Flow<List<Banner>> = repository.getBanners()
+    private fun getBanners(): Flow<List<Banner>> = repository.getBanners()
     
-    fun getCategories(): Flow<List<Category>> = repository.getCategories()
+    private fun getCategories(): Flow<List<Category>> = repository.getCategories()
     
-    fun getVoucherCount(userId: String = "user_001"): Flow<Int> = 
+    private fun getVoucherCount(userId: String = "user_001"): Flow<Int> =
         repository.getVoucherCount(userId)
     
-    fun getCollections(): Flow<List<FoodCollection>> = repository.getCollections()
+    private fun getCollections(): Flow<List<FoodCollection>> = repository.getCollections()
     
     fun getRecommendedRestaurants(): Flow<List<Restaurant>> =
         repository.getRecommendedRestaurants()
     
-    fun getDeals(): Flow<List<Deal>> = repository.getDeals()
+    private fun getDeals(): Flow<List<Deal>> = repository.getDeals()
     
     fun searchRestaurants(query: String): Flow<List<Restaurant>> =
         repository.searchRestaurants(query)
     
-    // If you need a convenience method that combines all home data:
     fun getHomeData(userId: String = "user_001"): Flow<HomeData> = flow {
         try {
             val banners = getBanners().first()

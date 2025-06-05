@@ -215,7 +215,7 @@ fun DeliveryAddressSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_bn_home), // Clock icon
+                painter = painterResource(id = R.drawable.ic_back_arrow), // Clock icon
                 contentDescription = "Time",
                 modifier = Modifier.size(20.dp),
                 tint = PrimaryColor
@@ -705,7 +705,7 @@ private fun getOrderItems(): List<OrderItem> {
             spiciness = "Hot",
             price = 32,
             quantity = 1,
-            imageRes = R.drawable.profile_img
+            imageRes = R.drawable.default_food
         ),
         OrderItem(
             id = "2",
@@ -716,7 +716,7 @@ private fun getOrderItems(): List<OrderItem> {
             spiciness = "No",
             price = 10,
             quantity = 1,
-            imageRes = R.drawable.profile_img
+            imageRes = R.drawable.default_food
         )
     )
 }
@@ -727,13 +727,13 @@ private fun getAlsoOrderedItems(): List<AlsoOrderedItem> {
             id = "1",
             name = "Sauté Chicken Rice",
             price = 15,
-            imageRes = R.drawable.profile_img
+            imageRes = R.drawable.default_food
         ),
         AlsoOrderedItem(
             id = "2",
             name = "Spicy Noodles",
             price = 12,
-            imageRes = R.drawable.profile_img
+            imageRes = R.drawable.default_food
         )
     )
 }

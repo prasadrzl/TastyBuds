@@ -107,7 +107,6 @@ fun SearchResultsScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        // Active Search Header
         ActiveSearchHeader(
             searchText = searchText,
             onSearchTextChange = { searchText = it },
@@ -217,13 +216,12 @@ fun ActiveSearchHeader(
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Back button
             IconButton(
                 onClick = onBackClick,
                 modifier = Modifier.size(24.dp)
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_bn_home), // Replace with back arrow
+                    painter = painterResource(id = R.drawable.ic_back_arrow),
                     contentDescription = "Back",
                     tint = Color.Black
                 )
@@ -494,7 +492,7 @@ fun RestaurantResultCard(
                     FoodMenuItem(
                         name = "Fried Chicken",
                         price = "$10",
-                        imageRes = R.drawable.profile_img
+                        imageRes = R.drawable.default_food
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -502,7 +500,7 @@ fun RestaurantResultCard(
                     FoodMenuItem(
                         name = "Fried Chicken & Potatos",
                         price = "$26",
-                        imageRes = R.drawable.profile_img
+                        imageRes = R.drawable.default_food
                     )
                 }
             }
@@ -514,7 +512,7 @@ fun RestaurantResultCard(
                     FoodMenuItem(
                         name = "Chicken Sandwich",
                         price = "$26",
-                        imageRes = R.drawable.profile_img
+                        imageRes = R.drawable.default_food
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -522,7 +520,7 @@ fun RestaurantResultCard(
                     FoodMenuItem(
                         name = "Crunchy Fried Chicken Balls",
                         price = "$30",
-                        imageRes = R.drawable.profile_img
+                        imageRes = R.drawable.default_food
                     )
                 }
             }
@@ -661,7 +659,7 @@ private fun getAllSearchResults(): List<SearchResultItem> {
             subtitle = "Fried Chicken",
             deliveryTime = "15 mins",
             rating = 4.8f,
-            imageRes = R.drawable.profile_img,
+            imageRes = R.drawable.default_food,
             badges = listOf("Freeship", "Near you")
         ),
         SearchResultItem(
@@ -671,7 +669,7 @@ private fun getAllSearchResults(): List<SearchResultItem> {
             subtitle = "Chicken Salad & Sandwich",
             deliveryTime = "35 mins",
             rating = 4.1f,
-            imageRes = R.drawable.profile_img,
+            imageRes = R.drawable.default_food,
             badges = listOf("Freeship", "Near you")
         ),
         SearchResultItem(
@@ -679,21 +677,21 @@ private fun getAllSearchResults(): List<SearchResultItem> {
             type = SearchResultType.FOOD_ITEM,
             name = "Fried Chicken",
             price = "$10",
-            imageRes = R.drawable.profile_img
+            imageRes = R.drawable.default_food
         ),
         SearchResultItem(
             id = "4",
             type = SearchResultType.FOOD_ITEM,
             name = "Chicken Sandwich",
             price = "$26",
-            imageRes = R.drawable.profile_img
+            imageRes = R.drawable.default_food
         ),
         SearchResultItem(
             id = "5",
             type = SearchResultType.FOOD_ITEM,
             name = "Crunchy Fried Chicken Balls",
             price = "$30",
-            imageRes = R.drawable.profile_img
+            imageRes = R.drawable.default_food
         ),
         SearchResultItem(
             id = "6",
@@ -702,7 +700,7 @@ private fun getAllSearchResults(): List<SearchResultItem> {
             subtitle = "Italian Pizza & Pasta",
             deliveryTime = "25 mins",
             rating = 4.5f,
-            imageRes = R.drawable.profile_img,
+            imageRes = R.drawable.default_food,
             badges = listOf("Popular")
         ),
         SearchResultItem(
@@ -710,14 +708,14 @@ private fun getAllSearchResults(): List<SearchResultItem> {
             type = SearchResultType.FOOD_ITEM,
             name = "Burger Deluxe",
             price = "$15",
-            imageRes = R.drawable.profile_img
+            imageRes = R.drawable.default_food
         ),
         SearchResultItem(
             id = "8",
             type = SearchResultType.FOOD_ITEM,
             name = "Chicken Wings",
             price = "$18",
-            imageRes = R.drawable.profile_img
+            imageRes = R.drawable.default_food
         )
     )
 }

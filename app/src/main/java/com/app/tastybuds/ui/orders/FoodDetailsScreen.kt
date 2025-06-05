@@ -1,4 +1,3 @@
-// FoodDetailsScreen.kt - Fixed Food Customization Screen
 package com.app.tastybuds.ui.orders
 
 import androidx.compose.foundation.Image
@@ -28,7 +27,6 @@ import androidx.compose.ui.unit.sp
 import com.app.tastybuds.R
 import com.app.tastybuds.ui.theme.PrimaryColor
 
-// Data Models
 data class FoodItem(
     val id: String,
     val name: String,
@@ -71,7 +69,6 @@ fun FoodDetailsScreen(
     val toppingOptions = getToppingOptions()
     val spiceLevels = getSpiceLevels()
 
-    // Calculate total price
     val totalPrice = calculateTotalPrice(
         foodItem.basePrice,
         selectedSize,
@@ -86,7 +83,6 @@ fun FoodDetailsScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             item {
-                // Food Image Header
                 FoodImageHeader(
                     imageRes = foodItem.imageRes,
                     onCloseClick = onBackClick
@@ -94,14 +90,12 @@ fun FoodDetailsScreen(
             }
 
             item {
-                // Food Info Card
                 FoodInfoCard(
                     foodItem = foodItem
                 )
             }
 
             item {
-                // Size Selection
                 SizeSelectionSection(
                     selectedSize = selectedSize,
                     sizeOptions = sizeOptions,
@@ -110,7 +104,6 @@ fun FoodDetailsScreen(
             }
 
             item {
-                // Divider
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 20.dp),
                     thickness = 1.dp,
@@ -119,7 +112,6 @@ fun FoodDetailsScreen(
             }
 
             item {
-                // Toppings Section
                 ToppingsSection(
                     toppingOptions = toppingOptions,
                     selectedToppings = selectedToppings,
@@ -136,7 +128,6 @@ fun FoodDetailsScreen(
             }
 
             item {
-                // Divider
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 20.dp),
                     thickness = 1.dp,
@@ -145,7 +136,6 @@ fun FoodDetailsScreen(
             }
 
             item {
-                // Spiciness Section
                 SpicinessSection(
                     selectedSpice = selectedSpice,
                     spiceLevels = spiceLevels,
@@ -154,7 +144,6 @@ fun FoodDetailsScreen(
             }
 
             item {
-                // Divider
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 20.dp),
                     thickness = 1.dp,
@@ -163,7 +152,6 @@ fun FoodDetailsScreen(
             }
 
             item {
-                // Note Section
                 NoteSection(
                     note = specialNote,
                     onNoteChange = { specialNote = it }
@@ -175,7 +163,6 @@ fun FoodDetailsScreen(
             }
         }
 
-        // Bottom Controls
         BottomControls(
             quantity = quantity,
             onQuantityChange = { quantity = it },
@@ -203,7 +190,6 @@ fun FoodImageHeader(
             contentScale = ContentScale.Crop
         )
 
-        // Close button
         IconButton(
             onClick = onCloseClick,
             modifier = Modifier
@@ -276,6 +262,21 @@ fun FoodInfoCard(foodItem: FoodItem) {
             }
         }
     }
+}
+
+fun calculateTotalPrice(
+    basePrice: Double,
+    selectedSize: String,
+    selectedToppings: List<String>,
+    sizeOptions: List<SizeOption>,
+    toppingOptions: List<ToppingOption>,
+    quantity: Int
+): Double {
+    val sizePrice = sizeOptions.find { it.id == selectedSize }?.additionalPrice ?: 0.0
+    val toppingsPrice = toppingOptions.filter { selectedToppings.contains(it.id) }
+        .sumOf { it.price }
+
+    return (basePrice + sizePrice + toppingsPrice) * quantity
 }
 
 @Composable
@@ -567,7 +568,6 @@ fun BottomControls(
                 .fillMaxWidth()
                 .padding(20.dp)
         ) {
-            // Quantity controls row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
@@ -610,7 +610,6 @@ fun BottomControls(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Add to cart button - full width
             Button(
                 onClick = onAddToCart,
                 modifier = Modifier
@@ -630,30 +629,13 @@ fun BottomControls(
     }
 }
 
-// Utility Functions
-private fun calculateTotalPrice(
-    basePrice: Double,
-    selectedSize: String,
-    selectedToppings: List<String>,
-    sizeOptions: List<SizeOption>,
-    toppingOptions: List<ToppingOption>,
-    quantity: Int
-): Double {
-    val sizePrice = sizeOptions.find { it.id == selectedSize }?.additionalPrice ?: 0.0
-    val toppingsPrice = toppingOptions.filter { selectedToppings.contains(it.id) }
-        .sumOf { it.price }
-
-    return (basePrice + sizePrice + toppingsPrice) * quantity
-}
-
-// Dummy Data Functions
 private fun getFoodItem(): FoodItem {
     return FoodItem(
         id = "1",
         name = "Fried Chicken",
         description = "Crispy fried wings, thigh",
         basePrice = 15.0,
-        imageRes = R.drawable.profile_img // Replace with actual food image
+        imageRes = R.drawable.default_food // Replace with actual food image
     )
 }
 

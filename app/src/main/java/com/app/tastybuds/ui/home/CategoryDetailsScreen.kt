@@ -1,6 +1,6 @@
-// FoodListingScreen.kt - Dedicated Food Listing Screen
-package com.app.tastybuds.ui.foodlisting
+package com.app.tastybuds.ui.home
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -32,7 +32,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.shape.CircleShape
 import kotlinx.coroutines.delay
 
-// Data Models
 data class FilterOption(
     val id: String,
     val name: String,
@@ -71,13 +70,11 @@ fun FoodListingScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        // Category Header with Back Button
         CategoryHeader(
             categoryName = categoryName,
             onBackClick = onBackClick
         )
 
-        // Filter Section
         FilterSection(
             selectedSortBy = selectedSortBy,
             onSortByClick = { selectedSortBy = it },
@@ -92,7 +89,6 @@ fun FoodListingScreen(
             }
         )
 
-        // Restaurant List Content
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -106,7 +102,6 @@ fun FoodListingScreen(
                 )
             }
 
-            // See all button
             item {
                 Box(
                     modifier = Modifier
@@ -127,17 +122,14 @@ fun FoodListingScreen(
                 }
             }
 
-            // Featured Banner Section
             item {
                 FeaturedBannerSection()
             }
 
-            // Recommended Section
             item {
                 RecommendedSection(onRestaurantClick = onRestaurantClick)
             }
 
-            // Bottom spacing
             item {
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -192,7 +184,6 @@ fun FilterSection(
             .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Sort by dropdown
         item {
             FilterChip(
                 selected = false,
@@ -229,7 +220,6 @@ fun FilterSection(
             )
         }
 
-        // Filter options
         items(filterOptions) { filter ->
             val isSelected = selectedFilters.contains(filter.id)
             FilterChip(
@@ -273,7 +263,6 @@ fun RestaurantCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Food Image - Square food photography
             Image(
                 painter = painterResource(id = restaurant.imageRes),
                 contentDescription = restaurant.name,
@@ -285,7 +274,6 @@ fun RestaurantCard(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // Restaurant Info
             Column(
                 modifier = Modifier.weight(1f)
             ) {
@@ -376,14 +364,12 @@ fun BadgeChip(text: String) {
     }
 }
 
-// Add missing components
-
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FeaturedBannerSection() {
     val banners = remember { getFeaturedBanners() }
     val pagerState = rememberPagerState(pageCount = { banners.size })
 
-    // Auto-scroll effect
     LaunchedEffect(pagerState) {
         while (true) {
             delay(4000) // 4 seconds delay
@@ -404,7 +390,6 @@ fun FeaturedBannerSection() {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Page indicators
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
@@ -446,7 +431,6 @@ fun FeaturedBannerCard(banner: FeaturedBanner) {
                 contentScale = ContentScale.Crop
             )
 
-            // Gradient overlay
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -460,7 +444,6 @@ fun FeaturedBannerCard(banner: FeaturedBanner) {
                     )
             )
 
-            // Content
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
@@ -509,7 +492,6 @@ fun RecommendedSection(onRestaurantClick: (String) -> Unit) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Two recommended restaurant cards
         val recommendedRestaurants = getRecommendedRestaurants()
 
         recommendedRestaurants.forEach { restaurant ->
@@ -525,13 +507,13 @@ fun RecommendedSection(onRestaurantClick: (String) -> Unit) {
     }
 }
 
-// Data model for featured banners
 data class FeaturedBanner(
     val id: String,
     val title: String,
     val subtitle: String,
     val imageRes: Int
 )
+
 // Dummy Data Functions
 private fun getRestaurantList(): List<RestaurantItem> {
     return listOf(
@@ -541,7 +523,7 @@ private fun getRestaurantList(): List<RestaurantItem> {
             cuisine = "Fried Chicken",
             deliveryTime = "15 mins",
             rating = 4.8f,
-            imageRes = R.drawable.profile_img, // TODO: Replace with chicken food image
+            imageRes = R.drawable.default_food,
             badges = listOf("Freeship", "Near you")
         ),
         RestaurantItem(
@@ -550,7 +532,7 @@ private fun getRestaurantList(): List<RestaurantItem> {
             cuisine = "Chicken Salad, Sandwich & Desserts",
             deliveryTime = "35 mins",
             rating = 4.1f,
-            imageRes = R.drawable.profile_img, // TODO: Replace with sandwich/salad image
+            imageRes = R.drawable.default_food,
             badges = listOf("Freeship")
         ),
         RestaurantItem(
@@ -559,7 +541,7 @@ private fun getRestaurantList(): List<RestaurantItem> {
             cuisine = "Dairy Drinks & Smoothies",
             deliveryTime = "35 mins",
             rating = 4.1f,
-            imageRes = R.drawable.profile_img, // TODO: Replace with milk/drinks image
+            imageRes = R.drawable.default_food,
             badges = listOf("Freeship")
         )
     )
@@ -571,25 +553,25 @@ private fun getFeaturedBanners(): List<FeaturedBanner> {
             id = "1",
             title = "Tasty",
             subtitle = "dishes",
-            imageRes = R.drawable.profile_img // TODO: Replace with tasty food banner
+            imageRes = R.drawable.default_food
         ),
         FeaturedBanner(
             id = "2",
             title = "Special",
             subtitle = "offers",
-            imageRes = R.drawable.profile_img // TODO: Replace with offers banner
+            imageRes = R.drawable.default_food
         ),
         FeaturedBanner(
             id = "3",
             title = "Fresh",
             subtitle = "ingredients",
-            imageRes = R.drawable.profile_img // TODO: Replace with fresh food banner
+            imageRes = R.drawable.default_food
         ),
         FeaturedBanner(
             id = "4",
             title = "Best",
             subtitle = "quality",
-            imageRes = R.drawable.profile_img // TODO: Replace with quality banner
+            imageRes = R.drawable.default_food
         )
     )
 }
@@ -602,7 +584,7 @@ private fun getRecommendedRestaurants(): List<RestaurantItem> {
             cuisine = "Best Tapas in Town",
             deliveryTime = "35 mins",
             rating = 4.1f,
-            imageRes = R.drawable.profile_img, // TODO: Replace with tapas food image
+            imageRes = R.drawable.default_food,
             badges = listOf("Freeship")
         ),
         RestaurantItem(
@@ -611,7 +593,7 @@ private fun getRecommendedRestaurants(): List<RestaurantItem> {
             cuisine = "Italian Cuisine & Pizza",
             deliveryTime = "25 mins",
             rating = 4.5f,
-            imageRes = R.drawable.profile_img, // TODO: Replace with pasta food image
+            imageRes = R.drawable.default_food,
             badges = listOf("Freeship", "Popular")
         )
     )

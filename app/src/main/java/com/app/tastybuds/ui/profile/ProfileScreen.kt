@@ -58,7 +58,7 @@ fun ProfileScreen(
             modifier = Modifier.padding(horizontal = 24.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.profile_img),
+                painter = painterResource(id = R.drawable.default_food),
                 contentDescription = "User Avatar",
                 modifier = Modifier
                     .size(56.dp)

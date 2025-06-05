@@ -27,7 +27,7 @@ class HomeViewModel @Inject constructor(
         loadHomeData()
     }
 
-    fun loadHomeData() {
+    private fun loadHomeData() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             

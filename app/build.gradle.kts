@@ -2,8 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.hilt)
-    alias(libs.plugins.compose.compiler)
-    id("org.jetbrains.kotlin.kapt")
+    id("kotlin-kapt")
 }
 
 android {
@@ -44,18 +43,28 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            excludes += "META-INF/LICENSE-notice.md"   // Add this to fix the JUnit conflict
+            excludes += "META-INF/LICENSE-notice.md"
             excludes += "META-INF/LICENSE.md"
             excludes += "META-INF/LICENSE"
             excludes += "META-INF/NOTICE"
             excludes += "META-INF/NOTICE.txt"
-
         }
+    }
+}
+
+// Force specific dependency versions to resolve JavaPoet conflicts
+configurations.all {
+    resolutionStrategy {
+        force("com.squareup:javapoet:1.13.0")
+        force("com.google.dagger:dagger:2.48")
+        force("com.google.dagger:dagger-compiler:2.48")
+        force("com.google.dagger:hilt-core:2.48")
+        force("com.google.dagger:hilt-compiler:2.48")
     }
 }
 
@@ -88,11 +97,11 @@ dependencies {
 
     // Hilt
     implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation.compose)
     kapt(libs.hilt.compiler)
 
     // Retrofit & OkHttp
     implementation(libs.retrofit)
-    implementation(libs.retrofit.moshi)
     implementation(libs.retrofit.rxjava)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
@@ -107,18 +116,31 @@ dependencies {
     implementation(libs.glide.compose)
     kapt(libs.glide.compiler)
 
-    // Testing - FIXED
-    testImplementation(libs.junit)                    // JUnit 4 for unit tests
+    //Moshi
+    implementation(libs.moshi)
+    implementation(libs.moshi.kotlin)
+    implementation(libs.retrofit.moshi)
+
+    // Testing
+    testImplementation(libs.junit)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.turbine)
-    testImplementation(libs.junit5.api)              // JUnit 5 for unit tests only
+    testImplementation(libs.junit5.api)
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.agent)
     testImplementation(libs.mockk.android)
 
-    // Android Testing - Use Android-specific testing libraries
-    androidTestImplementation(libs.androidx.junit)   // Use androidx.junit instead of JUnit 5
+    // Android Testing
+    androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.coroutines.test)
-    // REMOVED: androidTestImplementation(libs.junit5.api) - This was causing the conflict
+}
+
+// KAPT configuration to resolve Hilt issues
+kapt {
+    correctErrorTypes = true
+    useBuildCache = false
+    arguments {
+        arg("dagger.hilt.android.internal.disableAndroidSuperclassValidation", "true")
+    }
 }

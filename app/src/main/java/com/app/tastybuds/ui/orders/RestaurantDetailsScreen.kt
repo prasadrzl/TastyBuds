@@ -866,7 +866,7 @@ private fun getRestaurantInfo(): RestaurantInfo {
         priceRange = "$5 - $50",
         rating = 4.5f,
         reviewCount = 289,
-        imageRes = R.drawable.profile_img,
+        imageRes = R.drawable.default_food,
         badges = listOf(
             RestaurantBadge("Deal $1", Color(0xFF4CAF50)),
             RestaurantBadge("Near you", PrimaryColor)
@@ -876,31 +876,31 @@ private fun getRestaurantInfo(): RestaurantInfo {
 
 private fun getForYouItems(): List<FoodMenuItem> {
     return listOf(
-        FoodMenuItem("1", "Fried Chicken", "", 15, 4.5f, 99, R.drawable.profile_img),
-        FoodMenuItem("2", "Chicken Salad", "", 15, 4.5f, 99, R.drawable.profile_img),
-        FoodMenuItem("3", "Spicy Chicken", "", 15, 4.5f, 99, R.drawable.profile_img),
-        FoodMenuItem("4", "Fried Potatos", "", 15, 4.5f, 99, R.drawable.profile_img)
+        FoodMenuItem("1", "Fried Chicken", "", 15, 4.5f, 99, R.drawable.default_food),
+        FoodMenuItem("2", "Chicken Salad", "", 15, 4.5f, 99, R.drawable.default_food),
+        FoodMenuItem("3", "Spicy Chicken", "", 15, 4.5f, 99, R.drawable.default_food),
+        FoodMenuItem("4", "Fried Potatos", "", 15, 4.5f, 99, R.drawable.default_food)
     )
 }
 
 private fun getMenuItems(): List<FoodMenuItem> {
     return listOf(
-        FoodMenuItem("5", "Sauté Chicken Rice", "Sauté chicken, Rice", 15, 4.5f, 99, R.drawable.profile_img),
-        FoodMenuItem("6", "Chicken Burger", "Fried chicken, Cheese & Burger", 15, 4.5f, 99, R.drawable.profile_img)
+        FoodMenuItem("5", "Sauté Chicken Rice", "Sauté chicken, Rice", 15, 4.5f, 99, R.drawable.default_food),
+        FoodMenuItem("6", "Chicken Burger", "Fried chicken, Cheese & Burger", 15, 4.5f, 99, R.drawable.default_food)
     )
 }
 
 private fun getReviews(): List<ReviewItem> {
     return listOf(
-        ReviewItem("1", "Jinny Oslin", R.drawable.profile_img, "A day ago", 5.0f, "Quick delivery, good dishes. I love the chicken burger."),
-        ReviewItem("2", "John Doe", R.drawable.profile_img, "2 days ago", 4.0f, "Fresh ingredients and great taste!")
+        ReviewItem("1", "Jinny Oslin", R.drawable.default_food, "A day ago", 5.0f, "Quick delivery, good dishes. I love the chicken burger."),
+        ReviewItem("2", "John Doe", R.drawable.default_food, "2 days ago", 4.0f, "Fresh ingredients and great taste!")
     )
 }
 
 private fun getCombos(): List<ComboItem> {
     return listOf(
-        ComboItem("1", "Combo B", "Fried Chicken, Chicken Rice & Salad", 25, 4.5f, 60, R.drawable.profile_img),
-        ComboItem("2", "Combo B", "Fried Chicken (Small) & Potatos", 19, 4.6f, 76, R.drawable.profile_img)
+        ComboItem("1", "Combo B", "Fried Chicken, Chicken Rice & Salad", 25, 4.5f, 60, R.drawable.default_food),
+        ComboItem("2", "Combo B", "Fried Chicken (Small) & Potatos", 19, 4.6f, 76, R.drawable.default_food)
     )
 }
 
