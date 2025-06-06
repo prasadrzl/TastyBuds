@@ -25,11 +25,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.tastybuds.R
 import com.app.tastybuds.data.model.*
 import com.app.tastybuds.domain.model.Banner
 import com.app.tastybuds.domain.model.Category
+import com.app.tastybuds.domain.model.Collection
 import com.app.tastybuds.domain.model.Deal
 import com.app.tastybuds.domain.model.Restaurant
 import com.app.tastybuds.ui.home.state.HomeUiState
@@ -46,6 +46,13 @@ fun HomeScreen(
     onProfileClick: () -> Unit = {},
     onSearchClick: (String) -> Unit = {},
     onRestaurantClick: (String) -> Unit = {},
+    onViewAllCollections: () -> Unit = {},
+    onViewAllRestaurants: () -> Unit = {},
+    onViewAllDeals: () -> Unit = {},
+    onViewAllVouchers: () -> Unit = {},
+    onBannerClick: (String) -> Unit = {}, // ADD THIS LINE
+    onCollectionClick: (String) -> Unit = {}, // ADD THIS LINE
+    onDealClick: (String) -> Unit = {}, // ADD THIS LINE
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -54,18 +61,27 @@ fun HomeScreen(
         uiState.isLoading -> {
             LoadingScreen()
         }
+
         uiState.error != null -> {
             ErrorScreen(
                 error = uiState.error ?: "Unknown error",
                 onRetry = { viewModel.retry() }
             )
         }
+
         else -> {
             HomeContent(
                 uiState = uiState,
                 onCategoryClick = onCategoryClick,
                 onSearchClick = onSearchClick,
-                onRestaurantClick = onRestaurantClick
+                onRestaurantClick = onRestaurantClick,
+                onViewAllCollections = onViewAllCollections,
+                onViewAllRestaurants = onViewAllRestaurants,
+                onViewAllDeals = onViewAllDeals,
+                onViewAllVouchers = onViewAllVouchers,
+                onBannerClick = onBannerClick,
+                onCollectionClick = onCollectionClick,
+                onDealClick = onDealClick
             )
         }
     }
@@ -142,7 +158,14 @@ fun HomeContent(
     uiState: HomeUiState,
     onCategoryClick: (String, String) -> Unit,
     onSearchClick: (String) -> Unit,
-    onRestaurantClick: (String) -> Unit
+    onRestaurantClick: (String) -> Unit,
+    onViewAllCollections: () -> Unit,
+    onViewAllRestaurants: () -> Unit,
+    onViewAllDeals: () -> Unit,
+    onViewAllVouchers: () -> Unit,
+    onBannerClick: (String) -> Unit, // ADD THIS LINE
+    onCollectionClick: (String) -> Unit, // ADD THIS LINE
+    onDealClick: (String) -> Unit // ADD THIS LINE
 ) {
     LazyColumn(
         modifier = Modifier
@@ -153,7 +176,10 @@ fun HomeContent(
         if (uiState.banners.isNotEmpty()) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                DealBannerSection(banners = uiState.banners)
+                DealBannerSection(
+                    banners = uiState.banners,
+                    onBannerClick = onBannerClick // ADD THIS PARAMETER
+                )
             }
         }
 
@@ -167,27 +193,34 @@ fun HomeContent(
         }
 
         item {
-            VoucherSection(voucherCount = uiState.voucherCount)
+            VoucherSection(
+                voucherCount = uiState.voucherCount,
+                onViewAllClick = onViewAllVouchers
+            )
         }
-
         if (uiState.collections.isNotEmpty()) {
             item {
-                CollectionsSection(collections = uiState.collections)
+                CollectionsSection(
+                    collections = uiState.collections,
+                    onViewAllCollections = onViewAllCollections,
+                    onCollectionClick = onCollectionClick
+                )
             }
         }
-        
+
         if (uiState.recommendedRestaurants.isNotEmpty()) {
             item {
                 RecommendedSection(
                     restaurants = uiState.recommendedRestaurants,
-                    onRestaurantClick = onRestaurantClick
+                    onRestaurantClick = onRestaurantClick,
+                    onViewAllClick = onViewAllRestaurants
                 )
             }
         }
 
         if (uiState.deals.isNotEmpty()) {
             item {
-                SaleSection(deals = uiState.deals)
+                SaleSection(deals = uiState.deals, onViewAllDeals)
             }
         }
 
@@ -197,9 +230,58 @@ fun HomeContent(
     }
 }
 
+@Composable
+fun VoucherSection(
+    voucherCount: Int,
+    onViewAllClick: () -> Unit = {} // ADD THIS PARAMETER
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .clickable { onViewAllClick() }, // ADD THIS LINE
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_offer_percentage),
+                contentDescription = "Voucher",
+                modifier = Modifier.size(24.dp),
+                tint = PrimaryColor
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(
+                text = "You have $voucherCount voucher here",
+                fontSize = 14.sp,
+                color = Color.Black,
+                modifier = Modifier.weight(1f)
+            )
+
+            Text(
+                text = "View all",
+                fontSize = 12.sp,
+                color = PrimaryColor,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.clickable { onViewAllClick() } // ADD THIS MODIFIER
+            )
+        }
+    }
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun DealBannerSection(banners: List<Banner>) {
+fun DealBannerSection(
+    banners: List<Banner>,
+    onBannerClick: (String) -> Unit = {} // ADD THIS PARAMETER
+) {
     val pagerState = rememberPagerState(
         initialPage = 0,
         pageCount = { banners.size }
@@ -223,7 +305,7 @@ fun DealBannerSection(banners: List<Banner>) {
             val banner = banners[page]
             DealBannerCard(
                 banner = banner,
-                onClick = { /* Handle banner click */ }
+                onClick = { onBannerClick(banner.id) } // UPDATE THIS LINE
             )
         }
 
@@ -367,49 +449,11 @@ fun CategoryCard(
 }
 
 @Composable
-fun VoucherSection(voucherCount: Int) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0))
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_offer_percentage),
-                contentDescription = "Voucher",
-                modifier = Modifier.size(24.dp),
-                tint = PrimaryColor
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Text(
-                text = "You have $voucherCount voucher here",
-                fontSize = 14.sp,
-                color = Color.Black,
-                modifier = Modifier.weight(1f)
-            )
-
-            Text(
-                text = "View all",
-                fontSize = 12.sp,
-                color = PrimaryColor,
-                fontWeight = FontWeight.Medium
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-fun CollectionsSection(collections: List<com.app.tastybuds.domain.model.Collection>) {
+fun CollectionsSection(
+    collections: List<Collection>,
+    onViewAllCollections: () -> Unit,
+    onCollectionClick: (String) -> Unit = {}
+) {
     Column {
         Row(
             modifier = Modifier
@@ -429,7 +473,8 @@ fun CollectionsSection(collections: List<com.app.tastybuds.domain.model.Collecti
                 text = "View all",
                 fontSize = 14.sp,
                 color = PrimaryColor,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.clickable { onViewAllCollections() } // ADD THIS MODIFIER
             )
         }
 
@@ -446,14 +491,14 @@ fun CollectionsSection(collections: List<com.app.tastybuds.domain.model.Collecti
                 if (collections.size > 0) {
                     StaticCollectionCard(
                         collection = collections[0],
-                        onClick = { /* Handle collection click */ },
+                        onClick = { onCollectionClick(collections[0].id) },
                         modifier = Modifier.weight(1f)
                     )
                 }
                 if (collections.size > 1) {
                     StaticCollectionCard(
                         collection = collections[1],
-                        onClick = { /* Handle collection click */ },
+                        onClick = { onCollectionClick(collections[1].id) },
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -466,14 +511,14 @@ fun CollectionsSection(collections: List<com.app.tastybuds.domain.model.Collecti
                 if (collections.size > 2) {
                     StaticCollectionCard(
                         collection = collections[2],
-                        onClick = { /* Handle collection click */ },
+                        onClick = { onCollectionClick(collections[2].id) },
                         modifier = Modifier.weight(1f)
                     )
                 }
                 if (collections.size > 3) {
                     StaticCollectionCard(
                         collection = collections[3],
-                        onClick = { /* Handle collection click */ },
+                        onClick = { onCollectionClick(collections[3].id) },
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -566,7 +611,8 @@ fun StaticCollectionCard(
 @Composable
 fun RecommendedSection(
     restaurants: List<Restaurant>,
-    onRestaurantClick: (String) -> Unit
+    onRestaurantClick: (String) -> Unit,
+    onViewAllClick: () -> Unit
 ) {
     Column {
         Row(
@@ -587,7 +633,8 @@ fun RecommendedSection(
                 text = "View all",
                 fontSize = 14.sp,
                 color = PrimaryColor,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.clickable { onViewAllClick() } // ADD THIS MODIFIER
             )
         }
 
@@ -708,7 +755,11 @@ fun RestaurantCard(
 }
 
 @Composable
-fun SaleSection(deals: List<Deal>) {
+fun SaleSection(
+    deals: List<Deal>,
+    onViewAllClick: () -> Unit,
+    onDealClick: (String) -> Unit = {}
+) {
     Column {
         Row(
             modifier = Modifier
@@ -724,11 +775,13 @@ fun SaleSection(deals: List<Deal>) {
                 color = Color.Black
             )
 
+            // In SaleSection, find this Text and add clickable modifier:
             Text(
                 text = "View all",
                 fontSize = 14.sp,
                 color = PrimaryColor,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.clickable { onViewAllClick() } // ADD THIS MODIFIER
             )
         }
 
@@ -741,7 +794,7 @@ fun SaleSection(deals: List<Deal>) {
             items(deals) { deal ->
                 SaleCard(
                     deal = deal,
-                    onClick = { /* Handle deal click */ }
+                    onClick = { onDealClick(deal.id) }
                 )
             }
         }

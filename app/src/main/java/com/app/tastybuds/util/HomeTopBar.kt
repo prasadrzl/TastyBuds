@@ -1,4 +1,3 @@
-// Updated HomeTopBar.kt - Add Location Click Navigation
 package com.app.tastybuds.util
 
 import androidx.compose.foundation.background
@@ -27,7 +26,7 @@ import com.app.tastybuds.R
 @Composable
 fun HomeTopBar(
     onProfileClick: () -> Unit = {},
-    onLocationClick: () -> Unit = {} // NEW: Add location click handler
+    onLocationClick: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
@@ -38,10 +37,9 @@ fun HomeTopBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        // Location section - now clickable
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable { onLocationClick() } // NEW: Make location clickable
+            modifier = Modifier.clickable { onLocationClick() }
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_user_location),
@@ -53,7 +51,6 @@ fun HomeTopBar(
             Text("Home", style = MaterialTheme.typography.titleMedium, color = Color.White)
         }
 
-        // Profile icon
         Icon(
             painter = painterResource(id = R.drawable.ic_profile_setting),
             contentDescription = "Profile",

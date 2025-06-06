@@ -6,13 +6,16 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.core.view.WindowCompat
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.*
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.app.tastybuds.ui.theme.PrimaryColor
 import com.app.tastybuds.ui.theme.SetSystemBarColor
 import com.app.tastybuds.ui.theme.TastyBudsTheme
@@ -28,7 +31,7 @@ data class BottomNavItem(val route: String, val label: String, val iconRes: Int)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         setContent {
             TastyBudsTheme(darkTheme = false) {
                 SetSystemBarColor(PrimaryColor)
@@ -46,61 +49,67 @@ fun TastyBuddyMainScreen(navController: NavHostController) {
 
     var searchText by rememberSaveable { mutableStateOf("") }
 
+    // UPDATED: Don't hide UI for home screen
     val showUIChrome = currentRoute != "splash"
 
     Scaffold(
         topBar = {
-            if (showUIChrome) {
-                // Hide top bar for specific screens including splash
-                val hideTopBar = currentRoute == "profile" ||
-                        currentRoute?.startsWith("food_listing/") == true ||
-                        currentRoute?.startsWith("search_results/") == true ||
-                        currentRoute?.startsWith("restaurant_details/") == true ||
-                        currentRoute?.startsWith("food_details/") == true ||
-                        currentRoute == "location" ||
-                        currentRoute == "order_review"
+            // UPDATED: Show top bar logic
+            val hideTopBar = currentRoute == "splash" ||  // Hide for splash
+                    currentRoute == "profile" ||
+                    currentRoute?.startsWith("food_listing/") == true ||
+                    currentRoute?.startsWith("search_results/") == true ||
+                    currentRoute?.startsWith("restaurant_details/") == true ||
+                    currentRoute?.startsWith("food_details/") == true ||
+                    currentRoute == "location" ||
+                    currentRoute == "order_review" ||
+                    currentRoute == "all_collections" ||
+                    currentRoute == "all_restaurants" ||
+                    currentRoute == "all_deals" ||
+                    currentRoute == "all_vouchers"
 
-                if (!hideTopBar) {
-                    Column {
-                        HomeTopBar(
-                            onProfileClick = {
-                                navController.navigate("profile")
-                            },
-                            onLocationClick = {
-                                navController.navigate("location")
-                            }
-                        )
-                        HomeSearchBar(
-                            value = searchText,
-                            onValueChange = { newText -> searchText = newText },
-                            onSearchBarClick = {
-                                navController.navigate("search_results/${searchText.ifBlank { "food" }}")
-                            }
-                        )
-                    }
+            if (!hideTopBar) {
+                Column {
+                    HomeTopBar(
+                        onProfileClick = {
+                            navController.navigate("profile")
+                        },
+                        onLocationClick = {
+                            navController.navigate("location")
+                        }
+                    )
+                    HomeSearchBar(
+                        value = searchText,
+                        onValueChange = { newText -> searchText = newText },
+                        onSearchBarClick = {
+                            navController.navigate("search_results/${searchText.ifBlank { "food" }}")
+                        }
+                    )
                 }
             }
         },
         bottomBar = {
-            if (showUIChrome) {
-                // Hide bottom bar for specific screens including splash
-                val hideBottomBar = currentRoute == "profile" ||
-                        currentRoute?.startsWith("food_listing/") == true ||
-                        currentRoute?.startsWith("search_results/") == true ||
-                        currentRoute?.startsWith("restaurant_details/") == true ||
-                        currentRoute?.startsWith("food_details/") == true ||
-                        currentRoute == "location" ||
-                        currentRoute == "order_review"
+            val hideBottomBar = currentRoute == "splash" ||  // Hide for splash
+                    currentRoute == "profile" ||
+                    currentRoute?.startsWith("food_listing/") == true ||
+                    currentRoute?.startsWith("search_results/") == true ||
+                    currentRoute?.startsWith("restaurant_details/") == true ||
+                    currentRoute?.startsWith("food_details/") == true ||
+                    currentRoute == "location" ||
+                    currentRoute == "order_review" ||
+                    currentRoute == "all_collections" ||
+                    currentRoute == "all_restaurants" ||
+                    currentRoute == "all_deals" ||
+                    currentRoute == "all_vouchers"
 
-                if (!hideBottomBar) {
-                    BottomBar(navController = navController)
-                }
+            if (!hideBottomBar) {
+                BottomBar(navController = navController)
             }
         }
     ) { padding ->
         Box(
             modifier = Modifier.then(
-                if (showUIChrome) Modifier.padding(padding) else Modifier
+                if (currentRoute != "splash") Modifier.padding(padding) else Modifier
             )
         ) {
             AppNavGraph(navController = navController)

@@ -10,6 +10,10 @@ import com.app.tastybuds.BottomNavItem
 import com.app.tastybuds.R
 import com.app.tastybuds.ui.favorites.FavoriteScreen
 import com.app.tastybuds.ui.home.HomeScreen
+import com.app.tastybuds.ui.home.AllCollectionsScreen // NEW
+import com.app.tastybuds.ui.home.AllRestaurantsScreen // NEW
+import com.app.tastybuds.ui.home.AllDealsScreen // NEW
+import com.app.tastybuds.ui.home.AllVouchersScreen // NEW
 import com.app.tastybuds.ui.inbox.ChatBoxScreen
 import com.app.tastybuds.ui.profile.ProfileScreen
 import com.app.tastybuds.ui.home.FoodListingScreen
@@ -41,6 +45,7 @@ fun AppNavGraph(navController: NavHostController) {
                 }
             )
         }
+
         composable("home") {
             HomeScreen(
                 onCategoryClick = { categoryId, categoryName ->
@@ -56,6 +61,80 @@ fun AppNavGraph(navController: NavHostController) {
                 },
                 onRestaurantClick = { restaurantId ->
                     navController.navigate("restaurant_details/$restaurantId")
+                },
+                onViewAllCollections = {
+                    navController.navigate("all_collections")
+                },
+                onViewAllRestaurants = {
+                    navController.navigate("all_restaurants")
+                },
+                onViewAllDeals = {
+                    navController.navigate("all_deals")
+                },
+                onViewAllVouchers = {
+                    navController.navigate("all_vouchers")
+                },
+                // ADD THESE NEW HANDLERS:
+                onBannerClick = { bannerId ->
+                    // Navigate based on banner action type
+                    // For now, navigate to deals or category
+                    navController.navigate("all_deals")
+                },
+                onCollectionClick = { collectionId ->
+                    // Navigate to restaurants filtered by collection
+                    navController.navigate("food_listing/Collection")
+                },
+                onDealClick = { dealId ->
+                    // Navigate to food details for the deal item
+                    navController.navigate("food_details/$dealId")
+                }
+            )
+        }
+
+        // NEW: All Collections Screen
+        composable("all_collections") {
+            AllCollectionsScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onCollectionClick = { collectionId ->
+                    // Navigate to collection details or restaurant listing filtered by collection
+                    navController.navigate("food_listing/Collection")
+                }
+            )
+        }
+
+        // NEW: All Restaurants Screen
+        composable("all_restaurants") {
+            AllRestaurantsScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onRestaurantClick = { restaurantId ->
+                    navController.navigate("restaurant_details/$restaurantId")
+                }
+            )
+        }
+
+        composable("all_deals") {
+            AllDealsScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onDealClick = { dealId ->
+                    // Navigate to food details or deal details
+                    navController.navigate("food_details/$dealId")
+                }
+            )
+        }
+
+        composable("all_vouchers") {
+            AllVouchersScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onVoucherClick = { voucherId ->
+                    navController.popBackStack()
                 }
             )
         }
@@ -95,9 +174,7 @@ fun AppNavGraph(navController: NavHostController) {
                 onCloseClick = {
                     navController.popBackStack()
                 },
-                onFilterClick = {
-                    // TODO: Open filter modal
-                },
+                onFilterClick = {},
                 onResultClick = { resultId, resultType ->
                     when (resultType) {
                         SearchResultType.RESTAURANT -> {
@@ -144,7 +221,6 @@ fun AppNavGraph(navController: NavHostController) {
                     navController.popBackStack()
                 },
                 onAddToCart = { totalPrice, quantity ->
-                    // Navigate to order review or show success message
                     navController.navigate("order_review")
                 }
             )
@@ -190,7 +266,11 @@ fun BottomBar(navController: NavHostController) {
         "food_details/",
         "location",
         "order_review",
-        "splash"
+        "splash",
+        "all_collections",
+        "all_restaurants",
+        "all_deals",
+        "all_vouchers"
     )
     val shouldShowBottomBar = !screensWithoutBottomBar.any { route ->
         currentRoute?.startsWith(route) == true
@@ -222,19 +302,5 @@ fun BottomBar(navController: NavHostController) {
                 )
             }
         }
-    }
-}
-
-fun shouldHideTopBar(currentRoute: String?): Boolean {
-    val screensWithoutTopBar = listOf(
-        "profile",
-        "food_listing/",
-        "restaurant_details/",
-        "food_details/",
-        "location",
-        "order_review"
-    )
-    return screensWithoutTopBar.any { route ->
-        currentRoute?.startsWith(route) == true
     }
 }
