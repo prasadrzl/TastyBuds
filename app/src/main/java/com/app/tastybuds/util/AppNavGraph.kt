@@ -20,6 +20,7 @@ import com.app.tastybuds.ui.orders.FoodDetailsScreen
 import com.app.tastybuds.ui.location.LocationTrackerScreen
 import com.app.tastybuds.ui.location.OrderTrackingScreen
 import com.app.tastybuds.ui.orders.OrderReviewScreen
+import com.app.tastybuds.TastyBudsSplashScreen
 
 val items = listOf(
     BottomNavItem("home", "Home", R.drawable.ic_bn_home),
@@ -30,7 +31,16 @@ val items = listOf(
 
 @Composable
 fun AppNavGraph(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "home") {
+    NavHost(navController = navController, startDestination = "splash") {
+        composable("splash") {
+            TastyBudsSplashScreen(
+                onSplashComplete = {
+                    navController.navigate("home") {
+                        popUpTo("splash") { inclusive = true }
+                    }
+                }
+            )
+        }
         composable("home") {
             HomeScreen(
                 onCategoryClick = { categoryId, categoryName ->
@@ -179,7 +189,8 @@ fun BottomBar(navController: NavHostController) {
         "restaurant_details/",
         "food_details/",
         "location",
-        "order_review"
+        "order_review",
+        "splash"
     )
     val shouldShowBottomBar = !screensWithoutBottomBar.any { route ->
         currentRoute?.startsWith(route) == true

@@ -13,7 +13,7 @@
         android:name=".TastyBudsApplication"
         android:roundIcon="@drawable/tasty_buds"
         android:supportsRtl="true"
-        android:theme="@style/Theme.TastyBuds"
+        android:theme="@style/Theme.TastyBuds.Launch"
         tools:targetApi="31">
 
         <meta-data
@@ -23,8 +23,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.TastyBuds">
+            android:theme="@style/Theme.TastyBuds.Launch">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

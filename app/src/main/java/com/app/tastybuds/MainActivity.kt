@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.core.view.WindowCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import com.app.tastybuds.ui.theme.PrimaryColor
@@ -27,6 +28,7 @@ data class BottomNavItem(val route: String, val label: String, val iconRes: Int)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             TastyBudsTheme(darkTheme = false) {
                 SetSystemBarColor(PrimaryColor)
@@ -44,55 +46,63 @@ fun TastyBuddyMainScreen(navController: NavHostController) {
 
     var searchText by rememberSaveable { mutableStateOf("") }
 
+    val showUIChrome = currentRoute != "splash"
+
     Scaffold(
         topBar = {
-            // Hide top bar for specific screens
-            val hideTopBar = currentRoute == "profile" ||
-                    currentRoute?.startsWith("food_listing/") == true ||
-                    currentRoute?.startsWith("search_results/") == true ||
-                    currentRoute?.startsWith("restaurant_details/") == true ||
-                    currentRoute?.startsWith("food_details/") == true ||
-                    currentRoute == "location" ||
-                    currentRoute == "order_review"
+            if (showUIChrome) {
+                // Hide top bar for specific screens including splash
+                val hideTopBar = currentRoute == "profile" ||
+                        currentRoute?.startsWith("food_listing/") == true ||
+                        currentRoute?.startsWith("search_results/") == true ||
+                        currentRoute?.startsWith("restaurant_details/") == true ||
+                        currentRoute?.startsWith("food_details/") == true ||
+                        currentRoute == "location" ||
+                        currentRoute == "order_review"
 
-            if (!hideTopBar) {
-                Column {
-                    HomeTopBar(
-                        onProfileClick = {
-                            navController.navigate("profile")
-                        },
-                        // NEW: Add location click navigation
-                        onLocationClick = {
-                            navController.navigate("location")
-                        }
-                    )
-                    HomeSearchBar(
-                        value = searchText,
-                        onValueChange = { newText -> searchText = newText },
-                        onSearchBarClick = {
-                            // Navigate to search screen even with empty search
-                            navController.navigate("search_results/${searchText.ifBlank { "food" }}")
-                        }
-                    )
+                if (!hideTopBar) {
+                    Column {
+                        HomeTopBar(
+                            onProfileClick = {
+                                navController.navigate("profile")
+                            },
+                            onLocationClick = {
+                                navController.navigate("location")
+                            }
+                        )
+                        HomeSearchBar(
+                            value = searchText,
+                            onValueChange = { newText -> searchText = newText },
+                            onSearchBarClick = {
+                                navController.navigate("search_results/${searchText.ifBlank { "food" }}")
+                            }
+                        )
+                    }
                 }
             }
         },
         bottomBar = {
-            // Hide bottom bar for specific screens
-            val hideBottomBar = currentRoute == "profile" ||
-                    currentRoute?.startsWith("food_listing/") == true ||
-                    currentRoute?.startsWith("search_results/") == true ||
-                    currentRoute?.startsWith("restaurant_details/") == true ||
-                    currentRoute?.startsWith("food_details/") == true ||
-                    currentRoute == "location" ||
-                    currentRoute == "order_review"
+            if (showUIChrome) {
+                // Hide bottom bar for specific screens including splash
+                val hideBottomBar = currentRoute == "profile" ||
+                        currentRoute?.startsWith("food_listing/") == true ||
+                        currentRoute?.startsWith("search_results/") == true ||
+                        currentRoute?.startsWith("restaurant_details/") == true ||
+                        currentRoute?.startsWith("food_details/") == true ||
+                        currentRoute == "location" ||
+                        currentRoute == "order_review"
 
-            if (!hideBottomBar) {
-                BottomBar(navController = navController)
+                if (!hideBottomBar) {
+                    BottomBar(navController = navController)
+                }
             }
         }
     ) { padding ->
-        Box(modifier = Modifier.padding(padding)) {
+        Box(
+            modifier = Modifier.then(
+                if (showUIChrome) Modifier.padding(padding) else Modifier
+            )
+        ) {
             AppNavGraph(navController = navController)
         }
     }
