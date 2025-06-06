@@ -185,34 +185,6 @@ app/src/main/java/com/app/tastybuds/
 └── MainActivity.kt
 ```
 
-## 🚀 Getting Started
-
-### Prerequisites
-- Android Studio Hedgehog (2023.1.1) or later
-- JDK 8 or higher
-- Android SDK API 24+
-- Google Maps API Key
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/tastybuds-android.git
-   cd tastybuds-android
-   ```
-
-2. **Setup API Keys**
-   Create `local.properties` file in root directory:
-   ```properties
-   MAPS_API_KEY=your_google_maps_api_key_here
-   ```
-
-3. **Build and Run**
-   ```bash
-   ./gradlew assembleDebug
-   ./gradlew installDebug
-   ```
-
 ### Configuration
 
 #### Backend Setup
@@ -232,92 +204,11 @@ The app expects the following Supabase tables:
 
 ## 🔗 API Integration
 
-### Supabase Integration
-```kotlin
-// Example API call structure
-@GET("restaurants")
-suspend fun getRecommendedRestaurants(
-    @Query("select") select: String = "*",
-    @Query("is_open") isOpen: String = "eq.true",
-    @Query("order") order: String = "rating.desc",
-    @Query("limit") limit: String = "20"
-): List<RestaurantResponse>
-```
-
 ### Authentication Headers
 ```kotlin
 .addHeader("apikey", "YOUR_SUPABASE_ANON_KEY")
 .addHeader("Authorization", "Bearer YOUR_SUPABASE_ANON_KEY")
 ```
-
-## 🧪 Testing
-
-### Running Tests
-```bash
-# Unit tests
-./gradlew test
-
-# Instrumentation tests
-./gradlew connectedAndroidTest
-```
-
-### Test Coverage
-- **Unit Tests**: ViewModels, Use Cases, Repositories
-- **Integration Tests**: API services, Database operations
-- **UI Tests**: Navigation flows, User interactions
-
-## 📱 Supported Devices
-
-- **Minimum SDK**: API 24 (Android 7.0)
-- **Target SDK**: API 35 (Android 15)
-- **Screen Sizes**: Phone and Tablet
-- **Orientation**: Portrait (primary), Landscape (supported)
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-### Code Style
-- Follow [Kotlin Coding Conventions](https://kotlinlang.org/docs/coding-conventions.html)
-- Use meaningful commit messages
-- Add unit tests for new features
-- Update documentation as needed
-
-## 📋 Roadmap
-
-### Upcoming Features
-- [ ] Push notifications for order updates
-- [ ] Social login (Google, Facebook)
-- [ ] Offline mode support
-- [ ] Multiple language support
-- [ ] Advanced filtering options
-- [ ] Loyalty program integration
-- [ ] Voice ordering
-- [ ] AR menu visualization
-
-### Performance Improvements
-- [ ] Image caching optimization
-- [ ] Database query optimization
-- [ ] Background task management
-- [ ] Memory usage optimization
-
-## 🐛 Known Issues
-
-- Search suggestions may have slight delay on slower devices
-- Map rendering might be slower on devices with limited RAM
-- Some custom fonts may not load properly on older Android versions
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👥 Authors
-
-- **Your Name** - *Initial work* - [YourGitHub](https://github.com/yourusername)
 
 ## 🙏 Acknowledgments
 
@@ -325,10 +216,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Material Design](https://material.io/) for design guidelines
 - [Supabase](https://supabase.io/) for backend services
 - [Google Maps](https://developers.google.com/maps) for mapping services
-
-## 📞 Support
-
-For support, email support@tastybuds.com or create an issue in this repository.
 
 ---
 
