@@ -8,6 +8,7 @@ val BackgroundLight = Color(0xFFFFFFFF)
 val BackgroundDark = Color(0xFF121212)
 val SurfaceLight = Color(0xFFFFFFFF)
 val SurfaceDark = Color(0xFF1E1E1E)
+val buttonColor = Color(0xFFFFE7D2)
 val OnPrimary = Color.White
 val OnSecondary = Color.Black
 val OnBackgroundLight = Color.Black

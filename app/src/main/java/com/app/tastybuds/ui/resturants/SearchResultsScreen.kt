@@ -1,4 +1,4 @@
-package com.app.tastybuds.ui.home
+package com.app.tastybuds.ui.resturants
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

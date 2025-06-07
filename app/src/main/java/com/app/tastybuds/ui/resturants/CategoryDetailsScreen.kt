@@ -1,4 +1,4 @@
-package com.app.tastybuds.ui.home
+package com.app.tastybuds.ui.resturants
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -30,6 +30,8 @@ import com.app.tastybuds.R
 import com.app.tastybuds.ui.theme.PrimaryColor
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.shape.CircleShape
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.app.tastybuds.util.SeeAllButton
 import kotlinx.coroutines.delay
 
 data class FilterOption(
@@ -51,9 +53,15 @@ data class RestaurantItem(
 @Composable
 fun FoodListingScreen(
     categoryName: String = "Fast Food",
+    categoryId: String = "",
     onBackClick: () -> Unit = {},
-    onRestaurantClick: (String) -> Unit = {}
+    onRestaurantClick: (String) -> Unit = {},
+    viewModel: RestaurantViewModel = hiltViewModel()
 ) {
+
+    LaunchedEffect(categoryId) {
+        viewModel.loadRestaurantsByCategory(categoryId, categoryName)
+    }
     var selectedSortBy by remember { mutableStateOf("Sort by") }
     val filterOptions = remember {
         listOf(
@@ -94,7 +102,6 @@ fun FoodListingScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            // Restaurant List
             items(getRestaurantList()) { restaurant ->
                 RestaurantCard(
                     restaurant = restaurant,
@@ -112,12 +119,7 @@ fun FoodListingScreen(
                     TextButton(
                         onClick = { /* Load more */ }
                     ) {
-                        Text(
-                            text = "See all",
-                            color = PrimaryColor,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium
-                        )
+                        SeeAllButton()
                     }
                 }
             }
@@ -514,7 +516,6 @@ data class FeaturedBanner(
     val imageRes: Int
 )
 
-// Dummy Data Functions
 private fun getRestaurantList(): List<RestaurantItem> {
     return listOf(
         RestaurantItem(

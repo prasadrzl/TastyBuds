@@ -16,10 +16,10 @@ import com.app.tastybuds.ui.home.AllDealsScreen // NEW
 import com.app.tastybuds.ui.home.AllVouchersScreen // NEW
 import com.app.tastybuds.ui.inbox.ChatBoxScreen
 import com.app.tastybuds.ui.profile.ProfileScreen
-import com.app.tastybuds.ui.home.FoodListingScreen
-import com.app.tastybuds.ui.home.SearchResultType
-import com.app.tastybuds.ui.home.SearchResultsScreen
-import com.app.tastybuds.ui.restaurant.RestaurantDetailsScreen
+import com.app.tastybuds.ui.resturants.FoodListingScreen
+import com.app.tastybuds.ui.resturants.SearchResultType
+import com.app.tastybuds.ui.resturants.SearchResultsScreen
+import com.app.tastybuds.ui.resturants.RestaurantDetailsScreen
 import com.app.tastybuds.ui.orders.FoodDetailsScreen
 import com.app.tastybuds.ui.location.LocationTrackerScreen
 import com.app.tastybuds.ui.location.OrderTrackingScreen

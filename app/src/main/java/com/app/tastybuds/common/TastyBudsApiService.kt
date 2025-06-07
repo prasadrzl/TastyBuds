@@ -30,23 +30,29 @@ interface TastyBudsApiService {
         @Query("order") order: String = "title.asc"
     ): List<CollectionResponse>
 
+    @GET("sale_items")
+    suspend fun getDeals(
+        @Query("select") select: String = "*"
+    ): List<DealResponse>
+
+    @GET("restaurants")
+    suspend fun searchRestaurants(
+        @Query("name") nameQuery: String,
+        @Query("select") select: String = "*"
+    ): List<RestaurantResponse>
+
+    @GET("restaurants")
+    suspend fun getRestaurantsByCategory(
+        @Query("category_ids") categoryFilter: String,
+        @Query("select") select: String = "*",
+        @Query("order") order: String = "rating.desc"
+    ): List<RestaurantResponse>
+
     @GET("restaurants")
     suspend fun getRecommendedRestaurants(
         @Query("select") select: String = "*",
         @Query("is_open") isOpen: String = "eq.true",
         @Query("order") order: String = "rating.desc",
         @Query("limit") limit: String = "20"
-    ): List<RestaurantResponse>
-
-    // Keep this as Response<> only if you're unsure the table exists
-    @GET("sale_items")
-    suspend fun getDeals(
-        @Query("select") select: String = "*"
-    ): List<DealResponse>  // Changed back to consistent approach
-
-    @GET("restaurants")
-    suspend fun searchRestaurants(
-        @Query("name") nameQuery: String,
-        @Query("select") select: String = "*"
     ): List<RestaurantResponse>
 }
