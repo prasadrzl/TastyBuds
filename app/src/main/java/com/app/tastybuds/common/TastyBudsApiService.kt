@@ -55,4 +55,40 @@ interface TastyBudsApiService {
         @Query("order") order: String = "rating.desc",
         @Query("limit") limit: String = "20"
     ): List<RestaurantResponse>
+
+    @GET("restaurants")
+    suspend fun getTopRestaurantsByCategory(
+        @Query("category_ids") categoryIds: String,
+        @Query("order") order: String = "rating.desc,review_count.desc",
+        @Query("limit") limit: Int = 6,
+        @Query("select") select: String = "*"
+    ): List<CategoryRestaurantResponse>
+
+    @GET("menu_items")
+    suspend fun getMenuItemsByCategory(
+        @Query("category_id") categoryId: String,
+        @Query("is_popular") isPopular: String = "eq.true",
+        @Query("order") order: String = "rating.desc,review_count.desc",
+        @Query("limit") limit: Int = 6,
+        @Query("select") select: String = "*,restaurants(name,delivery_time,id)"
+    ): List<CategoryMenuItemResponse>
+
+    @GET("restaurants")
+    suspend fun getRecommendedRestaurantsByCategory(
+        @Query("category_ids") categoryIds: String,
+        @Query("rating") minRating: String = "gte.4.0",
+        @Query("order") order: String = "review_count.desc",
+        @Query("limit") limit: Int = 5,
+        @Query("offset") offset: Int = 6,
+        @Query("select") select: String = "*"
+    ): List<CategoryRestaurantResponse>
+
+    @GET("restaurants")
+    suspend fun getFilteredRestaurants(
+        @Query("category_ids") categoryIds: String,
+        @Query("is_freeship") isFreeship: String? = null,
+        @Query("order") order: String = "rating.desc",
+        @Query("limit") limit: Int = 10,
+        @Query("select") select: String = "*"
+    ): List<CategoryRestaurantResponse>
 }
