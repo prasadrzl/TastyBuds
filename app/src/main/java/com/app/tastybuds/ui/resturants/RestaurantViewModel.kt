@@ -23,15 +23,16 @@ class RestaurantViewModel @Inject constructor(
 
     fun loadRestaurantsByCategory(categoryId: String, categoryName: String) {
         viewModelScope.launch {
-            _uiState.update { 
+            _uiState.update {
                 it.copy(
-                    isLoading = true, 
-                    error = null, 
+                    isLoading = true,
+                    error = null,
                     categoryName = categoryName,
-                    searchQuery = ""
-                ) 
+                    searchQuery = "",
+                    currentCategoryId = categoryId
+                )
             }
-            
+
             try {
                 restaurantUseCase.getRestaurantsByCategory(categoryId).collect { restaurants ->
                     _uiState.update {
@@ -48,17 +49,47 @@ class RestaurantViewModel @Inject constructor(
         }
     }
 
+    fun loadCategoryDetails(categoryId: String, categoryName: String) {
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    isLoading = true,
+                    error = null,
+                    categoryName = categoryName,
+                    currentCategoryId = categoryId
+                )
+            }
+
+            try {
+                restaurantUseCase.getCategoryDetails(categoryId).collect { categoryData ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            categoryDetails = categoryData,
+                            isEmpty = categoryData.topRestaurants.isEmpty() &&
+                                    categoryData.menuItems.isEmpty() &&
+                                    categoryData.recommendedRestaurants.isEmpty()
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                handleError(e)
+            }
+        }
+    }
+
     fun searchRestaurants(query: String) {
         viewModelScope.launch {
-            _uiState.update { 
+            _uiState.update {
                 it.copy(
-                    isLoading = true, 
+                    isLoading = true,
                     error = null,
                     searchQuery = query,
-                    categoryName = ""
-                ) 
+                    categoryName = "",
+                    currentCategoryId = null
+                )
             }
-            
+
             try {
                 restaurantUseCase.searchRestaurants(query).collect { restaurants ->
                     _uiState.update {
@@ -77,15 +108,16 @@ class RestaurantViewModel @Inject constructor(
 
     fun loadAllRestaurants() {
         viewModelScope.launch {
-            _uiState.update { 
+            _uiState.update {
                 it.copy(
-                    isLoading = true, 
+                    isLoading = true,
                     error = null,
                     categoryName = "All Restaurants",
-                    searchQuery = ""
-                ) 
+                    searchQuery = "",
+                    currentCategoryId = null
+                )
             }
-            
+
             try {
                 restaurantUseCase.getAllRestaurants().collect { restaurants ->
                     _uiState.update {
@@ -117,12 +149,21 @@ class RestaurantViewModel @Inject constructor(
     fun retry() {
         val currentState = _uiState.value
         when {
-            currentState.categoryName.isNotBlank() && currentState.categoryName != "All Restaurants" -> {
-                loadRestaurantsByCategory("cat_004", currentState.categoryName)
+            !currentState.currentCategoryId.isNullOrBlank() -> {
+                if (currentState.categoryDetails != null) {
+                    loadCategoryDetails(currentState.currentCategoryId!!, currentState.categoryName)
+                } else {
+                    loadRestaurantsByCategory(
+                        currentState.currentCategoryId!!,
+                        currentState.categoryName
+                    )
+                }
             }
+
             currentState.searchQuery.isNotBlank() -> {
                 searchRestaurants(currentState.searchQuery)
             }
+
             else -> {
                 loadAllRestaurants()
             }
