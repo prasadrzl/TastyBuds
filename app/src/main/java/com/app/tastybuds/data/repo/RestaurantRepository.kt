@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
+import com.app.tastybuds.util.*
 
 interface RestaurantRepository {
     fun getRestaurantsByCategory(categoryId: String): Flow<List<Restaurant>>
@@ -27,10 +28,11 @@ class RestaurantRepositoryImpl @Inject constructor(
     private val tastyBudsApiService: TastyBudsApiService
 ) : RestaurantRepository {
 
-    private fun String.toCategoryFilter(): String = "cs.[\"$this\"]"
-
     override fun getRestaurantsByCategory(categoryId: String): Flow<List<Restaurant>> = flow {
-        val response = tastyBudsApiService.getRestaurantsByCategory(categoryId.toCategoryFilter())
+        val response = tastyBudsApiService.getRestaurantsByCategoryId(
+            categoryId,
+            limit = 5
+        )
         val restaurants = response.map { it.toDomainModel() }
         emit(restaurants)
     }.catch {
@@ -38,7 +40,7 @@ class RestaurantRepositoryImpl @Inject constructor(
     }
 
     override fun searchRestaurants(query: String): Flow<List<Restaurant>> = flow {
-        val response = tastyBudsApiService.searchRestaurants("ilike.*$query*")
+        val response = tastyBudsApiService.searchRestaurantsByName("ilike.*$query*")
         val restaurants = response.map { it.toDomainModel() }
         emit(restaurants)
     }.catch {
@@ -71,7 +73,7 @@ class RestaurantRepositoryImpl @Inject constructor(
     override fun getTopRestaurantsByCategory(categoryId: String): Flow<List<CategoryRestaurant>> =
         flow {
             val response =
-                tastyBudsApiService.getTopRestaurantsByCategory(categoryId.toCategoryFilter())
+                tastyBudsApiService.getTopCategoryRestaurants(categoryId)
             val restaurants = response.map { it.toDomainModel() }
             emit(restaurants)
         }.catch {
@@ -79,7 +81,7 @@ class RestaurantRepositoryImpl @Inject constructor(
         }
 
     override fun getMenuItemsByCategory(categoryId: String): Flow<List<CategoryMenuItem>> = flow {
-        val response = tastyBudsApiService.getMenuItemsByCategory(categoryId)
+        val response = tastyBudsApiService.getPopularMenuItems(categoryId)
         val menuItems = response.map { it.toDomainModel() }
         emit(menuItems)
     }.catch {
@@ -89,7 +91,7 @@ class RestaurantRepositoryImpl @Inject constructor(
     override fun getRecommendedRestaurantsByCategory(categoryId: String): Flow<List<CategoryRestaurant>> =
         flow {
             val response =
-                tastyBudsApiService.getRecommendedRestaurantsByCategory(categoryId.toCategoryFilter())
+                tastyBudsApiService.getRecommendedByCategoryExt(categoryId)
             val restaurants = response.map { it.toDomainModel() }
             emit(restaurants)
         }.catch {

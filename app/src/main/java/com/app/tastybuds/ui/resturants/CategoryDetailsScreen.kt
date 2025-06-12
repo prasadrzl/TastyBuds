@@ -3,18 +3,45 @@ package com.app.tastybuds.ui.resturants
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,12 +53,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.app.tastybuds.R
-import com.app.tastybuds.ui.theme.PrimaryColor
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.shape.CircleShape
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.app.tastybuds.R
+import com.app.tastybuds.domain.model.CategoryMenuItem
+import com.app.tastybuds.domain.model.CategoryRestaurant
+import com.app.tastybuds.domain.model.Restaurant
+import com.app.tastybuds.ui.resturants.state.RestaurantUiState
+import com.app.tastybuds.ui.theme.PrimaryColor
 import com.app.tastybuds.util.SeeAllButton
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
 import kotlinx.coroutines.delay
 
 data class FilterOption(
@@ -40,28 +72,23 @@ data class FilterOption(
     val isSelected: Boolean = false
 )
 
-data class RestaurantItem(
-    val id: String,
-    val name: String,
-    val cuisine: String,
-    val deliveryTime: String,
-    val rating: Float,
-    val imageRes: Int,
-    val badges: List<String> = emptyList()
-)
-
 @Composable
-fun FoodListingScreen(
+fun CategoryDetailsScreen(
     categoryName: String = "Fast Food",
     categoryId: String = "",
     onBackClick: () -> Unit = {},
     onRestaurantClick: (String) -> Unit = {},
+    onSeeAllClick: (String, String) -> Unit = {_, _ ->},
     viewModel: RestaurantViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(categoryId) {
-        viewModel.loadRestaurantsByCategory(categoryId, categoryName)
+        if (categoryId.isNotBlank()) {
+            viewModel.loadCategoryDetails(categoryId, categoryName)
+        }
     }
+
     var selectedSortBy by remember { mutableStateOf("Sort by") }
     val filterOptions = remember {
         listOf(
@@ -79,7 +106,7 @@ fun FoodListingScreen(
             .background(Color.White)
     ) {
         CategoryHeader(
-            categoryName = categoryName,
+            categoryName = uiState.categoryName.ifBlank { categoryName },
             onBackClick = onBackClick
         )
 
@@ -97,43 +124,499 @@ fun FoodListingScreen(
             }
         )
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+        when {
+            uiState.isLoading -> {
+                LoadingContent()
+            }
+
+            uiState.error != null -> {
+                ErrorContent(
+                    error = uiState.error ?: "Unknown error",
+                    onRetry = { viewModel.retry() }
+                )
+            }
+
+            uiState.isEmpty -> {
+                EmptyContent(categoryName = categoryName)
+            }
+
+            else -> {
+                CategoryContent(
+                    uiState = uiState,
+                    onRestaurantClick = onRestaurantClick,
+                    onSeeAllClick = onSeeAllClick,
+                    categoryName = categoryName
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun LoadingContent() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            color = PrimaryColor,
+            modifier = Modifier.size(48.dp)
+        )
+    }
+}
+
+@Composable
+fun ErrorContent(
+    error: String,
+    onRetry: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_help),
+            contentDescription = "Error",
+            tint = PrimaryColor,
+            modifier = Modifier.size(64.dp)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Something went wrong",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = error,
+            fontSize = 14.sp,
+            color = Color.Gray,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = onRetry,
+            colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
+            shape = RoundedCornerShape(24.dp)
         ) {
-            items(getRestaurantList()) { restaurant ->
-                RestaurantCard(
+            Text(
+                text = "Try Again",
+                color = Color.White,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun EmptyContent(categoryName: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_search),
+            contentDescription = "Empty",
+            tint = Color.Gray,
+            modifier = Modifier.size(64.dp)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "No restaurants found",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "No restaurants available in $categoryName category right now.",
+            fontSize = 14.sp,
+            color = Color.Gray,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
+    }
+}
+
+@Composable
+fun CategoryContent(
+    uiState: RestaurantUiState,
+    onRestaurantClick: (String) -> Unit,
+    onSeeAllClick: (String, String) -> Unit,
+    categoryName: String
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        uiState.categoryDetails?.let { categoryDetails ->
+            if (categoryDetails.topRestaurants.isNotEmpty()) {
+                val displayedRestaurants = categoryDetails.topRestaurants.take(3)
+
+                items(displayedRestaurants) { restaurant ->
+                    CategoryRestaurantCard(
+                        restaurant = restaurant,
+                        onClick = { onRestaurantClick(restaurant.id) }
+                    )
+                }
+                item {
+                    if (categoryDetails.topRestaurants.size > 3) {
+                        SeeAllButton(
+                            onClick = {
+                                onSeeAllClick(
+                                    "Top $categoryName Restaurants",
+                                    "top_restaurants"
+                                )
+                            }
+                        )
+                    }
+                }
+            }
+        }
+
+        if (uiState.categoryDetails == null && uiState.restaurants.isNotEmpty()) {
+            items(uiState.restaurants) { restaurant ->
+                RegularRestaurantCard(
                     restaurant = restaurant,
                     onClick = { onRestaurantClick(restaurant.id) }
                 )
             }
+        }
 
+
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        uiState.categoryDetails?.let { categoryDetails ->
             item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 24.dp),
-                    contentAlignment = Alignment.Center
+                FeaturedBannerSection(categoryDetails.menuItems)
+            }
+            if (categoryDetails.recommendedRestaurants.isNotEmpty()) {
+                item {
+                    Text(
+                        text = "Recommended for you",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                }
+
+                items(categoryDetails.recommendedRestaurants) { restaurant ->
+                    CategoryRestaurantCard(
+                        restaurant = restaurant,
+                        onClick = { onRestaurantClick(restaurant.id) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun CategoryRestaurantCard(
+    restaurant: CategoryRestaurant,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            GlideImage(
+                model = restaurant.imageUrl,
+                contentDescription = restaurant.name,
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop,
+                failure = placeholder(R.drawable.default_food),
+                loading = placeholder(R.drawable.default_food)
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = restaurant.name,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = restaurant.cuisine,
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    TextButton(
-                        onClick = { /* Load more */ }
-                    ) {
-                        SeeAllButton()
+                    Text(
+                        text = restaurant.deliveryTime,
+                        fontSize = 12.sp,
+                        color = Color.Black
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = "Rating",
+                        modifier = Modifier.size(14.dp),
+                        tint = Color(0xFFFFC107)
+                    )
+
+                    Spacer(modifier = Modifier.width(2.dp))
+
+                    Text(
+                        text = "${restaurant.rating} (${restaurant.reviewCount})",
+                        fontSize = 12.sp,
+                        color = Color.Black
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    items(restaurant.badges) { badge ->
+                        BadgeChip(text = badge)
                     }
                 }
             }
+        }
+    }
+}
 
-            item {
-                FeaturedBannerSection()
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun MenuItemCard(
+    menuItem: CategoryMenuItem,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            GlideImage(
+                model = menuItem.imageUrl,
+                contentDescription = menuItem.name,
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop,
+                failure = placeholder(R.drawable.default_food),
+                loading = placeholder(R.drawable.default_food)
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = menuItem.name,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                if (menuItem.description.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = menuItem.description,
+                        fontSize = 12.sp,
+                        color = Color.Gray,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "$${menuItem.price.toInt()}",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+                    )
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = "Rating",
+                        modifier = Modifier.size(12.dp),
+                        tint = Color(0xFFFFC107)
+                    )
+
+                    Spacer(modifier = Modifier.width(4.dp))
+
+                    Text(
+                        text = "${menuItem.rating} (${menuItem.reviewCount})",
+                        fontSize = 12.sp,
+                        color = Color.Gray
+                    )
+                }
+
+                if (menuItem.restaurantName.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "From ${menuItem.restaurantName}",
+                        fontSize = 12.sp,
+                        color = PrimaryColor,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
             }
+        }
+    }
+}
 
-            item {
-                RecommendedSection(onRestaurantClick = onRestaurantClick)
-            }
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun RegularRestaurantCard(
+    restaurant: Restaurant,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            GlideImage(
+                model = restaurant.imageUrl,
+                contentDescription = restaurant.name,
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop,
+                failure = placeholder(R.drawable.default_food),
+                loading = placeholder(R.drawable.default_food)
+            )
 
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = restaurant.name,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = restaurant.cuisine,
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = restaurant.deliveryTime,
+                        fontSize = 12.sp,
+                        color = Color.Black
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = "Rating",
+                        modifier = Modifier.size(14.dp),
+                        tint = Color(0xFFFFC107)
+                    )
+
+                    Spacer(modifier = Modifier.width(2.dp))
+
+                    Text(
+                        text = "${restaurant.rating} (${restaurant.reviewCount})",
+                        fontSize = 12.sp,
+                        color = Color.Black
+                    )
+                }
+
+                restaurant.badge?.let { badge ->
+                    Spacer(modifier = Modifier.height(8.dp))
+                    BadgeChip(text = badge)
+                }
             }
         }
     }
@@ -247,103 +730,6 @@ fun FilterSection(
 }
 
 @Composable
-fun RestaurantCard(
-    restaurant: RestaurantItem,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(id = restaurant.imageRes),
-                contentDescription = restaurant.name,
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
-            )
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = restaurant.name,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Text(
-                    text = restaurant.cuisine,
-                    fontSize = 14.sp,
-                    color = Color.Gray,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Delivery time and rating
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = restaurant.deliveryTime,
-                        fontSize = 12.sp,
-                        color = Color.Black
-                    )
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = "Rating",
-                        modifier = Modifier.size(14.dp),
-                        tint = Color(0xFFFFC107)
-                    )
-
-                    Spacer(modifier = Modifier.width(2.dp))
-
-                    Text(
-                        text = restaurant.rating.toString(),
-                        fontSize = 12.sp,
-                        color = Color.Black
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Badges Row
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    items(restaurant.badges) { badge ->
-                        BadgeChip(text = badge)
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
 fun BadgeChip(text: String) {
     val backgroundColor = when (text.lowercase()) {
         "freeship" -> Color(0xFF4CAF50)
@@ -368,8 +754,8 @@ fun BadgeChip(text: String) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FeaturedBannerSection() {
-    val banners = remember { getFeaturedBanners() }
+fun FeaturedBannerSection(menuItems: List<CategoryMenuItem>) {
+    val banners = remember { menuItems }
     val pagerState = rememberPagerState(pageCount = { banners.size })
 
     LaunchedEffect(pagerState) {
@@ -415,8 +801,9 @@ fun FeaturedBannerSection() {
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun FeaturedBannerCard(banner: FeaturedBanner) {
+fun FeaturedBannerCard(banner: CategoryMenuItem) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -426,11 +813,15 @@ fun FeaturedBannerCard(banner: FeaturedBanner) {
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            Image(
-                painter = painterResource(id = banner.imageRes),
-                contentDescription = banner.title,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
+            GlideImage(
+                model = banner.imageUrl,
+                contentDescription = banner.name,
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop,
+                failure = placeholder(R.drawable.default_food),
+                loading = placeholder(R.drawable.default_food)
             )
 
             Box(
@@ -452,58 +843,16 @@ fun FeaturedBannerCard(banner: FeaturedBanner) {
                     .padding(16.dp)
             ) {
                 Text(
-                    text = banner.title,
+                    text = banner.name,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
                 Text(
-                    text = banner.subtitle,
+                    text = banner.description,
                     fontSize = 16.sp,
                     color = Color.White.copy(alpha = 0.9f)
                 )
-            }
-        }
-    }
-}
-
-@Composable
-fun RecommendedSection(onRestaurantClick: (String) -> Unit) {
-    Column(
-        modifier = Modifier.padding(horizontal = 16.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Recommended for you",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-
-            Text(
-                text = "View all",
-                fontSize = 14.sp,
-                color = Color.Gray,
-                fontWeight = FontWeight.Medium
-            )
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        val recommendedRestaurants = getRecommendedRestaurants()
-
-        recommendedRestaurants.forEach { restaurant ->
-            RestaurantCard(
-                restaurant = restaurant,
-                onClick = { onRestaurantClick(restaurant.id) }
-            )
-
-            if (restaurant != recommendedRestaurants.last()) {
-                Spacer(modifier = Modifier.height(12.dp))
             }
         }
     }
@@ -516,92 +865,8 @@ data class FeaturedBanner(
     val imageRes: Int
 )
 
-private fun getRestaurantList(): List<RestaurantItem> {
-    return listOf(
-        RestaurantItem(
-            id = "1",
-            name = "Hana Chicken",
-            cuisine = "Fried Chicken",
-            deliveryTime = "15 mins",
-            rating = 4.8f,
-            imageRes = R.drawable.default_food,
-            badges = listOf("Freeship", "Near you")
-        ),
-        RestaurantItem(
-            id = "2",
-            name = "Bamsu Restaurant",
-            cuisine = "Chicken Salad, Sandwich & Desserts",
-            deliveryTime = "35 mins",
-            rating = 4.1f,
-            imageRes = R.drawable.default_food,
-            badges = listOf("Freeship")
-        ),
-        RestaurantItem(
-            id = "3",
-            name = "Neighbor Milk",
-            cuisine = "Dairy Drinks & Smoothies",
-            deliveryTime = "35 mins",
-            rating = 4.1f,
-            imageRes = R.drawable.default_food,
-            badges = listOf("Freeship")
-        )
-    )
-}
-
-private fun getFeaturedBanners(): List<FeaturedBanner> {
-    return listOf(
-        FeaturedBanner(
-            id = "1",
-            title = "Tasty",
-            subtitle = "dishes",
-            imageRes = R.drawable.default_food
-        ),
-        FeaturedBanner(
-            id = "2",
-            title = "Special",
-            subtitle = "offers",
-            imageRes = R.drawable.default_food
-        ),
-        FeaturedBanner(
-            id = "3",
-            title = "Fresh",
-            subtitle = "ingredients",
-            imageRes = R.drawable.default_food
-        ),
-        FeaturedBanner(
-            id = "4",
-            title = "Best",
-            subtitle = "quality",
-            imageRes = R.drawable.default_food
-        )
-    )
-}
-
-private fun getRecommendedRestaurants(): List<RestaurantItem> {
-    return listOf(
-        RestaurantItem(
-            id = "rec_1",
-            name = "Mr. John Tapas",
-            cuisine = "Best Tapas in Town",
-            deliveryTime = "35 mins",
-            rating = 4.1f,
-            imageRes = R.drawable.default_food,
-            badges = listOf("Freeship")
-        ),
-        RestaurantItem(
-            id = "rec_2",
-            name = "Pasta Paradise",
-            cuisine = "Italian Cuisine & Pizza",
-            deliveryTime = "25 mins",
-            rating = 4.5f,
-            imageRes = R.drawable.default_food,
-            badges = listOf("Freeship", "Popular")
-        )
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
-fun FoodListingScreenPreview() {
-    FoodListingScreen()
+fun CategoryDetailsScreenPreview() {
+    CategoryDetailsScreen()
 }

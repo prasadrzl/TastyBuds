@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.sp
 import com.app.tastybuds.R
 import com.app.tastybuds.ui.theme.PrimaryColor
 
-// Data Models
 data class SearchFilterOption(
     val id: String,
     val name: String,
@@ -79,16 +78,13 @@ fun SearchResultsScreen(
     }
     var selectedFilters by remember { mutableStateOf(setOf<String>()) }
 
-    // Focus requester for search field
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    // Auto-focus and show keyboard when screen opens
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
 
-    // Filter results based on search text
     val searchResults = remember(searchText) {
         if (searchText.isBlank()) {
             getAllSearchResults()
@@ -116,7 +112,6 @@ fun SearchResultsScreen(
             focusRequester = focusRequester
         )
 
-        // Filter Section
         SearchFilterSection(
             selectedSortBy = selectedSortBy,
             onSortByClick = { selectedSortBy = it },
@@ -131,13 +126,11 @@ fun SearchResultsScreen(
             }
         )
 
-        // Results Content
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            // Results count
             if (searchText.isNotBlank()) {
                 item {
                     Text(
@@ -150,7 +143,6 @@ fun SearchResultsScreen(
                 }
             }
 
-            // Search results or empty state
             if (searchResults.isEmpty() && searchText.isNotBlank()) {
                 item {
                     Box(
@@ -185,6 +177,7 @@ fun SearchResultsScreen(
                                 onClick = { onResultClick(result.id, result.type) }
                             )
                         }
+
                         SearchResultType.FOOD_ITEM -> {
                             FoodItemResultCard(
                                 result = result,
@@ -229,7 +222,6 @@ fun ActiveSearchHeader(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            // Active Search Field
             OutlinedTextField(
                 value = searchText,
                 onValueChange = onSearchTextChange,
@@ -286,7 +278,6 @@ fun ActiveSearchHeader(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            // Filter button
             IconButton(
                 onClick = onFilterClick,
                 modifier = Modifier.size(24.dp)
@@ -299,7 +290,6 @@ fun ActiveSearchHeader(
             }
         }
 
-        // Divider
         HorizontalDivider(
             thickness = 1.dp,
             color = Color(0xFFE0E0E0)
@@ -321,11 +311,10 @@ fun SearchFilterSection(
             .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Sort by dropdown
         item {
             FilterChip(
                 selected = false,
-                onClick = { /* Handle sort dropdown */ },
+                onClick = { },
                 label = {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
@@ -358,7 +347,6 @@ fun SearchFilterSection(
             )
         }
 
-        // Filter options
         items(filterOptions) { filter ->
             val isSelected = selectedFilters.contains(filter.id)
             FilterChip(
@@ -399,14 +387,12 @@ fun RestaurantResultCard(
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Main restaurant info
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Restaurant image
                 Image(
                     painter = painterResource(id = result.imageRes),
                     contentDescription = result.name,
@@ -418,7 +404,6 @@ fun RestaurantResultCard(
 
                 Spacer(modifier = Modifier.width(16.dp))
 
-                // Restaurant details
                 Column(
                     modifier = Modifier.weight(1f)
                 ) {
@@ -441,7 +426,6 @@ fun RestaurantResultCard(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Rating and delivery time
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -473,7 +457,6 @@ fun RestaurantResultCard(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Badges
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
@@ -484,7 +467,6 @@ fun RestaurantResultCard(
                 }
             }
 
-            // Food items from this restaurant
             if (result.name == "Hana Chicken") {
                 Column(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
@@ -649,7 +631,6 @@ fun SearchBadgeChip(text: String) {
     }
 }
 
-// Dummy Data - Expanded for Real-time Search
 private fun getAllSearchResults(): List<SearchResultItem> {
     return listOf(
         SearchResultItem(

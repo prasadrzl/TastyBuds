@@ -10,13 +10,12 @@ import com.app.tastybuds.BottomNavItem
 import com.app.tastybuds.R
 import com.app.tastybuds.ui.favorites.FavoriteScreen
 import com.app.tastybuds.ui.home.HomeScreen
-import com.app.tastybuds.ui.home.AllCollectionsScreen // NEW
-import com.app.tastybuds.ui.home.AllRestaurantsScreen // NEW
-import com.app.tastybuds.ui.home.AllDealsScreen // NEW
-import com.app.tastybuds.ui.home.AllVouchersScreen // NEW
+import com.app.tastybuds.ui.home.AllCollectionsScreen
+import com.app.tastybuds.ui.home.AllRestaurantsScreen
+import com.app.tastybuds.ui.home.AllDealsScreen
+import com.app.tastybuds.ui.home.AllVouchersScreen
 import com.app.tastybuds.ui.inbox.ChatBoxScreen
 import com.app.tastybuds.ui.profile.ProfileScreen
-import com.app.tastybuds.ui.resturants.FoodListingScreen
 import com.app.tastybuds.ui.resturants.SearchResultType
 import com.app.tastybuds.ui.resturants.SearchResultsScreen
 import com.app.tastybuds.ui.resturants.RestaurantDetailsScreen
@@ -25,6 +24,8 @@ import com.app.tastybuds.ui.location.LocationTrackerScreen
 import com.app.tastybuds.ui.location.OrderTrackingScreen
 import com.app.tastybuds.ui.orders.OrderReviewScreen
 import com.app.tastybuds.TastyBudsSplashScreen
+import com.app.tastybuds.ui.resturants.CategoryDetailsScreen
+import com.app.tastybuds.ui.resturants.SeeAllScreen
 
 val items = listOf(
     BottomNavItem("home", "Home", R.drawable.ic_bn_home),
@@ -49,7 +50,7 @@ fun AppNavGraph(navController: NavHostController) {
         composable("home") {
             HomeScreen(
                 onCategoryClick = { categoryId, categoryName ->
-                    navController.navigate("food_listing/$categoryName")
+                    navController.navigate("food_listing/$categoryName/$categoryId")
                 },
                 onProfileClick = {
                     navController.navigate("profile")
@@ -74,37 +75,29 @@ fun AppNavGraph(navController: NavHostController) {
                 onViewAllVouchers = {
                     navController.navigate("all_vouchers")
                 },
-                // ADD THESE NEW HANDLERS:
                 onBannerClick = { bannerId ->
-                    // Navigate based on banner action type
-                    // For now, navigate to deals or category
                     navController.navigate("all_deals")
                 },
                 onCollectionClick = { collectionId ->
-                    // Navigate to restaurants filtered by collection
                     navController.navigate("food_listing/Collection")
                 },
                 onDealClick = { dealId ->
-                    // Navigate to food details for the deal item
                     navController.navigate("food_details/$dealId")
                 }
             )
         }
 
-        // NEW: All Collections Screen
         composable("all_collections") {
             AllCollectionsScreen(
                 onBackClick = {
                     navController.popBackStack()
                 },
                 onCollectionClick = { collectionId ->
-                    // Navigate to collection details or restaurant listing filtered by collection
                     navController.navigate("food_listing/Collection")
                 }
             )
         }
 
-        // NEW: All Restaurants Screen
         composable("all_restaurants") {
             AllRestaurantsScreen(
                 onBackClick = {
@@ -122,7 +115,6 @@ fun AppNavGraph(navController: NavHostController) {
                     navController.popBackStack()
                 },
                 onDealClick = { dealId ->
-                    // Navigate to food details or deal details
                     navController.navigate("food_details/$dealId")
                 }
             )
@@ -151,15 +143,21 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
 
-        composable("food_listing/{categoryName}") { backStackEntry ->
+        composable("food_listing/{categoryName}/{categoryId}") { backStackEntry ->
             val categoryName = backStackEntry.arguments?.getString("categoryName") ?: "Food"
-            FoodListingScreen(
+            val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
+            CategoryDetailsScreen(
                 categoryName = categoryName,
+                categoryId = categoryId,
                 onBackClick = {
                     navController.popBackStack()
                 },
                 onRestaurantClick = { restaurantId ->
                     navController.navigate("restaurant_details/$restaurantId")
+                },
+                onSeeAllClick = { title, type ->
+                    val encodedTitle = java.net.URLEncoder.encode(title, "UTF-8")
+                    navController.navigate("see_all/$categoryId/$type/$encodedTitle")
                 }
             )
         }
@@ -192,7 +190,6 @@ fun AppNavGraph(navController: NavHostController) {
         composable("location") {
             LocationTrackerScreen(
                 onConfirm = {
-                    // After location is confirmed, go back to home
                     navController.popBackStack()
                 }
             )
@@ -250,6 +247,25 @@ fun AppNavGraph(navController: NavHostController) {
                 }
             )
         }
+
+        composable("see_all/{categoryId}/{type}/{title}") { backStackEntry ->
+            val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
+            val type = backStackEntry.arguments?.getString("type") ?: ""
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+
+            SeeAllScreen(
+                categoryId = categoryId,
+                type = type,
+                title = title,
+                onBackClick = { navController.popBackStack() },
+                onRestaurantClick = { restaurantId ->
+                    navController.navigate("restaurant_details/$restaurantId")
+                },
+                onMenuItemClick = { menuItemId ->
+                    navController.navigate("menu_item_details/$menuItemId")
+                }
+            )
+        }
     }
 }
 
@@ -270,7 +286,8 @@ fun BottomBar(navController: NavHostController) {
         "all_collections",
         "all_restaurants",
         "all_deals",
-        "all_vouchers"
+        "all_vouchers",
+        "see_all/"
     )
     val shouldShowBottomBar = !screensWithoutBottomBar.any { route ->
         currentRoute?.startsWith(route) == true

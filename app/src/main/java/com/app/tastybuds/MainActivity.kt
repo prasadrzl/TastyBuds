@@ -49,18 +49,15 @@ fun TastyBuddyMainScreen(navController: NavHostController) {
 
     var searchText by rememberSaveable { mutableStateOf("") }
 
-    // UPDATED: Don't hide UI for home screen
-    val showUIChrome = currentRoute != "splash"
-
     Scaffold(
         topBar = {
-            // UPDATED: Show top bar logic
-            val hideTopBar = currentRoute == "splash" ||  // Hide for splash
-                    currentRoute == "profile" ||
+            val hideTopBar = currentRoute == "splash"
+            currentRoute == "profile" ||
                     currentRoute?.startsWith("food_listing/") == true ||
                     currentRoute?.startsWith("search_results/") == true ||
                     currentRoute?.startsWith("restaurant_details/") == true ||
                     currentRoute?.startsWith("food_details/") == true ||
+                    currentRoute?.startsWith("see_all/") == true ||
                     currentRoute == "location" ||
                     currentRoute == "order_review" ||
                     currentRoute == "all_collections" ||
@@ -89,7 +86,7 @@ fun TastyBuddyMainScreen(navController: NavHostController) {
             }
         },
         bottomBar = {
-            val hideBottomBar = currentRoute == "splash" ||  // Hide for splash
+            val hideBottomBar = currentRoute == "splash" ||
                     currentRoute == "profile" ||
                     currentRoute?.startsWith("food_listing/") == true ||
                     currentRoute?.startsWith("search_results/") == true ||
