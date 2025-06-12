@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.domain.model.CategoryMenuItem
 import com.app.tastybuds.domain.model.CategoryRestaurant
-import com.app.tastybuds.util.AppTopBar
+import com.app.tastybuds.util.ui.AppTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

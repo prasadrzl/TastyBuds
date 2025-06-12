@@ -1,4 +1,4 @@
-package com.app.tastybuds.util
+package com.app.tastybuds.util.ui
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.*

@@ -60,7 +60,7 @@ import com.app.tastybuds.domain.model.CategoryRestaurant
 import com.app.tastybuds.domain.model.Restaurant
 import com.app.tastybuds.ui.resturants.state.RestaurantUiState
 import com.app.tastybuds.ui.theme.PrimaryColor
-import com.app.tastybuds.util.SeeAllButton
+import com.app.tastybuds.util.ui.SeeAllButton
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder

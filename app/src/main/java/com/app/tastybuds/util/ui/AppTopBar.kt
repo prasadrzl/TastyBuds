@@ -1,4 +1,4 @@
-package com.app.tastybuds.util
+package com.app.tastybuds.util.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,7 +28,7 @@ fun AppTopBar(
     title: String = "Rating",
     onBackClick: () -> Unit = {},
     modifier: Modifier = Modifier,
-    actions: @Composable RowScope.() -> Unit = {} // Optional right-side content
+    actions: @Composable RowScope.() -> Unit = {}
 ) {
     Column(modifier = modifier.background(Color.White)) {
         Box(
@@ -39,7 +37,6 @@ fun AppTopBar(
                 .height(56.dp),
             contentAlignment = Alignment.Center
         ) {
-            // Center Title
             Text(
                 text = title,
                 fontWeight = FontWeight.Bold,
@@ -47,7 +44,6 @@ fun AppTopBar(
                 color = Color.Black
             )
 
-            // Back Icon
             IconButton(
                 onClick = onBackClick,
                 modifier = Modifier.align(Alignment.CenterStart)
@@ -59,14 +55,11 @@ fun AppTopBar(
                 )
             }
 
-            // Optional right actions
             Row(
                 modifier = Modifier.align(Alignment.CenterEnd),
                 content = actions
             )
         }
-
-        // Divider underline
         HorizontalDivider(
             thickness = 1.dp,
             color = Color(0xFFE0E0E0)

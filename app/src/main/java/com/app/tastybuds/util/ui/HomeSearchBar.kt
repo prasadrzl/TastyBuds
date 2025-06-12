@@ -1,5 +1,4 @@
-// Updated HomeSearchBar.kt - Click to Open Search Screen
-package com.app.tastybuds.util
+package com.app.tastybuds.util.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,13 +32,12 @@ fun HomeSearchBar(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFFFF6F00)) // Orange background
+            .background(Color(0xFFFF6F00))
             .padding(horizontal = 20.dp, vertical = 16.dp)
     ) {
-        // Non-interactive search bar that acts as a button
         TextField(
-            value = "", // Always empty - just for appearance
-            onValueChange = { }, // No actual input handling
+            value = "",
+            onValueChange = { },
             placeholder = { Text("Search", color = Color(0xBCC1CAFF), fontSize = 12.sp) },
             leadingIcon = {
                 Icon(
@@ -66,8 +64,8 @@ fun HomeSearchBar(
                 ) {
                     onSearchBarClick()
                 },
-            enabled = false, // Disable text input
-            readOnly = true, // Make it read-only
+            enabled = false,
+            readOnly = true,
             singleLine = true
         )
     }

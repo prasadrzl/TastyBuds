@@ -1,4 +1,4 @@
-package com.app.tastybuds.util
+package com.app.tastybuds.util.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues

@@ -1,4 +1,4 @@
-package com.app.tastybuds.util
+package com.app.tastybuds.util.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,7 +32,7 @@ fun HomeTopBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .background(Color(0xFFFF6F00)) // Orange
+            .background(Color(0xFFFF6F00))
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween

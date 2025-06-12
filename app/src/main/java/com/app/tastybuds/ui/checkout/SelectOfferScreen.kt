@@ -40,7 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.app.tastybuds.R
-import com.app.tastybuds.util.AppTopBar
+import com.app.tastybuds.util.ui.AppTopBar
 
 @Composable
 fun SelectOfferScreen(offers: List<OfferItem>, onUseNowClick: () -> Unit) {

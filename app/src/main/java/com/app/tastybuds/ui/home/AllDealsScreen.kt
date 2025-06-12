@@ -39,7 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.R
 import com.app.tastybuds.domain.model.Deal
 import com.app.tastybuds.ui.theme.PrimaryColor
-import com.app.tastybuds.util.AppTopBar
+import com.app.tastybuds.util.ui.AppTopBar
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder

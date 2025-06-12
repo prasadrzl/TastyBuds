@@ -19,10 +19,10 @@ import androidx.navigation.compose.rememberNavController
 import com.app.tastybuds.ui.theme.PrimaryColor
 import com.app.tastybuds.ui.theme.SetSystemBarColor
 import com.app.tastybuds.ui.theme.TastyBudsTheme
-import com.app.tastybuds.util.AppNavGraph
-import com.app.tastybuds.util.BottomBar
-import com.app.tastybuds.util.HomeSearchBar
-import com.app.tastybuds.util.HomeTopBar
+import com.app.tastybuds.util.ui.AppNavGraph
+import com.app.tastybuds.util.ui.BottomBar
+import com.app.tastybuds.util.ui.HomeSearchBar
+import com.app.tastybuds.util.ui.HomeTopBar
 import dagger.hilt.android.AndroidEntryPoint
 
 data class BottomNavItem(val route: String, val label: String, val iconRes: Int)
