@@ -9,9 +9,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.app.tastybuds.BottomNavItem
 import com.app.tastybuds.R
 import com.app.tastybuds.TastyBudsSplashScreen
@@ -169,10 +171,19 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
 
-        composable("search_results/{searchTerm}") { backStackEntry ->
-            val searchTerm = backStackEntry.arguments?.getString("searchTerm") ?: ""
+        composable(
+            "search_results/{searchTerm}",
+            arguments = listOf(
+                navArgument("searchTerm") {
+                    type = NavType.StringType
+                    defaultValue = "all" // Default value for empty search
+                    nullable = false
+                }
+            )
+        ) { backStackEntry ->
+            val searchTerm = backStackEntry.arguments?.getString("searchTerm") ?: "all"
             SearchResultsScreen(
-                initialSearchTerm = searchTerm,
+                initialSearchTerm = if (searchTerm == "all") "" else searchTerm,
                 onBackClick = {
                     navController.popBackStack()
                 },

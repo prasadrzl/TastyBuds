@@ -73,7 +73,6 @@ fun SearchResultsScreen(
     val uiState by viewModel.uiState.collectAsState()
     val focusRequester = remember { FocusRequester() }
 
-    // Filter results based on selected badges
     val filteredResults = remember(uiState.searchResults, selectedFilters) {
         if (selectedFilters.isEmpty()) {
             uiState.searchResults
@@ -87,15 +86,11 @@ fun SearchResultsScreen(
     }
 
     LaunchedEffect(initialSearchTerm) {
-        if (initialSearchTerm.isNotBlank()) {
-            viewModel.searchMenuItems(initialSearchTerm)
-        }
+        viewModel.searchMenuItems(initialSearchTerm)
     }
 
     LaunchedEffect(searchText) {
-        if (searchText.isNotBlank()) {
             viewModel.searchMenuItems(searchText)
-        }
     }
 
     Column(

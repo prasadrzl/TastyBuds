@@ -43,7 +43,7 @@ interface TastyBudsApiService {
 
     @GET("menu_items")
     suspend fun searchMenuItemsWithRestaurants(
-        @Query("name") nameQuery: String,
+        @Query("name") nameQuery: String? = null,
         @Query("select") select: String = "*,restaurants(*)",
         @Query("order") order: String = "price.asc",
         @Query("limit") limit: Int = 20

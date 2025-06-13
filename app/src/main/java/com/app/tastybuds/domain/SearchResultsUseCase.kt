@@ -3,7 +3,6 @@ package com.app.tastybuds.domain
 import com.app.tastybuds.data.SearchResult
 import com.app.tastybuds.data.SearchResultsMapper
 import com.app.tastybuds.data.repo.SearchRepository
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -18,11 +17,6 @@ class SearchResultsUseCase @Inject constructor(
 ) {
 
     fun searchMenuItemsGroupedByRestaurant(query: String): Flow<List<SearchResult>> = flow {
-        if (query.isBlank()) {
-            emit(emptyList())
-            return@flow
-        }
-
         try {
             val menuItemsResponse = searchRepository.searchMenuItemsWithRestaurants(query.trim())
 

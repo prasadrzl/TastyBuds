@@ -2,8 +2,10 @@ package com.app.tastybuds.ui.resturants.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.tastybuds.data.SearchResult
 import com.app.tastybuds.domain.SearchResultsUseCase
 import com.app.tastybuds.ui.resturants.state.SearchUiState
+import com.app.tastybuds.util.isRestaurantNear
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,16 +22,20 @@ class SearchResultsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
-    fun searchMenuItems(query: String) {
+    private var originalSearchResults: List<SearchResult> = emptyList()
+
+    fun searchMenuItems(query: String = "") {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
             searchResultsUseCase.searchMenuItemsGroupedByRestaurant(query)
                 .collect { results ->
+                    originalSearchResults = results
+
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            searchResults = results,
+                            searchResults = applyCurrentFilters(results),
                             isEmpty = results.isEmpty(),
                             error = null
                         )
@@ -38,13 +44,87 @@ class SearchResultsViewModel @Inject constructor(
         }
     }
 
+    fun toggleFilter(badgeId: String) {
+        val currentFilters = _uiState.value.selectedFilters
+        val newFilters = if (currentFilters.contains(badgeId)) {
+            currentFilters - badgeId
+        } else {
+            currentFilters + badgeId
+        }
+
+        _uiState.update {
+            it.copy(
+                selectedFilters = newFilters,
+                searchResults = applyFilters(originalSearchResults, newFilters)
+            )
+        }
+    }
+
+    fun clearFilters() {
+        _uiState.update {
+            it.copy(
+                selectedFilters = emptySet(),
+                searchResults = originalSearchResults
+            )
+        }
+    }
+
+    private fun applyCurrentFilters(results: List<SearchResult>): List<SearchResult> {
+        return applyFilters(results, _uiState.value.selectedFilters)
+    }
+
+    private fun applyFilters(
+        results: List<SearchResult>,
+        selectedBadges: Set<String>
+    ): List<SearchResult> {
+        if (selectedBadges.isEmpty()) {
+            return results
+        }
+
+        return results.filter { searchResult ->
+            val restaurant = searchResult.restaurant ?: return@filter false
+
+            selectedBadges.all { badgeId ->
+                when (badgeId) {
+                    "freeship" -> {
+                        restaurant.badges.any { it.lowercase().contains("freeship") } ||
+                                restaurant.deliveryFee <= 0.0
+                    }
+
+                    "favorite" -> {
+                        restaurant.isFavorite
+                    }
+
+                    "near_you" -> {
+                        isRestaurantNear(restaurant.distance)
+                    }
+
+                    "partner" -> {
+                        restaurant.badges.any { badge ->
+                            val lowerBadge = badge.lowercase()
+                            lowerBadge.contains("partner") || lowerBadge.contains("verified")
+                        }
+                    }
+
+                    else -> {
+                        restaurant.badges.any {
+                            it.lowercase().replace(" ", "_") == badgeId.lowercase()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     fun clearResults() {
+        originalSearchResults = emptyList()
         _uiState.update {
             it.copy(
                 searchResults = emptyList(),
                 isEmpty = false,
                 isLoading = false,
-                error = null
+                error = null,
+                selectedFilters = emptySet()
             )
         }
     }

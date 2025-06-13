@@ -75,11 +75,12 @@ fun TastyBuddyMainScreen(navController: NavHostController) {
                             navController.navigate("location")
                         }
                     )
+
                     HomeSearchBar(
                         value = searchText,
                         onValueChange = { newText -> searchText = newText },
                         onSearchBarClick = {
-                            navController.navigate("search_results/${searchText.ifBlank { "ch" }}")
+                            navController.navigate("search_results/${searchText.ifBlank { "all" }}")
                         }
                     )
                 }
