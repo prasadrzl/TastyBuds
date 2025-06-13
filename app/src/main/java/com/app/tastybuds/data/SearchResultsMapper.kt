@@ -40,7 +40,8 @@ class SearchResultsMapper @Inject constructor() {
             badges = restaurantResponse.badges.map { it.text },
             isOpen = restaurantResponse.isOpen,
             isFavorite = restaurantResponse.isFavorite,
-            priceRange = restaurantResponse.priceRange
+            priceRange = restaurantResponse.priceRange,
+            type = SearchResultType.RESTAURANT
         )
     }
 
@@ -56,7 +57,8 @@ class SearchResultsMapper @Inject constructor() {
             isPopular = menuItemResponse.isPopular,
             isSpicy = menuItemResponse.isSpicy,
             prepTime = menuItemResponse.prepTime ?: "15-20 mins",
-            categoryId = ""
+            categoryId = "",
+            type = SearchResultType.FOOD_ITEM
         )
     }
 }

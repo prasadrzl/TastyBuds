@@ -1,5 +1,6 @@
-package com.app.tastybuds.ui.resturants.search
+package com.app.tastybuds.ui.resturants
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Search
@@ -32,14 +34,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.app.tastybuds.R
+import com.app.tastybuds.data.SearchResultType
+import com.app.tastybuds.ui.resturants.search.SearchResultsViewModel
+import com.app.tastybuds.ui.theme.PrimaryColor
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.app.tastybuds.R
-import com.app.tastybuds.data.SearchResult
-import com.app.tastybuds.data.SearchResultType
-import com.app.tastybuds.ui.resturants.state.SearchUiState
-import com.app.tastybuds.ui.theme.PrimaryColor
+import com.bumptech.glide.integration.compose.placeholder
 
+// Data Models
 data class SearchFilterOption(
     val id: String,
     val name: String,
@@ -49,11 +52,11 @@ data class SearchFilterOption(
 @Composable
 fun SearchResultsScreen(
     initialSearchTerm: String = "",
-    viewModel: SearchViewModel = hiltViewModel(),
     onBackClick: () -> Unit = {},
-    onFilterClick: () -> Unit = {},
     onCloseClick: () -> Unit = {},
-    onResultClick: (String, SearchResultType) -> Unit = { _, _ -> }
+    onFilterClick: () -> Unit = {},
+    onResultClick: (String, SearchResultType) -> Unit = { _, _ -> },
+    viewModel: SearchResultsViewModel = hiltViewModel()
 ) {
     var searchText by remember { mutableStateOf(initialSearchTerm) }
     var selectedSortBy by remember { mutableStateOf("Sort by") }
@@ -68,25 +71,18 @@ fun SearchResultsScreen(
     var selectedFilters by remember { mutableStateOf(setOf<String>()) }
 
     val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
-    // Get UI state from ViewModel
-    val uiState by viewModel.uiState.collectAsState()
-
-    // Trigger search when searchText changes
-    LaunchedEffect(searchText) {
-        if (searchText.isNotBlank()) {
-            viewModel.searchMenuItems(searchText)
-        }
-    }
-
-    // Auto-focus on search field
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
-        // Search initial term if provided
-        if (initialSearchTerm.isNotBlank()) {
-            viewModel.searchMenuItems(initialSearchTerm)
-        }
     }
+
+    // Mock data for demonstration - you can replace with viewModel data
+    val searchResults = remember(searchText) {
+        getSearchResults(searchText)
+    }
+
+    val resultsCount = searchResults.size
 
     Column(
         modifier = Modifier
@@ -95,14 +91,9 @@ fun SearchResultsScreen(
     ) {
         ActiveSearchHeader(
             searchText = searchText,
-            onSearchTextChange = {
-                searchText = it
-                // Clear results if search is empty
-                if (it.isBlank()) {
-                    viewModel.clearResults()
-                }
-            },
+            onSearchTextChange = { searchText = it },
             onBackClick = onBackClick,
+            onCloseClick = onCloseClick,
             onFilterClick = onFilterClick,
             focusRequester = focusRequester
         )
@@ -121,44 +112,24 @@ fun SearchResultsScreen(
             }
         )
 
-        // Updated content based on UI state
-        SearchResultsContent(
-            uiState = uiState,
-            searchText = searchText,
-            onResultClick = onResultClick
-        )
-    }
-}
-
-@Composable
-private fun SearchResultsContent(
-    uiState: SearchUiState,
-    searchText: String,
-    onResultClick: (String, SearchResultType) -> Unit
-) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-    ) {
-        when {
-            uiState.isLoading -> {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            if (searchText.isNotBlank()) {
                 item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 40.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(
-                            color = PrimaryColor,
-                            modifier = Modifier.size(40.dp)
-                        )
-                    }
+                    Text(
+                        text = "$resultsCount results for \"$searchText\"",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Black,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
                 }
             }
 
-            uiState.isEmpty && searchText.isNotBlank() -> {
+            if (searchResults.isEmpty() && searchText.isNotBlank()) {
                 item {
                     Box(
                         modifier = Modifier
@@ -183,251 +154,24 @@ private fun SearchResultsContent(
                         }
                     }
                 }
-            }
-
-            uiState.searchResults.isNotEmpty() -> {
-                // Result count
-                if (searchText.isNotBlank()) {
-                    item {
-                        val menuItemsCount = uiState.searchResults.count { it.type == SearchResultType.FOOD_ITEM }
-                        Text(
-                            text = "$menuItemsCount results for \"$searchText\"",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.Black,
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        )
-                    }
-                }
-
-                // Group results by restaurant
-                val groupedResults = groupSearchResults(uiState.searchResults)
-
-                items(groupedResults) { group ->
-                    SearchResultGroup(
-                        restaurantResult = group.restaurant,
-                        menuItems = group.menuItems,
-                        onResultClick = onResultClick
-                    )
-                }
-            }
-        }
-    }
-}
-
-// Helper function to group results
-private fun groupSearchResults(results: List<SearchResult>): List<SearchResultGroup> {
-    val groups = mutableListOf<SearchResultGroup>()
-    var currentRestaurant: SearchResult? = null
-    var currentMenuItems = mutableListOf<SearchResult>()
-
-    results.forEach { result ->
-        when (result.type) {
-            SearchResultType.RESTAURANT -> {
-                // Save previous group if exists
-                currentRestaurant?.let { restaurant ->
-                    groups.add(SearchResultGroup(restaurant, currentMenuItems.toList()))
-                }
-                // Start new group
-                currentRestaurant = result
-                currentMenuItems = mutableListOf()
-            }
-            SearchResultType.FOOD_ITEM -> {
-                currentMenuItems.add(result)
-            }
-        }
-    }
-
-    // Add last group
-    currentRestaurant?.let { restaurant ->
-        groups.add(SearchResultGroup(restaurant, currentMenuItems.toList()))
-    }
-
-    return groups
-}
-
-data class SearchResultGroup(
-    val restaurant: SearchResult,
-    val menuItems: List<SearchResult>
-)
-
-@Composable
-private fun SearchResultGroup(
-    restaurantResult: SearchResult,
-    menuItems: List<SearchResult>,
-    onResultClick: (String, SearchResultType) -> Unit
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            // Restaurant Header
-            RestaurantHeader(
-                restaurant = restaurantResult,
-                onClick = { onResultClick(restaurantResult.id, restaurantResult.type) }
-            )
-
-            // Menu Items under this restaurant
-            if (menuItems.isNotEmpty()) {
-                Column(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                ) {
-                    menuItems.forEachIndexed { index, menuItem ->
-                        if (index > 0) {
-                            Spacer(modifier = Modifier.height(8.dp))
+            } else {
+                items(searchResults) { result ->
+                    when (result.type) {
+                        SearchResultType.RESTAURANT -> {
+                            RestaurantResultCard(
+                                result = result,
+                                onClick = { onResultClick(result.id, result.type) }
+                            )
                         }
-                        MenuItemRow(
-                            menuItem = menuItem,
-                            onClick = { onResultClick(menuItem.id, menuItem.type) }
-                        )
+
+                        SearchResultType.FOOD_ITEM -> {
+                            FoodItemResultCard(
+                                result = result,
+                                onClick = { onResultClick(result.id, result.type) }
+                            )
+                        }
                     }
                 }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-private fun RestaurantHeader(
-    restaurant: SearchResult,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        GlideImage(
-            model = restaurant.imageUrl.ifEmpty { R.drawable.default_food },
-            contentDescription = restaurant.name,
-            modifier = Modifier
-                .size(80.dp)
-                .clip(RoundedCornerShape(8.dp)),
-            contentScale = ContentScale.Crop
-        ) {
-            it.placeholder(R.drawable.default_food)
-                .error(R.drawable.default_food)
-        }
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(
-                text = restaurant.name,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-
-            if (restaurant.subtitle.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = restaurant.subtitle,
-                    fontSize = 14.sp,
-                    color = Color.Gray,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (restaurant.deliveryTime.isNotEmpty()) {
-                    Text(
-                        text = restaurant.deliveryTime,
-                        fontSize = 12.sp,
-                        color = Color.Black
-                    )
-                }
-
-                if (restaurant.rating > 0) {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = "Rating",
-                        modifier = Modifier.size(14.dp),
-                        tint = Color(0xFFFFC107)
-                    )
-                    Spacer(modifier = Modifier.width(2.dp))
-                    Text(
-                        text = restaurant.rating.toString(),
-                        fontSize = 12.sp,
-                        color = Color.Black
-                    )
-                }
-            }
-
-            if (restaurant.badges.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    items(restaurant.badges) { badge ->
-                        SearchBadgeChip(text = badge)
-                    }
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-private fun MenuItemRow(
-    menuItem: SearchResult,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        GlideImage(
-            model = menuItem.imageUrl.ifEmpty { R.drawable.default_food },
-            contentDescription = menuItem.name,
-            modifier = Modifier
-                .size(60.dp)
-                .clip(RoundedCornerShape(8.dp)),
-            contentScale = ContentScale.Crop
-        ) {
-            it.placeholder(R.drawable.default_food)
-                .error(R.drawable.default_food)
-        }
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(
-                text = menuItem.name,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color.Black
-            )
-
-            if (menuItem.price.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = menuItem.price,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
             }
         }
     }
@@ -438,6 +182,7 @@ fun ActiveSearchHeader(
     searchText: String,
     onSearchTextChange: (String) -> Unit,
     onBackClick: () -> Unit,
+    onCloseClick: () -> Unit,
     onFilterClick: () -> Unit,
     focusRequester: FocusRequester
 ) {
@@ -455,7 +200,7 @@ fun ActiveSearchHeader(
                 modifier = Modifier.size(24.dp)
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_back_arrow),
+                    imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
                     tint = Color.Black
                 )
@@ -524,7 +269,7 @@ fun ActiveSearchHeader(
                 modifier = Modifier.size(24.dp)
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_search), // Keep your existing icon or add filter icon
+                    painter = painterResource(id = R.drawable.ic_free_shiping),
                     contentDescription = "Filter",
                     tint = PrimaryColor
                 )
@@ -612,31 +357,247 @@ fun SearchFilterSection(
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun SearchBadgeChip(text: String) {
-    val backgroundColor = when (text.lowercase()) {
-        "freeship" -> Color(0xFF4CAF50)
-        "near you" -> PrimaryColor
-        "popular" -> Color(0xFF9C27B0)
-        else -> Color(0xFF4CAF50)
-    }
-
+fun RestaurantResultCard(
+    result: SearchResultItem,
+    onClick: () -> Unit
+) {
     Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = backgroundColor)
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Text(
-            text = text,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            fontSize = 10.sp,
-            color = Color.White,
-            fontWeight = FontWeight.Medium
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color(0xFFF5F5F5))
+            ) {
+                if (result.imageUrl.isNotEmpty()) {
+                    GlideImage(
+                        model = result.imageUrl,
+                        contentDescription = result.name,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                        failure = placeholder(R.drawable.default_food)
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.default_food),
+                        contentDescription = result.name,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = result.name,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Text(
+                    text = result.subtitle,
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(top = 2.dp)
+                )
+
+                Row(
+                    modifier = Modifier.padding(top = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = result.deliveryTime,
+                        fontSize = 12.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.Medium
+                    )
+
+                    if (result.rating > 0) {
+                        Text(
+                            text = " • ",
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Rating",
+                            modifier = Modifier.size(12.dp),
+                            tint = Color(0xFFFFB400)
+                        )
+
+                        Text(
+                            text = result.rating.toString(),
+                            fontSize = 12.sp,
+                            color = Color.Black,
+                            modifier = Modifier.padding(start = 2.dp)
+                        )
+                    }
+                }
+
+                if (result.badges.isNotEmpty()) {
+                    LazyRow(
+                        modifier = Modifier.padding(top = 6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        items(result.badges) { badge ->
+                            BadgeChip(text = badge)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun FoodItemResultCard(
+    result: SearchResultItem,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(60.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color(0xFFF5F5F5))
+        ) {
+            if (result.imageUrl.isNotEmpty()) {
+                GlideImage(
+                    model = result.imageUrl,
+                    contentDescription = result.name,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                    failure = placeholder(R.drawable.default_food)
+                )
+            } else {
+                Image(
+                    painter = painterResource(id = R.drawable.default_food),
+                    contentDescription = result.name,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = result.name,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            if (result.price.isNotEmpty()) {
+                Text(
+                    text = result.price,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black,
+                    modifier = Modifier.padding(top = 2.dp)
+                )
+            }
+        }
+    }
+}
+
+// Mock data function - replace with actual data from ViewModel
+fun getSearchResults(searchTerm: String): List<SearchResultItem> {
+    val allResults = listOf(
+        SearchResultItem(
+            id = "1",
+            type = SearchResultType.RESTAURANT,
+            name = "Hana Chicken",
+            subtitle = "Fried Chicken",
+            deliveryTime = "15 mins",
+            rating = 4.8f,
+            badges = listOf("Freeship", "Near you")
+        ),
+        SearchResultItem(
+            id = "2",
+            type = SearchResultType.FOOD_ITEM,
+            name = "Fried Chicken",
+            price = "$10"
+        ),
+        SearchResultItem(
+            id = "3",
+            type = SearchResultType.FOOD_ITEM,
+            name = "Fried Chicken & Potatos",
+            price = "$26"
+        ),
+        SearchResultItem(
+            id = "4",
+            type = SearchResultType.RESTAURANT,
+            name = "Bamsu Restaurant",
+            subtitle = "Chicken Salad & Sandwich",
+            deliveryTime = "35 mins",
+            rating = 4.1f,
+            badges = listOf("Freeship", "Near you")
+        ),
+        SearchResultItem(
+            id = "5",
+            type = SearchResultType.FOOD_ITEM,
+            name = "Chicken Sandwich",
+            price = "$26"
+        ),
+        SearchResultItem(
+            id = "6",
+            type = SearchResultType.FOOD_ITEM,
+            name = "Crunchy Fried Chicken Balls",
+            price = "$30"
         )
+    )
+
+    return if (searchTerm.isBlank()) {
+        allResults
+    } else {
+        allResults.filter { result ->
+            result.name.contains(searchTerm, ignoreCase = true) ||
+                    result.subtitle.contains(searchTerm, ignoreCase = true)
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun SearchResultsScreenPreview() {
-    SearchResultsScreen(initialSearchTerm = "Chicken")
+    SearchResultsScreen(
+        initialSearchTerm = "Fried Chicken"
+    )
 }

@@ -21,7 +21,8 @@ data class Restaurant(
     val badges: List<String>,
     val isOpen: Boolean,
     val isFavorite: Boolean,
-    val priceRange: String
+    val priceRange: String,
+    val type: SearchResultType
 )
 
 data class MenuItem(
@@ -35,7 +36,8 @@ data class MenuItem(
     val isPopular: Boolean,
     val isSpicy: Boolean,
     val prepTime: String,
-    val categoryId: String
+    val categoryId: String,
+    val type: SearchResultType
 )
 
 enum class SearchResultType {
