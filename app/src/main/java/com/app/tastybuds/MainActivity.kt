@@ -51,8 +51,8 @@ fun TastyBuddyMainScreen(navController: NavHostController) {
 
     Scaffold(
         topBar = {
-            val hideTopBar = currentRoute == "splash"
-            currentRoute == "profile" ||
+            val hideTopBar = currentRoute == "splash" ||
+                    currentRoute == "profile" ||
                     currentRoute?.startsWith("food_listing/") == true ||
                     currentRoute?.startsWith("search_results/") == true ||
                     currentRoute?.startsWith("restaurant_details/") == true ||

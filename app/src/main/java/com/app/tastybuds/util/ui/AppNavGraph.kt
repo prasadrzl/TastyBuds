@@ -1,32 +1,38 @@
 package com.app.tastybuds.util.ui
 
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.app.tastybuds.BottomNavItem
 import com.app.tastybuds.R
+import com.app.tastybuds.TastyBudsSplashScreen
+import com.app.tastybuds.data.SearchResultType.FOOD_ITEM
+import com.app.tastybuds.data.SearchResultType.RESTAURANT
 import com.app.tastybuds.ui.favorites.FavoriteScreen
-import com.app.tastybuds.ui.home.HomeScreen
 import com.app.tastybuds.ui.home.AllCollectionsScreen
-import com.app.tastybuds.ui.home.AllRestaurantsScreen
 import com.app.tastybuds.ui.home.AllDealsScreen
+import com.app.tastybuds.ui.home.AllRestaurantsScreen
 import com.app.tastybuds.ui.home.AllVouchersScreen
+import com.app.tastybuds.ui.home.HomeScreen
 import com.app.tastybuds.ui.inbox.ChatBoxScreen
-import com.app.tastybuds.ui.profile.ProfileScreen
-import com.app.tastybuds.ui.resturants.RestaurantDetailsScreen
-import com.app.tastybuds.ui.orders.FoodDetailsScreen
 import com.app.tastybuds.ui.location.LocationTrackerScreen
 import com.app.tastybuds.ui.location.OrderTrackingScreen
+import com.app.tastybuds.ui.orders.FoodDetailsScreen
 import com.app.tastybuds.ui.orders.OrderReviewScreen
-import com.app.tastybuds.TastyBudsSplashScreen
-import com.app.tastybuds.data.SearchResultType
-import com.app.tastybuds.data.SearchResultType.*
+import com.app.tastybuds.ui.profile.ProfileScreen
 import com.app.tastybuds.ui.resturants.CategoryDetailsScreen
-import com.app.tastybuds.ui.resturants.SearchResultsScreen
+import com.app.tastybuds.ui.resturants.RestaurantDetailsScreen
 import com.app.tastybuds.ui.resturants.SeeAllScreen
+import com.app.tastybuds.ui.resturants.search.SearchResultsScreen
 
 val items = listOf(
     BottomNavItem("home", "Home", R.drawable.ic_bn_home),
@@ -170,17 +176,14 @@ fun AppNavGraph(navController: NavHostController) {
                 onBackClick = {
                     navController.popBackStack()
                 },
-                onCloseClick = {
-                    navController.popBackStack()
-                },
                 onFilterClick = {},
                 onResultClick = { resultId, resultType ->
                     when (resultType) {
-                        com.app.tastybuds.ui.resturants.SearchResultType.RESTAURANT -> {
+                        RESTAURANT -> {
                             navController.navigate("restaurant_details/$resultId")
                         }
 
-                        com.app.tastybuds.ui.resturants.SearchResultType.FOOD_ITEM -> {
+                        FOOD_ITEM -> {
                             navController.navigate("food_details/$resultId")
                         }
                     }
