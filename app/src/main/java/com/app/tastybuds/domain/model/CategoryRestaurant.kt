@@ -20,22 +20,22 @@ data class CategoryRestaurant(
 )
 
 data class CategoryMenuItem(
-    val id: String,
-    val name: String,
-    val description: String,
-    val price: Float,
-    val imageUrl: String,
-    val rating: Float,
-    val reviewCount: Int,
-    val isPopular: Boolean,
-    val isSpicy: Boolean,
-    val restaurantId: String,
-    val restaurantName: String,
-    val deliveryTime: String
+    val id: String = "",
+    val name: String = "",
+    val description: String = "",
+    val price: Float = 0f,
+    val imageUrl: String = "",
+    val rating: Float = 0f,
+    val reviewCount: Int = 0,
+    val isPopular: Boolean = false,
+    val isSpicy: Boolean = false,
+    val restaurantId: String = "",
+    val restaurantName: String = "",
+    val deliveryTime: String = ""
 )
 
 data class CategoryDetailsData(
-    val topRestaurants: List<CategoryRestaurant>,
-    val menuItems: List<CategoryMenuItem>,
-    val recommendedRestaurants: List<CategoryRestaurant>
+    val topRestaurants: List<CategoryRestaurant> = emptyList(),
+    val menuItems: List<CategoryMenuItem> = emptyList(),
+    val recommendedRestaurants: List<CategoryRestaurant> = emptyList()
 )

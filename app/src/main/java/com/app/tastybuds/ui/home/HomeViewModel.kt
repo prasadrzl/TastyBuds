@@ -18,11 +18,9 @@ class HomeViewModel @Inject constructor(
     private val homeUseCase: HomeUseCase
 ) : ViewModel() {
 
-    // MutableStateFlow to hold our UI state
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
-    // Initialize data loading
     init {
         loadHomeData()
     }
@@ -30,9 +28,8 @@ class HomeViewModel @Inject constructor(
     private fun loadHomeData() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
-            
+
             try {
-                // Use the consolidated method from HomeUseCase
                 homeUseCase.getHomeData().collect { homeData ->
                     _uiState.value = HomeUiState(
                         isLoading = false,
@@ -58,28 +55,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun searchRestaurants(query: String) {
-        viewModelScope.launch {
-            try {
-                if (query.isBlank()) {
-                    // If query is blank, reload the recommended restaurants
-                    homeUseCase.getRecommendedRestaurants().collect { restaurants ->
-                        _uiState.update { it.copy(recommendedRestaurants = restaurants) }
-                    }
-                } else {
-                    // Search for restaurants matching the query
-                    homeUseCase.searchRestaurants(query).collect { restaurants ->
-                        _uiState.update { it.copy(recommendedRestaurants = restaurants) }
-                    }
-                }
-            } catch (e: Exception) {
-                // Handle search errors if needed
-                // We could show a snackbar or update a specific search error state
-            }
-        }
-    }
-
-    // Function to retry loading data after an error
     fun retry() {
         loadHomeData()
     }

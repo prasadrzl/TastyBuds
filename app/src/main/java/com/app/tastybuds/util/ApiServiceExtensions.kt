@@ -1,6 +1,7 @@
 package com.app.tastybuds.util
 
 import com.app.tastybuds.common.TastyBudsApiService
+import com.app.tastybuds.data.model.RestaurantResponse
 
 suspend fun TastyBudsApiService.getPopularMenuItems(
     categoryId: String,
@@ -66,4 +67,34 @@ private fun getDateDaysAgo(days: Int): String {
     calendar.add(java.util.Calendar.DAY_OF_YEAR, -days)
     return java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
         .format(calendar.time)
+}
+
+suspend fun TastyBudsApiService.searchRestaurantsEnhanced(
+    query: String,
+    sortBy: String = "rating.desc",
+    limit: Int = 20
+) = searchRestaurants(
+    nameQuery = "ilike.*$query*",
+    select = "*"
+).sortedWith(
+    when (sortBy) {
+        "rating.desc" -> compareByDescending { it.rating }
+        "delivery_time.asc" -> compareBy { parseDeliveryTime(it.deliveryTime) }
+        "distance.asc" -> compareBy { parseDistance(it.distance) }
+        else -> compareByDescending { it.rating }
+    }
+).take(limit)
+
+suspend fun TastyBudsApiService.searchRestaurantsMultiField(
+    query: String,
+    includeDescription: Boolean = true,
+    includeCuisine: Boolean = true
+): List<RestaurantResponse> {
+    val searchQuery = buildString {
+        append("name.ilike.*$query*")
+        if (includeDescription) append(",description.ilike.*$query*")
+        if (includeCuisine) append(",cuisine.cs.{$query}")
+    }
+
+    return searchRestaurants(nameQuery = searchQuery)
 }

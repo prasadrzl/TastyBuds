@@ -41,6 +41,14 @@ interface TastyBudsApiService {
         @Query("select") select: String = "*"
     ): List<RestaurantResponse>
 
+    @GET("menu_items")
+    suspend fun searchMenuItemsWithRestaurants(
+        @Query("name") nameQuery: String,
+        @Query("select") select: String = "*,restaurants(*)",
+        @Query("order") order: String = "price.asc",
+        @Query("limit") limit: Int = 20
+    ): List<MenuItemWithRestaurantResponse>
+
     @GET("restaurants")
     suspend fun getRestaurantsByCategory(
         @Query("category_ids") categoryFilter: String,

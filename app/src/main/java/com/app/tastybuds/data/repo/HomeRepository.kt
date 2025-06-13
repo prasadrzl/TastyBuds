@@ -1,16 +1,15 @@
 package com.app.tastybuds.data.repo
 
-import com.app.tastybuds.data.model.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.catch
-import javax.inject.Inject
-import androidx.compose.ui.graphics.Color
 import com.app.tastybuds.common.TastyBudsApiService
+import com.app.tastybuds.data.model.toDomainModel
 import com.app.tastybuds.domain.model.Banner
 import com.app.tastybuds.domain.model.Category
 import com.app.tastybuds.domain.model.Deal
 import com.app.tastybuds.domain.model.Restaurant
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 import com.app.tastybuds.domain.model.Collection as FoodCollection
 
 interface HomeRepository {
@@ -20,7 +19,6 @@ interface HomeRepository {
     fun getCollections(): Flow<List<FoodCollection>>
     fun getRecommendedRestaurants(): Flow<List<Restaurant>>
     fun getDeals(): Flow<List<Deal>>
-    fun searchRestaurants(query: String): Flow<List<Restaurant>>
 }
 
 class HomeRepositoryImpl @Inject constructor(
@@ -71,14 +69,6 @@ class HomeRepositoryImpl @Inject constructor(
         val response = tastyBudsApiService.getDeals()
         val deals = response.map { it.toDomainModel() }
         emit(deals)
-    }.catch {
-        emit(emptyList())
-    }
-
-    override fun searchRestaurants(query: String): Flow<List<Restaurant>> = flow {
-        val response = tastyBudsApiService.searchRestaurants("ilike.*$query*")
-        val restaurants = response.map { it.toDomainModel() }
-        emit(restaurants)
     }.catch {
         emit(emptyList())
     }

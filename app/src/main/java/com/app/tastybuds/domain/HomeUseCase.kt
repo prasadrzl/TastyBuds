@@ -13,22 +13,20 @@ import com.app.tastybuds.domain.model.Collection as FoodCollection
 
 class HomeUseCase @Inject constructor(private val repository: HomeRepository) {
     private fun getBanners(): Flow<List<Banner>> = repository.getBanners()
-    
+
     private fun getCategories(): Flow<List<Category>> = repository.getCategories()
-    
+
     private fun getVoucherCount(userId: String = "user_001"): Flow<Int> =
         repository.getVoucherCount(userId)
-    
+
     private fun getCollections(): Flow<List<FoodCollection>> = repository.getCollections()
-    
-    fun getRecommendedRestaurants(): Flow<List<Restaurant>> =
+
+    private fun getRecommendedRestaurants(): Flow<List<Restaurant>> =
         repository.getRecommendedRestaurants()
-    
+
     private fun getDeals(): Flow<List<Deal>> = repository.getDeals()
-    
-    fun searchRestaurants(query: String): Flow<List<Restaurant>> =
-        repository.searchRestaurants(query)
-    
+
+
     fun getHomeData(userId: String = "user_001"): Flow<HomeData> = flow {
         try {
             val banners = getBanners().first()
@@ -37,15 +35,17 @@ class HomeUseCase @Inject constructor(private val repository: HomeRepository) {
             val collections = getCollections().first()
             val restaurants = getRecommendedRestaurants().first()
             val deals = getDeals().first()
-            
-            emit(HomeData(
-                banners = banners,
-                categories = categories,
-                voucherCount = voucherCount,
-                collections = collections,
-                recommendedRestaurants = restaurants,
-                deals = deals
-            ))
+
+            emit(
+                HomeData(
+                    banners = banners,
+                    categories = categories,
+                    voucherCount = voucherCount,
+                    collections = collections,
+                    recommendedRestaurants = restaurants,
+                    deals = deals
+                )
+            )
         } catch (e: Exception) {
             throw e
         }
