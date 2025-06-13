@@ -3,7 +3,6 @@
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.0-blue.svg)](https://kotlinlang.org)
 [![Android](https://img.shields.io/badge/Android-API%2024+-green.svg)](https://android.com)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-1.5.8-orange.svg)](https://developer.android.com/jetpack/compose)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A modern, feature-rich food delivery Android application built with Jetpack Compose and following Clean Architecture principles. TastyBuds offers a seamless food ordering experience with restaurant discovery, real-time tracking, and intuitive user interface.
 
@@ -216,9 +215,3 @@ The app expects the following Supabase tables:
 - [Material Design](https://material.io/) for design guidelines
 - [Supabase](https://supabase.io/) for backend services
 - [Google Maps](https://developers.google.com/maps) for mapping services
-
----
-
-<div align="center">
-Made with ❤️ for food lovers everywhere
-</div>
