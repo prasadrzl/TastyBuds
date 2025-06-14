@@ -1,6 +1,12 @@
 package com.app.tastybuds.common
 
 import com.app.tastybuds.data.model.*
+import com.app.tastybuds.domain.model.ComboResponse
+import com.app.tastybuds.domain.model.MenuItemResponse
+import com.app.tastybuds.domain.model.RestaurantDetailsResponse
+import com.app.tastybuds.domain.model.RestaurantReviewResponse
+import com.app.tastybuds.domain.model.RestaurantVoucherResponse
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -99,4 +105,52 @@ interface TastyBudsApiService {
         @Query("limit") limit: Int = 10,
         @Query("select") select: String = "*"
     ): List<CategoryRestaurantResponse>
+
+    @GET("menu_items")
+    suspend fun getRestaurantMenuItems(
+        @Query("restaurant_id") restaurantId: String,
+        @Query("select") select: String = "*",
+        @Query("order") order: String = "is_popular.desc,rating.desc"
+    ): Response<List<MenuItemResponse>>
+
+    @GET("menu_items")
+    suspend fun getForYouMenuItems(
+        @Query("restaurant_id") restaurantId: String,
+        @Query("is_popular") isPopular: String = "eq.true",
+        @Query("select") select: String = "*",
+        @Query("limit") limit: Int = 4
+    ): Response<List<MenuItemResponse>>
+
+    @GET("restaurant_reviews_with_time")
+    suspend fun getRestaurantReviews(
+        @Query("restaurant_id") restaurantId: String,
+        @Query("select") select: String = "*",
+        @Query("order") order: String = "created_at.desc",
+        @Query("limit") limit: Int = 10
+    ): Response<List<RestaurantReviewResponse>>
+
+    @GET("active_restaurant_vouchers")
+    suspend fun getRestaurantVouchers(
+        @Query("restaurant_id") restaurantId: String,
+        @Query("select") select: String = "*"
+    ): Response<List<RestaurantVoucherResponse>>
+
+    @GET("active_restaurant_vouchers")
+    suspend fun getUserRestaurantVouchers(
+        @Query("user_id") userId: String,
+        @Query("restaurant_id") restaurantId: String,
+        @Query("select") select: String = "*"
+    ): Response<List<RestaurantVoucherResponse>>
+
+    @GET("combos")
+    suspend fun getRestaurantCombos(
+        @Query("restaurant_id") restaurantId: String,
+        @Query("select") select: String = "*"
+    ): Response<List<ComboResponse>>
+
+    @GET("restaurants")
+    suspend fun getRestaurantDetails(
+        @Query("id") restaurantId: String,
+        @Query("select") select: String = "*"
+    ): Response<List<RestaurantDetailsResponse>>
 }

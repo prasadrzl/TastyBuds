@@ -1,7 +1,5 @@
-// RestaurantDetailsScreen.kt - Restaurant Details Food Listing
 package com.app.tastybuds.ui.resturants
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -33,130 +31,196 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
+import com.app.tastybuds.data.model.RestaurantCombo
+import com.app.tastybuds.data.model.RestaurantDetails
+import com.app.tastybuds.data.model.RestaurantDetailsData
+import com.app.tastybuds.data.model.RestaurantMenuItem
+import com.app.tastybuds.data.model.RestaurantReview
 import com.app.tastybuds.ui.theme.PrimaryColor
-
-// Data Models
-data class RestaurantInfo(
-    val id: String,
-    val name: String,
-    val timing: String,
-    val distance: String,
-    val priceRange: String,
-    val rating: Float,
-    val reviewCount: Int,
-    val imageRes: Int,
-    val badges: List<RestaurantBadge>
-)
-
-data class RestaurantBadge(
-    val text: String,
-    val backgroundColor: Color
-)
-
-data class FoodMenuItem(
-    val id: String,
-    val name: String,
-    val description: String = "",
-    val price: Int,
-    val rating: Float,
-    val reviewCount: Int,
-    val imageRes: Int
-)
-
-data class ReviewItem(
-    val id: String,
-    val userName: String,
-    val userImage: Int,
-    val timeAgo: String,
-    val rating: Float,
-    val comment: String
-)
-
-data class ComboItem(
-    val id: String,
-    val name: String,
-    val description: String,
-    val price: Int,
-    val rating: Float,
-    val reviewCount: Int,
-    val imageRes: Int
-)
+import com.app.tastybuds.util.ui.SeeAllButton
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
 
 @Composable
 fun RestaurantDetailsScreen(
-    restaurantId: String = "1",
+    restaurantId: String = "",
+    userId: String = "user_001", // Default for testing
     onBackClick: () -> Unit = {},
     onFoodItemClick: (String) -> Unit = {},
-    onComboClick: (String) -> Unit = {}
+    onComboClick: (String) -> Unit = {},
+    viewModel: RestaurantDetailsViewModel = hiltViewModel()
 ) {
-    val restaurant = getRestaurantInfo()
-    val forYouItems = getForYouItems()
-    val menuItems = getMenuItems()
-    val reviews = getReviews()
-    val combos = getCombos()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    var isFavorite by remember { mutableStateOf(false) }
+    LaunchedEffect(restaurantId) {
+        viewModel.loadRestaurantDetails(restaurantId, userId)
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            item {
-                // Restaurant Image Header with Overlapping Card
-                RestaurantImageHeader(
-                    restaurant = restaurant,
+        when {
+            uiState.isLoading -> {
+                LoadingContent()
+            }
+
+            uiState.error != null -> {
+                ErrorContent(
+                    error = uiState.error!!,
+                    onRetry = { viewModel.retry() },
+                    onBackClick = onBackClick
+                )
+            }
+
+            uiState.restaurantData != null -> {
+                RestaurantDetailsContent(
+                    restaurantData = uiState.restaurantData!!,
+                    isFavorite = uiState.isFavorite,
+                    voucherCount = uiState.voucherCount,
                     onBackClick = onBackClick,
-                    isFavorite = isFavorite,
-                    onFavoriteClick = { isFavorite = !isFavorite }
-                )
-            }
-
-            item {
-                // Info Rows (Reviews, Vouchers, Delivery)
-                RestaurantInfoRows()
-            }
-
-            item {
-                // For You Section
-                ForYouSection(
-                    items = forYouItems,
-                    onItemClick = onFoodItemClick
-                )
-            }
-
-            item {
-                // Menu Section
-                MenuSection(
-                    items = menuItems,
-                    onItemClick = onFoodItemClick
-                )
-            }
-
-            item {
-                // Reviews Section
-                ReviewsSection(reviews = reviews)
-            }
-
-            item {
-                // Combo Section
-                ComboSection(
-                    combos = combos,
+                    onFavoriteClick = { viewModel.toggleFavorite() },
+                    onFoodItemClick = onFoodItemClick,
                     onComboClick = onComboClick
                 )
             }
-
-            item {
-                Spacer(modifier = Modifier.height(80.dp)) // Space for bottom navigation
-            }
         }
-
     }
 }
 
 @Composable
+private fun ErrorContent(
+    error: String,
+    onRetry: () -> Unit,
+    onBackClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(32.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_help),
+                contentDescription = null,
+                modifier = Modifier.size(64.dp),
+                tint = Color.Gray
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Something went wrong",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = error,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                OutlinedButton(onClick = onBackClick) {
+                    Text("Go Back")
+                }
+
+                Button(
+                    onClick = onRetry,
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
+                ) {
+                    Text("Retry")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RestaurantDetailsContent(
+    restaurantData: RestaurantDetailsData,
+    isFavorite: Boolean,
+    voucherCount: Int,
+    onBackClick: () -> Unit,
+    onFavoriteClick: () -> Unit,
+    onFoodItemClick: (String) -> Unit,
+    onComboClick: (String) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        item {
+            RestaurantImageHeader(
+                restaurant = restaurantData.restaurant,
+                onBackClick = onBackClick,
+                isFavorite = isFavorite,
+                onFavoriteClick = onFavoriteClick
+            )
+        }
+
+        item {
+            RestaurantInfoRows(
+                restaurant = restaurantData.restaurant,
+                voucherCount = voucherCount
+            )
+        }
+
+        if (restaurantData.forYouItems.isNotEmpty()) {
+            item {
+                ForYouSection(
+                    items = restaurantData.forYouItems,
+                    onItemClick = onFoodItemClick
+                )
+            }
+        }
+
+        if (restaurantData.menuItems.isNotEmpty()) {
+            item {
+                MenuSection(
+                    items = restaurantData.menuItems,
+                    onItemClick = onFoodItemClick
+                )
+            }
+        }
+
+        if (restaurantData.reviews.isNotEmpty()) {
+            item {
+                ReviewsSection(reviews = restaurantData.reviews)
+            }
+        }
+
+        if (restaurantData.combos.isNotEmpty()) {
+            item {
+                ComboSection(
+                    combos = restaurantData.combos,
+                    onComboClick = onComboClick
+                )
+            }
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(80.dp))
+        }
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
 fun RestaurantImageHeader(
-    restaurant: RestaurantInfo,
+    restaurant: RestaurantDetails,
     onBackClick: () -> Unit,
     isFavorite: Boolean,
     onFavoriteClick: () -> Unit
@@ -164,16 +228,17 @@ fun RestaurantImageHeader(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(320.dp) // Increased height to accommodate overlapping card
+            .height(320.dp)
     ) {
-        // Restaurant Image
-        Image(
-            painter = painterResource(id = restaurant.imageRes),
+        GlideImage(
+            model = restaurant.imageUrl,
             contentDescription = "Restaurant Image",
             modifier = Modifier
                 .fillMaxWidth()
-                .height(250.dp), // Image takes less height to allow card overlap
-            contentScale = ContentScale.Crop
+                .height(250.dp),
+            contentScale = ContentScale.Crop,
+            failure = placeholder(R.drawable.default_food),
+            loading = placeholder(R.drawable.default_food)
         )
 
         // Top Controls
@@ -214,7 +279,6 @@ fun RestaurantImageHeader(
             }
         }
 
-        // Overlapping Restaurant Info Card
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -230,27 +294,6 @@ fun RestaurantImageHeader(
                     .padding(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Badges centered at top of card
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(bottom = 16.dp)
-                ) {
-                    restaurant.badges.forEach { badge ->
-                        Card(
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = badge.backgroundColor)
-                        ) {
-                            Text(
-                                text = badge.text,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                fontSize = 12.sp,
-                                color = Color.White,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                    }
-                }
-
                 // Restaurant name centered
                 Text(
                     text = restaurant.name,
@@ -269,19 +312,19 @@ fun RestaurantImageHeader(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     InfoItem(
-                        icon = R.drawable.ic_bn_home, // Clock icon
-                        text = restaurant.timing,
+                        icon = R.drawable.ic_bn_home,
+                        text = restaurant.deliveryTime,
                         color = PrimaryColor
                     )
 
                     InfoItem(
-                        icon = R.drawable.ic_user_location, // Location icon
+                        icon = R.drawable.ic_user_location,
                         text = restaurant.distance,
                         color = PrimaryColor
                     )
 
                     InfoItem(
-                        icon = R.drawable.ic_offer_percentage, // Money icon
+                        icon = R.drawable.ic_offer_percentage,
                         text = restaurant.priceRange,
                         color = PrimaryColor
                     )
@@ -290,8 +333,6 @@ fun RestaurantImageHeader(
         }
     }
 }
-
-// Remove the separate RestaurantInfoCard composable since it's now integrated
 
 @Composable
 fun InfoItem(
@@ -320,14 +361,16 @@ fun InfoItem(
 }
 
 @Composable
-fun RestaurantInfoRows() {
+fun RestaurantInfoRows(
+    restaurant: RestaurantDetails,
+    voucherCount: Int
+) {
     Column(
         modifier = Modifier.padding(horizontal = 20.dp)
     ) {
-        // Rating Row
         InfoRow(
             icon = R.drawable.material_starpurple500_sharp,
-            title = "4.5 (289 reviews)",
+            title = "${restaurant.rating} (${restaurant.reviewCount} reviews)",
             iconColor = Color(0xFFFFC107),
             showArrow = true,
             onClick = { /* Navigate to reviews */ }
@@ -339,10 +382,9 @@ fun RestaurantInfoRows() {
             modifier = Modifier.padding(vertical = 12.dp)
         )
 
-        // Voucher Row
         InfoRow(
             icon = R.drawable.ic_offer_percentage,
-            title = "2 discount voucher for restaurant",
+            title = "$voucherCount discount voucher for restaurant",
             iconColor = PrimaryColor,
             showArrow = true,
             onClick = { /* Navigate to vouchers */ }
@@ -354,10 +396,9 @@ fun RestaurantInfoRows() {
             modifier = Modifier.padding(vertical = 12.dp)
         )
 
-        // Delivery Row
         InfoRow(
-            icon = R.drawable.ic_help, // Delivery icon
-            title = "Delivery on 20 mins",
+            icon = R.drawable.ic_help,
+            title = "Delivery on ${restaurant.deliveryTime}",
             iconColor = PrimaryColor,
             showArrow = true,
             onClick = { /* Navigate to delivery info */ }
@@ -411,7 +452,7 @@ fun InfoRow(
 
 @Composable
 fun ForYouSection(
-    items: List<FoodMenuItem>,
+    items: List<RestaurantMenuItem>,
     onItemClick: (String) -> Unit
 ) {
     Column(
@@ -429,7 +470,7 @@ fun ForYouSection(
                 color = Color.Black
             )
 
-            TextButton(onClick = { /* View all */ }) {
+            TextButton(onClick = {  }) {
                 Text(
                     text = "View all",
                     fontSize = 14.sp,
@@ -440,12 +481,11 @@ fun ForYouSection(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // 2x2 Grid
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.height(320.dp) // Fixed height for 2 rows
+            modifier = Modifier.height(320.dp)
         ) {
             items(items) { item ->
                 ForYouItemCard(
@@ -459,9 +499,10 @@ fun ForYouSection(
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ForYouItemCard(
-    item: FoodMenuItem,
+    item: RestaurantMenuItem,
     onClick: () -> Unit
 ) {
     Card(
@@ -473,13 +514,15 @@ fun ForYouItemCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column {
-            Image(
-                painter = painterResource(id = item.imageRes),
+            GlideImage(
+                model = item.imageUrl,
                 contentDescription = item.name,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                failure = placeholder(R.drawable.default_food),
+                loading = placeholder(R.drawable.default_food)
             )
 
             Column(
@@ -517,7 +560,7 @@ fun ForYouItemCard(
                     Spacer(modifier = Modifier.weight(1f))
 
                     Text(
-                        text = "$${item.price}",
+                        text = "$${item.price.toInt()}",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
@@ -530,7 +573,7 @@ fun ForYouItemCard(
 
 @Composable
 fun MenuSection(
-    items: List<FoodMenuItem>,
+    items: List<RestaurantMenuItem>,
     onItemClick: (String) -> Unit
 ) {
     Column(
@@ -545,33 +588,35 @@ fun MenuSection(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        items.forEach { item ->
+        items.take(2).forEach { item ->
             MenuItemCard(
                 item = item,
                 onClick = { onItemClick(item.id) }
             )
-
             Spacer(modifier = Modifier.height(12.dp))
         }
 
-        TextButton(
-            onClick = { /* See all */ },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            Text(
-                text = "See all",
-                fontSize = 14.sp,
-                color = PrimaryColor
-            )
+        if (items.size > 2) {
+            TextButton(
+                onClick = { /* See all */ },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text(
+                    text = "See all",
+                    fontSize = 14.sp,
+                    color = PrimaryColor
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MenuItemCard(
-    item: FoodMenuItem,
+    item: RestaurantMenuItem,
     onClick: () -> Unit
 ) {
     Row(
@@ -580,13 +625,15 @@ fun MenuItemCard(
             .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(id = item.imageRes),
+        GlideImage(
+            model = item.imageUrl,
             contentDescription = item.name,
             modifier = Modifier
                 .size(80.dp)
                 .clip(RoundedCornerShape(8.dp)),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
+            failure = placeholder(R.drawable.default_food),
+            loading = placeholder(R.drawable.default_food)
         )
 
         Spacer(modifier = Modifier.width(16.dp))
@@ -618,7 +665,7 @@ fun MenuItemCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "$${item.price}",
+                    text = "$${item.price.toInt()}",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
@@ -646,7 +693,7 @@ fun MenuItemCard(
 }
 
 @Composable
-fun ReviewsSection(reviews: List<ReviewItem>) {
+fun ReviewsSection(reviews: List<RestaurantReview>) {
     Column(
         modifier = Modifier.padding(horizontal = 20.dp)
     ) {
@@ -662,13 +709,10 @@ fun ReviewsSection(reviews: List<ReviewItem>) {
                 color = Color.Black
             )
 
-            TextButton(onClick = { /* View all */ }) {
-                Text(
-                    text = "View all",
-                    fontSize = 14.sp,
-                    color = PrimaryColor
-                )
-            }
+            SeeAllButton(
+                text = "See all",
+                onClick = {  }
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -685,8 +729,9 @@ fun ReviewsSection(reviews: List<ReviewItem>) {
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun ReviewCard(review: ReviewItem) {
+fun ReviewCard(review: RestaurantReview) {
     Card(
         modifier = Modifier.width(250.dp),
         shape = RoundedCornerShape(12.dp),
@@ -699,13 +744,15 @@ fun ReviewCard(review: ReviewItem) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    painter = painterResource(id = review.userImage),
+                GlideImage(
+                    model = review.userAvatar,
                     contentDescription = "User Image",
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    failure = placeholder(R.drawable.default_food),
+                    loading = placeholder(R.drawable.default_food)
                 )
 
                 Spacer(modifier = Modifier.width(12.dp))
@@ -754,7 +801,7 @@ fun ReviewCard(review: ReviewItem) {
 
 @Composable
 fun ComboSection(
-    combos: List<ComboItem>,
+    combos: List<RestaurantCombo>,
     onComboClick: (String) -> Unit
 ) {
     Column(
@@ -774,15 +821,15 @@ fun ComboSection(
                 combo = combo,
                 onClick = { onComboClick(combo.id) }
             )
-
             Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ComboItemCard(
-    combo: ComboItem,
+    combo: RestaurantCombo,
     onClick: () -> Unit
 ) {
     Row(
@@ -791,13 +838,15 @@ fun ComboItemCard(
             .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(id = combo.imageRes),
+        GlideImage(
+            model = combo.imageUrl,
             contentDescription = combo.name,
             modifier = Modifier
                 .size(80.dp)
                 .clip(RoundedCornerShape(8.dp)),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
+            failure = placeholder(R.drawable.default_food),
+            loading = placeholder(R.drawable.default_food)
         )
 
         Spacer(modifier = Modifier.width(16.dp))
@@ -828,7 +877,7 @@ fun ComboItemCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "$${combo.price}",
+                    text = "$${combo.price.toInt()}",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
@@ -855,56 +904,8 @@ fun ComboItemCard(
     }
 }
 
-// Dummy Data Functions
-private fun getRestaurantInfo(): RestaurantInfo {
-    return RestaurantInfo(
-        id = "1",
-        name = "Hana Chicken",
-        timing = "6am - 9pm",
-        distance = "2 km",
-        priceRange = "$5 - $50",
-        rating = 4.5f,
-        reviewCount = 289,
-        imageRes = R.drawable.default_food,
-        badges = listOf(
-            RestaurantBadge("Deal $1", Color(0xFF4CAF50)),
-            RestaurantBadge("Near you", PrimaryColor)
-        )
-    )
-}
-
-private fun getForYouItems(): List<FoodMenuItem> {
-    return listOf(
-        FoodMenuItem("1", "Fried Chicken", "", 15, 4.5f, 99, R.drawable.default_food),
-        FoodMenuItem("2", "Chicken Salad", "", 15, 4.5f, 99, R.drawable.default_food),
-        FoodMenuItem("3", "Spicy Chicken", "", 15, 4.5f, 99, R.drawable.default_food),
-        FoodMenuItem("4", "Fried Potatos", "", 15, 4.5f, 99, R.drawable.default_food)
-    )
-}
-
-private fun getMenuItems(): List<FoodMenuItem> {
-    return listOf(
-        FoodMenuItem("5", "Sauté Chicken Rice", "Sauté chicken, Rice", 15, 4.5f, 99, R.drawable.default_food),
-        FoodMenuItem("6", "Chicken Burger", "Fried chicken, Cheese & Burger", 15, 4.5f, 99, R.drawable.default_food)
-    )
-}
-
-private fun getReviews(): List<ReviewItem> {
-    return listOf(
-        ReviewItem("1", "Jinny Oslin", R.drawable.default_food, "A day ago", 5.0f, "Quick delivery, good dishes. I love the chicken burger."),
-        ReviewItem("2", "John Doe", R.drawable.default_food, "2 days ago", 4.0f, "Fresh ingredients and great taste!")
-    )
-}
-
-private fun getCombos(): List<ComboItem> {
-    return listOf(
-        ComboItem("1", "Combo B", "Fried Chicken, Chicken Rice & Salad", 25, 4.5f, 60, R.drawable.default_food),
-        ComboItem("2", "Combo B", "Fried Chicken (Small) & Potatos", 19, 4.6f, 76, R.drawable.default_food)
-    )
-}
-
-@Preview(showBackground = true)
+@Preview
 @Composable
-fun RestaurantDetailsScreenPreview() {
+fun RestaurantDetailsScreenPreView() {
     RestaurantDetailsScreen()
 }

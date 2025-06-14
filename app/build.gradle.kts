@@ -57,7 +57,6 @@ android {
     }
 }
 
-// Force specific dependency versions to resolve JavaPoet conflicts
 configurations.all {
     resolutionStrategy {
         force("com.squareup:javapoet:1.13.0")
@@ -77,6 +76,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.lifecycle.runtime.compose.android)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
@@ -136,7 +136,6 @@ dependencies {
     androidTestImplementation(libs.coroutines.test)
 }
 
-// KAPT configuration to resolve Hilt issues
 kapt {
     correctErrorTypes = true
     useBuildCache = false

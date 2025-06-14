@@ -2,10 +2,13 @@ package com.app.tastybuds.di
 
 import com.app.tastybuds.common.TastyBudsApiService
 import com.app.tastybuds.data.SearchResultsMapper
+import com.app.tastybuds.data.repo.RestaurantDetailsRepository
+import com.app.tastybuds.data.repo.RestaurantDetailsRepositoryImpl
 import com.app.tastybuds.data.repo.RestaurantRepository
 import com.app.tastybuds.data.repo.RestaurantRepositoryImpl
 import com.app.tastybuds.data.repo.SearchRepository
 import com.app.tastybuds.data.repo.SearchRepositoryImpl
+import com.app.tastybuds.domain.RestaurantDetailsUseCase
 import com.app.tastybuds.domain.RestaurantUseCase
 import com.app.tastybuds.domain.SearchResultsUseCase
 import dagger.Module
@@ -47,4 +50,20 @@ object RestaurantModule {
     ): SearchResultsUseCase {
         return SearchResultsUseCase(searchRepository, searchResultsMapper)
     }
+
+    @Singleton
+    @Provides
+    fun provideRestaurantDetailsRepository(
+        apiService: TastyBudsApiService
+    ): RestaurantDetailsRepository {
+        return RestaurantDetailsRepositoryImpl(apiService)
+    }
+
+    @Provides
+    fun provideRestaurantDetailsUseCase(
+        restaurantDetailsRepository: RestaurantDetailsRepository
+    ): RestaurantDetailsUseCase {
+        return RestaurantDetailsUseCase(restaurantDetailsRepository)
+    }
+
 }
