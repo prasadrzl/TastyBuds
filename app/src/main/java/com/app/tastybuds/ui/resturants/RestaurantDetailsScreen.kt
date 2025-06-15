@@ -48,7 +48,7 @@ import com.bumptech.glide.integration.compose.placeholder
 @Composable
 fun RestaurantDetailsScreen(
     restaurantId: String = "",
-    userId: String = "user_001", // Default for testing
+    userId: String = "user_001",
     onBackClick: () -> Unit = {},
     onFoodItemClick: (String) -> Unit = {},
     onComboClick: (String) -> Unit = {},

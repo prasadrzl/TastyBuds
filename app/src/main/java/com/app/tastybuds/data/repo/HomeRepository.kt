@@ -1,7 +1,7 @@
 package com.app.tastybuds.data.repo
 
 import com.app.tastybuds.common.TastyBudsApiService
-import com.app.tastybuds.data.model.toDomainModel
+import com.app.tastybuds.data.model.mapper.toDomainModel
 import com.app.tastybuds.domain.model.Banner
 import com.app.tastybuds.domain.model.Category
 import com.app.tastybuds.domain.model.Deal

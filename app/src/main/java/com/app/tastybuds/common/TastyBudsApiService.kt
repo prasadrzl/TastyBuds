@@ -1,11 +1,13 @@
 package com.app.tastybuds.common
 
 import com.app.tastybuds.data.model.*
-import com.app.tastybuds.domain.model.ComboResponse
-import com.app.tastybuds.domain.model.MenuItemResponse
-import com.app.tastybuds.domain.model.RestaurantDetailsResponse
-import com.app.tastybuds.domain.model.RestaurantReviewResponse
-import com.app.tastybuds.domain.model.RestaurantVoucherResponse
+import com.app.tastybuds.data.model.ComboResponse
+import com.app.tastybuds.data.model.MenuItemResponse
+import com.app.tastybuds.data.model.RestaurantDetailsResponse
+import com.app.tastybuds.data.model.RestaurantReviewResponse
+import com.app.tastybuds.data.model.RestaurantVoucherResponse
+import com.app.tastybuds.ui.resturants.FoodCustomizationResponse
+import com.app.tastybuds.ui.resturants.FoodDetailsResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -153,4 +155,16 @@ interface TastyBudsApiService {
         @Query("id") restaurantId: String,
         @Query("select") select: String = "*"
     ): Response<List<RestaurantDetailsResponse>>
+
+    @GET("menu_items")
+    suspend fun getFoodDetails(
+        @Query("id") foodItemId: String,
+        @Query("select") select: String = "*"
+    ): List<FoodDetailsResponse>
+
+    @GET("customization_options")
+    suspend fun getCustomizationOptions(
+        @Query("menu_item_id") menuItemId: String,
+        @Query("select") select: String = "*"
+    ): List<FoodCustomizationResponse>
 }

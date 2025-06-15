@@ -1,5 +1,7 @@
-package com.app.tastybuds.data.model
+package com.app.tastybuds.data.model.mapper
 
+import com.app.tastybuds.data.model.CategoryMenuItemResponse
+import com.app.tastybuds.data.model.CategoryRestaurantResponse
 import com.app.tastybuds.domain.model.CategoryRestaurant
 import com.app.tastybuds.domain.model.CategoryMenuItem
 

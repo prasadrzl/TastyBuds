@@ -1,10 +1,20 @@
 package com.app.tastybuds.ui.orders
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,170 +22,245 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
+import com.app.tastybuds.domain.model.FoodDetails
+import com.app.tastybuds.domain.model.SizeOption
+import com.app.tastybuds.domain.model.SpiceLevel
+import com.app.tastybuds.domain.model.ToppingOption
+import com.app.tastybuds.ui.resturants.FoodDetailsViewModel
+import com.app.tastybuds.ui.resturants.state.FoodDetailsUiState
 import com.app.tastybuds.ui.theme.PrimaryColor
-
-data class FoodItem(
-    val id: String,
-    val name: String,
-    val description: String,
-    val basePrice: Double,
-    val imageRes: Int
-)
-
-data class SizeOption(
-    val id: String,
-    val name: String,
-    val additionalPrice: Double
-)
-
-data class ToppingOption(
-    val id: String,
-    val name: String,
-    val price: Double,
-    var isSelected: Boolean = false
-)
-
-data class SpiceLevel(
-    val id: String,
-    val name: String
-)
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
 
 @Composable
 fun FoodDetailsScreen(
-    foodItem: FoodItem = getFoodItem(),
+    foodItemId: String = "",
     onBackClick: () -> Unit = {},
-    onAddToCart: (Double, Int) -> Unit = { _, _ -> }
+    onAddToCart: (Float, Int) -> Unit = { _, _ -> },
+    viewModel: FoodDetailsViewModel = hiltViewModel()
 ) {
-    var selectedSize by remember { mutableStateOf("L") }
-    var selectedToppings by remember { mutableStateOf(mutableListOf("corn", "cheese")) }
-    var selectedSpice by remember { mutableStateOf("hot") }
-    var quantity by remember { mutableIntStateOf(1) }
-    var specialNote by remember { mutableStateOf("") }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val sizeOptions = getSizeOptions()
-    val toppingOptions = getToppingOptions()
-    val spiceLevels = getSpiceLevels()
-
-    val totalPrice = calculateTotalPrice(
-        foodItem.basePrice,
-        selectedSize,
-        selectedToppings,
-        sizeOptions,
-        toppingOptions,
-        quantity
-    )
+    LaunchedEffect(foodItemId) {
+        viewModel.loadFoodDetails(foodItemId)
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            item {
-                FoodImageHeader(
-                    imageRes = foodItem.imageRes,
-                    onCloseClick = onBackClick
+        when {
+            uiState.isLoading -> {
+                LoadingContent()
+            }
+
+            uiState.error != null -> {
+                ErrorContent(
+                    error = uiState.error!!,
+                    onRetry = { viewModel.retry() },
+                    onBackClick = onBackClick
                 )
             }
 
-            item {
-                FoodInfoCard(
-                    foodItem = foodItem
-                )
-            }
-
-            item {
-                SizeSelectionSection(
-                    selectedSize = selectedSize,
-                    sizeOptions = sizeOptions,
-                    onSizeSelected = { selectedSize = it }
-                )
-            }
-
-            item {
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                    thickness = 1.dp,
-                    color = Color(0xFFE0E0E0)
-                )
-            }
-
-            item {
-                ToppingsSection(
-                    toppingOptions = toppingOptions,
-                    selectedToppings = selectedToppings,
+            uiState.foodDetailsData != null -> {
+                FoodDetailsContent(
+                    uiState = uiState,
+                    onBackClick = onBackClick,
+                    onSizeSelected = { viewModel.updateSelectedSize(it) },
                     onToppingToggled = { toppingId ->
-                        selectedToppings = selectedToppings.toMutableList().apply {
-                            if (contains(toppingId)) {
-                                remove(toppingId)
-                            } else {
-                                add(toppingId)
-                            }
+                        val currentToppings = uiState.selectedToppings.toMutableList()
+                        if (currentToppings.contains(toppingId)) {
+                            currentToppings.remove(toppingId)
+                        } else {
+                            currentToppings.add(toppingId)
                         }
-                    }
+                        viewModel.updateSelectedToppings(currentToppings)
+                    },
+                    onSpiceSelected = { viewModel.updateSelectedSpiceLevel(it) },
+                    onNoteChange = { viewModel.updateSpecialNote(it) },
+                    onQuantityChange = { viewModel.updateQuantity(it) },
+                    onAddToCart = { onAddToCart(uiState.totalPrice, uiState.quantity) }
                 )
-            }
-
-            item {
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                    thickness = 1.dp,
-                    color = Color(0xFFE0E0E0)
-                )
-            }
-
-            item {
-                SpicinessSection(
-                    selectedSpice = selectedSpice,
-                    spiceLevels = spiceLevels,
-                    onSpiceSelected = { selectedSpice = it }
-                )
-            }
-
-            item {
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                    thickness = 1.dp,
-                    color = Color(0xFFE0E0E0)
-                )
-            }
-
-            item {
-                NoteSection(
-                    note = specialNote,
-                    onNoteChange = { specialNote = it }
-                )
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(120.dp)) // Space for bottom controls
             }
         }
-
-        BottomControls(
-            quantity = quantity,
-            onQuantityChange = { quantity = it },
-            totalPrice = totalPrice,
-            onAddToCart = { onAddToCart(totalPrice, quantity) },
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
     }
 }
 
 @Composable
+private fun LoadingContent() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(color = PrimaryColor)
+    }
+}
+
+@Composable
+private fun ErrorContent(
+    error: String,
+    onRetry: () -> Unit,
+    onBackClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(32.dp)
+        ) {
+            Text(text = "Error: $error")
+            Spacer(modifier = Modifier.height(16.dp))
+            Row {
+                OutlinedButton(onClick = onBackClick) {
+                    Text("Go Back")
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Button(onClick = onRetry) {
+                    Text("Retry")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FoodDetailsContent(
+    uiState: FoodDetailsUiState,
+    onBackClick: () -> Unit,
+    onSizeSelected: (String) -> Unit,
+    onToppingToggled: (String) -> Unit,
+    onSpiceSelected: (String) -> Unit,
+    onNoteChange: (String) -> Unit,
+    onQuantityChange: (Int) -> Unit,
+    onAddToCart: () -> Unit
+) {
+    val foodData = uiState.foodDetailsData!!
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        item {
+            FoodImageHeader(
+                imageUrl = foodData.foodDetails.imageUrl,
+                onCloseClick = onBackClick
+            )
+        }
+
+        item {
+            FoodInfoCard(
+                foodDetails = foodData.foodDetails
+            )
+        }
+
+        if (foodData.customization.sizes.isNotEmpty()) {
+            item {
+                SizeSelectionSection(
+                    selectedSize = uiState.selectedSize,
+                    sizeOptions = foodData.customization.sizes,
+                    onSizeSelected = onSizeSelected
+                )
+            }
+        }
+
+        item {
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 20.dp),
+                thickness = 1.dp,
+                color = Color(0xFFE0E0E0)
+            )
+        }
+
+        if (foodData.customization.toppings.isNotEmpty()) {
+            item {
+                ToppingsSection(
+                    toppingOptions = foodData.customization.toppings,
+                    selectedToppings = uiState.selectedToppings,
+                    onToppingToggled = onToppingToggled
+                )
+            }
+        }
+
+        item {
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 20.dp),
+                thickness = 1.dp,
+                color = Color(0xFFE0E0E0)
+            )
+        }
+
+        if (foodData.customization.spiceLevels.isNotEmpty()) {
+            item {
+                SpicinessSection(
+                    selectedSpice = uiState.selectedSpiceLevel,
+                    spiceLevels = foodData.customization.spiceLevels,
+                    onSpiceSelected = onSpiceSelected
+                )
+            }
+        }
+
+        item {
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 20.dp),
+                thickness = 1.dp,
+                color = Color(0xFFE0E0E0)
+            )
+        }
+
+        item {
+            NoteSection(
+                note = uiState.specialNote,
+                onNoteChange = onNoteChange
+            )
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(120.dp))
+        }
+    }
+
+    BottomControls(
+        quantity = uiState.quantity,
+        onQuantityChange = onQuantityChange,
+        totalPrice = uiState.totalPrice,
+        onAddToCart = onAddToCart,
+        modifier = Modifier
+    )
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
 fun FoodImageHeader(
-    imageRes: Int,
+    imageUrl: String,
     onCloseClick: () -> Unit
 ) {
     Box(
@@ -183,11 +268,13 @@ fun FoodImageHeader(
             .fillMaxWidth()
             .height(300.dp)
     ) {
-        Image(
-            painter = painterResource(id = imageRes),
+        GlideImage(
+            model = imageUrl,
             contentDescription = "Food Image",
             modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
+            failure = placeholder(R.drawable.default_food),
+            loading = placeholder(R.drawable.default_food)
         )
 
         IconButton(
@@ -209,7 +296,7 @@ fun FoodImageHeader(
 }
 
 @Composable
-fun FoodInfoCard(foodItem: FoodItem) {
+fun FoodInfoCard(foodDetails: FoodDetails) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -229,7 +316,7 @@ fun FoodInfoCard(foodItem: FoodItem) {
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = foodItem.name,
+                    text = foodDetails.name,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
@@ -238,7 +325,7 @@ fun FoodInfoCard(foodItem: FoodItem) {
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = foodItem.description,
+                    text = foodDetails.description,
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
@@ -248,7 +335,7 @@ fun FoodInfoCard(foodItem: FoodItem) {
                 horizontalAlignment = Alignment.End
             ) {
                 Text(
-                    text = "$${foodItem.basePrice.toInt()}",
+                    text = "$${foodDetails.basePrice.toInt()}",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
@@ -262,21 +349,6 @@ fun FoodInfoCard(foodItem: FoodItem) {
             }
         }
     }
-}
-
-fun calculateTotalPrice(
-    basePrice: Double,
-    selectedSize: String,
-    selectedToppings: List<String>,
-    sizeOptions: List<SizeOption>,
-    toppingOptions: List<ToppingOption>,
-    quantity: Int
-): Double {
-    val sizePrice = sizeOptions.find { it.id == selectedSize }?.additionalPrice ?: 0.0
-    val toppingsPrice = toppingOptions.filter { selectedToppings.contains(it.id) }
-        .sumOf { it.price }
-
-    return (basePrice + sizePrice + toppingsPrice) * quantity
 }
 
 @Composable
@@ -553,118 +625,83 @@ fun NoteSection(
 fun BottomControls(
     quantity: Int,
     onQuantityChange: (Int) -> Unit,
-    totalPrice: Double,
+    totalPrice: Float,
     onAddToCart: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomCenter
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
+        Card(
+            modifier = modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = { if (quantity > 1) onQuantityChange(quantity - 1) },
-                    modifier = Modifier
-                        .size(40.dp)
-                        .border(1.dp, Color.Gray.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
-                ) {
-                    Text(
-                        text = "−",
-                        fontSize = 20.sp,
-                        color = Color.Gray
-                    )
-                }
-
-                Text(
-                    text = quantity.toString(),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(horizontal = 24.dp),
-                    textAlign = TextAlign.Center
-                )
-
-                IconButton(
-                    onClick = { onQuantityChange(quantity + 1) },
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(PrimaryColor, RoundedCornerShape(8.dp))
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add",
-                        tint = Color.White
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = onAddToCart,
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
-                shape = RoundedCornerShape(25.dp)
+                    .padding(20.dp)
             ) {
-                Text(
-                    text = "Add to cart ($${totalPrice.toInt()})",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.White
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { if (quantity > 1) onQuantityChange(quantity - 1) },
+                        modifier = Modifier
+                            .size(40.dp)
+                            .border(1.dp, Color.Gray.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                    ) {
+                        Text(
+                            text = "−",
+                            fontSize = 20.sp,
+                            color = Color.Gray
+                        )
+                    }
+
+                    Text(
+                        text = quantity.toString(),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(horizontal = 24.dp),
+                        textAlign = TextAlign.Center
+                    )
+
+                    IconButton(
+                        onClick = { onQuantityChange(quantity + 1) },
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(PrimaryColor, RoundedCornerShape(8.dp))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add",
+                            tint = Color.White
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = onAddToCart,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
+                    shape = RoundedCornerShape(25.dp)
+                ) {
+                    Text(
+                        text = "Add to cart ($${totalPrice.toInt()})",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White
+                    )
+                }
             }
         }
     }
-}
-
-private fun getFoodItem(): FoodItem {
-    return FoodItem(
-        id = "1",
-        name = "Fried Chicken",
-        description = "Crispy fried wings, thigh",
-        basePrice = 15.0,
-        imageRes = R.drawable.default_food // Replace with actual food image
-    )
-}
-
-private fun getSizeOptions(): List<SizeOption> {
-    return listOf(
-        SizeOption("S", "S", 0.0),
-        SizeOption("M", "M", 5.0),
-        SizeOption("L", "L", 10.0)
-    )
-}
-
-private fun getToppingOptions(): List<ToppingOption> {
-    return listOf(
-        ToppingOption("corn", "Corn", 2.0),
-        ToppingOption("cheese", "Cheese Cheddar", 5.0),
-        ToppingOption("salted_egg", "Salted egg", 10.0)
-    )
-}
-
-private fun getSpiceLevels(): List<SpiceLevel> {
-    return listOf(
-        SpiceLevel("no", "No"),
-        SpiceLevel("hot", "Hot"),
-        SpiceLevel("very_hot", "Very hot")
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun FoodDetailsScreenPreview() {
-    FoodDetailsScreen()
 }

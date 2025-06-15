@@ -7,7 +7,7 @@ import com.app.tastybuds.data.model.RestaurantDetailsData
 import com.app.tastybuds.data.model.RestaurantMenuItem
 import com.app.tastybuds.data.model.RestaurantReview
 import com.app.tastybuds.data.model.RestaurantVoucher
-import com.app.tastybuds.data.model.toDomain
+import com.app.tastybuds.data.model.mapper.toDomain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject

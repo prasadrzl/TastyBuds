@@ -1,7 +1,12 @@
-package com.app.tastybuds.data.model
+package com.app.tastybuds.data.model.mapper
 
 import androidx.compose.ui.graphics.Color
 import androidx.core.graphics.toColorInt
+import com.app.tastybuds.data.model.BannerResponse
+import com.app.tastybuds.data.model.CategoryResponse
+import com.app.tastybuds.data.model.CollectionResponse
+import com.app.tastybuds.data.model.DealResponse
+import com.app.tastybuds.data.model.RestaurantResponse
 import com.app.tastybuds.domain.model.Banner
 import com.app.tastybuds.domain.model.Category
 import com.app.tastybuds.domain.model.Deal
