@@ -6,10 +6,15 @@ import com.app.tastybuds.data.model.MenuItemResponse
 import com.app.tastybuds.data.model.RestaurantDetailsResponse
 import com.app.tastybuds.data.model.RestaurantReviewResponse
 import com.app.tastybuds.data.model.RestaurantVoucherResponse
+import com.app.tastybuds.domain.model.UpdateProfileRequest
+import com.app.tastybuds.domain.model.UpdateUserRequest
+import com.app.tastybuds.domain.model.UserResponse
 import com.app.tastybuds.ui.resturants.FoodCustomizationResponse
 import com.app.tastybuds.ui.resturants.FoodDetailsResponse
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.Query
 
 interface TastyBudsApiService {
@@ -167,4 +172,16 @@ interface TastyBudsApiService {
         @Query("menu_item_id") menuItemId: String,
         @Query("select") select: String = "*"
     ): List<FoodCustomizationResponse>
+
+    @GET("users")
+    suspend fun getUser(
+        @Query("id") userId: String,
+        @Query("select") select: String = "*"
+    ): Response<List<UserResponse>>
+
+    @PATCH("users")
+    suspend fun updateUser(
+        @Query("id") userId: String,
+        @Body updateRequest: UpdateProfileRequest
+    ): Response<List<UserResponse>>
 }
