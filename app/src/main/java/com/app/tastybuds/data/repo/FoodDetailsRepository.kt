@@ -42,9 +42,7 @@ class FoodDetailsRepositoryImpl @Inject constructor(
         return try {
             val response = apiService.getCustomizationOptions("eq.$menuItemId")
             val customization = response.firstOrNull()?.toFoodCustomization() ?: FoodCustomization(
-                sizes = emptyList(),
-                toppings = emptyList(),
-                spiceLevels = emptyList()
+                sizes = emptyList(), toppings = emptyList(), spiceLevels = emptyList()
             )
             Result.Success(customization)
         } catch (e: Exception) {
@@ -56,7 +54,6 @@ class FoodDetailsRepositoryImpl @Inject constructor(
         emit(Result.Loading)
 
         try {
-            // Fetch food details
             val foodDetailsResult = getFoodDetails(foodItemId)
             if (foodDetailsResult is Result.Error) {
                 emit(Result.Error(foodDetailsResult.message))
@@ -65,7 +62,6 @@ class FoodDetailsRepositoryImpl @Inject constructor(
 
             val foodDetails = (foodDetailsResult as Result.Success).data
 
-            // Fetch customization options
             val customizationResult = getCustomizationOptions(foodItemId)
             val customization = if (customizationResult is Result.Success) {
                 customizationResult.data
@@ -74,8 +70,7 @@ class FoodDetailsRepositoryImpl @Inject constructor(
             }
 
             val foodDetailsData = FoodDetailsData(
-                foodDetails = foodDetails,
-                customization = customization
+                foodDetails = foodDetails, customization = customization
             )
 
             emit(Result.Success(foodDetailsData))

@@ -1,8 +1,10 @@
 package com.app.tastybuds.ui.resturants
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.tastybuds.domain.FoodDetailsUseCase
+import com.app.tastybuds.domain.model.FoodCustomization
 import com.app.tastybuds.domain.model.FoodDetailsData
 import com.app.tastybuds.ui.resturants.state.FoodDetailsUiState
 import com.app.tastybuds.util.Result
@@ -22,49 +24,92 @@ class FoodDetailsViewModel @Inject constructor(
     private val _foodItemId = MutableStateFlow("")
 
     fun loadFoodDetails(foodItemId: String) {
+        if (foodItemId.isBlank()) {
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    error = "Invalid food item ID"
+                )
+            }
+            return
+        }
+
         _foodItemId.value = foodItemId
+        Log.d("FoodDetailsVM", "Loading food details for ID: $foodItemId")
 
         viewModelScope.launch {
-            foodDetailsUseCase(foodItemId)
-                .collect { result ->
-                    when (result) {
-                        is Result.Loading -> {
-                            _uiState.update { it.copy(isLoading = true, error = null) }
+            try {
+                _uiState.update { it.copy(isLoading = true, error = null) }
+
+                val foodDetailsResult = foodDetailsUseCase.getFoodDetails(foodItemId)
+                val customizationResult = foodDetailsUseCase.getCustomizationOptions(foodItemId)
+
+                when (foodDetailsResult) {
+                    is Result.Success -> {
+                        val foodDetails = foodDetailsResult.data
+                        val customization = when (customizationResult) {
+                            is Result.Success -> customizationResult.data
+                            else -> FoodCustomization()
                         }
 
-                        is Result.Success -> {
-                            val data = result.data
-                            _uiState.update {
-                                it.copy(
-                                    isLoading = false,
-                                    foodDetailsData = data,
-                                    error = null,
-                                    selectedSize = data.customization.sizes.find { size -> size.isDefault }?.id
-                                        ?: data.customization.sizes.firstOrNull()?.id ?: "",
-                                    selectedToppings = data.customization.toppings.filter { topping -> topping.isDefault }
-                                        .map { it.id },
-                                    selectedSpiceLevel = data.customization.spiceLevels.find { spice -> spice.isDefault }?.id
-                                        ?: data.customization.spiceLevels.firstOrNull()?.id ?: "",
-                                    totalPrice = calculateTotalPrice(
-                                        data,
-                                        it.selectedSize,
-                                        it.selectedToppings,
-                                        it.quantity
-                                    )
+                        val foodDetailsData = FoodDetailsData(
+                            foodDetails = foodDetails,
+                            customization = customization
+                        )
+
+                        // Get default selections
+                        val defaultSize = customization.sizes.find { it.isDefault }?.id
+                            ?: customization.sizes.firstOrNull()?.id ?: ""
+
+                        val defaultToppings = customization.toppings
+                            .filter { it.isDefault }
+                            .map { it.id }
+
+                        val defaultSpiceLevel = customization.spiceLevels.find { it.isDefault }?.id
+                            ?: customization.spiceLevels.firstOrNull()?.id ?: ""
+
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                foodDetailsData = foodDetailsData,
+                                error = null,
+                                selectedSize = defaultSize,
+                                selectedToppings = defaultToppings,
+                                selectedSpiceLevel = defaultSpiceLevel,
+                                totalPrice = calculateTotalPrice(
+                                    foodDetailsData,
+                                    defaultSize,
+                                    defaultToppings,
+                                    1
                                 )
-                            }
+                            )
                         }
 
-                        is Result.Error -> {
-                            _uiState.update {
-                                it.copy(
-                                    isLoading = false,
-                                    error = result.message
-                                )
-                            }
+                        Log.d("FoodDetailsVM", "Successfully loaded food details: ${foodDetails.name}")
+                    }
+
+                    is Result.Error -> {
+                        Log.e("FoodDetailsVM", "Error loading food details: ${foodDetailsResult.message}")
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = foodDetailsResult.message
+                            )
                         }
                     }
+
+                    Result.Loading -> {}
                 }
+
+            } catch (e: Exception) {
+                android.util.Log.e("FoodDetailsVM", "Exception in loadFoodDetails: ${e.message}", e)
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = "Failed to load food details: ${e.message}"
+                    )
+                }
+            }
         }
     }
 
@@ -118,8 +163,18 @@ class FoodDetailsViewModel @Inject constructor(
     }
 
     fun retry() {
-        if (_foodItemId.value.isNotEmpty()) {
-            loadFoodDetails(_foodItemId.value)
+        val foodItemId = _foodItemId.value
+        if (foodItemId.isNotEmpty()) {
+            android.util.Log.d("FoodDetailsVM", "Retrying to load food details for ID: $foodItemId")
+            loadFoodDetails(foodItemId)
+        } else {
+            android.util.Log.w("FoodDetailsVM", "Cannot retry - no food item ID available")
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    error = "No food item ID available for retry"
+                )
+            }
         }
     }
 
