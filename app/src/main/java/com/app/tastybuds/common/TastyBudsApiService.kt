@@ -1,13 +1,20 @@
 package com.app.tastybuds.common
 
-import com.app.tastybuds.data.model.*
+import com.app.tastybuds.data.model.BannerResponse
+import com.app.tastybuds.data.model.CategoryMenuItemResponse
+import com.app.tastybuds.data.model.CategoryResponse
+import com.app.tastybuds.data.model.CategoryRestaurantResponse
+import com.app.tastybuds.data.model.CollectionResponse
 import com.app.tastybuds.data.model.ComboResponse
+import com.app.tastybuds.data.model.DealResponse
 import com.app.tastybuds.data.model.MenuItemResponse
+import com.app.tastybuds.data.model.MenuItemWithRestaurantResponse
 import com.app.tastybuds.data.model.RestaurantDetailsResponse
+import com.app.tastybuds.data.model.RestaurantResponse
 import com.app.tastybuds.data.model.RestaurantReviewResponse
 import com.app.tastybuds.data.model.RestaurantVoucherResponse
+import com.app.tastybuds.data.model.VoucherCountResponse
 import com.app.tastybuds.domain.model.UpdateProfileRequest
-import com.app.tastybuds.domain.model.UpdateUserRequest
 import com.app.tastybuds.domain.model.UserResponse
 import com.app.tastybuds.ui.resturants.FoodCustomizationResponse
 import com.app.tastybuds.ui.resturants.FoodDetailsResponse

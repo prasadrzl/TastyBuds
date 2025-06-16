@@ -102,7 +102,7 @@ class FoodDetailsViewModel @Inject constructor(
                 }
 
             } catch (e: Exception) {
-                android.util.Log.e("FoodDetailsVM", "Exception in loadFoodDetails: ${e.message}", e)
+                Log.e("FoodDetailsVM", "Exception in loadFoodDetails: ${e.message}", e)
                 _uiState.update {
                     it.copy(
                         isLoading = false,

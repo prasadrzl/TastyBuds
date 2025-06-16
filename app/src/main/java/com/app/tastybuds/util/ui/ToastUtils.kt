@@ -3,7 +3,6 @@ package com.app.tastybuds.util.ui
 import android.content.Context
 import android.view.Gravity
 import android.widget.Toast
-import androidx.compose.runtime.Composable
 
 fun Context.showDevelopmentToast() {
     val toast = Toast.makeText(this, "Still in development", Toast.LENGTH_SHORT)
@@ -12,7 +11,7 @@ fun Context.showDevelopmentToast() {
 }
 
 fun Context.showErrorToast(message: String) {
-    android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_SHORT).show()
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }
 
 fun Context.showSuccessToast(message: String) {
