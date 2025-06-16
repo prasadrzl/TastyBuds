@@ -183,7 +183,8 @@ fun AppNavGraph(navController: NavHostController) {
                 },
                 onSignOut = {
                     navController.navigate("login") {
-                        popUpTo(0) { inclusive = true }
+                        popUpTo("home") { inclusive = true }
+                        launchSingleTop = true
                     }
                 }
             )

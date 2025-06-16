@@ -54,10 +54,10 @@ fun LoginScreen(
         }
     }
 
-    showError?.let { error ->
-        LaunchedEffect(error) {
+    LaunchedEffect(uiState.errorMessage) {
+        uiState.errorMessage?.let { error ->
             context.showErrorToast(error)
-            showError = null
+            viewModel.clearError()
         }
     }
 

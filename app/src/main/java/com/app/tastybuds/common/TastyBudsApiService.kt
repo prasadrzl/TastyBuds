@@ -183,6 +183,7 @@ interface TastyBudsApiService {
     @GET("users")
     suspend fun getUser(
         @Query("id") userId: String,
+        @Query("email") email: String? = null,
         @Query("select") select: String = "*"
     ): Response<List<UserResponse>>
 

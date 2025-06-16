@@ -40,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.R
+import com.app.tastybuds.ui.login.LoginUiState
+import com.app.tastybuds.ui.login.LoginViewModel
 import com.app.tastybuds.ui.theme.PrimaryColor
 import com.app.tastybuds.util.ui.AppTopBar
 import com.app.tastybuds.util.ui.showDevelopmentToast
@@ -55,12 +57,21 @@ fun ProfileScreen(
     onSignOut: () -> Unit = {},
     onEditProfile: () -> Unit = {},
     viewModel: ProfileViewModel = hiltViewModel(),
+    loginViewModel: LoginViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+    val loginUiState by loginViewModel.uiState.collectAsState()
+
     LaunchedEffect(Unit) {
         viewModel.initialize("user_001")
     }
 
-    val uiState by viewModel.uiState.collectAsState()
+    LaunchedEffect(loginUiState.logoutTriggered) {
+        if (loginUiState.logoutTriggered) {
+            loginViewModel.onLogoutNavigationHandled()
+            onSignOut()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -105,8 +116,7 @@ fun ProfileScreen(
                     user = uiState.user,
                     isDarkMode = isDarkMode,
                     onToggleDarkMode = onToggleDarkMode,
-                    onEditProfile = onEditProfile,
-                    onSignOut = onSignOut
+                    onEditProfile = onEditProfile
                 )
             }
         }
@@ -120,7 +130,7 @@ private fun ProfileContent(
     isDarkMode: Boolean,
     onToggleDarkMode: (Boolean) -> Unit,
     onEditProfile: () -> Unit,
-    onSignOut: () -> Unit
+    onLogout: () -> Unit = {}
 ) {
     val context = LocalContext.current
     Spacer(modifier = Modifier.height(16.dp))
@@ -231,7 +241,9 @@ private fun ProfileContent(
     ProfileOption(
         icon = loadVector(R.drawable.ic_logout),
         label = "Sign out",
-        onClick = onSignOut,
+        onClick = {
+            onLogout()
+        },
         textColor = Color.Red
     )
 }

@@ -1,64 +1,60 @@
 package com.app.tastybuds.data.repo
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
+import com.app.tastybuds.domain.model.User
+import com.app.tastybuds.util.Result
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class AuthRepository @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    private val localDataSource: LocalDataSource,
+    private val remoteDataSource: RemoteDataSource
 ) {
-    companion object {
-        private val IS_LOGGED_IN_KEY = booleanPreferencesKey("is_logged_in")
-        private val USER_EMAIL_KEY = stringPreferencesKey("user_email")
 
-        private const val VALID_EMAIL = "admin@tastybuds.com"
-        private const val UNIVERSAL_PASSWORD = "tastybuds123"
-    }
-
-    suspend fun login(email: String, password: String): Boolean {
-        val isValid = validateCredentials(email, password)
-
-        if (isValid) {
-            dataStore.edit { preferences ->
-                preferences[IS_LOGGED_IN_KEY] = true
-                preferences[USER_EMAIL_KEY] = email
+    suspend fun login(email: String, password: String): Result<User> {
+        return try {
+            val isPasswordValid = localDataSource.validatePassword(email, password)
+            if (!isPasswordValid) {
+                return Result.Error("Invalid email or password")
             }
-        }
 
-        return isValid
+            when (val userResult = remoteDataSource.getUserByEmail(email)) {
+                is Result.Success -> {
+                    val user = userResult.data
+                    // Step 3: Save login state
+                    localDataSource.saveLoginState(user)
+                    Result.Success(user)
+                }
+
+                is Result.Error -> {
+                    Result.Error("Failed to fetch user profile: ${userResult.message}")
+                }
+
+                is Result.Loading -> Result.Loading
+            }
+        } catch (e: Exception) {
+            Result.Error("Login failed: ${e.localizedMessage ?: "Unknown error"}")
+        }
     }
 
-    fun isLoggedIn(): Flow<Boolean> {
-        return dataStore.data.map { preferences ->
-            preferences[IS_LOGGED_IN_KEY] ?: false
-        }
-    }
+    fun isLoggedIn(): Flow<Boolean> = localDataSource.isLoggedIn()
 
-    fun getUserEmail(): Flow<String?> {
-        return dataStore.data.map { preferences ->
-            preferences[USER_EMAIL_KEY]
-        }
-    }
+    fun getUserEmail(): Flow<String?> = localDataSource.getUserEmail()
+
+    fun getUserId(): Flow<String?> = localDataSource.getUserId()
 
     suspend fun logout() {
-        dataStore.edit { preferences ->
-            preferences[IS_LOGGED_IN_KEY] = false
-            preferences[USER_EMAIL_KEY] = ""
+        localDataSource.clearLoginState()
+    }
+
+    suspend fun getCurrentUser(): Result<User> {
+        return try {
+            val userEmail = localDataSource.getUserEmail()
+            remoteDataSource.getUserByEmail(userEmail.first() ?: "")
+        } catch (e: Exception) {
+            Result.Error("Failed to get current user: ${e.localizedMessage}")
         }
-    }
-
-    private fun validateCredentials(email: String, password: String): Boolean {
-        return email.equals(VALID_EMAIL, ignoreCase = true) && password == UNIVERSAL_PASSWORD
-    }
-
-    fun getValidCredentials(): Pair<String, String> {
-        return Pair(VALID_EMAIL, UNIVERSAL_PASSWORD)
     }
 }
