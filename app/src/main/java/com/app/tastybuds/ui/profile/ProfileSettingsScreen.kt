@@ -15,17 +15,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -41,10 +39,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,18 +51,13 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ProfileSettingsScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
     onDismiss: () -> Unit = {},
     onSaveChanges: () -> Unit = {}
 ) {
-    var name by remember { mutableStateOf("James Harrid") }
-    var email by remember { mutableStateOf("example@email.com") }
-    var password by remember { mutableStateOf("************") }
     var isPasswordVisible by remember { mutableStateOf(false) }
-    var profileImageUrl by remember { mutableStateOf("https://images.unsplash.com/photo-1494790108755-2616b612b1e3?w=150&h=150&fit=crop&crop=face") }
 
     LaunchedEffect(Unit) {
         viewModel.initialize("user_001")
@@ -72,6 +65,13 @@ fun ProfileSettingsScreen(
 
     val uiState by viewModel.uiState.collectAsState()
     val formState by viewModel.formState.collectAsState()
+
+    LaunchedEffect(uiState.updateSuccess) {
+        if (uiState.updateSuccess) {
+            onSaveChanges()
+            viewModel.handleEvent(ProfileEvent.DismissSuccess)
+        }
+    }
 
     Card(
         modifier = Modifier
@@ -86,6 +86,7 @@ fun ProfileSettingsScreen(
                 .fillMaxSize()
                 .padding(24.dp)
         ) {
+            // Header
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -113,180 +114,267 @@ fun ProfileSettingsScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center
-                ) {
-                    GlideImage(
-                        model = profileImageUrl,
-                        contentDescription = name,
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop,
-                        failure = placeholder(R.drawable.default_food),
-                        loading = placeholder(R.drawable.default_food)
-                    )
-
+            when {
+                uiState.isLoading -> {
                     Box(
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .offset(x = (-4).dp, y = 4.dp)
-                            .size(32.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFFFF7700)),
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit Profile Image",
-                            modifier = Modifier.size(16.dp),
-                            tint = Color.White
-                        )
+                        CircularProgressIndicator()
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "Name",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = Color.LightGray,
-                        focusedBorderColor = Color(0xFFFF7700),
-                        unfocusedContainerColor = Color(0xFFF8F8F8),
-                        focusedContainerColor = Color(0xFFF8F8F8)
-                    ),
-                    singleLine = true
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "Email",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = Color.LightGray,
-                        focusedBorderColor = Color(0xFFFF7700),
-                        unfocusedContainerColor = Color(0xFFF8F8F8),
-                        focusedContainerColor = Color(0xFFF8F8F8)
-                    ),
-                    singleLine = true
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "Password",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = Color.LightGray,
-                        focusedBorderColor = Color(0xFFFF7700),
-                        unfocusedContainerColor = Color(0xFFF8F8F8),
-                        focusedContainerColor = Color(0xFFF8F8F8)
-                    ),
-                    visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    trailingIcon = {
-                        IconButton(
-                            onClick = { isPasswordVisible = !isPasswordVisible }
+                uiState.error != null -> {
+                    Column {
+                        Text(
+                            text = "Error: ${uiState.error}",
+                            color = Color.Red,
+                            fontSize = 14.sp
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(
+                            onClick = {
+                                viewModel.handleEvent(ProfileEvent.DismissError)
+                                viewModel.handleEvent(ProfileEvent.LoadProfile)
+                            }
                         ) {
-                            Icon(
-                                imageVector = if (isPasswordVisible) Icons.Default.Edit else Icons.Default.Build,
-                                contentDescription = if (isPasswordVisible) "Hide password" else "Show password",
-                                tint = Color.Gray
-                            )
+                            Text("Retry")
                         }
-                    },
-                    singleLine = true
-                )
-            }
+                    }
+                }
 
-            Spacer(modifier = Modifier.weight(1f))
-
-            Button(
-                onClick = onSaveChanges,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFF7700)
-                )
-            ) {
-                Text(
-                    text = "Save changes",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.White
-                )
+                else -> {
+                    ProfileSettingsContent(
+                        uiState = uiState,
+                        formState = formState,
+                        isPasswordVisible = isPasswordVisible,
+                        onPasswordVisibilityToggle = { isPasswordVisible = !isPasswordVisible },
+                        onNameChange = { viewModel.handleEvent(ProfileEvent.UpdateName(it)) },
+                        onEmailChange = { viewModel.handleEvent(ProfileEvent.UpdateEmail(it)) },
+                        onProfileImageChange = {
+                            viewModel.handleEvent(
+                                ProfileEvent.UpdateProfileImage(
+                                    it
+                                )
+                            )
+                        },
+                        onSaveClick = { viewModel.handleEvent(ProfileEvent.SaveProfile) },
+                        onCancelClick = {
+                            viewModel.handleEvent(ProfileEvent.CancelEditing)
+                            onDismiss()
+                        }
+                    )
+                }
             }
         }
     }
 }
 
-@Preview
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun ProfileSettingsScreenPreview() {
-    MaterialTheme {
+private fun ProfileSettingsContent(
+    uiState: ProfileUiState,
+    formState: EditProfileFormState,
+    isPasswordVisible: Boolean,
+    onPasswordVisibilityToggle: () -> Unit,
+    onNameChange: (String) -> Unit,
+    onEmailChange: (String) -> Unit,
+    onProfileImageChange: (String) -> Unit,
+    onSaveClick: () -> Unit,
+    onCancelClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        contentAlignment = Alignment.Center
+    ) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFFF0F0F0))
+            contentAlignment = Alignment.Center
         ) {
-            ProfileSettingsScreen()
+            val imageUrl = formState.profileUrl.ifBlank {
+                uiState.user?.profileUrl ?: ""
+            }
+
+            GlideImage(
+                model = imageUrl.ifBlank { "https://images.unsplash.com/photo-1494790108755-2616b612b1e3?w=150&h=150&fit=crop&crop=face" },
+                contentDescription = formState.name,
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop,
+                failure = placeholder(R.drawable.default_food),
+                loading = placeholder(R.drawable.default_food)
+            )
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .offset(x = (-4).dp, y = 4.dp)
+                    .size(32.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFFFF7700)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Edit Profile Image",
+                    modifier = Modifier.size(16.dp),
+                    tint = Color.White
+                )
+            }
+        }
+    }
+
+    Spacer(modifier = Modifier.height(32.dp))
+
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = "Name",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color.Black,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        OutlinedTextField(
+            value = formState.name,
+            onValueChange = onNameChange,
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text("Enter your name") },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFFFF7700),
+                unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
+            ),
+            singleLine = true,
+            isError = uiState.validationErrors.nameError != null
+        )
+
+        uiState.validationErrors.nameError?.let { error ->
+            Text(
+                text = error,
+                color = Color.Red,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = "Email",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color.Black,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        OutlinedTextField(
+            value = formState.email,
+            onValueChange = onEmailChange,
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text("Enter your email") },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFFFF7700),
+                unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
+            ),
+            singleLine = true,
+            isError = uiState.validationErrors.emailError != null
+        )
+
+        uiState.validationErrors.emailError?.let { error ->
+            Text(
+                text = error,
+                color = Color.Red,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = "Password",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color.Black,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        OutlinedTextField(
+            value = "************",
+            onValueChange = { },
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFFFF7700),
+                unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
+            ),
+            visualTransformation = if (isPasswordVisible) VisualTransformation.None
+            else PasswordVisualTransformation(),
+            trailingIcon = {
+                IconButton(onClick = onPasswordVisibilityToggle) {
+                    Icon(
+                        painter = painterResource(
+                            id = if (isPasswordVisible) R.drawable.ic_hide else R.drawable.ic_show
+                        ),
+                        contentDescription = if (isPasswordVisible) "Hide password"
+                        else "Show password"
+                    )
+                }
+            },
+            readOnly = true,
+            singleLine = true
+        )
+
+        Spacer(modifier = Modifier.height(48.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Button(
+                onClick = onCancelClick,
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Gray.copy(alpha = 0.2f),
+                    contentColor = Color.Black
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(
+                    text = "Cancel",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
+
+            Button(
+                onClick = onSaveClick,
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFFF7700)
+                ),
+                shape = RoundedCornerShape(12.dp),
+                enabled = !uiState.isUpdating && formState.isValid()
+            ) {
+                if (uiState.isUpdating) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(16.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text(
+                        text = "Save Changes",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                }
+            }
         }
     }
 }
