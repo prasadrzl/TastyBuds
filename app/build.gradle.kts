@@ -121,6 +121,11 @@ dependencies {
     implementation(libs.moshi.kotlin)
     implementation(libs.retrofit.moshi)
 
+    // DataStore for secure local storage
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.preferences.core)
+    implementation(libs.androidx.security.crypto)
+
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.coroutines.test)

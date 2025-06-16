@@ -54,6 +54,7 @@ fun TastyBuddyMainScreen(navController: NavHostController) {
             val hideTopBar = currentRoute == "splash" ||
                     currentRoute == "profile" ||
                     currentRoute == "profile_edit" ||
+                    currentRoute == "login" ||
                     currentRoute?.startsWith("food_listing/") == true ||
                     currentRoute?.startsWith("search_results/") == true ||
                     currentRoute?.startsWith("restaurant_details/") == true ||
@@ -91,6 +92,7 @@ fun TastyBuddyMainScreen(navController: NavHostController) {
             val hideBottomBar = currentRoute == "splash" ||
                     currentRoute == "profile" ||
                     currentRoute == "profile_edit" ||
+                    currentRoute == "login" ||
                     currentRoute?.startsWith("food_listing/") == true ||
                     currentRoute?.startsWith("search_results/") == true ||
                     currentRoute?.startsWith("restaurant_details/") == true ||

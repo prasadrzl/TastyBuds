@@ -29,6 +29,8 @@ import com.app.tastybuds.ui.home.HomeScreen
 import com.app.tastybuds.ui.inbox.ChatBoxScreen
 import com.app.tastybuds.ui.location.LocationTrackerScreen
 import com.app.tastybuds.ui.location.OrderTrackingScreen
+import com.app.tastybuds.ui.login.AuthCheckScreen
+import com.app.tastybuds.ui.login.LoginScreen
 import com.app.tastybuds.ui.orders.FoodDetailsScreen
 import com.app.tastybuds.ui.orders.OrderReviewScreen
 import com.app.tastybuds.ui.profile.ProfileScreen
@@ -53,6 +55,31 @@ fun AppNavGraph(navController: NavHostController) {
                 onSplashComplete = {
                     navController.navigate("home") {
                         popUpTo("splash") { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable("auth_check") {
+            AuthCheckScreen(
+                onNavigateToLogin = {
+                    navController.navigate("login") {
+                        popUpTo("auth_check") { inclusive = true }
+                    }
+                },
+                onNavigateToHome = {
+                    navController.navigate("home") {
+                        popUpTo("auth_check") { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable("login") {
+            LoginScreen(
+                onLoginSuccess = {
+                    navController.navigate("home") {
+                        popUpTo("login") { inclusive = true }
                     }
                 }
             )
@@ -86,10 +113,10 @@ fun AppNavGraph(navController: NavHostController) {
                 onViewAllVouchers = {
                     navController.navigate("all_vouchers")
                 },
-                onBannerClick = { bannerId ->
+                onBannerClick = { _ ->
                     navController.navigate("all_deals")
                 },
-                onCollectionClick = { collectionId ->
+                onCollectionClick = { _ ->
                     navController.navigate("food_listing/Collection")
                 },
                 onDealClick = { dealId ->
@@ -153,6 +180,11 @@ fun AppNavGraph(navController: NavHostController) {
                 },
                 onEditProfile = {
                     navController.navigate("profile_edit")
+                },
+                onSignOut = {
+                    navController.navigate("login") {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
             )
         }

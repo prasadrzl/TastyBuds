@@ -30,6 +30,10 @@ hiltNavigationCompose = "1.1.0"
 moshi = "1.15.0"
 lifecycleRuntimeComposeAndroid = "2.8.6"
 
+datastorePreferences = "1.0.0"
+datastoreCore = "1.0.0"
+securityCrypto = "1.1.0-alpha06"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -91,6 +95,9 @@ material = { group = "com.google.android.material", name = "material", version.r
 moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
 moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
 androidx-lifecycle-runtime-compose-android = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "lifecycleRuntimeComposeAndroid" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
+androidx-datastore-preferences-core = { group = "androidx.datastore", name = "datastore-preferences-core", version.ref = "datastoreCore" }
+androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
