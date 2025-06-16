@@ -30,6 +30,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +47,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.R
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -53,6 +56,7 @@ import com.bumptech.glide.integration.compose.placeholder
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ProfileSettingsScreen(
+    viewModel: ProfileViewModel = hiltViewModel(),
     onDismiss: () -> Unit = {},
     onSaveChanges: () -> Unit = {}
 ) {
@@ -61,6 +65,13 @@ fun ProfileSettingsScreen(
     var password by remember { mutableStateOf("************") }
     var isPasswordVisible by remember { mutableStateOf(false) }
     var profileImageUrl by remember { mutableStateOf("https://images.unsplash.com/photo-1494790108755-2616b612b1e3?w=150&h=150&fit=crop&crop=face") }
+
+    LaunchedEffect(Unit) {
+        viewModel.initialize("user_001")
+    }
+
+    val uiState by viewModel.uiState.collectAsState()
+    val formState by viewModel.formState.collectAsState()
 
     Card(
         modifier = Modifier

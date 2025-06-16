@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -31,6 +32,7 @@ import com.app.tastybuds.ui.location.OrderTrackingScreen
 import com.app.tastybuds.ui.orders.FoodDetailsScreen
 import com.app.tastybuds.ui.orders.OrderReviewScreen
 import com.app.tastybuds.ui.profile.ProfileScreen
+import com.app.tastybuds.ui.profile.ProfileSettingsScreen
 import com.app.tastybuds.ui.resturants.CategoryDetailsScreen
 import com.app.tastybuds.ui.resturants.RestaurantDetailsScreen
 import com.app.tastybuds.ui.resturants.SeeAllScreen
@@ -148,7 +150,18 @@ fun AppNavGraph(navController: NavHostController) {
             ProfileScreen(
                 onBackClick = {
                     navController.popBackStack()
+                },
+                onEditProfile = {
+                    navController.navigate("profile_edit")
                 }
+            )
+        }
+
+        composable("profile_edit") {
+            ProfileSettingsScreen(
+                viewModel = hiltViewModel(),
+                onDismiss = { navController.popBackStack() },
+                onSaveChanges = { navController.popBackStack() }
             )
         }
 

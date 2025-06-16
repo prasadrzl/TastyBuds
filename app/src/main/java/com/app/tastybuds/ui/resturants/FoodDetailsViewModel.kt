@@ -165,10 +165,10 @@ class FoodDetailsViewModel @Inject constructor(
     fun retry() {
         val foodItemId = _foodItemId.value
         if (foodItemId.isNotEmpty()) {
-            android.util.Log.d("FoodDetailsVM", "Retrying to load food details for ID: $foodItemId")
+            Log.d("FoodDetailsVM", "Retrying to load food details for ID: $foodItemId")
             loadFoodDetails(foodItemId)
         } else {
-            android.util.Log.w("FoodDetailsVM", "Cannot retry - no food item ID available")
+            Log.w("FoodDetailsVM", "Cannot retry - no food item ID available")
             _uiState.update {
                 it.copy(
                     isLoading = false,

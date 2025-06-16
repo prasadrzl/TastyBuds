@@ -20,6 +20,9 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.R
 import com.app.tastybuds.ui.theme.PrimaryColor
 import com.app.tastybuds.util.ui.AppTopBar
@@ -42,8 +46,15 @@ fun ProfileScreen(
     onBackClick: () -> Unit = {},
     isDarkMode: Boolean = false,
     onToggleDarkMode: (Boolean) -> Unit = {},
-    onSignOut: () -> Unit = {}
+    onSignOut: () -> Unit = {},
+    onEditProfile: () -> Unit = {},
+    viewModel: ProfileViewModel = hiltViewModel(),
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.initialize("user_001")
+    }
+
+    val uiState by viewModel.uiState.collectAsState()
     Column(modifier = Modifier
         .fillMaxSize()
         .background(Color.White)) {
@@ -78,7 +89,11 @@ fun ProfileScreen(
 
         HorizontalDivider(color = Color(0xFFE0E0E0))
 
-        ProfileOption(icon = loadVector(R.drawable.ic_profile_setting), label = "Edit profile")
+        ProfileOption(
+            icon = loadVector(R.drawable.ic_profile_setting),
+            label = "Edit profile",
+            onClick = { onEditProfile() }
+        )
         ProfileOption(icon = loadVector(R.drawable.ic_settings), label = "Preferences")
 
         HorizontalDivider(color = Color(0xFFE0E0E0))
