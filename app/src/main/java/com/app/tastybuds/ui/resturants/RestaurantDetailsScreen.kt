@@ -39,6 +39,7 @@ import com.app.tastybuds.data.model.RestaurantDetails
 import com.app.tastybuds.data.model.RestaurantDetailsData
 import com.app.tastybuds.data.model.RestaurantMenuItem
 import com.app.tastybuds.data.model.RestaurantReview
+import com.app.tastybuds.ui.login.LoginViewModel
 import com.app.tastybuds.ui.theme.PrimaryColor
 import com.app.tastybuds.util.ui.SeeAllButton
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -48,16 +49,22 @@ import com.bumptech.glide.integration.compose.placeholder
 @Composable
 fun RestaurantDetailsScreen(
     restaurantId: String = "",
-    userId: String = "user_001",
     onBackClick: () -> Unit = {},
     onFoodItemClick: (String) -> Unit = {},
     onComboClick: (String) -> Unit = {},
-    viewModel: RestaurantDetailsViewModel = hiltViewModel()
+    viewModel: RestaurantDetailsViewModel = hiltViewModel(),
+    loginViewModel: LoginViewModel = hiltViewModel()
+
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val userIdFlow by loginViewModel.getUserId().collectAsState(initial = "user_001")
 
-    LaunchedEffect(restaurantId) {
-        viewModel.loadRestaurantDetails(restaurantId, userId)
+    LaunchedEffect(restaurantId, userIdFlow) {
+        userIdFlow?.let { userId ->
+            if (userId.isNotEmpty() && restaurantId.isNotEmpty()) {
+                viewModel.loadRestaurantDetails(restaurantId, userId)
+            }
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -470,7 +477,7 @@ fun ForYouSection(
                 color = Color.Black
             )
 
-            TextButton(onClick = {  }) {
+            TextButton(onClick = { }) {
                 Text(
                     text = "View all",
                     fontSize = 14.sp,
@@ -711,7 +718,7 @@ fun ReviewsSection(reviews: List<RestaurantReview>) {
 
             SeeAllButton(
                 text = "See all",
-                onClick = {  }
+                onClick = { }
             )
         }
 

@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.R
+import com.app.tastybuds.ui.login.LoginViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -54,17 +55,22 @@ import com.bumptech.glide.integration.compose.placeholder
 @Composable
 fun ProfileSettingsScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
+    loginViewModel: LoginViewModel = hiltViewModel(),
     onDismiss: () -> Unit = {},
     onSaveChanges: () -> Unit = {}
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        viewModel.initialize("user_001")
-    }
-
+    val userIdFlow by loginViewModel.getUserId().collectAsState(initial = "user_001")
     val uiState by viewModel.uiState.collectAsState()
     val formState by viewModel.formState.collectAsState()
+
+    LaunchedEffect(userIdFlow) {
+        userIdFlow?.let { userId ->
+            if (userId.isNotEmpty()) {
+                viewModel.initialize(userId)
+            }
+        }
+    }
 
     LaunchedEffect(uiState.updateSuccess) {
         if (uiState.updateSuccess) {

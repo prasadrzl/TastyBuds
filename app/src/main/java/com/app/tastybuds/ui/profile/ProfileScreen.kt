@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.R
-import com.app.tastybuds.ui.login.LoginUiState
 import com.app.tastybuds.ui.login.LoginViewModel
 import com.app.tastybuds.ui.theme.PrimaryColor
 import com.app.tastybuds.util.ui.AppTopBar
@@ -61,9 +60,14 @@ fun ProfileScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val loginUiState by loginViewModel.uiState.collectAsState()
+    val userIdFlow by loginViewModel.getUserId().collectAsState(initial = "user_001")
 
-    LaunchedEffect(Unit) {
-        viewModel.initialize("user_001")
+    LaunchedEffect(userIdFlow) {
+        userIdFlow?.let { userId ->
+            if (userId.isNotEmpty()) {
+                viewModel.initialize(userId)
+            }
+        }
     }
 
     LaunchedEffect(loginUiState.logoutTriggered) {

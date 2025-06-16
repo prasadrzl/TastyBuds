@@ -6,6 +6,7 @@ import com.app.tastybuds.data.repo.AuthRepository
 import com.app.tastybuds.domain.model.User
 import com.app.tastybuds.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,6 +33,8 @@ class LoginViewModel @Inject constructor(
             }
         }
     }
+
+    fun getUserId(): Flow<String?> = authRepository.getUserId()
 
     fun login(email: String, password: String) {
         if (email.isBlank() || password.isBlank()) {
