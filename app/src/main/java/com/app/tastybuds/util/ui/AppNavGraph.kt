@@ -170,7 +170,16 @@ fun AppNavGraph(navController: NavHostController) {
         }
 
         composable("orders") { OrderTrackingScreen() }
-        composable("favorites") { FavoriteScreen() }
+        composable("favorites") {
+            FavoriteScreen(
+                onRestaurantClick = { restaurantId ->
+                    navController.navigate("restaurant_details/$restaurantId")
+                },
+                onMenuItemClick = { menuItemId ->
+                    navController.navigate("food_details/$menuItemId")
+                }
+            )
+        }
         composable("inbox") { ChatBoxScreen() }
 
         composable("profile") {

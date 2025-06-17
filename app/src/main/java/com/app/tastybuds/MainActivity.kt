@@ -61,6 +61,7 @@ fun TastyBuddyMainScreen(navController: NavHostController) {
                     currentRoute?.startsWith("food_details/") == true ||
                     currentRoute?.startsWith("see_all/") == true ||
                     currentRoute == "location" ||
+                    currentRoute == "favorites" ||
                     currentRoute == "order_review" ||
                     currentRoute == "all_collections" ||
                     currentRoute == "all_restaurants" ||

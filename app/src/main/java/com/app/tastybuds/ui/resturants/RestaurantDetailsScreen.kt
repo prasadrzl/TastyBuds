@@ -248,7 +248,6 @@ fun RestaurantImageHeader(
             loading = placeholder(R.drawable.default_food)
         )
 
-        // Top Controls
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -301,7 +300,6 @@ fun RestaurantImageHeader(
                     .padding(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Restaurant name centered
                 Text(
                     text = restaurant.name,
                     fontSize = 24.sp,
@@ -312,7 +310,6 @@ fun RestaurantImageHeader(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Info items centered
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -460,8 +457,7 @@ fun InfoRow(
 @Composable
 fun ForYouSection(
     items: List<RestaurantMenuItem>,
-    onItemClick: (String) -> Unit,
-    onFavoriteClick: (String) -> Unit = {}
+    onItemClick: (String) -> Unit
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 20.dp)
@@ -498,8 +494,7 @@ fun ForYouSection(
             items(items) { item ->
                 ForYouItemCard(
                     item = item,
-                    onClick = { onItemClick(item.id) },
-                    onFavoriteClick = { onFavoriteClick(item.id) }
+                    onClick = { onItemClick(item.id) }
                 )
             }
         }
@@ -512,8 +507,7 @@ fun ForYouSection(
 @Composable
 fun ForYouItemCard(
     item: RestaurantMenuItem,
-    onClick: () -> Unit,
-    onFavoriteClick: () -> Unit = {}
+    onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -534,26 +528,6 @@ fun ForYouItemCard(
                 failure = placeholder(R.drawable.default_food),
                 loading = placeholder(R.drawable.default_food)
             )
-
-            IconButton(
-                onClick = onFavoriteClick,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(4.dp)
-                    .background(
-                        color = Color.White.copy(alpha = 0.8f),
-                        shape = CircleShape
-                    )
-                    .size(28.dp)
-            ) {
-                Icon(
-                    imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = if (item.isFavorite) "Remove from favorites" else "Add to favorites",
-                    tint = if (item.isFavorite) Color.Red else Color.Gray,
-                    modifier = Modifier.size(16.dp)
-                )
-            }
-
             Column(
                 modifier = Modifier.padding(12.dp)
             ) {
@@ -603,8 +577,7 @@ fun ForYouItemCard(
 @Composable
 fun MenuSection(
     items: List<RestaurantMenuItem>,
-    onItemClick: (String) -> Unit,
-    onFavoriteClick: (String) -> Unit = {}
+    onItemClick: (String) -> Unit
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 20.dp)
@@ -621,8 +594,7 @@ fun MenuSection(
         items.take(2).forEach { item ->
             MenuItemCard(
                 item = item,
-                onClick = { onItemClick(item.id) },
-                onFavoriteClick = { onFavoriteClick(item.id) }
+                onClick = { onItemClick(item.id) }
             )
             Spacer(modifier = Modifier.height(12.dp))
         }
@@ -632,10 +604,9 @@ fun MenuSection(
                 onClick = { /* See all */ },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text(
+                SeeAllButton(
                     text = "See all",
-                    fontSize = 14.sp,
-                    color = PrimaryColor
+                    onClick = { }
                 )
             }
         }
@@ -648,8 +619,7 @@ fun MenuSection(
 @Composable
 fun MenuItemCard(
     item: RestaurantMenuItem,
-    onClick: () -> Unit,
-    onFavoriteClick: () -> Unit = {}
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -719,18 +689,6 @@ fun MenuItemCard(
                     fontSize = 12.sp,
                     color = Color.Gray
                 )
-
-                IconButton(
-                    onClick = onFavoriteClick,
-                    modifier = Modifier.size(32.dp)
-                ) {
-                    Icon(
-                        imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = if (item.isFavorite) "Remove from favorites" else "Add to favorites",
-                        tint = if (item.isFavorite) Color.Red else Color.Gray,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
             }
         }
     }
@@ -753,9 +711,10 @@ fun ReviewsSection(reviews: List<RestaurantReview>) {
                 color = Color.Black
             )
 
-            SeeAllButton(
+            Text(
                 text = "See all",
-                onClick = { }
+                fontSize = 14.sp,
+                color = PrimaryColor
             )
         }
 

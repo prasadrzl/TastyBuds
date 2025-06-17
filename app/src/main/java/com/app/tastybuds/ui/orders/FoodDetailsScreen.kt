@@ -73,7 +73,6 @@ fun FoodDetailsScreen(
     viewModel: FoodDetailsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val userId = "user_001"
 
     LaunchedEffect(foodItemId) {
         viewModel.loadFoodDetails(foodItemId)
@@ -288,35 +287,43 @@ fun FoodImageHeader(
             loading = placeholder(R.drawable.default_food)
         )
 
-        IconButton(
-            onClick = onCloseClick,
+        Row(
             modifier = Modifier
-                .padding(16.dp)
-                .background(
-                    color = Color.Black.copy(alpha = 0.3f),
-                    shape = CircleShape
-                )
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "Close",
-                tint = Color.White
-            )
-        }
 
-        IconButton(
-            onClick = onFavoriteClick,
-            modifier = Modifier
-                .background(
-                    color = Color.Black.copy(alpha = 0.3f),
-                    shape = CircleShape
+            IconButton(
+                onClick = onCloseClick,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .background(
+                        color = Color.Black.copy(alpha = 0.3f),
+                        shape = CircleShape
+                    )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Close",
+                    tint = Color.White
                 )
-        ) {
-            Icon(
-                imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
-                tint = if (isFavorite) Color.Red else Color.White
-            )
+            }
+
+            IconButton(
+                onClick = onFavoriteClick,
+                modifier = Modifier
+                    .background(
+                        color = Color.Black.copy(alpha = 0.3f),
+                        shape = CircleShape
+                    )
+            ) {
+                Icon(
+                    imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                    tint = if (isFavorite) Color.Red else Color.White
+                )
+            }
         }
     }
 }
