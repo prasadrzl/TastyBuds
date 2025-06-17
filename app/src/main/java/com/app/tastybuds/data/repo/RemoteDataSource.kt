@@ -6,6 +6,7 @@ import com.app.tastybuds.domain.model.User
 import com.app.tastybuds.util.Result
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.app.tastybuds.util.*
 
 @Singleton
 class RemoteDataSource @Inject constructor(
@@ -13,11 +14,11 @@ class RemoteDataSource @Inject constructor(
 ) {
     suspend fun getUserByEmail(email: String): Result<User> {
         return try {
-            val response = apiService.getUser(userId = "", select = "*")
+            val response = apiService.getUserBy(email = email)
             if (response.isSuccessful) {
                 val users = response.body() ?: emptyList()
                 val user = users.find { it.email.equals(email, ignoreCase = true) }
-                
+
                 if (user != null) {
                     Result.Success(user.toUserDomainModel())
                 } else {

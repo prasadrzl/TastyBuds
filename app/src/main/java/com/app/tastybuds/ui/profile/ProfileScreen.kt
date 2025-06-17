@@ -120,7 +120,11 @@ fun ProfileScreen(
                     user = uiState.user,
                     isDarkMode = isDarkMode,
                     onToggleDarkMode = onToggleDarkMode,
-                    onEditProfile = onEditProfile
+                    onEditProfile = onEditProfile,
+                    onLogout = {
+                        loginViewModel.onLogoutNavigationHandled()
+                        onSignOut()
+                    }
                 )
             }
         }

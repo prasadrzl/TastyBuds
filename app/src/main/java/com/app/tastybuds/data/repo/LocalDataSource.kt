@@ -48,7 +48,6 @@ class LocalDataSource @Inject constructor(
         return try {
             val storedHashedPassword = encryptedPrefs.getString("password_$email", null)
             if (storedHashedPassword == null) {
-                // If no password stored, save it for first time
                 savePassword(email, password)
                 true
             } else {

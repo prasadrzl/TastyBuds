@@ -23,7 +23,6 @@ class AuthRepository @Inject constructor(
             when (val userResult = remoteDataSource.getUserByEmail(email)) {
                 is Result.Success -> {
                     val user = userResult.data
-                    // Step 3: Save login state
                     localDataSource.saveLoginState(user)
                     Result.Success(user)
                 }
