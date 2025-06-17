@@ -71,7 +71,13 @@ class LoginViewModel @Inject constructor(
     fun logout() {
         viewModelScope.launch {
             authRepository.logout()
-            _uiState.value = LoginUiState(logoutTriggered = true)
+            _uiState.value = LoginUiState(
+                isLoggedIn = false,
+                logoutTriggered = true,
+                user = null,
+                errorMessage = null,
+                isLoading = false
+            )
         }
     }
 

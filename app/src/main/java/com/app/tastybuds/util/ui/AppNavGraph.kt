@@ -53,7 +53,7 @@ fun AppNavGraph(navController: NavHostController) {
         composable("splash") {
             TastyBudsSplashScreen(
                 onSplashComplete = {
-                    navController.navigate("home") {
+                    navController.navigate("auth_check") {
                         popUpTo("splash") { inclusive = true }
                     }
                 }

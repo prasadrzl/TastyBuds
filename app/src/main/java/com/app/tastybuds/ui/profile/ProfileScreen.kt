@@ -123,6 +123,7 @@ fun ProfileScreen(
                     onEditProfile = onEditProfile,
                     onLogout = {
                         loginViewModel.onLogoutNavigationHandled()
+                        loginViewModel.logout()
                         onSignOut()
                     }
                 )
