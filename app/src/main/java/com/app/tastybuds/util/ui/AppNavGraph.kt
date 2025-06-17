@@ -116,8 +116,8 @@ fun AppNavGraph(navController: NavHostController) {
                 onBannerClick = { _ ->
                     navController.navigate("all_deals")
                 },
-                onCollectionClick = { _ ->
-                    navController.navigate("food_listing/Collection")
+                onCollectionClick = { collectionId ->
+                    navController.navigate("food_listing/collection/$collectionId")
                 },
                 onDealClick = { dealId ->
                     navController.navigate("food_details/$dealId")
@@ -131,7 +131,7 @@ fun AppNavGraph(navController: NavHostController) {
                     navController.popBackStack()
                 },
                 onCollectionClick = { collectionId ->
-                    navController.navigate("food_listing/Collection")
+                    navController.navigate("food_listing/collection/$collectionId")
                 }
             )
         }

@@ -15,7 +15,8 @@ data class FoodDetails(
     val isSpicy: Boolean = false,
     val allergens: List<String> = emptyList(),
     val prepTime: String = "",
-    val calories: Int = 0
+    val calories: Int = 0,
+    val isFavorite: Boolean = false
 )
 
 data class SizeOption(

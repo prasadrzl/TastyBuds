@@ -27,7 +27,8 @@ fun RestaurantDetailsResponse.toDomain() = RestaurantDetails(
     deliveryFee = deliveryFee,
     minimumOrder = minimumOrder,
     phone = phone,
-    address = address
+    address = address,
+    isFavorite = isFavorite
 )
 
 fun MenuItemResponse.toDomain() = RestaurantMenuItem(

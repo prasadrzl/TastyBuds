@@ -3,11 +3,15 @@ package com.app.tastybuds.ui.resturants
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.tastybuds.domain.FavoritesUseCase
 import com.app.tastybuds.domain.FoodDetailsUseCase
 import com.app.tastybuds.domain.model.FoodCustomization
 import com.app.tastybuds.domain.model.FoodDetailsData
 import com.app.tastybuds.ui.resturants.state.FoodDetailsUiState
 import com.app.tastybuds.util.Result
+import com.app.tastybuds.util.onError
+import com.app.tastybuds.util.onLoading
+import com.app.tastybuds.util.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -15,13 +19,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FoodDetailsViewModel @Inject constructor(
-    private val foodDetailsUseCase: FoodDetailsUseCase
+    private val foodDetailsUseCase: FoodDetailsUseCase,
+    private val favoritesUseCase: FavoritesUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FoodDetailsUiState())
     val uiState: StateFlow<FoodDetailsUiState> = _uiState.asStateFlow()
 
     private val _foodItemId = MutableStateFlow("")
+    private val _userId = MutableStateFlow("")
 
     fun loadFoodDetails(foodItemId: String) {
         if (foodItemId.isBlank()) {
@@ -57,7 +63,6 @@ class FoodDetailsViewModel @Inject constructor(
                             customization = customization
                         )
 
-                        // Get default selections
                         val defaultSize = customization.sizes.find { it.isDefault }?.id
                             ?: customization.sizes.firstOrNull()?.id ?: ""
 
@@ -85,11 +90,17 @@ class FoodDetailsViewModel @Inject constructor(
                             )
                         }
 
-                        Log.d("FoodDetailsVM", "Successfully loaded food details: ${foodDetails.name}")
+                        Log.d(
+                            "FoodDetailsVM",
+                            "Successfully loaded food details: ${foodDetails.name}"
+                        )
                     }
 
                     is Result.Error -> {
-                        Log.e("FoodDetailsVM", "Error loading food details: ${foodDetailsResult.message}")
+                        Log.e(
+                            "FoodDetailsVM",
+                            "Error loading food details: ${foodDetailsResult.message}"
+                        )
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
@@ -174,6 +185,47 @@ class FoodDetailsViewModel @Inject constructor(
                     isLoading = false,
                     error = "No food item ID available for retry"
                 )
+            }
+        }
+    }
+
+    fun toggleFavorite() {
+        if (_foodItemId.value.isEmpty() || _userId.value.isEmpty()) return
+
+        viewModelScope.launch {
+            val currentFoodData = _uiState.value.foodDetailsData
+            if (currentFoodData != null) {
+                val updatedFoodDetails = currentFoodData.foodDetails.copy(
+                    isFavorite = !currentFoodData.foodDetails.isFavorite
+                )
+                _uiState.update {
+                    it.copy(
+                        foodDetailsData = currentFoodData.copy(foodDetails = updatedFoodDetails)
+                    )
+                }
+
+                favoritesUseCase.toggleMenuItemFavorite(
+                    userId = _userId.value,
+                    menuItemId = _foodItemId.value,
+                    restaurantId = currentFoodData.foodDetails.restaurantId
+                ).onSuccess { result ->
+
+                    val revertedFoodDetails = updatedFoodDetails.copy(
+                        isFavorite = !updatedFoodDetails.isFavorite
+                    )
+                    _uiState.update {
+                        it.copy(
+                            foodDetailsData = currentFoodData.copy(foodDetails = revertedFoodDetails)
+                        )
+                    }
+                }.onError {
+                    _uiState.update {
+                        it.copy(error = it.error)
+                    }
+                }
+                    .onLoading {
+                        // loading
+                    }
             }
         }
     }

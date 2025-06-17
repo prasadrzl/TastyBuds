@@ -15,7 +15,8 @@ data class RestaurantDetails(
     val deliveryFee: Float,
     val minimumOrder: Float?,
     val phone: String,
-    val address: String
+    val address: String,
+    val isFavorite: Boolean
 )
 
 data class RestaurantMenuItem(
@@ -29,7 +30,8 @@ data class RestaurantMenuItem(
     val category: String,
     val isPopular: Boolean,
     val isSpicy: Boolean,
-    val prepTime: String
+    val prepTime: String,
+    val isFavorite: Boolean = false
 )
 
 data class RestaurantReview(

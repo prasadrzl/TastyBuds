@@ -19,7 +19,8 @@ data class RestaurantDetailsResponse(
     @Json(name = "delivery_fee") val deliveryFee: Float = 0.0f,
     @Json(name = "minimum_order") val minimumOrder: Float? = null,
     @Json(name = "phone") val phone: String = "",
-    @Json(name = "address") val address: String = ""
+    @Json(name = "address") val address: String = "",
+    @Json(name = "is_favorite") val isFavorite: Boolean = false,
 )
 
 @JsonClass(generateAdapter = true)
@@ -35,7 +36,8 @@ data class MenuItemResponse(
     @Json(name = "is_popular") val isPopular: Boolean = false,
     @Json(name = "is_spicy") val isSpicy: Boolean = false,
     @Json(name = "restaurant_id") val restaurantId: String = "",
-    @Json(name = "prep_time") val prepTime: String = "15-20 mins"
+    @Json(name = "prep_time") val prepTime: String = "15-20 mins",
+    @Json(name = "is_favorite") val isFavorite: Boolean = false
 )
 
 @JsonClass(generateAdapter = true)

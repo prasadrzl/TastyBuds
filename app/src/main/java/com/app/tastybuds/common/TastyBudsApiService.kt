@@ -1,5 +1,6 @@
 package com.app.tastybuds.common
 
+import com.app.tastybuds.data.model.AddFavoriteRequest
 import com.app.tastybuds.data.model.BannerResponse
 import com.app.tastybuds.data.model.CategoryMenuItemResponse
 import com.app.tastybuds.data.model.CategoryResponse
@@ -7,6 +8,7 @@ import com.app.tastybuds.data.model.CategoryRestaurantResponse
 import com.app.tastybuds.data.model.CollectionResponse
 import com.app.tastybuds.data.model.ComboResponse
 import com.app.tastybuds.data.model.DealResponse
+import com.app.tastybuds.data.model.FavoriteResponse
 import com.app.tastybuds.data.model.MenuItemResponse
 import com.app.tastybuds.data.model.MenuItemWithRestaurantResponse
 import com.app.tastybuds.data.model.RestaurantDetailsResponse
@@ -20,8 +22,10 @@ import com.app.tastybuds.ui.resturants.FoodCustomizationResponse
 import com.app.tastybuds.ui.resturants.FoodDetailsResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PATCH
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface TastyBudsApiService {
@@ -192,4 +196,36 @@ interface TastyBudsApiService {
         @Query("id") userId: String,
         @Body updateRequest: UpdateProfileRequest
     ): Response<List<UserResponse>>
+
+    @GET("favorites")
+    suspend fun getUserFavorites(
+        @Query("user_id") userId: String,
+        @Query("select") select: String = "*"
+    ): Response<List<FavoriteResponse>>
+
+    @POST("favorites")
+    suspend fun addFavorite(
+        @Body favoriteRequest: AddFavoriteRequest
+    ): Response<FavoriteResponse>
+
+    @DELETE("favorites")
+    suspend fun removeFavorite(
+        @Query("user_id") userId: String,
+        @Query("menu_item_id") menuItemId: String? = null,
+        @Query("restaurant_id") restaurantId: String? = null
+    ): Response<Unit>
+
+    @GET("menu_items")
+    suspend fun getMenuItemsWithFavorites(
+        @Query("restaurant_id") restaurantId: String,
+        @Query("user_id") userId: String,
+        @Query("select") select: String = "*,is_favorite:favorites!inner(user_id)",
+        @Query("order") order: String = "is_popular.desc,rating.desc"
+    ): Response<List<MenuItemResponse>>
+
+    @GET("restaurants")
+    suspend fun getRestaurantsWithFavorites(
+        @Query("user_id") userId: String,
+        @Query("select") select: String = "*,is_favorite:favorites!inner(user_id)"
+    ): Response<List<RestaurantResponse>>
 }

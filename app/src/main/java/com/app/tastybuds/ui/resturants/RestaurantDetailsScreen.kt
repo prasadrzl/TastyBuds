@@ -159,12 +159,12 @@ private fun ErrorContent(
 @Composable
 private fun RestaurantDetailsContent(
     restaurantData: RestaurantDetailsData,
-    isFavorite: Boolean,
     voucherCount: Int,
     onBackClick: () -> Unit,
-    onFavoriteClick: () -> Unit,
     onFoodItemClick: (String) -> Unit,
-    onComboClick: (String) -> Unit
+    onComboClick: (String) -> Unit,
+    isFavorite: Boolean = false,
+    onFavoriteClick: () -> Unit = {}
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize()
@@ -280,7 +280,7 @@ fun RestaurantImageHeader(
             ) {
                 Icon(
                     imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = "Favorite",
+                    contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
                     tint = if (isFavorite) Color.Red else Color.White
                 )
             }
@@ -460,7 +460,8 @@ fun InfoRow(
 @Composable
 fun ForYouSection(
     items: List<RestaurantMenuItem>,
-    onItemClick: (String) -> Unit
+    onItemClick: (String) -> Unit,
+    onFavoriteClick: (String) -> Unit = {}
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 20.dp)
@@ -497,7 +498,8 @@ fun ForYouSection(
             items(items) { item ->
                 ForYouItemCard(
                     item = item,
-                    onClick = { onItemClick(item.id) }
+                    onClick = { onItemClick(item.id) },
+                    onFavoriteClick = { onFavoriteClick(item.id) }
                 )
             }
         }
@@ -510,7 +512,8 @@ fun ForYouSection(
 @Composable
 fun ForYouItemCard(
     item: RestaurantMenuItem,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onFavoriteClick: () -> Unit = {}
 ) {
     Card(
         modifier = Modifier
@@ -531,6 +534,25 @@ fun ForYouItemCard(
                 failure = placeholder(R.drawable.default_food),
                 loading = placeholder(R.drawable.default_food)
             )
+
+            IconButton(
+                onClick = onFavoriteClick,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(4.dp)
+                    .background(
+                        color = Color.White.copy(alpha = 0.8f),
+                        shape = CircleShape
+                    )
+                    .size(28.dp)
+            ) {
+                Icon(
+                    imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = if (item.isFavorite) "Remove from favorites" else "Add to favorites",
+                    tint = if (item.isFavorite) Color.Red else Color.Gray,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
 
             Column(
                 modifier = Modifier.padding(12.dp)
@@ -581,7 +603,8 @@ fun ForYouItemCard(
 @Composable
 fun MenuSection(
     items: List<RestaurantMenuItem>,
-    onItemClick: (String) -> Unit
+    onItemClick: (String) -> Unit,
+    onFavoriteClick: (String) -> Unit = {}
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 20.dp)
@@ -598,7 +621,8 @@ fun MenuSection(
         items.take(2).forEach { item ->
             MenuItemCard(
                 item = item,
-                onClick = { onItemClick(item.id) }
+                onClick = { onItemClick(item.id) },
+                onFavoriteClick = { onFavoriteClick(item.id) }
             )
             Spacer(modifier = Modifier.height(12.dp))
         }
@@ -624,7 +648,8 @@ fun MenuSection(
 @Composable
 fun MenuItemCard(
     item: RestaurantMenuItem,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onFavoriteClick: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
@@ -694,6 +719,18 @@ fun MenuItemCard(
                     fontSize = 12.sp,
                     color = Color.Gray
                 )
+
+                IconButton(
+                    onClick = onFavoriteClick,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = if (item.isFavorite) "Remove from favorites" else "Add to favorites",
+                        tint = if (item.isFavorite) Color.Red else Color.Gray,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
         }
     }

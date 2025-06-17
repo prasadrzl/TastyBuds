@@ -22,6 +22,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -71,6 +73,7 @@ fun FoodDetailsScreen(
     viewModel: FoodDetailsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val userId = "user_001"
 
     LaunchedEffect(foodItemId) {
         viewModel.loadFoodDetails(foodItemId)
@@ -107,7 +110,9 @@ fun FoodDetailsScreen(
                     onSpiceSelected = { viewModel.updateSelectedSpiceLevel(it) },
                     onNoteChange = { viewModel.updateSpecialNote(it) },
                     onQuantityChange = { viewModel.updateQuantity(it) },
-                    onAddToCart = { onAddToCart(uiState.totalPrice, uiState.quantity) }
+                    onAddToCart = { onAddToCart(uiState.totalPrice, uiState.quantity) },
+                    onFavoriteClick = { viewModel.toggleFavorite() },
+                    onComboClick = {}
                 )
             }
         }
@@ -162,7 +167,9 @@ private fun FoodDetailsContent(
     onSpiceSelected: (String) -> Unit,
     onNoteChange: (String) -> Unit,
     onQuantityChange: (Int) -> Unit,
-    onAddToCart: () -> Unit
+    onAddToCart: () -> Unit,
+    onFavoriteClick: () -> Unit,
+    onComboClick: (String) -> Unit
 ) {
     val foodData = uiState.foodDetailsData!!
 
@@ -172,7 +179,9 @@ private fun FoodDetailsContent(
         item {
             FoodImageHeader(
                 imageUrl = foodData.foodDetails.imageUrl,
-                onCloseClick = onBackClick
+                onCloseClick = onBackClick,
+                onFavoriteClick = onFavoriteClick,
+                isFavorite = false,
             )
         }
 
@@ -261,6 +270,8 @@ private fun FoodDetailsContent(
 @Composable
 fun FoodImageHeader(
     imageUrl: String,
+    isFavorite: Boolean,
+    onFavoriteClick: () -> Unit,
     onCloseClick: () -> Unit
 ) {
     Box(
@@ -290,6 +301,21 @@ fun FoodImageHeader(
                 imageVector = Icons.Default.Close,
                 contentDescription = "Close",
                 tint = Color.White
+            )
+        }
+
+        IconButton(
+            onClick = onFavoriteClick,
+            modifier = Modifier
+                .background(
+                    color = Color.Black.copy(alpha = 0.3f),
+                    shape = CircleShape
+                )
+        ) {
+            Icon(
+                imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                tint = if (isFavorite) Color.Red else Color.White
             )
         }
     }
