@@ -15,7 +15,7 @@ import javax.inject.Singleton
 import com.app.tastybuds.util.Result
 
 interface RestaurantDetailsRepository {
-    suspend fun getRestaurantDetails(restaurantId: String): Result<RestaurantDetails>
+    suspend fun getRestaurantDetails(restaurantId: String, userId: String): Result<RestaurantDetails>
     suspend fun getRestaurantMenuItems(restaurantId: String): Result<List<RestaurantMenuItem>>
     suspend fun getForYouMenuItems(restaurantId: String): Result<List<RestaurantMenuItem>>
     suspend fun getRestaurantReviews(restaurantId: String): Result<List<RestaurantReview>>
@@ -36,18 +36,25 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
     private val apiService: TastyBudsApiService
 ) : RestaurantDetailsRepository {
 
-    override suspend fun getRestaurantDetails(restaurantId: String): Result<RestaurantDetails> {
+    override suspend fun getRestaurantDetails(restaurantId: String, userId: String): Result<RestaurantDetails> {
         return try {
-            val response = apiService.getRestaurantDetails("eq.$restaurantId")
-            if (response.isSuccessful) {
-                val restaurant = response.body()?.firstOrNull()?.toDomain()
+            val restaurantResponse = apiService.getRestaurantDetails("eq.$restaurantId")
+
+            val favoritesResponse = apiService.getUserFavorites("eq.$userId")
+
+            if (restaurantResponse.isSuccessful) {
+                val restaurant = restaurantResponse.body()?.firstOrNull()
                 if (restaurant != null) {
-                    Result.Success(restaurant)
+                    val favorites = favoritesResponse.body() ?: emptyList()
+                    val isFavorite = favorites.any { it.restaurantId == restaurantId }
+
+                    val restaurantWithFavorite = restaurant.copy(isFavorite = isFavorite)
+                    Result.Success(restaurantWithFavorite.toDomain())
                 } else {
                     Result.Error("Restaurant not found")
                 }
             } else {
-                Result.Error("Restaurant not found")
+                Result.Error("Failed to get restaurant details")
             }
         } catch (e: Exception) {
             Result.Error("Network error: ${e.message}")
@@ -134,7 +141,7 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
         emit(Result.Loading)
 
         try {
-            val restaurantResult = getRestaurantDetails(restaurantId)
+            val restaurantResult = getRestaurantDetails(restaurantId, userId)
             if (restaurantResult is Result.Error) {
                 emit(Result.Error(restaurantResult.message))
                 return@flow

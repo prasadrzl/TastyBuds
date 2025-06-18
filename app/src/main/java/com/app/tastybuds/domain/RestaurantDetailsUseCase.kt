@@ -21,10 +21,6 @@ class RestaurantDetailsUseCase @Inject constructor(
         return repository.getRestaurantDetailsData(restaurantId, userId)
     }
 
-    suspend fun getRestaurantDetails(restaurantId: String): Result<RestaurantDetails> {
-        return repository.getRestaurantDetails(restaurantId)
-    }
-
     suspend fun getRestaurantMenuItems(restaurantId: String): Result<List<RestaurantMenuItem>> {
         return repository.getRestaurantMenuItems(restaurantId)
     }
@@ -87,31 +83,6 @@ class RestaurantDetailsUseCase @Inject constructor(
                     0.0f
                 }
                 Result.Success(averageRating)
-            }
-
-            is Result.Error -> Result.Error(result.message)
-            is Result.Loading -> Result.Loading
-        }
-    }
-
-    suspend fun isRestaurantOpen(restaurantId: String): Result<Boolean> {
-        return when (val result = repository.getRestaurantDetails(restaurantId)) {
-            is Result.Success -> Result.Success(result.data.isOpen)
-            is Result.Error -> Result.Error(result.message)
-            is Result.Loading -> Result.Loading
-        }
-    }
-
-    suspend fun getDeliveryInfo(restaurantId: String): Result<DeliveryInfo> {
-        return when (val result = repository.getRestaurantDetails(restaurantId)) {
-            is Result.Success -> {
-                val deliveryInfo = DeliveryInfo(
-                    deliveryTime = result.data.deliveryTime,
-                    deliveryFee = result.data.deliveryFee,
-                    minimumOrder = result.data.minimumOrder,
-                    distance = result.data.distance
-                )
-                Result.Success(deliveryInfo)
             }
 
             is Result.Error -> Result.Error(result.message)

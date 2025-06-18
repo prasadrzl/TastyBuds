@@ -9,6 +9,8 @@ import com.app.tastybuds.data.model.CollectionResponse
 import com.app.tastybuds.data.model.ComboResponse
 import com.app.tastybuds.data.model.DealResponse
 import com.app.tastybuds.data.model.FavoriteResponse
+import com.app.tastybuds.data.model.FavoriteWithMenuItemResponse
+import com.app.tastybuds.data.model.FavoriteWithRestaurantResponse
 import com.app.tastybuds.data.model.MenuItemResponse
 import com.app.tastybuds.data.model.MenuItemWithRestaurantResponse
 import com.app.tastybuds.data.model.RestaurantDetailsResponse
@@ -206,26 +208,26 @@ interface TastyBudsApiService {
     @POST("favorites")
     suspend fun addFavorite(
         @Body favoriteRequest: AddFavoriteRequest
-    ): Response<FavoriteResponse>
+    ): Response<List<FavoriteResponse>>
 
     @DELETE("favorites")
     suspend fun removeFavorite(
         @Query("user_id") userId: String,
         @Query("menu_item_id") menuItemId: String? = null,
         @Query("restaurant_id") restaurantId: String? = null
-    ): Response<Unit>
+    ): Response<List<FavoriteResponse>>
 
-    @GET("menu_items")
-    suspend fun getMenuItemsWithFavorites(
-        @Query("restaurant_id") restaurantId: String,
+    @GET("favorites")
+    suspend fun getFavoriteRestaurantsWithDetails(
         @Query("user_id") userId: String,
-        @Query("select") select: String = "*,is_favorite:favorites!inner(user_id)",
-        @Query("order") order: String = "is_popular.desc,rating.desc"
-    ): Response<List<MenuItemResponse>>
+        @Query("restaurant_id") restaurantFilter: String = "not.is.null",
+        @Query("select") select: String = "*,restaurants(*)"
+    ): Response<List<FavoriteWithRestaurantResponse>>
 
-    @GET("restaurants")
-    suspend fun getRestaurantsWithFavorites(
+    @GET("favorites")
+    suspend fun getFavoriteMenuItemsWithDetails(
         @Query("user_id") userId: String,
-        @Query("select") select: String = "*,is_favorite:favorites!inner(user_id)"
-    ): Response<List<RestaurantResponse>>
+        @Query("menu_item_id") menuItemFilter: String = "not.is.null",
+        @Query("select") select: String = "*,menu_items(*,restaurants(name,id))"
+    ): Response<List<FavoriteWithMenuItemResponse>>
 }

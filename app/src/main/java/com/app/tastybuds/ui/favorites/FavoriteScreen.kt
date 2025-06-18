@@ -41,12 +41,13 @@ fun FavoriteScreen(
     onMenuItemClick: (String) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val userIdFlow by loginViewModel.getUserId().collectAsState(initial = "user_001")
+    val userIdFlow by loginViewModel.getUserId().collectAsState(initial = "")
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     val userId = userIdFlow ?: ""
 
     LaunchedEffect(userIdFlow) {
-        viewModel.loadUserFavorites(userId)
+        if (userId.isNotBlank())
+            viewModel.loadUserFavoritesWithDetails(userId)
     }
 
     Column(

@@ -15,10 +15,22 @@ class FavoritesUseCase @Inject constructor(
         return when (val isFavoriteResult =
             favoritesRepository.isMenuItemFavorite(userId, menuItemId)) {
             is Result.Success -> {
-                if (isFavoriteResult.data) {
-                    favoritesRepository.removeFavorite(userId, menuItemId, null)
+                val wasAlreadyFavorite = isFavoriteResult.data
+                if (wasAlreadyFavorite) {
+                    when (val removeResult =
+                        favoritesRepository.removeFavorite(userId, menuItemId, null)) {
+                        is Result.Success -> Result.Success(false)
+                        is Result.Error -> Result.Error(removeResult.message)
+                        is Result.Loading -> Result.Loading
+                    }
                 } else {
-                    favoritesRepository.addFavorite(userId, menuItemId, restaurantId)
+                    // Add favorite - new state will be TRUE
+                    when (val addResult =
+                        favoritesRepository.addFavorite(userId, menuItemId, restaurantId)) {
+                        is Result.Success -> Result.Success(true)
+                        is Result.Error -> Result.Error(addResult.message)
+                        is Result.Loading -> Result.Loading
+                    }
                 }
             }
 
@@ -31,10 +43,21 @@ class FavoritesUseCase @Inject constructor(
         return when (val isFavoriteResult =
             favoritesRepository.isRestaurantFavorite(userId, restaurantId)) {
             is Result.Success -> {
-                if (isFavoriteResult.data) {
-                    favoritesRepository.removeFavorite(userId, null, restaurantId)
+                val wasAlreadyFavorite = isFavoriteResult.data
+                if (wasAlreadyFavorite) {
+                    when (val removeResult =
+                        favoritesRepository.removeFavorite(userId, null, restaurantId)) {
+                        is Result.Success -> Result.Success(false)
+                        is Result.Error -> Result.Error(removeResult.message)
+                        is Result.Loading -> Result.Loading
+                    }
                 } else {
-                    favoritesRepository.addFavorite(userId, null, restaurantId)
+                    when (val addResult =
+                        favoritesRepository.addFavorite(userId, null, restaurantId)) {
+                        is Result.Success -> Result.Success(true)
+                        is Result.Error -> Result.Error(addResult.message)
+                        is Result.Loading -> Result.Loading
+                    }
                 }
             }
 
@@ -44,6 +67,12 @@ class FavoritesUseCase @Inject constructor(
     }
 
     suspend fun getUserFavorites(userId: String) = favoritesRepository.getUserFavorites(userId)
+
+    suspend fun getFavoriteRestaurantsWithDetails(userId: String) =
+        favoritesRepository.getFavoriteRestaurantsWithDetails(userId)
+
+    suspend fun getFavoriteMenuItemsWithDetails(userId: String) =
+        favoritesRepository.getFavoriteMenuItemsWithDetails(userId)
 
     suspend fun isMenuItemFavorite(userId: String, menuItemId: String) =
         favoritesRepository.isMenuItemFavorite(userId, menuItemId)

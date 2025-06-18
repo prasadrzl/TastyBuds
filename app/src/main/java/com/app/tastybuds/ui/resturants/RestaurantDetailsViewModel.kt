@@ -63,7 +63,7 @@ class RestaurantDetailsViewModel @Inject constructor(
         }
     }
 
-    fun toggleRestaurantFavorite() {
+    private fun toggleRestaurantFavorite() {
         if (_restaurantId.value.isEmpty() || _userId.value.isEmpty()) return
 
         viewModelScope.launch {
@@ -73,8 +73,13 @@ class RestaurantDetailsViewModel @Inject constructor(
             favoritesUseCase.toggleRestaurantFavorite(
                 userId = _userId.value,
                 restaurantId = _restaurantId.value
-            ).onSuccess { result ->
-
+            ).onSuccess { isNowFavorite ->
+                _uiState.update { state ->
+                    state.copy(
+                        isFavorite = isNowFavorite,
+                        error = null
+                    )
+                }
             }
                 .onError {
                     _uiState.update {
