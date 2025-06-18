@@ -53,8 +53,7 @@ class FavoritesViewModel @Inject constructor(
                 menuItemFavorite != null -> {
                     favoritesUseCase.toggleMenuItemFavorite(
                         userId = userId,
-                        menuItemId = menuItemFavorite.menuItemId,
-                        restaurantId = menuItemFavorite.restaurantId
+                        menuItemId = menuItemFavorite.menuItemId
                     ).onSuccess {
                         loadUserFavoritesWithDetails(userId)
                     }.onError {

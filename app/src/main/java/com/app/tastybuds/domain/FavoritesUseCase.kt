@@ -28,7 +28,6 @@ class FavoritesUseCase @Inject constructor(
                         is Result.Loading -> Result.Loading
                     }
                 } else {
-                    // Add favorite - new state will be TRUE
                     when (val addResult =
                         favoritesRepository.addFavorite(userId, menuItemId, restaurantId)) {
                         is Result.Success -> Result.Success(true)
@@ -70,8 +69,6 @@ class FavoritesUseCase @Inject constructor(
         }
     }
 
-    suspend fun getUserFavorites(userId: String) = favoritesRepository.getUserFavorites(userId)
-
     suspend fun getFavoriteRestaurantsForUI(userId: String): Result<List<FavoriteRestaurantUi>> {
         return when (val result = favoritesRepository.getFavoriteRestaurantsWithDetails(userId)) {
             is Result.Success -> {
@@ -95,17 +92,5 @@ class FavoritesUseCase @Inject constructor(
             is Result.Loading -> Result.Loading
         }
     }
-
-    suspend fun getFavoriteRestaurantsWithDetails(userId: String) =
-        favoritesRepository.getFavoriteRestaurantsWithDetails(userId)
-
-    suspend fun getFavoriteMenuItemsWithDetails(userId: String) =
-        favoritesRepository.getFavoriteMenuItemsWithDetails(userId)
-
-    suspend fun isMenuItemFavorite(userId: String, menuItemId: String) =
-        favoritesRepository.isMenuItemFavorite(userId, menuItemId)
-
-    suspend fun isRestaurantFavorite(userId: String, restaurantId: String) =
-        favoritesRepository.isRestaurantFavorite(userId, restaurantId)
 }
 

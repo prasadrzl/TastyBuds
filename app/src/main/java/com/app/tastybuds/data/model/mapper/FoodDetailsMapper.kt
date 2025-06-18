@@ -22,7 +22,8 @@ fun FoodDetailsResponse.toFoodDetails() = FoodDetails(
     isSpicy = isSpicy,
     allergens = allergens,
     prepTime = prepTime,
-    calories = calories ?: 0
+    calories = calories ?: 0,
+    isFavorite = isFavorite
 )
 
 fun SizeOptionResponse.toSizeOption() = SizeOption(
@@ -58,9 +59,3 @@ fun FoodCustomizationResponse.toFoodCustomization() = FoodCustomization(
     toppings = toppings.map { it.toToppingOption() },
     spiceLevels = spiceLevels.map { it.toSpiceLevel() }
 )
-
-fun List<SizeOptionResponse>.toSizeOptionsList(): List<SizeOption> = map { it.toSizeOption() }
-fun List<ToppingOptionResponse>.toToppingOptionsList(): List<ToppingOption> =
-    map { it.toToppingOption() }
-
-fun List<SpiceLevelResponse>.toSpiceLevelsList(): List<SpiceLevel> = map { it.toSpiceLevel() }

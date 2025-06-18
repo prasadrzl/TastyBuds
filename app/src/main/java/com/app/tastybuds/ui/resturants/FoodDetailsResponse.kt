@@ -19,7 +19,8 @@ data class FoodDetailsResponse(
     @Json(name = "is_spicy") val isSpicy: Boolean = false,
     @Json(name = "allergens") val allergens: List<String> = emptyList(),
     @Json(name = "prep_time") val prepTime: String = "15-20 mins",
-    @Json(name = "calories") val calories: Int? = null
+    @Json(name = "calories") val calories: Int? = null,
+    @Json(name = "isFavorite") val isFavorite: Boolean = false
 )
 
 @JsonClass(generateAdapter = true)

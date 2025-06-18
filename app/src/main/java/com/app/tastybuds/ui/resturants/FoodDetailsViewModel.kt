@@ -3,24 +3,31 @@ package com.app.tastybuds.ui.resturants
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.tastybuds.data.repo.AuthRepository
 import com.app.tastybuds.domain.FavoritesUseCase
 import com.app.tastybuds.domain.FoodDetailsUseCase
 import com.app.tastybuds.domain.model.FoodCustomization
 import com.app.tastybuds.domain.model.FoodDetailsData
 import com.app.tastybuds.ui.resturants.state.FoodDetailsUiState
 import com.app.tastybuds.util.Result
+import com.app.tastybuds.util.calculateTotalPrice
 import com.app.tastybuds.util.onError
 import com.app.tastybuds.util.onLoading
 import com.app.tastybuds.util.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FoodDetailsViewModel @Inject constructor(
     private val foodDetailsUseCase: FoodDetailsUseCase,
-    private val favoritesUseCase: FavoritesUseCase
+    private val favoritesUseCase: FavoritesUseCase,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FoodDetailsUiState())
@@ -41,13 +48,15 @@ class FoodDetailsViewModel @Inject constructor(
         }
 
         _foodItemId.value = foodItemId
+
         Log.d("FoodDetailsVM", "Loading food details for ID: $foodItemId")
 
         viewModelScope.launch {
             try {
+                _userId.value = authRepository.getUserId().first() ?: ""
                 _uiState.update { it.copy(isLoading = true, error = null) }
 
-                val foodDetailsResult = foodDetailsUseCase.getFoodDetails(foodItemId)
+                val foodDetailsResult = foodDetailsUseCase.getFoodDetails(foodItemId, userId = _userId.value)
                 val customizationResult = foodDetailsUseCase.getCustomizationOptions(foodItemId)
 
                 when (foodDetailsResult) {
@@ -89,18 +98,9 @@ class FoodDetailsViewModel @Inject constructor(
                                 )
                             )
                         }
-
-                        Log.d(
-                            "FoodDetailsVM",
-                            "Successfully loaded food details: ${foodDetails.name}"
-                        )
                     }
 
                     is Result.Error -> {
-                        Log.e(
-                            "FoodDetailsVM",
-                            "Error loading food details: ${foodDetailsResult.message}"
-                        )
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
@@ -113,7 +113,6 @@ class FoodDetailsViewModel @Inject constructor(
                 }
 
             } catch (e: Exception) {
-                Log.e("FoodDetailsVM", "Exception in loadFoodDetails: ${e.message}", e)
                 _uiState.update {
                     it.copy(
                         isLoading = false,
@@ -176,10 +175,8 @@ class FoodDetailsViewModel @Inject constructor(
     fun retry() {
         val foodItemId = _foodItemId.value
         if (foodItemId.isNotEmpty()) {
-            Log.d("FoodDetailsVM", "Retrying to load food details for ID: $foodItemId")
             loadFoodDetails(foodItemId)
         } else {
-            Log.w("FoodDetailsVM", "Cannot retry - no food item ID available")
             _uiState.update {
                 it.copy(
                     isLoading = false,
@@ -206,12 +203,11 @@ class FoodDetailsViewModel @Inject constructor(
 
                 favoritesUseCase.toggleMenuItemFavorite(
                     userId = _userId.value,
-                    menuItemId = _foodItemId.value,
-                    restaurantId = currentFoodData.foodDetails.restaurantId
+                    menuItemId = _foodItemId.value
                 ).onSuccess { result ->
 
                     val revertedFoodDetails = updatedFoodDetails.copy(
-                        isFavorite = !updatedFoodDetails.isFavorite
+                        isFavorite = result
                     )
                     _uiState.update {
                         it.copy(
@@ -224,27 +220,9 @@ class FoodDetailsViewModel @Inject constructor(
                     }
                 }
                     .onLoading {
-                        // loading
+
                     }
             }
         }
-    }
-
-    private fun calculateTotalPrice(
-        data: FoodDetailsData,
-        sizeId: String,
-        toppingIds: List<String>,
-        quantity: Int
-    ): Float {
-        val basePrice = data.foodDetails.basePrice
-
-        val sizePrice = data.customization.sizes
-            .find { it.id == sizeId }?.additionalPrice ?: 0.0f
-
-        val toppingsPrice = data.customization.toppings
-            .filter { it.id in toppingIds }
-            .sumOf { it.price.toDouble() }.toFloat()
-
-        return (basePrice + sizePrice + toppingsPrice) * quantity
     }
 }

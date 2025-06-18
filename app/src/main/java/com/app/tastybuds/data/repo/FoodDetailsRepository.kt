@@ -14,9 +14,9 @@ import javax.inject.Singleton
 
 
 interface FoodDetailsRepository {
-    suspend fun getFoodDetails(foodItemId: String): Result<FoodDetails>
+    suspend fun getFoodDetails(foodItemId: String, userId: String): Result<FoodDetails>
     suspend fun getCustomizationOptions(menuItemId: String): Result<FoodCustomization>
-    fun getFoodDetailsData(foodItemId: String): Flow<Result<FoodDetailsData>>
+    fun getFoodDetailsData(foodItemId: String, userId: String): Flow<Result<FoodDetailsData>>
 }
 
 @Singleton
@@ -24,14 +24,25 @@ class FoodDetailsRepositoryImpl @Inject constructor(
     private val apiService: TastyBudsApiService
 ) : FoodDetailsRepository {
 
-    override suspend fun getFoodDetails(foodItemId: String): Result<FoodDetails> {
+    override suspend fun getFoodDetails(foodItemId: String, userId: String): Result<FoodDetails> {
         return try {
-            val response = apiService.getFoodDetails("eq.$foodItemId")
-            val foodDetails = response.firstOrNull()?.toFoodDetails()
-            if (foodDetails != null) {
-                Result.Success(foodDetails)
+            val foodResponse = apiService.getFoodDetails("eq.$foodItemId")
+            val favoritesResponse = apiService.getUserFavorites("eq.$userId")
+
+            if (foodResponse.isNotEmpty()) {
+                val foodItem = foodResponse.firstOrNull()
+                if (foodItem != null) {
+                    val favorites = favoritesResponse.body() ?: emptyList()
+                    val isFavorite = favorites.any { it.menuItemId == foodItemId }
+
+                    val foodDetailsWithFavorite =
+                        foodItem.toFoodDetails().copy(isFavorite = isFavorite)
+                    Result.Success(foodDetailsWithFavorite)
+                } else {
+                    Result.Error("Food item not found")
+                }
             } else {
-                Result.Error("Food item not found")
+                Result.Error("Failed to get food details")
             }
         } catch (e: Exception) {
             Result.Error("Network error: ${e.message}")
@@ -50,11 +61,14 @@ class FoodDetailsRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getFoodDetailsData(foodItemId: String): Flow<Result<FoodDetailsData>> = flow {
+    override fun getFoodDetailsData(
+        foodItemId: String,
+        userId: String
+    ): Flow<Result<FoodDetailsData>> = flow {
         emit(Result.Loading)
 
         try {
-            val foodDetailsResult = getFoodDetails(foodItemId)
+            val foodDetailsResult = getFoodDetails(foodItemId, userId)
             if (foodDetailsResult is Result.Error) {
                 emit(Result.Error(foodDetailsResult.message))
                 return@flow

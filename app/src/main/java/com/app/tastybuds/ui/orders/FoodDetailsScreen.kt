@@ -180,7 +180,7 @@ private fun FoodDetailsContent(
                 imageUrl = foodData.foodDetails.imageUrl,
                 onCloseClick = onBackClick,
                 onFavoriteClick = onFavoriteClick,
-                isFavorite = false,
+                isFavorite = foodData.foodDetails.isFavorite,
             )
         }
 
