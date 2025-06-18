@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -43,6 +44,7 @@ import com.app.tastybuds.R
 import com.app.tastybuds.ui.login.LoginViewModel
 import com.app.tastybuds.ui.theme.PrimaryColor
 import com.app.tastybuds.util.ui.AppTopBar
+import com.app.tastybuds.util.ui.ThemeManager
 import com.app.tastybuds.util.ui.showDevelopmentToast
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -61,6 +63,8 @@ fun ProfileScreen(
     val uiState by viewModel.uiState.collectAsState()
     val loginUiState by loginViewModel.uiState.collectAsState()
     val userIdFlow by loginViewModel.getUserId().collectAsState(initial = "user_001")
+
+
 
     LaunchedEffect(userIdFlow) {
         userIdFlow?.let { userId ->
@@ -216,17 +220,17 @@ private fun ProfileContent(
                 imageVector = loadVector(R.drawable.ic_night_mode),
                 contentDescription = "Dark mode",
                 modifier = Modifier.size(24.dp),
-                tint = Color.Gray
+                tint = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.width(16.dp))
-            Text(text = "Dark mode", fontSize = 16.sp)
+            Text(text = "Dark mode", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
         }
         Switch(
             checked = isDarkMode,
             onCheckedChange = onToggleDarkMode,
             colors = SwitchDefaults.colors(
-                checkedThumbColor = PrimaryColor,
-                checkedTrackColor = PrimaryColor.copy(alpha = 0.5f)
+                checkedThumbColor = MaterialTheme.colorScheme.primary,
+                checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
             )
         )
     }

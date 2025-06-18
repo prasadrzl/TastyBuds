@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -23,17 +24,23 @@ import com.app.tastybuds.util.ui.AppNavGraph
 import com.app.tastybuds.util.ui.BottomBar
 import com.app.tastybuds.util.ui.HomeSearchBar
 import com.app.tastybuds.util.ui.HomeTopBar
+import com.app.tastybuds.util.ui.ThemeManager
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 data class BottomNavItem(val route: String, val label: String, val iconRes: Int)
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var themeManager: ThemeManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            TastyBudsTheme(darkTheme = false) {
+            val isDarkMode by themeManager.isDarkMode.collectAsStateWithLifecycle(initialValue = false)
+            TastyBudsTheme(darkTheme = isDarkMode, dynamicColor = false) {
                 SetSystemBarColor(PrimaryColor)
                 val navController = rememberNavController()
                 TastyBuddyMainScreen(navController)

@@ -54,4 +54,5 @@ fun TastyBudsTheme(
         typography = AppTypography,
         content = content
     )
+    SetSystemBarColor(colorScheme.background)
 }
