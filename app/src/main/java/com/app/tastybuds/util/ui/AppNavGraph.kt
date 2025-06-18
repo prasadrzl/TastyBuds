@@ -184,10 +184,6 @@ fun AppNavGraph(navController: NavHostController) {
 
         composable("profile") {
             ProfileScreen(
-                isDarkMode = true,
-                onToggleDarkMode = {
-
-                },
                 onBackClick = {
                     navController.popBackStack()
                 },

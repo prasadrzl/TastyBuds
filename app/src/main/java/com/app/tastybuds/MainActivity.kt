@@ -3,11 +3,14 @@ package com.app.tastybuds
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -29,6 +32,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 data class BottomNavItem(val route: String, val label: String, val iconRes: Int)
+val LocalThemeManager = compositionLocalOf<ThemeManager> {
+    error("ThemeManager not provided")
+}
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -43,14 +49,14 @@ class MainActivity : ComponentActivity() {
             TastyBudsTheme(darkTheme = isDarkMode, dynamicColor = false) {
                 SetSystemBarColor(PrimaryColor)
                 val navController = rememberNavController()
-                TastyBuddyMainScreen(navController)
+                TastyBuddyMainScreen(navController, themeManager)
             }
         }
     }
 }
 
 @Composable
-fun TastyBuddyMainScreen(navController: NavHostController) {
+fun TastyBuddyMainScreen(navController: NavHostController , themeManager: ThemeManager) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -122,7 +128,9 @@ fun TastyBuddyMainScreen(navController: NavHostController) {
                 if (currentRoute != "splash") Modifier.padding(padding) else Modifier
             )
         ) {
-            AppNavGraph(navController = navController)
+            CompositionLocalProvider(LocalThemeManager provides themeManager) {
+                AppNavGraph(navController = navController)
+            }
         }
     }
 }

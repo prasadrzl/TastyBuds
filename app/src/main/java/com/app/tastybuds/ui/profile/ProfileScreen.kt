@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,21 +41,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.app.tastybuds.LocalThemeManager
 import com.app.tastybuds.R
 import com.app.tastybuds.ui.login.LoginViewModel
 import com.app.tastybuds.ui.theme.PrimaryColor
 import com.app.tastybuds.util.ui.AppTopBar
-import com.app.tastybuds.util.ui.ThemeManager
 import com.app.tastybuds.util.ui.showDevelopmentToast
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileScreen(
     onBackClick: () -> Unit = {},
-    isDarkMode: Boolean = false,
-    onToggleDarkMode: (Boolean) -> Unit = {},
     onSignOut: () -> Unit = {},
     onEditProfile: () -> Unit = {},
     viewModel: ProfileViewModel = hiltViewModel(),
@@ -64,7 +64,8 @@ fun ProfileScreen(
     val loginUiState by loginViewModel.uiState.collectAsState()
     val userIdFlow by loginViewModel.getUserId().collectAsState(initial = "user_001")
 
-
+    val themeManager = LocalThemeManager.current
+    val isDarkMode by themeManager.isDarkMode.collectAsState(false)
 
     LaunchedEffect(userIdFlow) {
         userIdFlow?.let { userId ->
@@ -80,6 +81,8 @@ fun ProfileScreen(
             onSignOut()
         }
     }
+
+    val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -123,7 +126,11 @@ fun ProfileScreen(
                 ProfileContent(
                     user = uiState.user,
                     isDarkMode = isDarkMode,
-                    onToggleDarkMode = onToggleDarkMode,
+                    onToggleDarkMode = {
+                        scope.launch {
+                            themeManager.toggleDarkMode()
+                        }
+                    },
                     onEditProfile = onEditProfile,
                     onLogout = {
                         loginViewModel.onLogoutNavigationHandled()

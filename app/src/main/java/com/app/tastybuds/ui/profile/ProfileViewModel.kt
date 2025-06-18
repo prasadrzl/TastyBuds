@@ -5,16 +5,17 @@ import androidx.lifecycle.viewModelScope
 import com.app.tastybuds.domain.UserUseCase
 import com.app.tastybuds.domain.model.UpdateUserRequest
 import com.app.tastybuds.util.Result
-import com.app.tastybuds.util.ui.ThemeManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val userUseCase: UserUseCase,
-    private val themeManager: ThemeManager
+    private val userUseCase: UserUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -200,24 +201,5 @@ class ProfileViewModel @Inject constructor(
     fun initialize(userId: String) {
         currentUserId = userId
         handleEvent(ProfileEvent.LoadProfile)
-    }
-
-    val isDarkMode = themeManager.isDarkMode
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = false
-        )
-
-    fun toggleDarkMode() {
-        viewModelScope.launch {
-            themeManager.toggleDarkMode()
-        }
-    }
-
-    fun setDarkMode(isDark: Boolean) {
-        viewModelScope.launch {
-            themeManager.setDarkMode(isDark)
-        }
     }
 }
