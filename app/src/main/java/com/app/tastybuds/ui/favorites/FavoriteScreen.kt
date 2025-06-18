@@ -26,7 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.R
-import com.app.tastybuds.data.model.FavoriteResponse
+import com.app.tastybuds.data.model.FavoriteMenuItemUi
+import com.app.tastybuds.data.model.FavoriteRestaurantUi
 import com.app.tastybuds.ui.login.LoginViewModel
 import com.app.tastybuds.ui.theme.PrimaryColor
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -106,83 +107,81 @@ fun FavoritesTabRow(
     ) {
         Tab(
             selected = selectedTabIndex == 0,
-            onClick = { onTabSelected(0) },
-            text = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "Food Items",
-                        fontSize = 16.sp,
-                        fontWeight = if (selectedTabIndex == 0) FontWeight.Bold else FontWeight.Normal,
-                        color = if (selectedTabIndex == 0) PrimaryColor else Color.Gray
-                    )
-                    if (favoriteItemsCount > 0) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Box(
-                            modifier = Modifier
-                                .background(
-                                    color = if (selectedTabIndex == 0) PrimaryColor else Color.Gray,
-                                    shape = CircleShape
-                                )
-                                .padding(horizontal = 6.dp, vertical = 2.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = favoriteItemsCount.toString(),
-                                color = Color.White,
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold
+            onClick = { onTabSelected(0) }
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Items",
+                    fontSize = 16.sp,
+                    fontWeight = if (selectedTabIndex == 0) FontWeight.Bold else FontWeight.Normal,
+                    color = if (selectedTabIndex == 0) PrimaryColor else Color.Gray
+                )
+                if (favoriteItemsCount > 0) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = if (selectedTabIndex == 0) PrimaryColor else Color.Gray,
+                                shape = CircleShape
                             )
-                        }
+                            .padding(horizontal = 6.dp, vertical = 2.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = favoriteItemsCount.toString(),
+                            color = Color.White,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
             }
-        )
+        }
 
         Tab(
             selected = selectedTabIndex == 1,
-            onClick = { onTabSelected(1) },
-            text = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "Restaurants",
-                        fontSize = 16.sp,
-                        fontWeight = if (selectedTabIndex == 1) FontWeight.Bold else FontWeight.Normal,
-                        color = if (selectedTabIndex == 1) PrimaryColor else Color.Gray
-                    )
-                    if (favoriteRestaurantsCount > 0) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Box(
-                            modifier = Modifier
-                                .background(
-                                    color = if (selectedTabIndex == 1) PrimaryColor else Color.Gray,
-                                    shape = CircleShape
-                                )
-                                .padding(horizontal = 6.dp, vertical = 2.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = favoriteRestaurantsCount.toString(),
-                                color = Color.White,
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold
+            onClick = { onTabSelected(1) }
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Restaurants",
+                    fontSize = 16.sp,
+                    fontWeight = if (selectedTabIndex == 1) FontWeight.Bold else FontWeight.Normal,
+                    color = if (selectedTabIndex == 1) PrimaryColor else Color.Gray
+                )
+                if (favoriteRestaurantsCount > 0) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = if (selectedTabIndex == 1) PrimaryColor else Color.Gray,
+                                shape = CircleShape
                             )
-                        }
+                            .padding(horizontal = 6.dp, vertical = 2.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = favoriteRestaurantsCount.toString(),
+                            color = Color.White,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
             }
-        )
+        }
     }
 }
 
 @Composable
 fun FavoriteItemsTab(
-    favoriteItems: List<FavoriteResponse>,
+    favoriteItems: List<FavoriteMenuItemUi>,
     isLoading: Boolean,
     onItemClick: (String) -> Unit,
     onRemoveClick: (Int) -> Unit
@@ -206,13 +205,14 @@ fun FavoriteItemsTab(
 
         else -> {
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 items(favoriteItems) { favorite ->
                     FavoriteMenuItemCard(
                         favorite = favorite,
                         onClick = {
-                            favorite.menuItemId?.let { onItemClick(it) }
+                            onItemClick(favorite.menuItemId)
                         },
                         onRemoveClick = { onRemoveClick(favorite.id) }
                     )
@@ -224,7 +224,7 @@ fun FavoriteItemsTab(
 
 @Composable
 fun FavoriteRestaurantsTab(
-    favoriteRestaurants: List<FavoriteResponse>,
+    favoriteRestaurants: List<FavoriteRestaurantUi>,
     isLoading: Boolean,
     onRestaurantClick: (String) -> Unit,
     onRemoveClick: (Int) -> Unit
@@ -248,13 +248,14 @@ fun FavoriteRestaurantsTab(
 
         else -> {
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 items(favoriteRestaurants) { favorite ->
                     FavoriteRestaurantCard(
                         favorite = favorite,
                         onClick = {
-                            favorite.restaurantId?.let { onRestaurantClick(it) }
+                            onRestaurantClick(favorite.restaurantId)
                         },
                         onRemoveClick = { onRemoveClick(favorite.id) }
                     )
@@ -263,6 +264,231 @@ fun FavoriteRestaurantsTab(
         }
     }
 }
+
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun FavoriteRestaurantCard(
+    favorite: FavoriteRestaurantUi,
+    onClick: () -> Unit,
+    onRemoveClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // 🔧 FIXED: Use actual restaurant image
+            GlideImage(
+                model = if (favorite.hasValidImage) favorite.imageUrl else null,
+                contentDescription = favorite.name,
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop,
+                failure = placeholder(R.drawable.default_food),
+                loading = placeholder(R.drawable.default_food)
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                // 🔧 FIXED: Use actual restaurant name
+                Text(
+                    text = favorite.name,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // 🔧 FIXED: Use actual cuisine info
+                Text(
+                    text = favorite.cuisine,
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // 🔧 FIXED: Show actual rating
+                    if (favorite.rating > 0) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Rating",
+                            modifier = Modifier.size(12.dp),
+                            tint = Color(0xFFFFC107)
+                        )
+
+                        Spacer(modifier = Modifier.width(4.dp))
+
+                        Text(
+                            text = favorite.ratingText,
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+
+                    // 🔧 FIXED: Show actual delivery info
+                    Text(
+                        text = favorite.deliveryInfo,
+                        fontSize = 12.sp,
+                        color = Color.Gray
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // 🔧 FIXED: Show actual price range
+                Text(
+                    text = favorite.priceRange,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = PrimaryColor
+                )
+            }
+
+            IconButton(
+                onClick = onRemoveClick,
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = "Remove from favorites",
+                    tint = Color.Red,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun FavoriteMenuItemCard(
+    favorite: FavoriteMenuItemUi,
+    onClick: () -> Unit,
+    onRemoveClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // 🔧 FIXED: Use actual menu item image
+            GlideImage(
+                model = if (favorite.hasValidImage) favorite.imageUrl else null,
+                contentDescription = favorite.name,
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop,
+                failure = placeholder(R.drawable.default_food),
+                loading = placeholder(R.drawable.default_food)
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                // 🔧 FIXED: Use actual menu item name
+                Text(
+                    text = favorite.name,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // 🔧 FIXED: Use actual restaurant name
+                Text(
+                    text = favorite.restaurantName,
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // 🔧 FIXED: Show actual rating
+                    if (favorite.rating > 0) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Rating",
+                            modifier = Modifier.size(12.dp),
+                            tint = Color(0xFFFFC107)
+                        )
+
+                        Spacer(modifier = Modifier.width(4.dp))
+
+                        Text(
+                            text = favorite.ratingText,
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    // 🔧 FIXED: Show actual price
+                    Text(
+                        text = favorite.priceText,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = PrimaryColor
+                    )
+                }
+            }
+
+            IconButton(
+                onClick = onRemoveClick,
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = "Remove from favorites",
+                    tint = Color.Red,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+    }
+}
+
 
 @Composable
 fun EmptyFavoritesState(
@@ -301,224 +527,16 @@ fun EmptyFavoritesState(
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-fun FavoriteMenuItemCard(
-    favorite: FavoriteResponse,
-    onClick: () -> Unit,
-    onRemoveClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            GlideImage(
-                model = "https://via.placeholder.com/80",
-                contentDescription = "Menu Item",
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop,
-                failure = placeholder(R.drawable.default_food),
-                loading = placeholder(R.drawable.default_food)
-            )
 
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Menu Item Name",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Text(
-                    text = "Restaurant Name",
-                    fontSize = 14.sp,
-                    color = Color.Gray,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = "Rating",
-                        modifier = Modifier.size(12.dp),
-                        tint = Color(0xFFFFC107)
-                    )
-
-                    Spacer(modifier = Modifier.width(4.dp))
-
-                    Text(
-                        text = "4.5 (123)",
-                        fontSize = 12.sp,
-                        color = Color.Gray
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Text(
-                        text = "$15",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = PrimaryColor
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Text(
-                    text = "Added ${formatDate(favorite.createdAt)}",
-                    fontSize = 10.sp,
-                    color = Color.Gray
-                )
-            }
-            IconButton(
-                onClick = onRemoveClick,
-                modifier = Modifier.size(32.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Favorite,
-                    contentDescription = "Remove from favorites",
-                    tint = Color.Red,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
+fun formatDate(dateString: String): String {
+    // Simple date formatting - you can enhance this
+    return if (dateString.isNotBlank()) {
+        try {
+            dateString.substring(0, 10) // Extract YYYY-MM-DD
+        } catch (e: Exception) {
+            "recently"
         }
-    }
-}
-
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-fun FavoriteRestaurantCard(
-    favorite: FavoriteResponse,
-    onClick: () -> Unit,
-    onRemoveClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            GlideImage(
-                model = "https://via.placeholder.com/80",
-                contentDescription = "Restaurant",
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop,
-                failure = placeholder(R.drawable.default_food),
-                loading = placeholder(R.drawable.default_food)
-            )
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Restaurant Name",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Text(
-                    text = "Cuisine Type • Distance",
-                    fontSize = 14.sp,
-                    color = Color.Gray,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = "Rating",
-                        modifier = Modifier.size(12.dp),
-                        tint = Color(0xFFFFC107)
-                    )
-
-                    Spacer(modifier = Modifier.width(4.dp))
-
-                    Text(
-                        text = "4.8 (289)",
-                        fontSize = 12.sp,
-                        color = Color.Gray
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Text(
-                        text = "25 mins",
-                        fontSize = 12.sp,
-                        color = Color.Gray
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Text(
-                    text = "Added ${formatDate(favorite.createdAt)}",
-                    fontSize = 10.sp,
-                    color = Color.Gray
-                )
-            }
-
-            IconButton(
-                onClick = onRemoveClick,
-                modifier = Modifier.size(32.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Favorite,
-                    contentDescription = "Remove from favorites",
-                    tint = Color.Red,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-        }
-    }
-}
-
-private fun formatDate(dateString: String): String {
-    return try {
-        dateString.substringBefore("T")
-    } catch (e: Exception) {
-        "Recently"
+    } else {
+        "recently"
     }
 }
