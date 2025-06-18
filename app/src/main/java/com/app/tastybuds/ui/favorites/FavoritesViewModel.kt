@@ -29,27 +29,28 @@ class FavoritesViewModel @Inject constructor(
         viewModelScope.launch {
             val currentState = _uiState.value
 
-            // Find favorite to remove from UI models
             val restaurantFavorite = currentState.favoriteRestaurants.find { it.id == favoriteId }
             val menuItemFavorite = currentState.favoriteMenuItems.find { it.id == favoriteId }
 
             when {
                 restaurantFavorite != null -> {
-                    // Remove restaurant favorite
                     favoritesUseCase.toggleRestaurantFavorite(
                         userId = userId,
                         restaurantId = restaurantFavorite.restaurantId
                     ).onSuccess {
                         loadUserFavoritesWithDetails(userId)
                     }.onError {
-                        _uiState.update { it.copy(error = it.error ?: "Failed to remove restaurant favorite") }
+                        _uiState.update {
+                            it.copy(
+                                error = it.error ?: "Failed to remove restaurant favorite"
+                            )
+                        }
                     }.onLoading {
                         _uiState.update { it.copy(isLoading = true, error = null) }
                     }
                 }
 
                 menuItemFavorite != null -> {
-                    // Remove menu item favorite
                     favoritesUseCase.toggleMenuItemFavorite(
                         userId = userId,
                         menuItemId = menuItemFavorite.menuItemId,
@@ -57,7 +58,11 @@ class FavoritesViewModel @Inject constructor(
                     ).onSuccess {
                         loadUserFavoritesWithDetails(userId)
                     }.onError {
-                        _uiState.update { it.copy(error = it.error ?: "Failed to remove menu item favorite") }
+                        _uiState.update {
+                            it.copy(
+                                error = it.error ?: "Failed to remove menu item favorite"
+                            )
+                        }
                     }.onLoading {
                         _uiState.update { it.copy(isLoading = true, error = null) }
                     }
@@ -75,7 +80,6 @@ class FavoritesViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, error = null) }
 
             try {
-                // 🔧 CLEANED: Now UseCase handles mapping, ViewModel just consumes UI models
                 val restaurantFavoritesResult = favoritesUseCase.getFavoriteRestaurantsForUI(userId)
                 val menuItemFavoritesResult = favoritesUseCase.getFavoriteMenuItemsForUI(userId)
 
@@ -98,10 +102,8 @@ class FavoritesViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        // 🔧 CLEAN: Direct assignment of UI models from UseCase
                         favoriteRestaurants = restaurantUiModels,
                         favoriteMenuItems = menuItemUiModels,
-                        // Note: WithDetails can be removed if not needed elsewhere
                         favoriteRestaurantsWithDetails = emptyList(),
                         favoriteMenuItemsWithDetails = emptyList(),
                         error = error

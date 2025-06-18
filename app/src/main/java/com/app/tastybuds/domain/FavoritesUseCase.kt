@@ -1,9 +1,12 @@
 package com.app.tastybuds.domain
 
 import com.app.tastybuds.data.model.FavoriteMenuItemUi
+import com.app.tastybuds.data.model.FavoriteRestaurantUi
+import com.app.tastybuds.data.model.mapper.toMenuItemUiModel
+import com.app.tastybuds.data.model.mapper.toRestaurantUiModel
 import com.app.tastybuds.data.repo.FavoritesRepository
-import javax.inject.Inject
 import com.app.tastybuds.util.Result
+import javax.inject.Inject
 
 class FavoritesUseCase @Inject constructor(
     private val favoritesRepository: FavoritesRepository
@@ -69,31 +72,30 @@ class FavoritesUseCase @Inject constructor(
 
     suspend fun getUserFavorites(userId: String) = favoritesRepository.getUserFavorites(userId)
 
-    // 🔧 NEW: UseCase now handles mapping to UI models
-    suspend fun getFavoriteRestaurantsForUI(userId: String): Result<List<Unit>> {
+    suspend fun getFavoriteRestaurantsForUI(userId: String): Result<List<FavoriteRestaurantUi>> {
         return when (val result = favoritesRepository.getFavoriteRestaurantsWithDetails(userId)) {
             is Result.Success -> {
                 val uiModels = result.data.map { it.toRestaurantUiModel() }
                 Result.Success(uiModels)
             }
+
             is Result.Error -> Result.Error(result.message)
             is Result.Loading -> Result.Loading
         }
     }
 
-    // 🔧 NEW: UseCase now handles mapping to UI models
     suspend fun getFavoriteMenuItemsForUI(userId: String): Result<List<FavoriteMenuItemUi>> {
         return when (val result = favoritesRepository.getFavoriteMenuItemsWithDetails(userId)) {
             is Result.Success -> {
                 val uiModels = result.data.map { it.toMenuItemUiModel() }
                 Result.Success(uiModels)
             }
+
             is Result.Error -> Result.Error(result.message)
             is Result.Loading -> Result.Loading
         }
     }
 
-    // Keep original methods for backward compatibility
     suspend fun getFavoriteRestaurantsWithDetails(userId: String) =
         favoritesRepository.getFavoriteRestaurantsWithDetails(userId)
 
@@ -106,3 +108,4 @@ class FavoritesUseCase @Inject constructor(
     suspend fun isRestaurantFavorite(userId: String, restaurantId: String) =
         favoritesRepository.isRestaurantFavorite(userId, restaurantId)
 }
+
