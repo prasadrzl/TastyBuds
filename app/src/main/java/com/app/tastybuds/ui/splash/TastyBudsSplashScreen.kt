@@ -1,4 +1,4 @@
-package com.app.tastybuds
+package com.app.tastybuds.ui.splash
 
 import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.EaseOut
@@ -51,7 +51,6 @@ import com.app.tastybuds.ui.theme.SetSystemBarColor
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
 
-// Color palette
 object SplashColors {
     val BrandOrange = Color(0xFFFF7700)
     val FreshGreen = Color(0xFF4CAF50)

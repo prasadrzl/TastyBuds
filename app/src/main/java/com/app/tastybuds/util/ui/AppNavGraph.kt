@@ -30,7 +30,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.app.tastybuds.BottomNavItem
 import com.app.tastybuds.R
-import com.app.tastybuds.TastyBudsSplashScreen
+import com.app.tastybuds.ui.splash.TastyBudsSplashScreen
 import com.app.tastybuds.data.SearchResultType.FOOD_ITEM
 import com.app.tastybuds.data.SearchResultType.RESTAURANT
 import com.app.tastybuds.ui.favorites.FavoriteScreen

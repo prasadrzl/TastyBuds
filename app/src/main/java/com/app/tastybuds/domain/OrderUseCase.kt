@@ -107,6 +107,29 @@ class OrderUseCase @Inject constructor(
         }
     }
 
+    suspend fun getOrderById(orderId: String): Flow<Result<Order>> {
+        return repository.getOrderById(orderId)
+    }
+
+    fun calculateDeliveryTimeFromDistance(distanceKm: Double): Int {
+        return when {
+            distanceKm <= 2.0 -> 15
+            distanceKm <= 5.0 -> 20
+            distanceKm <= 10.0 -> 30
+            distanceKm <= 15.0 -> 40
+            else -> 50
+        }
+    }
+
+    fun getRestaurantLocation(restaurantId: String?): Pair<Double, Double> {
+        return when (restaurantId) {
+            "rest_001" -> Pair(1.3966, 103.9072)
+            "rest_002" -> Pair(1.4043, 103.9010)
+            "rest_003" -> Pair(1.3914, 103.8946)
+            else -> Pair(1.3966, 103.9072)
+        }
+    }
+
 
     private fun calculateEstimatedDeliveryTime(address: UserAddress): Int {
         return when (address.city?.lowercase()) {
