@@ -1,10 +1,14 @@
 package com.app.tastybuds.domain
 
-import com.app.tastybuds.data.model.*
+import com.app.tastybuds.data.model.CartItem
+import com.app.tastybuds.data.model.CreateOrderRequest
+import com.app.tastybuds.data.model.DeliveryAddress
+import com.app.tastybuds.data.model.Order
+import com.app.tastybuds.data.model.UserAddress
+import com.app.tastybuds.data.model.Voucher
 import com.app.tastybuds.data.repo.OrderRepository
 import com.app.tastybuds.util.Result
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -18,7 +22,7 @@ class OrderUseCase @Inject constructor(
         return repository.getUserAddresses(userId)
     }
 
-    suspend fun createOrder(
+    fun createOrder(
         userId: String,
         cartItems: List<CartItem>,
         deliveryAddress: UserAddress,
@@ -73,16 +77,13 @@ class OrderUseCase @Inject constructor(
                 specialNotes = specialNotes
             )
 
-            val result = repository.createOrder(orderRequest).first()
-            emit(result)
+            repository.createOrder(orderRequest).collect { result ->
+                emit(result)
+            }
 
         } catch (e: Exception) {
             emit(Result.Error("Failed to create order: ${e.message}"))
         }
-    }
-
-    suspend fun getUserOrders(userId: String): Flow<Result<List<Order>>> {
-        return repository.getUserOrders(userId)
     }
 
     suspend fun getAvailableVouchers(userId: String): Flow<Result<List<Voucher>>> {
@@ -109,23 +110,12 @@ class OrderUseCase @Inject constructor(
 
     private fun calculateEstimatedDeliveryTime(address: UserAddress): Int {
         return when (address.city?.lowercase()) {
-            "marina bay", "raffles place", "tanjong pagar" -> 15 // CBD areas
-            "sengkang", "punggol", "hougang" -> 20 // North East
-            "tampines", "bedok", "pasir ris" -> 25 // East
-            "jurong west", "clementi" -> 30 // West
-            "woodlands", "yishun" -> 35 // North
-            else -> 20 // Default
+            "marina bay", "raffles place", "tanjong pagar" -> 15
+            "sengkang", "punggol", "hougang" -> 20
+            "tampines", "bedok", "pasir ris" -> 25
+            "jurong west", "clementi" -> 30
+            "woodlands", "yishun" -> 35
+            else -> 20
         }
     }
 }
-
-
-data class OrderReviewData(
-    val cartItems: List<CartItem>,
-    val defaultAddress: UserAddress?,
-    val availableVouchers: List<Voucher>,
-    val recommendedItems: List<RestaurantMenuItem>,
-    val subtotal: Double,
-    val deliveryFee: Double,
-    val totalAmount: Double
-)

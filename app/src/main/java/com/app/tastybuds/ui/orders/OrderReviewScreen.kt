@@ -28,7 +28,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
 import com.app.tastybuds.data.model.*
-import com.app.tastybuds.ui.checkout.OrderReviewViewModel
 import com.app.tastybuds.ui.theme.PrimaryColor
 import com.app.tastybuds.util.ui.AppTopBar
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -49,16 +48,13 @@ fun OrderReviewScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    val cartViewModel: CartViewModel = hiltViewModel()
-    val actualCartItems by cartViewModel.cartItems.collectAsState()
 
-
-    LaunchedEffect(actualCartItems) {
-        viewModel.loadOrderReviewData(actualCartItems)
-        viewModel.loadUserAddresses()
+    LaunchedEffect(cartItems) {
+        if (cartItems.isNotEmpty()) {
+            viewModel.loadOrderReviewData(cartItems)
+        }
     }
 
-    // Handle order creation success
     LaunchedEffect(uiState.orderCreated) {
         if (uiState.orderCreated && uiState.createdOrderId != null) {
             onOrderSuccess(uiState.createdOrderId!!)
@@ -66,7 +62,6 @@ fun OrderReviewScreen(
         }
     }
 
-    // Handle errors
     LaunchedEffect(uiState.error) {
         uiState.error?.let { error ->
             Toast.makeText(context, error, Toast.LENGTH_LONG).show()
@@ -79,7 +74,6 @@ fun OrderReviewScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        // Top Bar
         AppTopBar(
             title = "Order review",
             onBackClick = onBackClick
@@ -185,7 +179,6 @@ private fun OrderReviewContent(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Delivery Address Section
         item {
             DeliveryAddressSection(
                 address = uiState.userAddress,
@@ -194,7 +187,6 @@ private fun OrderReviewContent(
             )
         }
 
-        // Order Details Section
         item {
             OrderDetailsSection(
                 cartItems = uiState.cartItems,
@@ -380,7 +372,6 @@ private fun OrderItemCard(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Food Image
         GlideImage(
             model = cartItem.image,
             contentDescription = cartItem.name,
@@ -392,7 +383,6 @@ private fun OrderItemCard(
             loading = placeholder(R.drawable.default_food)
         )
 
-        // Item Details
         Column(
             modifier = Modifier.weight(1f)
         ) {
@@ -403,7 +393,6 @@ private fun OrderItemCard(
                 color = Color.Black
             )
 
-            // Size
             cartItem.selectedSize?.let { size ->
                 Text(
                     text = "Size: ${size.name}",
@@ -412,7 +401,6 @@ private fun OrderItemCard(
                 )
             }
 
-            // Toppings
             if (cartItem.selectedToppings.isNotEmpty()) {
                 val toppingsText = cartItem.selectedToppings.joinToString(", ") { it.name }
                 Text(
@@ -424,7 +412,6 @@ private fun OrderItemCard(
                 )
             }
 
-            // Spice Level
             cartItem.selectedSpiceLevel?.let { spice ->
                 Text(
                     text = "Spiciness: ${spice.name}",
@@ -443,7 +430,6 @@ private fun OrderItemCard(
             )
         }
 
-        // Edit and Quantity Controls
         Column(
             horizontalAlignment = Alignment.End
         ) {
@@ -458,7 +444,6 @@ private fun OrderItemCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Quantity Controls
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -589,11 +574,10 @@ private fun PaymentDetailsSection(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // E-wallet Payment Method
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { /* Handle payment method change */ }
+                .clickable { }
                 .padding(vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -622,7 +606,6 @@ private fun PaymentDetailsSection(
             )
         }
 
-        // Voucher/Promotion
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -657,7 +640,6 @@ private fun PaymentDetailsSection(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Payment Breakdown
         PaymentBreakdownRow("Subtotal", subtotal)
         PaymentBreakdownRow("Delivery fee", deliveryFee)
         if (promotionDiscount > 0) {
@@ -665,7 +647,7 @@ private fun PaymentDetailsSection(
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-        Divider(color = Color.Gray.copy(alpha = 0.3f))
+        HorizontalDivider(color = Color.Gray.copy(alpha = 0.3f))
         Spacer(modifier = Modifier.height(8.dp))
 
         Row(
@@ -734,10 +716,6 @@ private fun PaymentBreakdownRow(
         )
     }
 }
-
-// ============================================
-// Preview
-// ============================================
 
 @Preview(showBackground = true)
 @Composable

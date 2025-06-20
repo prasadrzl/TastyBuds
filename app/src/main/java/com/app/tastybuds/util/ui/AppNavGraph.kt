@@ -1,5 +1,14 @@
 package com.app.tastybuds.util.ui
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -7,8 +16,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -51,6 +63,8 @@ val items = listOf(
 
 @Composable
 fun AppNavGraph(navController: NavHostController) {
+    val sharedCartViewModel: CartViewModel = hiltViewModel()
+
     NavHost(navController = navController, startDestination = "splash") {
 
         composable("splash") {
@@ -172,7 +186,49 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
 
-        composable("orders") { OrderTrackingScreen() }
+        composable("orders") {
+            val cartItems by sharedCartViewModel.cartItems.collectAsState()
+
+            if (cartItems.isNotEmpty()) {
+                OrderReviewScreen(
+                    cartItems = cartItems,
+                    onBackClick = {
+                        navController.navigate("home") {
+                            popUpTo("orders") { inclusive = true }
+                        }
+                    },
+                    onOrderSuccess = { orderId ->
+                        sharedCartViewModel.clearCart()
+                        navController.navigate("order_tracking/$orderId") {
+                            popUpTo("home") { inclusive = false }
+                        }
+                    },
+                    onChangeAddress = {
+                        navController.navigate("location")
+                    },
+                    onSelectOffer = {
+                        navController.navigate("select_offers")
+                    },
+                    onAddMore = { restaurantId ->
+                        if (restaurantId != null) {
+                            navController.navigate("restaurant_details/$restaurantId")
+                        } else {
+                            navController.navigate("home")
+                        }
+                    },
+                    onEditItem = { cartItem ->
+                        sharedCartViewModel.setEditingItem(cartItem)
+                        navController.navigate("food_details/${cartItem.menuItemId}")
+                    }
+                )
+            } else {
+                EmptyOrdersScreen(
+                    onBrowseMenuClick = {
+                        navController.navigate("home")
+                    }
+                )
+            }
+        }
 
         composable("favorites") {
             FavoriteScreen(
@@ -235,7 +291,7 @@ fun AppNavGraph(navController: NavHostController) {
             arguments = listOf(
                 navArgument("searchTerm") {
                     type = NavType.StringType
-                    defaultValue = "all" // Default value for empty search
+                    defaultValue = "all"
                     nullable = false
                 }
             )
@@ -290,21 +346,20 @@ fun AppNavGraph(navController: NavHostController) {
             arguments = listOf(navArgument("foodId") { type = NavType.StringType })
         ) { backStackEntry ->
             val foodId = backStackEntry.arguments?.getString("foodId") ?: ""
-            val cartViewModel: CartViewModel = hiltViewModel()
 
             FoodDetailsScreen(
                 foodItemId = foodId,
                 onBackClick = { navController.popBackStack() },
                 onAddToCart = { cartItem ->
-                    cartViewModel.addToCart(cartItem)
+                    sharedCartViewModel.addToCart(cartItem)
+
                     navController.navigate("order_review")
                 }
             )
         }
 
         composable("order_review") {
-            val cartViewModel: CartViewModel = hiltViewModel()
-            val cartItems by cartViewModel.cartItems.collectAsState()
+            val cartItems by sharedCartViewModel.cartItems.collectAsState()
 
             OrderReviewScreen(
                 cartItems = cartItems,
@@ -312,7 +367,7 @@ fun AppNavGraph(navController: NavHostController) {
                     navController.popBackStack()
                 },
                 onOrderSuccess = { orderId ->
-                    cartViewModel.clearCart()
+                    sharedCartViewModel.clearCart()
                     navController.navigate("order_tracking/$orderId") {
                         popUpTo("home") { inclusive = false }
                     }
@@ -331,7 +386,7 @@ fun AppNavGraph(navController: NavHostController) {
                     }
                 },
                 onEditItem = { cartItem ->
-                    cartViewModel.setEditingItem(cartItem)
+                    sharedCartViewModel.setEditingItem(cartItem)
                     navController.navigate("food_details/${cartItem.menuItemId}")
                 }
             )
@@ -355,6 +410,63 @@ fun AppNavGraph(navController: NavHostController) {
                 }
             )
         }
+
+        composable(
+            "order_tracking/{orderId}",
+            arguments = listOf(navArgument("orderId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
+            OrderTrackingScreen(
+                orderId = orderId,
+                onBackClick = {
+                    navController.navigate("home") {
+                        popUpTo("home") { inclusive = false }
+                    }
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun EmptyOrdersScreen(
+    onBrowseMenuClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+        verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.ShoppingCart,
+            contentDescription = "No Orders",
+            modifier = Modifier.size(80.dp),
+            tint = Color.Gray
+        )
+        androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "No orders yet",
+            fontSize = 20.sp,
+            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+            color = Color.Black
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Browse our delicious menu and place your first order",
+            fontSize = 14.sp,
+            color = Color.Gray
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        Button(
+            onClick = onBrowseMenuClick,
+            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                containerColor = com.app.tastybuds.ui.theme.PrimaryColor
+            )
+        ) {
+            Text("Browse Menu", color = Color.White)
+        }
     }
 }
 
@@ -363,50 +475,29 @@ fun BottomBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val screensWithoutBottomBar = listOf(
-        "profile",
-        "food_listing/",
-        "search_results/",
-        "restaurant_details/",
-        "food_details/",
-        "location",
-        "order_review",
-        "splash",
-        "all_collections",
-        "all_restaurants",
-        "all_deals",
-        "all_vouchers",
-        "see_all/"
-    )
-    val shouldShowBottomBar = !screensWithoutBottomBar.any { route ->
-        currentRoute?.startsWith(route) == true
-    }
-
-    if (shouldShowBottomBar) {
-        NavigationBar {
-            items.forEach { item ->
-                val selected = currentRoute == item.route
-                NavigationBarItem(
-                    icon = {
-                        Icon(
-                            painter = painterResource(id = item.iconRes),
-                            contentDescription = item.label,
-                            tint = if (selected) Color(0xFFFF6F00) else Color(0xFF333333)
-                        )
-                    },
-                    label = { Text(item.label) },
-                    selected = selected,
-                    onClick = {
-                        if (currentRoute != item.route) {
-                            navController.navigate(item.route) {
-                                popUpTo(navController.graph.startDestinationId) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
+    NavigationBar {
+        items.forEach { item ->
+            val selected = currentRoute == item.route
+            NavigationBarItem(
+                icon = {
+                    Icon(
+                        painter = painterResource(id = item.iconRes),
+                        contentDescription = item.label,
+                        tint = if (selected) Color(0xFFFF6F00) else Color(0xFF333333)
+                    )
+                },
+                label = { Text(item.label) },
+                selected = selected,
+                onClick = {
+                    if (currentRoute != item.route) {
+                        navController.navigate(item.route) {
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
                         }
                     }
-                )
-            }
+                }
+            )
         }
     }
 }

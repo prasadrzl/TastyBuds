@@ -3,7 +3,6 @@ package com.app.tastybuds
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -32,6 +31,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 data class BottomNavItem(val route: String, val label: String, val iconRes: Int)
+
 val LocalThemeManager = compositionLocalOf<ThemeManager> {
     error("ThemeManager not provided")
 }
@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun TastyBuddyMainScreen(navController: NavHostController , themeManager: ThemeManager) {
+fun TastyBuddyMainScreen(navController: NavHostController, themeManager: ThemeManager) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -73,6 +73,7 @@ fun TastyBuddyMainScreen(navController: NavHostController , themeManager: ThemeM
                     currentRoute?.startsWith("restaurant_details/") == true ||
                     currentRoute?.startsWith("food_details/") == true ||
                     currentRoute?.startsWith("see_all/") == true ||
+                    currentRoute?.startsWith("order_tracking/") == true ||
                     currentRoute == "location" ||
                     currentRoute == "favorites" ||
                     currentRoute == "order_review" ||
@@ -111,6 +112,7 @@ fun TastyBuddyMainScreen(navController: NavHostController , themeManager: ThemeM
                     currentRoute?.startsWith("search_results/") == true ||
                     currentRoute?.startsWith("restaurant_details/") == true ||
                     currentRoute?.startsWith("food_details/") == true ||
+                    currentRoute?.startsWith("order_tracking/") == true ||
                     currentRoute == "location" ||
                     currentRoute == "order_review" ||
                     currentRoute == "all_collections" ||

@@ -25,10 +25,13 @@ import com.google.maps.android.compose.*
 
 @Preview(showBackground = true)
 @Composable
-fun OrderTrackingScreen() {
+fun OrderTrackingScreen(
+    orderId: String = "",
+    onBackClick: () -> Unit = {}
+) {
     val context = LocalContext.current
-    val sourceLatLng = LatLng(1.390355, 103.895824) // Example
-    val destinationLatLng = LatLng(1.393762, 103.897593) // Example
+    val sourceLatLng = LatLng(1.390355, 103.895824)
+    val destinationLatLng = LatLng(1.393762, 103.897593)
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(destinationLatLng, 15f)
@@ -101,7 +104,11 @@ fun TrackingBottomSheet(modifier: Modifier = Modifier) {
                 Spacer(Modifier.width(8.dp))
                 Column {
                     Text("Delivery Address", color = Color.Gray)
-                    Text("201 Katlian No.21 Street", fontWeight = FontWeight.Medium, fontSize = 18.sp)
+                    Text(
+                        "201 Katlian No.21 Street",
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 18.sp
+                    )
                 }
             }
 
@@ -129,11 +136,19 @@ fun TrackingBottomSheet(modifier: Modifier = Modifier) {
                 }
 
                 Row {
-                    IconButton(onClick = { /* Call */ }) {
-                        Icon(Icons.Default.Phone, contentDescription = null, tint = Color(0xFFFF7700))
+                    IconButton(onClick = { }) {
+                        Icon(
+                            Icons.Default.Phone,
+                            contentDescription = null,
+                            tint = Color(0xFFFF7700)
+                        )
                     }
-                    IconButton(onClick = { /* Chat */ }) {
-                        Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFF7700))
+                    IconButton(onClick = { }) {
+                        Icon(
+                            Icons.Default.Star,
+                            contentDescription = null,
+                            tint = Color(0xFFFF7700)
+                        )
                     }
                 }
             }

@@ -6,22 +6,22 @@ import com.squareup.moshi.JsonClass
 enum class OrderStatus(val displayName: String) {
     @Json(name = "pending")
     PENDING("Pending"),
-    
+
     @Json(name = "confirmed")
     CONFIRMED("Confirmed"),
-    
+
     @Json(name = "preparing")
     PREPARING("Preparing"),
-    
+
     @Json(name = "ready")
     READY("Ready"),
-    
+
     @Json(name = "out_for_delivery")
     OUT_FOR_DELIVERY("Out for Delivery"),
-    
+
     @Json(name = "delivered")
     DELIVERED("Delivered"),
-    
+
     @Json(name = "cancelled")
     CANCELLED("Cancelled")
 }
@@ -195,15 +195,15 @@ data class Voucher(
     @Json(name = "terms_conditions")
     val termsConditions: String?
 ) {
-    // Calculate discount amount for given subtotal
     fun calculateDiscount(subtotal: Double): Double {
         if (minimumOrder != null && subtotal < minimumOrder) return 0.0
-        
+
         return when (discountType) {
             "percentage" -> {
                 val discount = subtotal * (discountValue / 100.0)
                 if (maxDiscount != null) minOf(discount, maxDiscount) else discount
             }
+
             "fixed_amount" -> discountValue
             else -> 0.0
         }
