@@ -1,5 +1,6 @@
 package com.app.tastybuds.ui.orders
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -42,11 +43,13 @@ import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -54,6 +57,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
+import com.app.tastybuds.data.model.CartItem
+import com.app.tastybuds.data.model.OrderItemSize
+import com.app.tastybuds.data.model.OrderItemTopping
+import com.app.tastybuds.data.model.OrderItemSpiceLevel
 import com.app.tastybuds.domain.model.FoodDetails
 import com.app.tastybuds.domain.model.SizeOption
 import com.app.tastybuds.domain.model.SpiceLevel
@@ -61,6 +68,7 @@ import com.app.tastybuds.domain.model.ToppingOption
 import com.app.tastybuds.ui.resturants.FoodDetailsViewModel
 import com.app.tastybuds.ui.resturants.state.FoodDetailsUiState
 import com.app.tastybuds.ui.theme.PrimaryColor
+import com.app.tastybuds.util.createCartItemFromUiState
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -69,10 +77,32 @@ import com.bumptech.glide.integration.compose.placeholder
 fun FoodDetailsScreen(
     foodItemId: String = "",
     onBackClick: () -> Unit = {},
-    onAddToCart: (Float, Int) -> Unit = { _, _ -> },
+    onAddToCart: (CartItem) -> Unit = {},
     viewModel: FoodDetailsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val cartViewModel: CartViewModel = hiltViewModel()
+    val editingItem: CartItem? by cartViewModel.editingItem.collectAsState()
+
+    LaunchedEffect(editingItem, uiState.foodDetailsData) {
+        editingItem?.let {
+            if (uiState.foodDetailsData != null) {
+                it.selectedSize?.let { size ->
+                    viewModel.updateSelectedSize(size.id)
+                }
+
+                val toppingIds = it.selectedToppings.map { it.id }
+                viewModel.updateSelectedToppings(toppingIds)
+
+                it.selectedSpiceLevel?.let { spice ->
+                    viewModel.updateSelectedSpiceLevel(spice.id)
+                }
+
+                viewModel.updateQuantity(it.quantity)
+                viewModel.updateSpecialNote(it.notes ?: "")
+            }
+        }
+    }
 
     LaunchedEffect(foodItemId) {
         viewModel.loadFoodDetails(foodItemId)
@@ -109,7 +139,16 @@ fun FoodDetailsScreen(
                     onSpiceSelected = { viewModel.updateSelectedSpiceLevel(it) },
                     onNoteChange = { viewModel.updateSpecialNote(it) },
                     onQuantityChange = { viewModel.updateQuantity(it) },
-                    onAddToCart = { onAddToCart(uiState.totalPrice, uiState.quantity) },
+                    onAddToCart = { cartItem ->
+                        if (editingItem != null) {
+                            // Update existing item
+                            cartViewModel.updateCartItem(editingItem!!, cartItem)
+                            onBackClick() // Go back to order review
+                        } else {
+                            cartViewModel.addToCart(cartItem)
+                            onAddToCart(cartItem)
+                        }
+                    },
                     onFavoriteClick = { viewModel.toggleFavorite() },
                     onComboClick = {}
                 )
@@ -166,7 +205,7 @@ private fun FoodDetailsContent(
     onSpiceSelected: (String) -> Unit,
     onNoteChange: (String) -> Unit,
     onQuantityChange: (Int) -> Unit,
-    onAddToCart: () -> Unit,
+    onAddToCart: (CartItem) -> Unit,
     onFavoriteClick: () -> Unit,
     onComboClick: (String) -> Unit
 ) {
@@ -261,6 +300,9 @@ private fun FoodDetailsContent(
         onQuantityChange = onQuantityChange,
         totalPrice = uiState.totalPrice,
         onAddToCart = onAddToCart,
+        createCartItem = {
+            createCartItemFromUiState(foodData, uiState)
+        },
         modifier = Modifier
     )
 }
@@ -659,9 +701,12 @@ fun BottomControls(
     quantity: Int,
     onQuantityChange: (Int) -> Unit,
     totalPrice: Float,
-    onAddToCart: () -> Unit,
+    onAddToCart: (CartItem) -> Unit,
+    createCartItem: () -> CartItem?,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
@@ -720,7 +765,18 @@ fun BottomControls(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = onAddToCart,
+                    onClick = {
+                        val cartItem = createCartItem()
+                        if (cartItem != null) {
+                            onAddToCart(cartItem)
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Please select required options (Size and Spiciness)",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),

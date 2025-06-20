@@ -7,16 +7,20 @@ import com.app.tastybuds.data.model.CategoryResponse
 import com.app.tastybuds.data.model.CategoryRestaurantResponse
 import com.app.tastybuds.data.model.CollectionResponse
 import com.app.tastybuds.data.model.ComboResponse
+import com.app.tastybuds.data.model.CreateOrderRequest
 import com.app.tastybuds.data.model.DealResponse
 import com.app.tastybuds.data.model.FavoriteResponse
 import com.app.tastybuds.data.model.FavoriteWithMenuItemResponse
 import com.app.tastybuds.data.model.FavoriteWithRestaurantResponse
 import com.app.tastybuds.data.model.MenuItemResponse
 import com.app.tastybuds.data.model.MenuItemWithRestaurantResponse
+import com.app.tastybuds.data.model.Order
 import com.app.tastybuds.data.model.RestaurantDetailsResponse
 import com.app.tastybuds.data.model.RestaurantResponse
 import com.app.tastybuds.data.model.RestaurantReviewResponse
 import com.app.tastybuds.data.model.RestaurantVoucherResponse
+import com.app.tastybuds.data.model.UserAddress
+import com.app.tastybuds.data.model.Voucher
 import com.app.tastybuds.data.model.VoucherCountResponse
 import com.app.tastybuds.domain.model.UpdateProfileRequest
 import com.app.tastybuds.domain.model.UserResponse
@@ -230,4 +234,41 @@ interface TastyBudsApiService {
         @Query("menu_item_id") menuItemFilter: String = "not.is.null",
         @Query("select") select: String = "*,menu_items(*,restaurants(name,id))"
     ): Response<List<FavoriteWithMenuItemResponse>>
+
+    @GET("user_addresses")
+    suspend fun getUserAddresses(
+        @Query("user_id") userId: String? = null,
+        @Query("select") select: String = "*"
+    ): Response<List<UserAddress>>
+
+    @POST("orders")
+    suspend fun createOrder(
+        @Body orderRequest: CreateOrderRequest
+    ): Response<List<Order>>
+
+    @GET("orders")
+    suspend fun getUserOrders(
+        @Query("user_id") userId: String,
+        @Query("order") order: String = "created_at.desc",
+        @Query("select") select: String = "*"
+    ): Response<List<Order>>
+
+    @GET("orders")
+    suspend fun getOrderById(
+        @Query("id") orderId: String,
+        @Query("select") select: String = "*"
+    ): Response<List<Order>>
+
+    @PATCH("orders")
+    suspend fun updateOrderStatus(
+        @Query("id") orderId: String,
+        @Body statusUpdate: Map<String, String>
+    ): Response<List<Order>>
+
+    @GET("vouchers")
+    suspend fun getGlobalVouchers(
+        @Query("user_id") userId: String? = null,
+        @Query("is_used") isUsed: String = "eq.false",
+        @Query("select") select: String = "*"
+    ): Response<List<Voucher>>
 }

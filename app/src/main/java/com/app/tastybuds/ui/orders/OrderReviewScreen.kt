@@ -1,8 +1,7 @@
 package com.app.tastybuds.ui.orders
 
-import androidx.compose.foundation.Image
+import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,9 +9,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,66 +17,62 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
+import com.app.tastybuds.data.model.*
+import com.app.tastybuds.ui.checkout.OrderReviewViewModel
 import com.app.tastybuds.ui.theme.PrimaryColor
 import com.app.tastybuds.util.ui.AppTopBar
-
-// Data Models
-data class OrderItem(
-    val id: String,
-    val name: String,
-    val size: String,
-    val toppings: List<String>,
-    val sauce: String = "",
-    val spiciness: String,
-    val price: Int,
-    val quantity: Int,
-    val imageRes: Int
-)
-
-data class AlsoOrderedItem(
-    val id: String,
-    val name: String,
-    val price: Int,
-    val imageRes: Int
-)
-
-data class PaymentMethod(
-    val id: String,
-    val name: String,
-    val iconRes: Int
-)
-
-data class OrderSummary(
-    val subtotal: Double,
-    val deliveryFee: Double,
-    val promotion: Double,
-    val paymentMethod: String,
-    val total: Double
-)
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
 
 @Composable
 fun OrderReviewScreen(
+    cartItems: List<CartItem>,
     onBackClick: () -> Unit = {},
+    onOrderSuccess: (String) -> Unit = {},
     onChangeAddress: () -> Unit = {},
-    onAddMore: () -> Unit = {},
-    onEditItem: (String) -> Unit = {},
-    onQuantityChange: (String, Int) -> Unit = { _, _ -> },
-    onAlsoOrderedClick: (String) -> Unit = {},
-    onPaymentMethodClick: () -> Unit = {},
-    onPromotionClick: () -> Unit = {},
-    onOrderNow: () -> Unit = {}
+    onSelectOffer: () -> Unit = {},
+    onAddMore: (String?) -> Unit = {},
+    onEditItem: (CartItem) -> Unit = {},
+    viewModel: OrderReviewViewModel = hiltViewModel()
 ) {
-    val orderItems = getOrderItems()
-    val alsoOrderedItems = getAlsoOrderedItems()
-    val orderSummary = getOrderSummary()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    val cartViewModel: CartViewModel = hiltViewModel()
+    val actualCartItems by cartViewModel.cartItems.collectAsState()
+
+
+    LaunchedEffect(actualCartItems) {
+        viewModel.loadOrderReviewData(actualCartItems)
+        viewModel.loadUserAddresses()
+    }
+
+    // Handle order creation success
+    LaunchedEffect(uiState.orderCreated) {
+        if (uiState.orderCreated && uiState.createdOrderId != null) {
+            onOrderSuccess(uiState.createdOrderId!!)
+            viewModel.resetOrderCreatedState()
+        }
+    }
+
+    // Handle errors
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let { error ->
+            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+            viewModel.clearError()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -92,80 +85,187 @@ fun OrderReviewScreen(
             onBackClick = onBackClick
         )
 
-        LazyColumn(
-            modifier = Modifier.weight(1f),
-            contentPadding = PaddingValues(vertical = 16.dp)
-        ) {
-            item {
-                // Delivery Address Section
-                DeliveryAddressSection(
-                    address = "201 Katlian No.21 Street",
-                    deliveryTime = "20 mins",
-                    onChangeAddress = onChangeAddress
-                )
+        when {
+            uiState.isLoading -> {
+                LoadingContent()
             }
 
-            item {
-                Spacer(modifier = Modifier.height(24.dp))
+            uiState.cartItems.isEmpty() -> {
+                EmptyCartContent(onBackClick = onBackClick)
             }
 
-            item {
-                // Order Details Section
-                OrderDetailsSection(
-                    orderItems = orderItems,
+            else -> {
+                OrderReviewContent(
+                    uiState = uiState,
+                    onChangeAddress = onChangeAddress,
+                    onSelectOffer = onSelectOffer,
+                    onQuantityChange = viewModel::updateItemQuantity,
+                    onRemoveItem = viewModel::removeItem,
+                    onOrderNow = {
+                        Toast.makeText(
+                            context,
+                            "E-wallet payment is under development",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        viewModel.createOrder()
+                    },
+                    estimatedDeliveryTime = viewModel.getEstimatedDeliveryTime(),
+                    isCreatingOrder = uiState.isCreatingOrder,
                     onAddMore = onAddMore,
-                    onEditItem = onEditItem,
-                    onQuantityChange = onQuantityChange
+                    onEditItem = onEditItem
                 )
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-
-            item {
-                // Also Ordered Section
-                AlsoOrderedSection(
-                    items = alsoOrderedItems,
-                    onItemClick = onAlsoOrderedClick
-                )
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-
-            item {
-                // Payment Details Section
-                PaymentDetailsSection(
-                    orderSummary = orderSummary,
-                    onPaymentMethodClick = onPaymentMethodClick,
-                    onPromotionClick = onPromotionClick
-                )
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(120.dp)) // Space for bottom button
             }
         }
-
-        // Bottom Order Button
-        BottomOrderButton(
-            total = orderSummary.total,
-            onOrderNow = onOrderNow
-        )
     }
 }
 
 @Composable
-fun DeliveryAddressSection(
-    address: String,
+private fun LoadingContent() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(color = PrimaryColor)
+    }
+}
+
+@Composable
+private fun EmptyCartContent(onBackClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.ShoppingCart,
+            contentDescription = "Empty Cart",
+            modifier = Modifier.size(80.dp),
+            tint = Color.Gray
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Your cart is empty",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Add some delicious items to your cart",
+            fontSize = 14.sp,
+            color = Color.Gray
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        Button(
+            onClick = onBackClick,
+            colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
+        ) {
+            Text("Browse Menu", color = Color.White)
+        }
+    }
+}
+
+@Composable
+private fun OrderReviewContent(
+    uiState: OrderReviewUiState,
+    onChangeAddress: () -> Unit,
+    onSelectOffer: () -> Unit,
+    onQuantityChange: (CartItem, Int) -> Unit,
+    onRemoveItem: (CartItem) -> Unit,
+    onOrderNow: () -> Unit,
+    onAddMore: (String?) -> Unit,
+    onEditItem: (CartItem) -> Unit,
+    estimatedDeliveryTime: String,
+    isCreatingOrder: Boolean
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // Delivery Address Section
+        item {
+            DeliveryAddressSection(
+                address = uiState.userAddress,
+                deliveryTime = estimatedDeliveryTime,
+                onChangeAddress = onChangeAddress
+            )
+        }
+
+        // Order Details Section
+        item {
+            OrderDetailsSection(
+                cartItems = uiState.cartItems,
+                onQuantityChange = onQuantityChange,
+                onRemoveItem = onRemoveItem,
+                onAddMore = {
+                    val restaurantId = uiState.cartItems.firstOrNull()?.restaurantId
+                    onAddMore(restaurantId)
+                },
+                onEditItem = onEditItem
+            )
+        }
+
+        if (uiState.recommendedItems.isNotEmpty()) {
+            item {
+                AlsoOrderedSection(
+                    recommendedItems = uiState.recommendedItems
+                )
+            }
+        }
+
+        item {
+            PaymentDetailsSection(
+                subtotal = uiState.subtotal,
+                deliveryFee = uiState.deliveryFee,
+                promotionDiscount = uiState.promotionDiscount,
+                totalAmount = uiState.totalAmount,
+                selectedVoucher = uiState.selectedVoucher,
+                onSelectOffer = onSelectOffer
+            )
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = onOrderNow,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
+                shape = RoundedCornerShape(28.dp),
+                enabled = !isCreatingOrder && uiState.userAddress != null
+            ) {
+                if (isCreatingOrder) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Creating Order...", color = Color.White, fontSize = 16.sp)
+                } else {
+                    Text(
+                        text = "Order now",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DeliveryAddressSection(
+    address: UserAddress?,
     deliveryTime: String,
     onChangeAddress: () -> Unit
 ) {
-    Column(
-        modifier = Modifier.padding(horizontal = 20.dp)
-    ) {
+    Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -177,14 +277,12 @@ fun DeliveryAddressSection(
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
-
-            TextButton(onClick = onChangeAddress) {
-                Text(
-                    text = "Change address",
-                    fontSize = 14.sp,
-                    color = PrimaryColor
-                )
-            }
+            Text(
+                text = "Change address",
+                fontSize = 14.sp,
+                color = PrimaryColor,
+                modifier = Modifier.clickable { onChangeAddress() }
+            )
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -193,18 +291,17 @@ fun DeliveryAddressSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_user_location),
+                imageVector = Icons.Default.LocationOn,
                 contentDescription = "Location",
-                modifier = Modifier.size(20.dp),
-                tint = PrimaryColor
+                tint = PrimaryColor,
+                modifier = Modifier.size(20.dp)
             )
-
             Spacer(modifier = Modifier.width(8.dp))
-
             Text(
-                text = address,
-                fontSize = 16.sp,
-                color = Color.Black
+                text = address?.addressLine ?: "No address selected",
+                fontSize = 14.sp,
+                color = Color.Black,
+                modifier = Modifier.weight(1f)
             )
         }
 
@@ -216,15 +313,13 @@ fun DeliveryAddressSection(
             Icon(
                 painter = painterResource(id = R.drawable.ic_back_arrow), // Clock icon
                 contentDescription = "Time",
-                modifier = Modifier.size(20.dp),
-                tint = PrimaryColor
+                tint = PrimaryColor,
+                modifier = Modifier.size(20.dp)
             )
-
             Spacer(modifier = Modifier.width(8.dp))
-
             Text(
                 text = deliveryTime,
-                fontSize = 16.sp,
+                fontSize = 14.sp,
                 color = Color.Black
             )
         }
@@ -232,15 +327,14 @@ fun DeliveryAddressSection(
 }
 
 @Composable
-fun OrderDetailsSection(
-    orderItems: List<OrderItem>,
-    onAddMore: () -> Unit,
-    onEditItem: (String) -> Unit,
-    onQuantityChange: (String, Int) -> Unit
+private fun OrderDetailsSection(
+    cartItems: List<CartItem>,
+    onQuantityChange: (CartItem, Int) -> Unit,
+    onRemoveItem: (CartItem) -> Unit,
+    onAddMore: () -> Unit = {},
+    onEditItem: (CartItem) -> Unit = {}
 ) {
-    Column(
-        modifier = Modifier.padding(horizontal = 20.dp)
-    ) {
+    Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -252,191 +346,170 @@ fun OrderDetailsSection(
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
-
-            TextButton(onClick = onAddMore) {
-                Text(
-                    text = "Add more",
-                    fontSize = 14.sp,
-                    color = PrimaryColor
-                )
-            }
+            Text(
+                text = "Add more",
+                fontSize = 14.sp,
+                color = PrimaryColor,
+                modifier = Modifier.clickable { onAddMore() }
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        orderItems.forEachIndexed { index, item ->
+        cartItems.forEach { cartItem ->
             OrderItemCard(
-                item = item,
-                onEditClick = { onEditItem(item.id) },
-                onQuantityChange = { newQuantity ->
-                    onQuantityChange(item.id, newQuantity)
-                }
+                cartItem = cartItem,
+                onQuantityChange = { newQuantity -> onQuantityChange(cartItem, newQuantity) },
+                onRemove = { onRemoveItem(cartItem) },
+                onEdit = { onEditItem(cartItem) }
             )
-
-            if (index < orderItems.size - 1) {
-                Spacer(modifier = Modifier.height(16.dp))
-                HorizontalDivider(
-                    thickness = 1.dp,
-                    color = Color(0xFFE0E0E0)
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-            }
+            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun OrderItemCard(
-    item: OrderItem,
-    onEditClick: () -> Unit,
-    onQuantityChange: (Int) -> Unit
+private fun OrderItemCard(
+    cartItem: CartItem,
+    onQuantityChange: (Int) -> Unit,
+    onRemove: () -> Unit,
+    onEdit: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.Top
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         // Food Image
-        Image(
-            painter = painterResource(id = item.imageRes),
-            contentDescription = item.name,
+        GlideImage(
+            model = cartItem.image,
+            contentDescription = cartItem.name,
             modifier = Modifier
-                .size(80.dp)
+                .size(60.dp)
                 .clip(RoundedCornerShape(8.dp)),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
+            failure = placeholder(R.drawable.default_food),
+            loading = placeholder(R.drawable.default_food)
         )
-
-        Spacer(modifier = Modifier.width(16.dp))
 
         // Item Details
         Column(
             modifier = Modifier.weight(1f)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
-            ) {
-                Text(
-                    text = item.name,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black,
-                    modifier = Modifier.weight(1f)
-                )
-
-                IconButton(
-                    onClick = onEditClick,
-                    modifier = Modifier.size(24.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit",
-                        modifier = Modifier.size(16.dp),
-                        tint = Color.Gray
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
             Text(
-                text = "Size: ${item.size}",
-                fontSize = 14.sp,
-                color = Color.Gray
+                text = cartItem.name,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black
             )
 
-            if (item.toppings.isNotEmpty()) {
+            // Size
+            cartItem.selectedSize?.let { size ->
                 Text(
-                    text = "Topping: ${item.toppings.joinToString(", ")}",
-                    fontSize = 14.sp,
+                    text = "Size: ${size.name}",
+                    fontSize = 12.sp,
                     color = Color.Gray
                 )
             }
 
-            if (item.sauce.isNotEmpty()) {
+            // Toppings
+            if (cartItem.selectedToppings.isNotEmpty()) {
+                val toppingsText = cartItem.selectedToppings.joinToString(", ") { it.name }
                 Text(
-                    text = "Sauce: ${item.sauce}",
-                    fontSize = 14.sp,
+                    text = "Topping: $toppingsText",
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            // Spice Level
+            cartItem.selectedSpiceLevel?.let { spice ->
+                Text(
+                    text = "Spiciness: ${spice.name}",
+                    fontSize = 12.sp,
                     color = Color.Gray
                 )
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Spiciness: ${item.spiciness}",
-                fontSize = 14.sp,
-                color = Color.Gray
+                text = "$${cartItem.calculateItemTotal()}",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+        }
+
+        // Edit and Quantity Controls
+        Column(
+            horizontalAlignment = Alignment.End
+        ) {
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = "Edit",
+                modifier = Modifier
+                    .size(20.dp)
+                    .clickable { onEdit() },
+                tint = Color.Gray
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Quantity Controls
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                IconButton(
+                    onClick = {
+                        if (cartItem.quantity > 1) {
+                            onQuantityChange(cartItem.quantity - 1)
+                        } else {
+                            onRemove()
+                        }
+                    },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = if (cartItem.quantity > 1) Icons.Default.Add else Icons.Default.Delete,
+                        contentDescription = if (cartItem.quantity > 1) "Decrease" else "Remove",
+                        tint = Color.Gray,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+
                 Text(
-                    text = "$${item.price}",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
+                    text = cartItem.quantity.toString(),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
                     color = Color.Black
                 )
 
-                // Quantity Controls
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                IconButton(
+                    onClick = { onQuantityChange(cartItem.quantity + 1) },
+                    modifier = Modifier.size(32.dp)
                 ) {
-                    IconButton(
-                        onClick = { 
-                            if (item.quantity > 1) {
-                                onQuantityChange(item.quantity - 1)
-                            }
-                        },
-                        modifier = Modifier
-                            .size(32.dp)
-                            .border(1.dp, Color.Gray.copy(alpha = 0.3f), RoundedCornerShape(6.dp))
-                    ) {
-                        Text(
-                            text = "−",
-                            fontSize = 16.sp,
-                            color = Color.Gray
-                        )
-                    }
-
-                    Text(
-                        text = item.quantity.toString(),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        textAlign = TextAlign.Center
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Increase",
+                        tint = PrimaryColor,
+                        modifier = Modifier.size(16.dp)
                     )
-
-                    IconButton(
-                        onClick = { onQuantityChange(item.quantity + 1) },
-                        modifier = Modifier
-                            .size(32.dp)
-                            .background(PrimaryColor, RoundedCornerShape(6.dp))
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Add",
-                            tint = Color.White,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun AlsoOrderedSection(
-    items: List<AlsoOrderedItem>,
-    onItemClick: (String) -> Unit
+private fun AlsoOrderedSection(
+    recommendedItems: List<RestaurantMenuItem>
 ) {
-    Column(
-        modifier = Modifier.padding(horizontal = 20.dp)
-    ) {
+    Column {
         Text(
             text = "Also ordered",
             fontSize = 18.sp,
@@ -444,69 +517,69 @@ fun AlsoOrderedSection(
             color = Color.Black
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(horizontal = 4.dp)
         ) {
-            items(items) { item ->
-                AlsoOrderedItemCard(
-                    item = item,
-                    onClick = { onItemClick(item.id) }
-                )
+            items(recommendedItems) { item ->
+                Card(
+                    modifier = Modifier
+                        .width(120.dp)
+                        .clickable { /* Handle item click */ },
+                    shape = RoundedCornerShape(8.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(8.dp)
+                    ) {
+                        GlideImage(
+                            model = item.imageUrl,
+                            contentDescription = item.name,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(80.dp)
+                                .clip(RoundedCornerShape(6.dp)),
+                            contentScale = ContentScale.Crop,
+                            failure = placeholder(R.drawable.default_food),
+                            loading = placeholder(R.drawable.default_food)
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = item.name,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color.Black,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+
+                        Text(
+                            text = "$${item.price}",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = PrimaryColor
+                        )
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-fun AlsoOrderedItemCard(
-    item: AlsoOrderedItem,
-    onClick: () -> Unit
+private fun PaymentDetailsSection(
+    subtotal: Double,
+    deliveryFee: Double,
+    promotionDiscount: Double,
+    totalAmount: Double,
+    selectedVoucher: Voucher?,
+    onSelectOffer: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .width(120.dp)
-            .clickable { onClick() }
-    ) {
-        Image(
-            painter = painterResource(id = item.imageRes),
-            contentDescription = item.name,
-            modifier = Modifier
-                .size(120.dp)
-                .clip(RoundedCornerShape(8.dp)),
-            contentScale = ContentScale.Crop
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = item.name,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.Black,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
-
-        Text(
-            text = "$${item.price}",
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
-    }
-}
-
-@Composable
-fun PaymentDetailsSection(
-    orderSummary: OrderSummary,
-    onPaymentMethodClick: () -> Unit,
-    onPromotionClick: () -> Unit
-) {
-    Column(
-        modifier = Modifier.padding(horizontal = 20.dp)
-    ) {
+    Column {
         Text(
             text = "Payment details",
             fontSize = 18.sp,
@@ -516,239 +589,190 @@ fun PaymentDetailsSection(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Payment Method Row
-        PaymentRow(
-            icon = R.drawable.ic_ewallet,
-            title = "E-wallet",
-            onClick = onPaymentMethodClick
-        )
+        // E-wallet Payment Method
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { /* Handle payment method change */ }
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ShoppingCart,
+                    contentDescription = "E-wallet",
+                    tint = Color.Gray,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = "E-wallet",
+                    fontSize = 16.sp,
+                    color = Color.Black
+                )
+            }
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = "Change",
+                tint = Color.Gray,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+
+        // Voucher/Promotion
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onSelectOffer() }
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Promotion",
+                    tint = Color.Gray,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = selectedVoucher?.title ?: "- 30% for bill over $50",
+                    fontSize = 16.sp,
+                    color = Color.Black
+                )
+            }
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = "Change",
+                tint = Color.Gray,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Payment Breakdown
+        PaymentBreakdownRow("Subtotal", subtotal)
+        PaymentBreakdownRow("Delivery fee", deliveryFee)
+        if (promotionDiscount > 0) {
+            PaymentBreakdownRow("Promotion", -promotionDiscount, isDiscount = true)
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Divider(color = Color.Gray.copy(alpha = 0.3f))
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Payment method",
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
+            Text(
+                text = "E-wallet",
+                fontSize = 14.sp,
+                color = Color.Black
+            )
+        }
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        HorizontalDivider(
-            thickness = 1.dp,
-            color = Color(0xFFE0E0E0)
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Promotion Row
-        PaymentRow(
-            icon = R.drawable.ic_offer_percentage,
-            title = "- 30% for bill over $50",
-            onClick = onPromotionClick
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Order Summary
-        OrderSummarySection(orderSummary = orderSummary)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Total",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+            Text(
+                text = "$${String.format("%.1f", totalAmount)}",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+        }
     }
 }
 
 @Composable
-fun PaymentRow(
-    icon: Int,
-    title: String,
-    onClick: () -> Unit
+private fun PaymentBreakdownRow(
+    label: String,
+    amount: Double,
+    isDiscount: Boolean = false
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            painter = painterResource(id = icon),
-            contentDescription = null,
-            modifier = Modifier.size(20.dp),
-            tint = Color.Black
-        )
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        Text(
-            text = title,
-            fontSize = 16.sp,
-            color = Color.Black,
-            modifier = Modifier.weight(1f)
-        )
-
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = "Arrow",
-            tint = Color.Gray,
-            modifier = Modifier.size(20.dp)
-        )
-    }
-}
-
-@Composable
-fun OrderSummarySection(orderSummary: OrderSummary) {
-    Column {
-        SummaryRow(
-            label = "Subtotal",
-            value = "$${orderSummary.subtotal.toInt()}"
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        SummaryRow(
-            label = "Delivery fee",
-            value = "$${orderSummary.deliveryFee.toInt()}"
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        SummaryRow(
-            label = "Promotion",
-            value = "-$${orderSummary.promotion}",
-            valueColor = PrimaryColor
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        HorizontalDivider(
-            thickness = 1.dp,
-            color = Color(0xFFE0E0E0)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        SummaryRow(
-            label = "Payment method",
-            value = orderSummary.paymentMethod
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        HorizontalDivider(
-            thickness = 2.dp,
-            color = Color(0xFFE0E0E0)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        SummaryRow(
-            label = "Total",
-            value = "$${orderSummary.total}",
-            labelWeight = FontWeight.Bold,
-            valueWeight = FontWeight.Bold,
-            valueSize = 20.sp
-        )
-    }
-}
-
-@Composable
-fun SummaryRow(
-    label: String,
-    value: String,
-    labelWeight: FontWeight = FontWeight.Normal,
-    valueWeight: FontWeight = FontWeight.Normal,
-    valueColor: Color = Color.Black,
-    valueSize: androidx.compose.ui.unit.TextUnit = 16.sp
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
+            .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = label,
-            fontSize = 16.sp,
-            fontWeight = labelWeight,
+            fontSize = 14.sp,
             color = Color.Gray
         )
-
         Text(
-            text = value,
-            fontSize = valueSize,
-            fontWeight = valueWeight,
-            color = valueColor
+            text = if (isDiscount) "-$${String.format("%.1f", amount.coerceAtLeast(0.0))}"
+            else "$${String.format("%.1f", amount)}",
+            fontSize = 14.sp,
+            color = if (isDiscount) Color.Red else Color.Black
         )
     }
 }
 
-@Composable
-fun BottomOrderButton(
-    total: Double,
-    onOrderNow: () -> Unit
-) {
-    Button(
-        onClick = onOrderNow,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp)
-            .padding(horizontal = 20.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
-        shape = RoundedCornerShape(28.dp)
-    ) {
-        Text(
-            text = "Order now",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.White
-        )
-    }
-}
-
-// Dummy Data Functions
-private fun getOrderItems(): List<OrderItem> {
-    return listOf(
-        OrderItem(
-            id = "1",
-            name = "Fried Chicken",
-            size = "L",
-            toppings = listOf("Corn", "Cheese Cheddar"),
-            spiciness = "Hot",
-            price = 32,
-            quantity = 1,
-            imageRes = R.drawable.default_food
-        ),
-        OrderItem(
-            id = "2",
-            name = "Chicken Salad",
-            size = "M",
-            toppings = emptyList(),
-            sauce = "Roasted Sesame",
-            spiciness = "No",
-            price = 10,
-            quantity = 1,
-            imageRes = R.drawable.default_food
-        )
-    )
-}
-
-private fun getAlsoOrderedItems(): List<AlsoOrderedItem> {
-    return listOf(
-        AlsoOrderedItem(
-            id = "1",
-            name = "Sauté Chicken Rice",
-            price = 15,
-            imageRes = R.drawable.default_food
-        ),
-        AlsoOrderedItem(
-            id = "2",
-            name = "Spicy Noodles",
-            price = 12,
-            imageRes = R.drawable.default_food
-        )
-    )
-}
-
-private fun getOrderSummary(): OrderSummary {
-    return OrderSummary(
-        subtotal = 32.0,
-        deliveryFee = 2.0,
-        promotion = 3.2,
-        paymentMethod = "E-wallet",
-        total = 30.8
-    )
-}
+// ============================================
+// Preview
+// ============================================
 
 @Preview(showBackground = true)
 @Composable
 fun OrderReviewScreenPreview() {
-    OrderReviewScreen()
+    val sampleCartItems = listOf(
+        CartItem(
+            menuItemId = "menu_001",
+            name = "Fried Chicken",
+            image = null,
+            basePrice = 15.0,
+            selectedSize = OrderItemSize("size_large", "L", 10.0),
+            selectedToppings = listOf(
+                OrderItemTopping("topping_corn", "Corn", 2.0),
+                OrderItemTopping("topping_cheese", "Cheese Cheddar", 5.0)
+            ),
+            selectedSpiceLevel = OrderItemSpiceLevel("spice_hot", "Hot", 3),
+            quantity = 1,
+            notes = null,
+            restaurantId = "rest_001"
+        ),
+        CartItem(
+            menuItemId = "menu_002",
+            name = "Chicken Salad",
+            image = null,
+            basePrice = 10.0,
+            selectedSize = OrderItemSize("size_medium", "M", 0.0),
+            selectedToppings = emptyList(),
+            selectedSpiceLevel = null,
+            quantity = 1,
+            notes = null,
+            restaurantId = "rest_001"
+        )
+    )
+
+    OrderReviewScreen(
+        cartItems = sampleCartItems
+    )
 }

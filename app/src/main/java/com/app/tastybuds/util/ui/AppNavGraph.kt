@@ -5,6 +5,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -31,6 +32,7 @@ import com.app.tastybuds.ui.location.LocationTrackerScreen
 import com.app.tastybuds.ui.location.OrderTrackingScreen
 import com.app.tastybuds.ui.login.AuthCheckScreen
 import com.app.tastybuds.ui.login.LoginScreen
+import com.app.tastybuds.ui.orders.CartViewModel
 import com.app.tastybuds.ui.orders.FoodDetailsScreen
 import com.app.tastybuds.ui.orders.OrderReviewScreen
 import com.app.tastybuds.ui.profile.ProfileScreen
@@ -50,6 +52,7 @@ val items = listOf(
 @Composable
 fun AppNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "splash") {
+
         composable("splash") {
             TastyBudsSplashScreen(
                 onSplashComplete = {
@@ -170,6 +173,7 @@ fun AppNavGraph(navController: NavHostController) {
         }
 
         composable("orders") { OrderTrackingScreen() }
+
         composable("favorites") {
             FavoriteScreen(
                 onRestaurantClick = { restaurantId ->
@@ -180,6 +184,7 @@ fun AppNavGraph(navController: NavHostController) {
                 }
             )
         }
+
         composable("inbox") { ChatBoxScreen() }
 
         composable("profile") {
@@ -280,40 +285,54 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
 
-        composable("food_details/{foodId}") { backStackEntry ->
+        composable(
+            "food_details/{foodId}",
+            arguments = listOf(navArgument("foodId") { type = NavType.StringType })
+        ) { backStackEntry ->
             val foodId = backStackEntry.arguments?.getString("foodId") ?: ""
+            val cartViewModel: CartViewModel = hiltViewModel()
+
             FoodDetailsScreen(
                 foodItemId = foodId,
-                onBackClick = {
-                    navController.popBackStack()
-                },
-                onAddToCart = { totalPrice, quantity ->
+                onBackClick = { navController.popBackStack() },
+                onAddToCart = { cartItem ->
+                    cartViewModel.addToCart(cartItem)
                     navController.navigate("order_review")
                 }
             )
         }
 
         composable("order_review") {
+            val cartViewModel: CartViewModel = hiltViewModel()
+            val cartItems by cartViewModel.cartItems.collectAsState()
+
             OrderReviewScreen(
+                cartItems = cartItems,
                 onBackClick = {
                     navController.popBackStack()
+                },
+                onOrderSuccess = { orderId ->
+                    cartViewModel.clearCart()
+                    navController.navigate("order_tracking/$orderId") {
+                        popUpTo("home") { inclusive = false }
+                    }
                 },
                 onChangeAddress = {
                     navController.navigate("location")
                 },
-                onAddMore = {
-                    navController.popBackStack()
+                onSelectOffer = {
+                    navController.navigate("select_offers")
                 },
-                onEditItem = { itemId ->
-                    navController.navigate("food_details/$itemId")
-                },
-                onAlsoOrderedClick = { itemId ->
-                    navController.navigate("food_details/$itemId")
-                },
-                onOrderNow = {
-                    navController.navigate("home") {
-                        popUpTo("home") { inclusive = true }
+                onAddMore = { restaurantId ->
+                    if (restaurantId != null) {
+                        navController.navigate("restaurant_details/$restaurantId")
+                    } else {
+                        navController.navigate("home")
                     }
+                },
+                onEditItem = { cartItem ->
+                    cartViewModel.setEditingItem(cartItem)
+                    navController.navigate("food_details/${cartItem.menuItemId}")
                 }
             )
         }

@@ -3,12 +3,17 @@ package com.app.tastybuds.ui.resturants
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.tastybuds.data.model.CartItem
+import com.app.tastybuds.data.model.OrderItemSize
+import com.app.tastybuds.data.model.OrderItemSpiceLevel
+import com.app.tastybuds.data.model.OrderItemTopping
 import com.app.tastybuds.data.repo.AuthRepository
 import com.app.tastybuds.domain.FavoritesUseCase
 import com.app.tastybuds.domain.FoodDetailsUseCase
 import com.app.tastybuds.domain.model.FoodCustomization
 import com.app.tastybuds.domain.model.FoodDetailsData
 import com.app.tastybuds.ui.resturants.state.FoodDetailsUiState
+import com.app.tastybuds.util.CartJsonUtils
 import com.app.tastybuds.util.Result
 import com.app.tastybuds.util.calculateTotalPrice
 import com.app.tastybuds.util.onError
@@ -56,7 +61,8 @@ class FoodDetailsViewModel @Inject constructor(
                 _userId.value = authRepository.getUserId().first() ?: ""
                 _uiState.update { it.copy(isLoading = true, error = null) }
 
-                val foodDetailsResult = foodDetailsUseCase.getFoodDetails(foodItemId, userId = _userId.value)
+                val foodDetailsResult =
+                    foodDetailsUseCase.getFoodDetails(foodItemId, userId = _userId.value)
                 val customizationResult = foodDetailsUseCase.getCustomizationOptions(foodItemId)
 
                 when (foodDetailsResult) {

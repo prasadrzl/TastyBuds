@@ -59,3 +59,17 @@ suspend fun TastyBudsApiService.getRecommendedByCategoryExt(
     categoryIds = categoryId.toCategoryFilter(),
     limit = limit
 )
+
+suspend fun TastyBudsApiService.getUserAddressesExt(
+    userId: String? = null
+) = getUserAddresses(
+    userId = if (userId != null) "eq.$userId" else null,
+    select = "*"
+)
+
+suspend fun TastyBudsApiService.getGlobalVouchersExt(
+    userId: String? = null
+) = getGlobalVouchers(
+    userId = if (userId != null) "eq.$userId" else null,
+    select = "*"
+)
