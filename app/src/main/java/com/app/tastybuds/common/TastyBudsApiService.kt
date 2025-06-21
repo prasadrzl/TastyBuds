@@ -15,6 +15,7 @@ import com.app.tastybuds.data.model.FavoriteWithRestaurantResponse
 import com.app.tastybuds.data.model.MenuItemResponse
 import com.app.tastybuds.data.model.MenuItemWithRestaurantResponse
 import com.app.tastybuds.data.model.Order
+import com.app.tastybuds.data.model.OrderStatus
 import com.app.tastybuds.data.model.RestaurantDetailsResponse
 import com.app.tastybuds.data.model.RestaurantResponse
 import com.app.tastybuds.data.model.RestaurantReviewResponse
@@ -246,19 +247,6 @@ interface TastyBudsApiService {
         @Body orderRequest: CreateOrderRequest
     ): Response<List<Order>>
 
-    @GET("orders")
-    suspend fun getUserOrders(
-        @Query("user_id") userId: String,
-        @Query("order") order: String = "created_at.desc",
-        @Query("select") select: String = "*"
-    ): Response<List<Order>>
-
-    @GET("orders")
-    suspend fun getOrderById(
-        @Query("id") orderId: String,
-        @Query("select") select: String = "*"
-    ): Response<List<Order>>
-
     @PATCH("orders")
     suspend fun updateOrderStatus(
         @Query("id") orderId: String,
@@ -271,4 +259,45 @@ interface TastyBudsApiService {
         @Query("is_used") isUsed: String = "eq.false",
         @Query("select") select: String = "*"
     ): Response<List<Voucher>>
+
+    @GET("orders")
+    suspend fun getUserOrders(
+        @Query("user_id") userId: String,
+        @Query("order") order: String = "created_at.desc",
+        @Query("select") select: String = "*,restaurants(name,id,image)"
+    ): Response<List<Order>>
+
+    @GET("orders")
+    suspend fun getOrderById(
+        @Query("id") orderId: String,
+        @Query("select") select: String = "*,restaurants(name,id,image),order_items(*)"
+    ): Response<List<Order>>
+
+    @GET("orders")
+    suspend fun getUserOrdersByStatus(
+        @Query("user_id") userId: String,
+        @Query("status") status: String,
+        @Query("order") order: String = "created_at.desc",
+        @Query("select") select: String = "*,restaurants(name,id,image),order_items(*)"
+    ): Response<List<Order>>
+
+    @GET("orders")
+    suspend fun getActiveUserOrders(
+        @Query("user_id") userId: String,
+        @Query("status") status: String = "in.(pending,confirmed,preparing,ready,out_for_delivery)",
+        @Query("order") order: String = "created_at.desc",
+        @Query("select") select: String = "*,restaurants(name,id,image),order_items(*)"
+    ): Response<List<Order>>
+
+    @PATCH("orders")
+    suspend fun updateOrderStatusExt(
+        @Query("id") orderId: String,
+        @Body statusUpdate: UpdateOrderStatusRequest
+    ): Response<List<Order>>
 }
+
+data class UpdateOrderStatusRequest(
+    val status: String,
+    val updatedAt: String = ""
+)
+

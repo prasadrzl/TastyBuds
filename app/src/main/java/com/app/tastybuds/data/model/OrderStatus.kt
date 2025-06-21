@@ -132,6 +132,8 @@ data class Order(
     val userId: String,
     @Json(name = "restaurant_id")
     val restaurantId: String?,
+    @Json(name = "restaurant_name")
+    val restaurantName: String? = null,
     @Json(name = "status")
     val status: OrderStatus,
     @Json(name = "order_items")
@@ -177,7 +179,7 @@ data class Voucher(
     @Json(name = "description")
     val description: String?,
     @Json(name = "discount_type")
-    val discountType: String, // 'percentage', 'fixed_amount'
+    val discountType: String,
     @Json(name = "discount_value")
     val discountValue: Double,
     @Json(name = "minimum_order")

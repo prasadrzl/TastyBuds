@@ -1,10 +1,6 @@
 package com.app.tastybuds.util
 
 import com.app.tastybuds.common.TastyBudsApiService
-import com.app.tastybuds.data.model.Order
-import retrofit2.Response
-import retrofit2.http.GET
-import retrofit2.http.Query
 
 suspend fun TastyBudsApiService.getPopularMenuItems(
     categoryId: String,
@@ -81,6 +77,14 @@ suspend fun TastyBudsApiService.getGlobalVouchersExt(
 suspend fun TastyBudsApiService.getOrderByExt(
     orderId: String? = null
 ) = getOrderById(
-    orderId = "eq.$orderId" ,
+    orderId = "eq.$orderId",
     select = "*"
 )
+
+suspend fun TastyBudsApiService.getUserOrdersExt(
+    userId: String? = null
+) = getUserOrders(
+    userId = "eq.$userId"
+)
+
+

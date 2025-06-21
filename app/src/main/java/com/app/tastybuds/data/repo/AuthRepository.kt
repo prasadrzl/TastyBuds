@@ -40,8 +40,6 @@ class AuthRepository @Inject constructor(
 
     fun isLoggedIn(): Flow<Boolean> = localDataSource.isLoggedIn()
 
-    fun getUserEmail(): Flow<String?> = localDataSource.getUserEmail()
-
     fun getUserId(): Flow<String?> = localDataSource.getUserId()
 
     suspend fun logout() {
@@ -50,8 +48,8 @@ class AuthRepository @Inject constructor(
 
     suspend fun getCurrentUser(): Result<User> {
         return try {
-            val userEmail = localDataSource.getUserEmail()
-            remoteDataSource.getUserByEmail(userEmail.first() ?: "")
+            val userId = localDataSource.getUserId()
+            remoteDataSource.getUserById(userId.first() ?: "")
         } catch (e: Exception) {
             Result.Error("Failed to get current user: ${e.localizedMessage}")
         }

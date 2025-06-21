@@ -10,6 +10,7 @@ import com.app.tastybuds.data.repo.OrderRepository
 import com.app.tastybuds.util.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -107,10 +108,6 @@ class OrderUseCase @Inject constructor(
         }
     }
 
-    suspend fun getOrderById(orderId: String): Flow<Result<Order>> {
-        return repository.getOrderById(orderId)
-    }
-
     fun calculateDeliveryTimeFromDistance(distanceKm: Double): Int {
         return when {
             distanceKm <= 2.0 -> 15
@@ -140,5 +137,42 @@ class OrderUseCase @Inject constructor(
             "woodlands", "yishun" -> 35
             else -> 20
         }
+    }
+
+
+    suspend fun getUserOrders(userId: String): Flow<Result<List<Order>>> {
+        return repository.getUserOrders(userId)
+            .map { result ->
+                when (result) {
+                    is Result.Success -> {
+                        val processedOrders = result.data.map { order ->
+                            order.copy(
+                                restaurantName = order.restaurantName ?: "Unknown Restaurant"
+                            )
+                        }
+                        Result.Success(processedOrders)
+                    }
+
+                    is Result.Error -> result
+                    is Result.Loading -> result
+                }
+            }
+    }
+
+    suspend fun getOrderById(orderId: String): Flow<Result<Order>> {
+        return repository.getOrderById(orderId)
+            .map { result ->
+                when (result) {
+                    is Result.Success -> {
+                        val processedOrder = result.data.copy(
+                            restaurantName = result.data.restaurantName ?: "Unknown Restaurant"
+                        )
+                        Result.Success(processedOrder)
+                    }
+
+                    is Result.Error -> result
+                    is Result.Loading -> result
+                }
+            }
     }
 }

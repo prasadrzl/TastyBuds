@@ -46,7 +46,9 @@ import com.app.tastybuds.ui.login.AuthCheckScreen
 import com.app.tastybuds.ui.login.LoginScreen
 import com.app.tastybuds.ui.orders.CartViewModel
 import com.app.tastybuds.ui.orders.FoodDetailsScreen
+import com.app.tastybuds.ui.orders.OrderDetailsScreen
 import com.app.tastybuds.ui.orders.OrderReviewScreen
+import com.app.tastybuds.ui.orders.OrdersScreen
 import com.app.tastybuds.ui.profile.ProfileScreen
 import com.app.tastybuds.ui.profile.ProfileSettingsScreen
 import com.app.tastybuds.ui.resturants.CategoryDetailsScreen
@@ -187,47 +189,20 @@ fun AppNavGraph(navController: NavHostController) {
         }
 
         composable("orders") {
-            val cartItems by sharedCartViewModel.cartItems.collectAsState()
 
-            if (cartItems.isNotEmpty()) {
-                OrderReviewScreen(
-                    cartItems = cartItems,
-                    onBackClick = {
-                        navController.navigate("home") {
-                            popUpTo("orders") { inclusive = true }
-                        }
-                    },
-                    onOrderSuccess = { orderId ->
-                        sharedCartViewModel.clearCart()
-                        navController.navigate("order_tracking/$orderId") {
-                            popUpTo("home") { inclusive = false }
-                        }
-                    },
-                    onChangeAddress = {
-                        navController.navigate("location")
-                    },
-                    onSelectOffer = {
-                        navController.navigate("select_offers")
-                    },
-                    onAddMore = { restaurantId ->
-                        if (restaurantId != null) {
-                            navController.navigate("restaurant_details/$restaurantId")
-                        } else {
-                            navController.navigate("home")
-                        }
-                    },
-                    onEditItem = { cartItem ->
-                        sharedCartViewModel.setEditingItem(cartItem)
-                        navController.navigate("food_details/${cartItem.menuItemId}")
+            OrdersScreen(
+                onOrderClick = { orderId ->
+                    navController.navigate("order_details/$orderId")
+                },
+                onTrackOrder = { orderId ->
+                    navController.navigate("order_tracking/$orderId")
+                },
+                onReorderClick = { order ->
+                    if (order.restaurantId?.isNotEmpty() == true) {
+                        navController.navigate("restaurant_details/${order.restaurantId}")
                     }
-                )
-            } else {
-                EmptyOrdersScreen(
-                    onBrowseMenuClick = {
-                        navController.navigate("home")
-                    }
-                )
-            }
+                }
+            )
         }
 
         composable("favorites") {
@@ -358,6 +333,24 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
 
+        composable(
+            "order_details/{orderId}",
+            arguments = listOf(navArgument("orderId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
+
+            OrderDetailsScreen(
+                orderId = orderId,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onTrackOrder = {
+                    navController.navigate("order_tracking/$orderId")
+                },
+                onContactRestaurant = {}
+            )
+        }
+
         composable("order_review") {
             val cartItems by sharedCartViewModel.cartItems.collectAsState()
 
@@ -424,48 +417,6 @@ fun AppNavGraph(navController: NavHostController) {
                     }
                 }
             )
-        }
-    }
-}
-
-@Composable
-private fun EmptyOrdersScreen(
-    onBrowseMenuClick: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
-        verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
-    ) {
-        Icon(
-            imageVector = Icons.Default.ShoppingCart,
-            contentDescription = "No Orders",
-            modifier = Modifier.size(80.dp),
-            tint = Color.Gray
-        )
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "No orders yet",
-            fontSize = 20.sp,
-            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-            color = Color.Black
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Browse our delicious menu and place your first order",
-            fontSize = 14.sp,
-            color = Color.Gray
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-        Button(
-            onClick = onBrowseMenuClick,
-            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                containerColor = com.app.tastybuds.ui.theme.PrimaryColor
-            )
-        ) {
-            Text("Browse Menu", color = Color.White)
         }
     }
 }
