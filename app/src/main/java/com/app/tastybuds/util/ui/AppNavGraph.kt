@@ -1,5 +1,6 @@
 package com.app.tastybuds.util.ui
 
+import android.util.Log
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -7,8 +8,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -32,6 +33,7 @@ import com.app.tastybuds.ui.location.LocationTrackerScreen
 import com.app.tastybuds.ui.location.OrderTrackingScreen
 import com.app.tastybuds.ui.login.AuthCheckScreen
 import com.app.tastybuds.ui.login.LoginScreen
+import com.app.tastybuds.ui.onboarding.OnboardingViewModel
 import com.app.tastybuds.ui.orders.CartViewModel
 import com.app.tastybuds.ui.orders.FoodDetailsScreen
 import com.app.tastybuds.ui.orders.OrderDetailsScreen
@@ -44,7 +46,8 @@ import com.app.tastybuds.ui.resturants.RestaurantDetailsScreen
 import com.app.tastybuds.ui.resturants.SeeAllScreen
 import com.app.tastybuds.ui.resturants.search.SearchResultsScreen
 import com.app.tastybuds.ui.splash.TastyBudsSplashScreen
-import com.tastybuds.app.ui.screens.OnboardingScreen
+import com.app.tastybuds.ui.onboarding.OnboardingScreen
+import kotlinx.coroutines.launch
 
 val items = listOf(
     BottomNavItem("home", "Home", R.drawable.ic_bn_home),
@@ -56,16 +59,17 @@ val items = listOf(
 @Composable
 fun AppNavGraph(navController: NavHostController) {
     val sharedCartViewModel: CartViewModel = hiltViewModel()
-    val context = LocalContext.current
+    val onboardingViewModel: OnboardingViewModel = hiltViewModel()
 
     NavHost(navController = navController, startDestination = "splash") {
-
         composable("splash") {
+
             TastyBudsSplashScreen(
                 onSplashComplete = {
+
                     val destination = when {
-                        !OnboardingUtils.isOnboardingCompleted(context) -> "onboarding"
-                        OnboardingUtils.isUserLoggedIn(context) -> "home"
+                        !onboardingViewModel.isOnboardingCompleted() -> "onboarding"
+                        onboardingViewModel.isUserLoggedIn() -> "home"
                         else -> "auth_check"
                     }
 
@@ -79,8 +83,25 @@ fun AppNavGraph(navController: NavHostController) {
         composable("onboarding") {
             OnboardingScreen(
                 onNavigateToLogin = {
+                    onboardingViewModel.markOnboardingCompleted()
                     navController.navigate("login") {
                         popUpTo("onboarding") { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable("profile") {
+            val scope = rememberCoroutineScope()
+            ProfileScreen(
+                onBackClick = { navController.popBackStack() },
+                onEditProfile = { navController.navigate("profile_edit") },
+                onSignOut = {
+                    scope.launch {
+                        onboardingViewModel.clearUserSession()
+                        navController.navigate("login") {
+                            popUpTo(0) { inclusive = true }
+                        }
                     }
                 }
             )
@@ -102,9 +123,12 @@ fun AppNavGraph(navController: NavHostController) {
         }
 
         composable("login") {
+            Log.d("Navigation", "📱 LoginScreen displayed")
+
             LoginScreen(
                 onLoginSuccess = {
-                    OnboardingUtils.setUserLoggedIn(context, true)
+                    Log.d("Navigation", "✅ Login successful!")
+
                     navController.navigate("home") {
                         popUpTo("login") { inclusive = true }
                     }
@@ -225,23 +249,6 @@ fun AppNavGraph(navController: NavHostController) {
         }
 
         composable("inbox") { ChatBoxScreen() }
-
-        composable("profile") {
-            ProfileScreen(
-                onBackClick = {
-                    navController.popBackStack()
-                },
-                onEditProfile = {
-                    navController.navigate("profile_edit")
-                },
-                onSignOut = {
-                    OnboardingUtils.clearUserSession(context)
-                    navController.navigate("login") {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
-            )
-        }
 
         composable("profile_edit") {
             ProfileSettingsScreen(

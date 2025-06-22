@@ -2,9 +2,6 @@ package com.app.tastybuds.di
 
 import android.util.Log
 import com.app.tastybuds.common.TastyBudsApiService
-import com.app.tastybuds.data.repo.HomeRepository
-import com.app.tastybuds.data.repo.HomeRepositoryImpl
-import com.app.tastybuds.domain.HomeUseCase
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -107,27 +104,6 @@ object NetworkModule {
     @Provides
     fun provideHomeApiService(retrofit: Retrofit): TastyBudsApiService {
         return retrofit.create(TastyBudsApiService::class.java)
-    }
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-object RepositoryModule {
-
-    @Singleton
-    @Provides
-    fun provideHomeRepository(homeApiService: TastyBudsApiService): HomeRepository {
-        return HomeRepositoryImpl(homeApiService)
-    }
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-object UseCaseModule {
-
-    @Provides
-    fun provideHomeUseCase(homeRepository: HomeRepository): HomeUseCase {
-        return HomeUseCase(homeRepository)
     }
 }
 

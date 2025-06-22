@@ -23,8 +23,7 @@ object UserModule {
     }
 
     @Provides
-    fun provideUserUseCase(
-        userRepository: UserRepository
+    fun provideUserUseCase(userRepository: UserRepository
     ): UserUseCase {
         return UserUseCase(userRepository)
     }
