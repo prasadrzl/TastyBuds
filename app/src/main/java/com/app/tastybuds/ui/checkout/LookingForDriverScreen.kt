@@ -51,8 +51,7 @@ fun LookingForDriverScreen(onCancel: () -> Unit, onHelp: () -> Unit) {
 
         Image(
             painter = painterResource(id = R.drawable.ic_check_mark), // <-- your icon
-            contentDescription = "Order confirmed",
-            modifier = Modifier.size(32.dp)
+            contentDescription = "Order confirmed", modifier = Modifier.size(32.dp)
         )
 
 
@@ -81,9 +80,7 @@ fun LookingForDriverScreen(onCancel: () -> Unit, onHelp: () -> Unit) {
         Spacer(modifier = Modifier.height(40.dp))
 
         StageProgressBar(
-            stageLabels = stageLabels,
-            currentStage = currentStage,
-            brandColor = brandOrange
+            stageLabels = stageLabels, currentStage = currentStage, brandColor = brandOrange
         )
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -112,16 +109,13 @@ fun LookingForDriverScreen(onCancel: () -> Unit, onHelp: () -> Unit) {
 
 @Composable
 fun StageProgressBar(
-    stageLabels: List<String>,
-    currentStage: Int,
-    brandColor: Color
+    stageLabels: List<String>, currentStage: Int, brandColor: Color
 ) {
     val dotSize = 16.dp
     val lineThickness = 3.dp
     val lineColorPending = Color.LightGray
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        // Top row: Dots with lines
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -130,7 +124,6 @@ fun StageProgressBar(
         ) {
             stageLabels.forEachIndexed { index, _ ->
                 Box(contentAlignment = Alignment.Center) {
-                    // Draw circle
                     Canvas(modifier = Modifier.size(dotSize)) {
                         if (index <= currentStage) {
                             drawCircle(color = brandColor)
@@ -181,7 +174,6 @@ fun StageProgressBar(
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

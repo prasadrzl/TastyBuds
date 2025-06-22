@@ -11,18 +11,42 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,7 +60,10 @@ import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.CancellationTokenSource
-import com.google.maps.android.compose.*
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.tasks.await
 import java.util.Locale
 
@@ -114,7 +141,7 @@ fun UserLocationMapView(onConfirm: () -> Unit) {
                 }
             }
         } else {
-            Text("Location permission required to display map")
+            Text(stringResource(R.string.location_permission_required_to_display_map))
         }
 
         CenterPinOverlay(modifier = Modifier.align(Alignment.Center))
@@ -149,14 +176,17 @@ fun BottomSheetCard(
         shadowElevation = 8.dp
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Select location", fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.select_location), fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = address,
                 onValueChange = onAddressChange,
                 modifier = Modifier.fillMaxWidth(),
                 trailingIcon = {
-                    Icon(Icons.Default.Edit, contentDescription = "Edit")
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription = stringResource(id = R.string.edit)
+                    )
                 },
                 shape = RoundedCornerShape(8.dp)
             )
@@ -165,14 +195,18 @@ fun BottomSheetCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                listOf("Home", "Work", "Other").forEach {
+                listOf(
+                    stringResource(R.string.home),
+                    stringResource(R.string.work),
+                    stringResource(R.string.other)
+                ).forEach {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.clickable { onTypeSelected(it) }
                     ) {
                         RadioButton(
                             selected = selectedType == it,
-                            onClick = null, // handled by Row click
+                            onClick = null,
                             colors = RadioButtonDefaults.colors(selectedColor = Color(0xFFFF7700))
                         )
                         Spacer(modifier = Modifier.width(4.dp))
@@ -187,7 +221,7 @@ fun BottomSheetCard(
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7700))
             ) {
-                Text("Confirm", color = Color.White)
+                Text(stringResource(R.string.confirm), color = Color.White)
             }
         }
     }
@@ -210,11 +244,12 @@ fun getAddressFromLatLng(context: Context, latLng: LatLng): String {
     return try {
         val geocoder = Geocoder(context, Locale.getDefault())
         val address = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
-        address?.firstOrNull()?.getAddressLine(0) ?: "Location not found"
+        address?.firstOrNull()?.getAddressLine(0) ?: context.getString(R.string.location_not_found)
     } catch (e: Exception) {
-        "Unable to fetch address"
+        context.getString(R.string.unable_to_fetch_address)
     }
 }
+
 @Composable
 fun CenterPinOverlay(modifier: Modifier = Modifier) {
     Box(
@@ -224,7 +259,7 @@ fun CenterPinOverlay(modifier: Modifier = Modifier) {
             .background(color = Color(0xFFFF7700), shape = CircleShape)
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_user_location), // use your white pin drawable
+            painter = painterResource(id = R.drawable.ic_user_location),
             contentDescription = null,
             tint = Color.White,
             modifier = Modifier.size(24.dp)

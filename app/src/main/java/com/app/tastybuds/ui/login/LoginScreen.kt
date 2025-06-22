@@ -1,15 +1,37 @@
 package com.app.tastybuds.ui.login
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -18,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -36,7 +59,6 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit = {},
     viewModel: LoginViewModel = hiltViewModel()
 ) {
-    var showError by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val uiState by viewModel.uiState.collectAsState()
@@ -82,21 +104,21 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = "Hello.",
+                    text = stringResource(R.string.hello),
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
 
                 Text(
-                    text = "Welcome back",
+                    text = stringResource(R.string.welcome_back),
                     fontSize = 18.sp,
                     color = Color.Gray,
                     modifier = Modifier.padding(bottom = 32.dp)
                 )
 
                 Text(
-                    text = "Email",
+                    text = stringResource(R.string.email),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.Black,
@@ -111,14 +133,14 @@ fun LoginScreen(
                         .focusRequester(emailFocusRequester),
                     placeholder = {
                         Text(
-                            text = "Enter email",
+                            text = stringResource(R.string.enter_email),
                             color = Color.Gray.copy(alpha = 0.6f)
                         )
                     },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Email,
-                            contentDescription = "Email",
+                            contentDescription = stringResource(R.string.email),
                             tint = Color.Gray
                         )
                     },
@@ -141,7 +163,7 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
-                    text = "Password",
+                    text = stringResource(R.string.password),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.Black,
@@ -156,14 +178,14 @@ fun LoginScreen(
                         .focusRequester(passwordFocusRequester),
                     placeholder = {
                         Text(
-                            text = "Enter password",
+                            text = stringResource(R.string.enter_password),
                             color = Color.Gray.copy(alpha = 0.6f)
                         )
                     },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Lock,
-                            contentDescription = "Password",
+                            contentDescription = stringResource(R.string.password),
                             tint = Color.Gray
                         )
                     },
@@ -173,8 +195,9 @@ fun LoginScreen(
                                 if (isPasswordVisible) R.drawable.ic_hide else R.drawable.ic_show
                             Icon(
                                 painter = painterResource(painter),
-                                contentDescription = if (isPasswordVisible) "Hide password"
-                                else "Show password",
+                                contentDescription = if (isPasswordVisible)
+                                    stringResource(R.string.hide_password)
+                                else stringResource(R.string.show_password),
                                 tint = Color.Gray
                             )
                         }
@@ -224,7 +247,7 @@ fun LoginScreen(
                         )
                     } else {
                         Text(
-                            text = "Sign In",
+                            text = stringResource(R.string.sign_in),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Medium
                         )

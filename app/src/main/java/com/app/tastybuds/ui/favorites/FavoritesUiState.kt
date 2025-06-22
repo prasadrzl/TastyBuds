@@ -11,7 +11,6 @@ data class FavoritesUiState(
     val favoriteRestaurants: List<FavoriteRestaurantUi> = emptyList(),
     val favoriteMenuItems: List<FavoriteMenuItemUi> = emptyList(),
 
-    // Keep original detailed responses for potential future use
     val favoriteRestaurantsWithDetails: List<FavoriteWithRestaurantResponse> = emptyList(),
     val favoriteMenuItemsWithDetails: List<FavoriteWithMenuItemResponse> = emptyList(),
 

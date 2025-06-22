@@ -50,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -58,9 +59,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
 import com.app.tastybuds.data.model.CartItem
-import com.app.tastybuds.data.model.OrderItemSize
-import com.app.tastybuds.data.model.OrderItemTopping
-import com.app.tastybuds.data.model.OrderItemSpiceLevel
 import com.app.tastybuds.domain.model.FoodDetails
 import com.app.tastybuds.domain.model.SizeOption
 import com.app.tastybuds.domain.model.SpiceLevel
@@ -181,15 +179,15 @@ private fun ErrorContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(32.dp)
         ) {
-            Text(text = "Error: $error")
+            Text(text = stringResource(R.string.error, error))
             Spacer(modifier = Modifier.height(16.dp))
             Row {
                 OutlinedButton(onClick = onBackClick) {
-                    Text("Go Back")
+                    Text(stringResource(R.string.go_back))
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Button(onClick = onRetry) {
-                    Text("Retry")
+                    Text(stringResource(R.string.retry))
                 }
             }
         }
@@ -322,7 +320,7 @@ fun FoodImageHeader(
     ) {
         GlideImage(
             model = imageUrl,
-            contentDescription = "Food Image",
+            contentDescription = stringResource(R.string.food_image),
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
             failure = placeholder(R.drawable.default_food),
@@ -362,7 +360,11 @@ fun FoodImageHeader(
             ) {
                 Icon(
                     imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                    contentDescription = if (isFavorite)
+                        stringResource(R.string.remove_from_favorites)
+                    else stringResource(
+                        R.string.add_to_favorites
+                    ),
                     tint = if (isFavorite) Color.Red else Color.White
                 )
             }
@@ -417,7 +419,7 @@ fun FoodInfoCard(foodDetails: FoodDetails) {
                 )
 
                 Text(
-                    text = "Base price",
+                    text = stringResource(R.string.base_price),
                     fontSize = 12.sp,
                     color = Color.Gray
                 )
@@ -439,7 +441,7 @@ fun SizeSelectionSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Size",
+                text = stringResource(R.string.size),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
@@ -448,7 +450,7 @@ fun SizeSelectionSection(
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
-                text = "(Pick 1)",
+                text = stringResource(R.string.pick_1),
                 fontSize = 14.sp,
                 color = Color.Gray
             )
@@ -466,7 +468,7 @@ fun SizeSelectionSection(
             ) {
                 Icon(
                     imageVector = Icons.Default.Check,
-                    contentDescription = "Required",
+                    contentDescription = stringResource(R.string.required),
                     tint = Color.White,
                     modifier = Modifier.size(16.dp)
                 )
@@ -526,7 +528,7 @@ fun ToppingsSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Topping",
+                text = stringResource(R.string.topping),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
@@ -535,7 +537,7 @@ fun ToppingsSection(
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
-                text = "(Optional)",
+                text = stringResource(R.string.optional),
                 fontSize = 14.sp,
                 color = Color.Gray
             )
@@ -592,7 +594,7 @@ fun SpicinessSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Spiciness",
+                text = stringResource(R.string.spiciness),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
@@ -601,7 +603,7 @@ fun SpicinessSection(
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
-                text = "(Pick 1)",
+                text = stringResource(R.string.pick_1_brackets),
                 fontSize = 14.sp,
                 color = Color.Gray
             )
@@ -619,7 +621,7 @@ fun SpicinessSection(
             ) {
                 Icon(
                     imageVector = Icons.Default.Check,
-                    contentDescription = "Required",
+                    contentDescription = stringResource(R.string.required),
                     tint = Color.White,
                     modifier = Modifier.size(16.dp)
                 )
@@ -666,7 +668,7 @@ fun NoteSection(
         modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
     ) {
         Text(
-            text = "Note for restaurant",
+            text = stringResource(R.string.note_for_restaurant),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black
@@ -679,7 +681,7 @@ fun NoteSection(
             onValueChange = onNoteChange,
             placeholder = {
                 Text(
-                    text = "Special note",
+                    text = stringResource(R.string.special_note),
                     color = Color.Gray
                 )
             },
@@ -756,7 +758,7 @@ fun BottomControls(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            contentDescription = "Add",
+                            contentDescription = stringResource(R.string.add),
                             tint = Color.White
                         )
                     }
@@ -772,7 +774,7 @@ fun BottomControls(
                         } else {
                             Toast.makeText(
                                 context,
-                                "Please select required options (Size and Spiciness)",
+                                context.getString(R.string.please_select_required_options_size_and_spiciness),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -784,7 +786,7 @@ fun BottomControls(
                     shape = RoundedCornerShape(25.dp)
                 ) {
                     Text(
-                        text = "Add to cart ($${totalPrice.toInt()})",
+                        text = stringResource(R.string.add_to_cart_brackets, totalPrice.toInt()),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color.White

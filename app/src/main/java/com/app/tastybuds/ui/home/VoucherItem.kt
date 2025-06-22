@@ -41,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -81,7 +82,10 @@ fun AllVouchersScreen(
     val usedVouchers = vouchers.filter { it.isUsed }
 
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Active (${activeVouchers.size})", "Used (${usedVouchers.size})")
+    val tabs = listOf(
+        stringResource(R.string.active, activeVouchers.size),
+        stringResource(R.string.used, usedVouchers.size)
+    )
 
     Column(
         modifier = Modifier
@@ -89,7 +93,7 @@ fun AllVouchersScreen(
             .background(Color.White)
     ) {
         AppTopBar(
-            title = "My Vouchers",
+            title = stringResource(id = R.string.my_vouchers),
             onBackClick = onBackClick
         )
 
@@ -121,19 +125,23 @@ fun AllVouchersScreen(
         }
 
         when (selectedTab) {
-            0 -> VouchersContent(
-                vouchers = activeVouchers,
-                onVoucherClick = onVoucherClick,
-                emptyMessage = "No active vouchers available",
-                emptySubMessage = "Check back later for new vouchers and deals"
-            )
+            0 -> {
+                VouchersContent(
+                    vouchers = activeVouchers,
+                    onVoucherClick = onVoucherClick,
+                    emptyMessage = stringResource(R.string.no_active_vouchers_available),
+                    emptySubMessage = stringResource(R.string.check_back_later_for_new_vouchers_and_deals)
+                )
+            }
 
-            1 -> VouchersContent(
-                vouchers = usedVouchers,
-                onVoucherClick = onVoucherClick,
-                emptyMessage = "No used vouchers",
-                emptySubMessage = "Your used vouchers will appear here"
-            )
+            1 -> {
+                VouchersContent(
+                    vouchers = usedVouchers,
+                    onVoucherClick = onVoucherClick,
+                    emptyMessage = stringResource(R.string.no_used_vouchers),
+                    emptySubMessage = stringResource(R.string.your_used_vouchers_will_appear_here)
+                )
+            }
         }
     }
 }
@@ -156,7 +164,7 @@ fun VouchersContent(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_offer_percentage),
-                    contentDescription = "No vouchers",
+                    contentDescription = stringResource(R.string.no_vouchers),
                     modifier = Modifier.size(64.dp),
                     tint = Color.Gray
                 )
@@ -235,7 +243,7 @@ fun VoucherCard(
                 ) {
                     Icon(
                         imageVector = getVoucherIcon(voucher.voucherType),
-                        contentDescription = "Voucher",
+                        contentDescription = stringResource(R.string.voucher),
                         modifier = Modifier.size(24.dp),
                         tint = if (voucher.isUsed) Color.Gray else Color.White
                     )
@@ -278,7 +286,7 @@ fun VoucherCard(
                 voucher.minOrder?.let { minOrder ->
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Min. order: $minOrder",
+                        text = stringResource(id = R.string.min_order, minOrder),
                         fontSize = 12.sp,
                         color = if (voucher.isUsed) Color.Gray else Color.Gray,
                         fontWeight = FontWeight.Medium
@@ -288,7 +296,7 @@ fun VoucherCard(
                 voucher.restaurantName?.let { restaurant ->
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Valid at: $restaurant",
+                        text = stringResource(R.string.valid_at, restaurant),
                         fontSize = 12.sp,
                         color = if (voucher.isUsed) Color.Gray else PrimaryColor,
                         fontWeight = FontWeight.Medium
@@ -302,7 +310,7 @@ fun VoucherCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Star,
-                        contentDescription = "Expiry",
+                        contentDescription = stringResource(R.string.expiry),
                         modifier = Modifier.size(14.dp),
                         tint = if (voucher.isUsed) Color.Gray else Color.Gray
                     )
@@ -310,7 +318,11 @@ fun VoucherCard(
                     Spacer(modifier = Modifier.width(4.dp))
 
                     Text(
-                        text = if (voucher.isUsed) "Used" else "Expires ${voucher.expiryDate}",
+                        text = if (voucher.isUsed) {
+                            stringResource(R.string.used)
+                        } else {
+                            stringResource(R.string.expires, voucher.expiryDate)
+                        },
                         fontSize = 12.sp,
                         color = if (voucher.isUsed) Color.Gray else Color.Gray
                     )
@@ -323,7 +335,7 @@ fun VoucherCard(
                     colors = CardDefaults.cardColors(containerColor = Color.Gray.copy(alpha = 0.2f))
                 ) {
                     Text(
-                        text = "USED",
+                        text = stringResource(id = R.string.used),
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
@@ -337,7 +349,7 @@ fun VoucherCard(
                     modifier = Modifier.clickable { onClick() }
                 ) {
                     Text(
-                        text = "USE NOW",
+                        text = stringResource(R.string.use_now),
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,

@@ -40,7 +40,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -69,9 +71,9 @@ fun HomeScreen(
     onViewAllRestaurants: () -> Unit = {},
     onViewAllDeals: () -> Unit = {},
     onViewAllVouchers: () -> Unit = {},
-    onBannerClick: (String) -> Unit = {}, // ADD THIS LINE
-    onCollectionClick: (String) -> Unit = {}, // ADD THIS LINE
-    onDealClick: (String) -> Unit = {}, // ADD THIS LINE
+    onBannerClick: (String) -> Unit = {},
+    onCollectionClick: (String) -> Unit = {},
+    onDealClick: (String) -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -83,7 +85,7 @@ fun HomeScreen(
 
         uiState.error != null -> {
             ErrorScreen(
-                error = uiState.error ?: "Unknown error",
+                error = uiState.error ?: stringResource(id = R.string.unknown_error),
                 onRetry = { viewModel.retry() }
             )
         }
@@ -92,7 +94,6 @@ fun HomeScreen(
             HomeContent(
                 uiState = uiState,
                 onCategoryClick = onCategoryClick,
-                onSearchClick = onSearchClick,
                 onRestaurantClick = onRestaurantClick,
                 onViewAllCollections = onViewAllCollections,
                 onViewAllRestaurants = onViewAllRestaurants,
@@ -100,7 +101,6 @@ fun HomeScreen(
                 onViewAllVouchers = onViewAllVouchers,
                 onBannerClick = onBannerClick,
                 onCollectionClick = onCollectionClick,
-                onDealClick = onDealClick
             )
         }
     }
@@ -141,7 +141,7 @@ fun ErrorScreen(error: String, onRetry: () -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Oops! Something went wrong",
+            text = stringResource(R.string.oops_something_went_wrong),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black
@@ -176,7 +176,6 @@ fun ErrorScreen(error: String, onRetry: () -> Unit) {
 fun HomeContent(
     uiState: HomeUiState,
     onCategoryClick: (String, String) -> Unit,
-    onSearchClick: (String) -> Unit,
     onRestaurantClick: (String) -> Unit,
     onViewAllCollections: () -> Unit,
     onViewAllRestaurants: () -> Unit,
@@ -184,7 +183,6 @@ fun HomeContent(
     onViewAllVouchers: () -> Unit,
     onBannerClick: (String) -> Unit,
     onCollectionClick: (String) -> Unit,
-    onDealClick: (String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -252,13 +250,13 @@ fun HomeContent(
 @Composable
 fun VoucherSection(
     voucherCount: Int,
-    onViewAllClick: () -> Unit = {} // ADD THIS PARAMETER
+    onViewAllClick: () -> Unit = {}
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .clickable { onViewAllClick() }, // ADD THIS LINE
+            .clickable { onViewAllClick() },
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0))
     ) {
@@ -289,7 +287,7 @@ fun VoucherSection(
                 fontSize = 12.sp,
                 color = PrimaryColor,
                 fontWeight = FontWeight.Medium,
-                modifier = Modifier.clickable { onViewAllClick() } // ADD THIS MODIFIER
+                modifier = Modifier.clickable { onViewAllClick() }
             )
         }
     }
@@ -484,18 +482,18 @@ fun CollectionsSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Collections",
+                text = stringResource(id = R.string.collections),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
 
             Text(
-                text = "View all",
+                text = stringResource(id = R.string.view_all),
                 fontSize = 14.sp,
                 color = PrimaryColor,
                 fontWeight = FontWeight.Medium,
-                modifier = Modifier.clickable { onViewAllCollections() } // ADD THIS MODIFIER
+                modifier = Modifier.clickable { onViewAllCollections() }
             )
         }
 
@@ -562,7 +560,7 @@ fun StaticCollectionCard(
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        border = BorderStroke(1.dp, Color(0xFFE0E0E0)) // Border for each item
+        border = BorderStroke(1.dp, Color(0xFFE0E0E0))
     ) {
         Row(
             modifier = Modifier
@@ -644,18 +642,18 @@ fun RecommendedSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Recommended for you",
+                text = stringResource(R.string.recommended_for_you),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
 
             Text(
-                text = "View all",
+                text = stringResource(id = R.string.view_all),
                 fontSize = 14.sp,
                 color = PrimaryColor,
                 fontWeight = FontWeight.Medium,
-                modifier = Modifier.clickable { onViewAllClick() } // ADD THIS MODIFIER
+                modifier = Modifier.clickable { onViewAllClick() }
             )
         }
 
@@ -691,7 +689,6 @@ fun RestaurantCard(
     ) {
         Column {
             Box {
-                // Use Glide for restaurant image
                 GlideImage(
                     model = restaurant.imageUrl,
                     contentDescription = restaurant.name,
@@ -796,13 +793,12 @@ fun SaleSection(
                 color = Color.Black
             )
 
-            // In SaleSection, find this Text and add clickable modifier:
             Text(
                 text = "View all",
                 fontSize = 14.sp,
                 color = PrimaryColor,
                 fontWeight = FontWeight.Medium,
-                modifier = Modifier.clickable { onViewAllClick() } // ADD THIS MODIFIER
+                modifier = Modifier.clickable { onViewAllClick() }
             )
         }
 
@@ -914,7 +910,7 @@ fun SaleCard(
                             text = originalPrice,
                             fontSize = 12.sp,
                             color = Color.Gray,
-                            textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough
+                            textDecoration = TextDecoration.LineThrough
                         )
                     }
                 }

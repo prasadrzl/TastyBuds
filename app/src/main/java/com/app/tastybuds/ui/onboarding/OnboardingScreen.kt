@@ -32,11 +32,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.app.tastybuds.R
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -50,8 +52,8 @@ fun OnboardingScreen(
 
     val onboardingPages = listOf(
         OnboardingPage(
-            title = "Discover Amazing Food",
-            description = "Explore thousands of delicious recipes and find your next favorite meal",
+            title = stringResource(R.string.onboarding_title_1),
+            description = stringResource(R.string.onboarding_desc_1),
             gradientColors = listOf(
                 Color(0xFFFFF3E6),
                 Color(0xFFFFE6CC),
@@ -60,8 +62,8 @@ fun OnboardingScreen(
             icon = "🍽️"
         ),
         OnboardingPage(
-            title = "Fast Delivery",
-            description = "Get your favorite food delivered hot and fresh right to your doorstep",
+            title = stringResource(R.string.onboarding_title_2),
+            description = stringResource(R.string.onboarding_desc_2),
             gradientColors = listOf(
                 Color(0xFFE6F7F1),
                 Color(0xFFCCF2E8),
@@ -70,8 +72,8 @@ fun OnboardingScreen(
             icon = "🚚"
         ),
         OnboardingPage(
-            title = "Enjoy Your Meal",
-            description = "Savor every bite of carefully prepared dishes made with love and quality ingredients",
+            title = stringResource(R.string.onboarding_title_3),
+            description = stringResource(R.string.onboarding_desc_3),
             gradientColors = listOf(
                 Color(0xFFE8F4FD),
                 Color(0xFFD1E9FC),
@@ -102,14 +104,13 @@ fun OnboardingScreen(
         ) {
             TextButton(
                 onClick = {
-                    Log.d("OnboardingScreen", "⏭️ SKIP button clicked")
                     viewModel.markOnboardingCompleted()
                     onNavigateToLogin()
                 }
             ) {
                 Text(
-                    text = "Skip",
-                    color = Color(0xFF666666), // Darker for better contrast
+                    text = stringResource(R.string.skip),
+                    color = Color(0xFF666666),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -134,22 +135,16 @@ fun OnboardingScreen(
             onPrevious = {
                 scope.launch {
                     val targetPage = pagerState.currentPage - 1
-                    Log.d(
-                        "OnboardingScreen",
-                        "⬅️ Previous: ${pagerState.currentPage} -> $targetPage"
-                    )
                     pagerState.animateScrollToPage(targetPage)
                 }
             },
             onNext = {
                 scope.launch {
                     val targetPage = pagerState.currentPage + 1
-                    Log.d("OnboardingScreen", "➡️ Next: ${pagerState.currentPage} -> $targetPage")
                     pagerState.animateScrollToPage(targetPage)
                 }
             },
             onGetStarted = {
-                Log.d("OnboardingScreen", "🚀 GET STARTED button clicked")
                 viewModel.markOnboardingCompleted()
                 onNavigateToLogin()
             }
@@ -203,11 +198,6 @@ fun NavigationButtons(
     val isFirstPage = currentPage == 0
     val isLastPage = currentPage == pageCount - 1
 
-    Log.d(
-        "NavigationButtons",
-        "🔍 Current page: $currentPage, isFirst: $isFirstPage, isLast: $isLastPage"
-    )
-
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = if (isLastPage) {
@@ -220,7 +210,6 @@ fun NavigationButtons(
             isLastPage -> {
                 Button(
                     onClick = {
-                        Log.d("NavigationButtons", "🚀 GET STARTED clicked from last page")
                         onGetStarted()
                     },
                     modifier = Modifier
@@ -232,7 +221,7 @@ fun NavigationButtons(
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Text(
-                        text = "Get Started",
+                        text = stringResource(R.string.get_started),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = Color.White
@@ -243,7 +232,6 @@ fun NavigationButtons(
             isFirstPage -> {
                 Button(
                     onClick = {
-                        Log.d("NavigationButtons", "➡️ NEXT clicked from first page")
                         onNext()
                     },
                     modifier = Modifier
@@ -255,7 +243,7 @@ fun NavigationButtons(
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Text(
-                        text = "Next",
+                        text = stringResource(R.string.next),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = Color.White
@@ -266,7 +254,6 @@ fun NavigationButtons(
             else -> {
                 OutlinedButton(
                     onClick = {
-                        Log.d("NavigationButtons", "⬅️ PREVIOUS clicked from page $currentPage")
                         onPrevious()
                     },
                     modifier = Modifier
@@ -278,7 +265,7 @@ fun NavigationButtons(
                     )
                 ) {
                     Text(
-                        text = "Previous",
+                        text = stringResource(R.string.previous),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
                     )
@@ -288,7 +275,6 @@ fun NavigationButtons(
 
                 Button(
                     onClick = {
-                        Log.d("NavigationButtons", "➡️ NEXT clicked from page $currentPage")
                         onNext()
                     },
                     modifier = Modifier
@@ -300,7 +286,7 @@ fun NavigationButtons(
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Text(
-                        text = "Next",
+                        text = stringResource(R.string.next),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = Color.White
@@ -322,7 +308,7 @@ fun OnboardingPageContent(page: OnboardingPage) {
                 .size(300.dp)
                 .clip(RoundedCornerShape(32.dp))
                 .background(
-                    Color.White.copy(alpha = 0.3f) // Subtle white overlay for contrast
+                    Color.White.copy(alpha = 0.3f)
                 ),
             contentAlignment = Alignment.Center
         ) {

@@ -29,8 +29,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -71,12 +73,14 @@ fun AllDealsScreen(
                     CircularProgressIndicator(color = PrimaryColor)
                 }
             }
+
             uiState.error != null -> {
                 ErrorContent(
-                    error = uiState.error ?: "Unknown error",
+                    error = uiState.error ?: stringResource(id = R.string.unknown_error),
                     onRetry = { viewModel.retry() }
                 )
             }
+
             else -> {
                 DealsContent(
                     deals = uiState.deals,
@@ -118,14 +122,14 @@ fun DealsContent(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "No deals available",
+                            text = stringResource(R.string.no_deals_available),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Medium,
                             color = Color.Gray,
                             textAlign = TextAlign.Center
                         )
                         Text(
-                            text = "Check back later for new deals",
+                            text = stringResource(R.string.check_back_later_for_new_deals),
                             fontSize = 14.sp,
                             color = Color.Gray,
                             textAlign = TextAlign.Center
@@ -234,7 +238,7 @@ fun DealGridItemCard(
                             text = originalPrice,
                             fontSize = 14.sp,
                             color = Color.Gray,
-                            textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough
+                            textDecoration = TextDecoration.LineThrough
                         )
                     }
                 }

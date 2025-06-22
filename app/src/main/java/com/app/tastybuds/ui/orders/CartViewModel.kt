@@ -47,17 +47,14 @@ class CartViewModel @Inject constructor() : ViewModel() {
     }
 
     fun setEditingItem(item: CartItem) {
-        Log.d(TAG, "Setting editing item: ${item.name}")
         _editingItem.value = item
     }
 
     private fun clearEditingItem() {
-        Log.d(TAG, "Clearing editing item")
         _editingItem.value = null
     }
 
     fun updateCartItem(oldItem: CartItem, newItem: CartItem) {
-        Log.d(TAG, "Updating cart item: ${oldItem.name} -> ${newItem.name}")
 
         val currentItems = _cartItems.value.toMutableList()
 
@@ -80,7 +77,6 @@ class CartViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun removeFromCart(item: CartItem) {
-        Log.d(TAG, "Removing item from cart: ${item.name}")
 
         val currentItems = _cartItems.value.toMutableList()
         val removed = currentItems.removeAll { cartItem ->
@@ -98,41 +94,10 @@ class CartViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun updateItemQuantity(item: CartItem, newQuantity: Int) {
-        Log.d(TAG, "Updating item quantity: ${item.name} -> $newQuantity")
-
-        if (newQuantity <= 0) {
-            removeFromCart(item)
-            return
-        }
-
-        val currentItems = _cartItems.value.toMutableList()
-        val itemIndex = currentItems.indexOfFirst { cartItem ->
-            cartItem.menuItemId == item.menuItemId &&
-                    cartItem.selectedSize?.id == item.selectedSize?.id &&
-                    cartItem.selectedToppings == item.selectedToppings &&
-                    cartItem.selectedSpiceLevel?.id == item.selectedSpiceLevel?.id
-        }
-
-        if (itemIndex != -1) {
-            currentItems[itemIndex] = currentItems[itemIndex].copy(quantity = newQuantity)
-            _cartItems.value = currentItems
-            Log.d(TAG, "Item quantity updated successfully")
-        } else {
-            Log.w(TAG, "Item not found for quantity update")
-        }
-    }
-
     fun clearCart() {
         Log.d(TAG, "Clearing entire cart")
         _cartItems.value = emptyList()
         clearEditingItem()
-    }
-
-    fun getCartTotal(): Double {
-        val total = _cartItems.value.sumOf { it.calculateItemTotal() }
-        Log.d(TAG, "Cart total calculated: $total")
-        return total
     }
 
     fun isEmpty(): Boolean {

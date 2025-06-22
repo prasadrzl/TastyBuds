@@ -61,9 +61,7 @@ class LoginViewModel @Inject constructor(
                     )
                 }
 
-                is Result.Loading -> {
-                    // Already handling
-                }
+                is Result.Loading -> {}
             }
         }
     }

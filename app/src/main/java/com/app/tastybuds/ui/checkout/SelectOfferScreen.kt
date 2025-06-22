@@ -46,8 +46,12 @@ import com.app.tastybuds.util.ui.AppTopBar
 fun SelectOfferScreen(offers: List<OfferItem>, onUseNowClick: () -> Unit) {
     var selectedOffer by remember { mutableStateOf<String?>(null) }
 
-    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
-        AppTopBar(title = "Select offer", onBackClick = { /* TODO */ })
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        AppTopBar(title = "Select offer", onBackClick = { })
 
         OutlinedTextField(
             value = "",
@@ -73,14 +77,14 @@ fun SelectOfferScreen(offers: List<OfferItem>, onUseNowClick: () -> Unit) {
 
                 val isSelected = selectedOffer == offer.id
                 val backgroundColor = when {
-                    isSelected -> Color(0xFFFFF3E0) // selected = light orange
-                    offer.enabled -> Color(0xFFFDFDFD) // default background for enabled
-                    else -> Color(0xFFF2F2F2) // disabled = gray
+                    isSelected -> Color(0xFFFFF3E0)
+                    offer.enabled -> Color(0xFFFDFDFD)
+                    else -> Color(0xFFF2F2F2)
                 }
 
                 val borderStroke = when {
                     isSelected -> BorderStroke(1.dp, Color(0xFFFF7700))
-                    offer.enabled -> BorderStroke(1.dp, Color(0xFFE0E0E0)) // light gray border
+                    offer.enabled -> BorderStroke(1.dp, Color(0xFFE0E0E0))
                     else -> null
                 }
 
@@ -137,7 +141,6 @@ fun SelectOfferScreen(offers: List<OfferItem>, onUseNowClick: () -> Unit) {
     }
 }
 
-// Data model
 data class OfferItem(
     val id: String,
     val label: String,
@@ -145,7 +148,6 @@ data class OfferItem(
     val enabled: Boolean = true
 )
 
-// Dummy data for preview
 @Preview(showBackground = true)
 @Composable
 fun PreviewSelectOfferScreen() {

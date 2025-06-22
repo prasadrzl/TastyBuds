@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -76,7 +77,7 @@ fun OrderDetailsScreen(
     Scaffold(
         topBar = {
             AppTopBar(
-                title = "Order Details",
+                title = stringResource(R.string.order_details),
                 onBackClick = onBackClick,
             )
         },
@@ -126,7 +127,7 @@ private fun LoadingContent() {
                 modifier = Modifier.size(48.dp)
             )
             Text(
-                text = "Loading order details...",
+                text = stringResource(R.string.loading_order_details),
                 fontSize = 16.sp,
                 color = Color.Gray
             )
@@ -150,12 +151,12 @@ private fun ErrorContent(
         ) {
             Icon(
                 imageVector = Icons.Default.Edit,
-                contentDescription = "Error",
+                contentDescription = stringResource(R.string.error),
                 tint = Color.Red,
                 modifier = Modifier.size(64.dp)
             )
             Text(
-                text = "Failed to load order",
+                text = stringResource(R.string.failed_to_load_order),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
@@ -170,7 +171,7 @@ private fun ErrorContent(
                 onClick = onRetry,
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
             ) {
-                Text("Try Again")
+                Text(stringResource(R.string.try_again))
             }
         }
     }
@@ -255,7 +256,7 @@ private fun OrderHeaderCard(order: Order) {
                         color = Color.Gray
                     )
                 }
-                
+
                 OrderStatusChip(status = order.status, isLarge = true)
             }
 
@@ -267,19 +268,19 @@ private fun OrderHeaderCard(order: Order) {
             ) {
                 InfoItem(
                     icon = Icons.Default.ShoppingCart,
-                    label = "Items",
+                    label = stringResource(R.string.items),
                     value = "${order.orderItems.size}"
                 )
-                
+
                 InfoItem(
                     icon = Icons.Default.ShoppingCart,
-                    label = "Total",
+                    label = stringResource(R.string.total),
                     value = "$${"%.2f".format(order.totalAmount)}"
                 )
-                
+
                 InfoItem(
                     icon = Icons.Default.ShoppingCart,
-                    label = "Time",
+                    label = stringResource(R.string.time),
                     value = getEstimatedTime(order.status)
                 )
             }
@@ -302,14 +303,14 @@ private fun RestaurantInfoCard(
             modifier = Modifier.padding(20.dp)
         ) {
             Text(
-                text = "Restaurant",
+                text = stringResource(R.string.restaurant),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
-            
+
             Spacer(modifier = Modifier.height(12.dp))
-            
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -323,47 +324,47 @@ private fun RestaurantInfoCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.ShoppingCart,
-                        contentDescription = "Restaurant",
+                        contentDescription = stringResource(R.string.restaurant),
                         tint = Color.Gray,
                         modifier = Modifier.size(30.dp)
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.width(12.dp))
-                
+
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = order.restaurantName ?: "Restaurant Name",
+                        text = order.restaurantName ?: stringResource(R.string.restaurant_name),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color.Black
                     )
-                    
+
                     Text(
-                        text = "Restaurant • Fast Food",
+                        text = stringResource(R.string.restaurant_fast_food),
                         fontSize = 12.sp,
                         color = Color.Gray
                     )
-                    
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(top = 4.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Star,
-                            contentDescription = "Rating",
+                            contentDescription = stringResource(R.string.rating),
                             tint = Color(0xFFFFB000),
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
-                            text = "4.5 • 15-20 mins",
+                            text = stringResource(R.string.time_place_holder),
                             fontSize = 12.sp,
                             color = Color.Gray,
                             modifier = Modifier.padding(start = 4.dp)
                         )
                     }
                 }
-                
+
                 OutlinedButton(
                     onClick = onContactRestaurant,
                     modifier = Modifier.height(36.dp),
@@ -373,7 +374,7 @@ private fun RestaurantInfoCard(
                     border = androidx.compose.foundation.BorderStroke(1.dp, PrimaryColor)
                 ) {
                     Text(
-                        text = "Contact",
+                        text = stringResource(R.string.contact),
                         fontSize = 12.sp
                     )
                 }
@@ -394,14 +395,14 @@ private fun OrderItemsCard(orderItems: List<OrderItemRequest>) {
             modifier = Modifier.padding(20.dp)
         ) {
             Text(
-                text = "Order Items (${orderItems.size})",
+                text = stringResource(R.string.order_items, orderItems.size),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             orderItems.forEach { item ->
                 OrderItemRow(item = item)
                 if (item != orderItems.last()) {
@@ -432,7 +433,7 @@ private fun OrderItemRow(item: OrderItemRequest) {
             if (item.image.isNullOrEmpty()) {
                 Icon(
                     imageVector = Icons.Default.ShoppingCart,
-                    contentDescription = "Food",
+                    contentDescription = stringResource(R.string.food),
                     tint = Color.Gray,
                     modifier = Modifier.size(30.dp)
                 )
@@ -446,9 +447,9 @@ private fun OrderItemRow(item: OrderItemRequest) {
                 )
             }
         }
-        
+
         Spacer(modifier = Modifier.width(12.dp))
-        
+
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = item.name,
@@ -458,49 +459,51 @@ private fun OrderItemRow(item: OrderItemRequest) {
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-            
+
             if (item.customizations.size != null) {
                 Text(
-                    text = "Size: ${item.customizations.size?.name ?: "Regular"}",
+                    text = "Size: ${item.customizations.size?.name ?: stringResource(R.string.regular)}",
                     fontSize = 12.sp,
                     color = Color.Gray,
                     modifier = Modifier.padding(top = 2.dp)
                 )
             }
-            
+
             if (item.customizations.toppings.isNotEmpty()) {
                 Text(
-                    text = "Toppings: ${item.customizations.toppings.joinToString(", ") { it.name }}",
+                    text = stringResource(
+                        R.string.toppings_number_holder,
+                        item.customizations.toppings.joinToString(", ") { it.name }),
                     fontSize = 12.sp,
                     color = Color.Gray,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            
+
             if (item.customizations.spiceLevel != null) {
                 Text(
-                    text = "Spice: ${item.customizations.spiceLevel!!.name}",
+                    text = stringResource(R.string.spice, item.customizations.spiceLevel.name),
                     fontSize = 12.sp,
                     color = Color.Gray
                 )
             }
-            
+
             if (!item.notes.isNullOrEmpty()) {
                 Text(
-                    text = "Note: ${item.notes}",
+                    text = stringResource(R.string.note_number_holder, item.notes),
                     fontSize = 12.sp,
                     color = Color.Gray,
                     fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                 )
             }
         }
-        
+
         Column(
             horizontalAlignment = Alignment.End
         ) {
             Text(
-                text = "Qty: ${item.quantity}",
+                text = stringResource(R.string.qty_number_holder, item.quantity),
                 fontSize = 12.sp,
                 color = Color.Gray
             )
@@ -526,29 +529,29 @@ private fun DeliveryInfoCard(order: Order) {
             modifier = Modifier.padding(20.dp)
         ) {
             Text(
-                text = "Delivery Information",
+                text = stringResource(R.string.delivery_information),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             Row(
                 verticalAlignment = Alignment.Top
             ) {
                 Icon(
                     imageVector = Icons.Default.LocationOn,
-                    contentDescription = "Address",
+                    contentDescription = stringResource(R.string.address),
                     tint = PrimaryColor,
                     modifier = Modifier.size(20.dp)
                 )
-                
+
                 Spacer(modifier = Modifier.width(12.dp))
-                
+
                 Column {
                     Text(
-                        text = "Delivery Address",
+                        text = stringResource(R.string.delivery_address),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color.Black
@@ -559,7 +562,7 @@ private fun DeliveryInfoCard(order: Order) {
                         color = Color.Gray,
                         modifier = Modifier.padding(top = 4.dp)
                     )
-                    
+
                     if (!order.deliveryAddress.deliveryInstructions.isNullOrEmpty()) {
                         Text(
                             text = "Instructions: ${order.deliveryAddress.deliveryInstructions}",
@@ -587,37 +590,37 @@ private fun PaymentSummaryCard(order: Order) {
             modifier = Modifier.padding(20.dp)
         ) {
             Text(
-                text = "Payment Summary",
+                text = stringResource(R.string.payment_summary),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             PaymentRow(label = "Subtotal", amount = order.subtotal)
             PaymentRow(label = "Delivery Fee", amount = order.deliveryFee)
-            
+
             if (order.promotionDiscount > 0) {
                 PaymentRow(
-                    label = "Discount", 
+                    label = "Discount",
                     amount = -order.promotionDiscount,
                     isDiscount = true
                 )
             }
-            
+
             Divider(
                 color = Color.Gray.copy(alpha = 0.3f),
                 modifier = Modifier.padding(vertical = 12.dp)
             )
-            
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Total",
+                    text = stringResource(R.string.total),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
@@ -629,15 +632,15 @@ private fun PaymentSummaryCard(order: Order) {
                     color = PrimaryColor
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(12.dp))
-            
+
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = Icons.Default.ShoppingCart,
-                    contentDescription = "Payment",
+                    contentDescription = stringResource(R.string.payment),
                     tint = Color.Gray,
                     modifier = Modifier.size(16.dp)
                 )
@@ -664,16 +667,16 @@ private fun OrderTimelineCard(order: Order) {
             modifier = Modifier.padding(20.dp)
         ) {
             Text(
-                text = "Order Timeline",
+                text = stringResource(R.string.order_timeline),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             val timelineSteps = generateTimelineSteps(order)
-            
+
             timelineSteps.forEachIndexed { index, step ->
                 TimelineStep(
                     step = step,
@@ -702,11 +705,11 @@ private fun ActionButtonsSection(
             ) {
                 Icon(
                     imageVector = Icons.Default.LocationOn,
-                    contentDescription = "Track",
+                    contentDescription = stringResource(R.string.track),
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Track Order")
+                Text(stringResource(R.string.track_order))
             }
         }
     }
@@ -819,7 +822,7 @@ private fun TimelineStep(
                         shape = androidx.compose.foundation.shape.CircleShape
                     )
             )
-            
+
             if (!isLast) {
                 Box(
                     modifier = Modifier
@@ -829,9 +832,9 @@ private fun TimelineStep(
                 )
             }
         }
-        
+
         Spacer(modifier = Modifier.width(12.dp))
-        
+
         Column(
             modifier = Modifier.weight(1f)
         ) {
@@ -880,68 +883,80 @@ private fun isOrderActive(status: OrderStatus): Boolean {
     )
 }
 
+@Composable
 private fun generateTimelineSteps(order: Order): List<TimelineStepData> {
     val steps = mutableListOf<TimelineStepData>()
     val currentStatus = order.status
-    
+
     steps.add(
         TimelineStepData(
-            title = "Order Placed",
+            title = stringResource(R.string.order_placed),
             time = formatOrderDate(order.createdAt),
             isCompleted = true
         )
     )
-    
+
     if (currentStatus != OrderStatus.PENDING) {
         steps.add(
             TimelineStepData(
-                title = "Order Confirmed",
+                title = stringResource(R.string.order_confirmed),
                 time = "2 mins ago",
                 isCompleted = true
             )
         )
     }
-    
-    if (currentStatus in listOf(OrderStatus.PREPARING, OrderStatus.READY, OrderStatus.OUT_FOR_DELIVERY, OrderStatus.DELIVERED)) {
+
+    if (currentStatus in listOf(
+            OrderStatus.PREPARING,
+            OrderStatus.READY,
+            OrderStatus.OUT_FOR_DELIVERY,
+            OrderStatus.DELIVERED
+        )
+    ) {
         steps.add(
             TimelineStepData(
-                title = "Preparing",
+                title = stringResource(R.string.preparing),
                 time = "5 mins ago",
                 isCompleted = true
             )
         )
     }
-    
-    if (currentStatus in listOf(OrderStatus.READY, OrderStatus.OUT_FOR_DELIVERY, OrderStatus.DELIVERED)) {
+
+    if (currentStatus in listOf(
+            OrderStatus.READY,
+            OrderStatus.OUT_FOR_DELIVERY,
+            OrderStatus.DELIVERED
+        )
+    ) {
         steps.add(
             TimelineStepData(
-                title = "Ready for Pickup",
+                title = stringResource(R.string.ready_for_pickup),
                 time = "Just now",
                 isCompleted = true
             )
         )
     }
-    
+
     if (currentStatus in listOf(OrderStatus.OUT_FOR_DELIVERY, OrderStatus.DELIVERED)) {
         steps.add(
             TimelineStepData(
-                title = "Out for Delivery",
+                title = stringResource(R.string.out_for_delivery),
                 time = "In progress",
                 isCompleted = currentStatus == OrderStatus.DELIVERED
             )
         )
     }
-    
+
     if (currentStatus == OrderStatus.DELIVERED) {
         steps.add(
             TimelineStepData(
-                title = "Delivered",
+                title = stringResource(R.string.delivered),
                 time = order.actualDeliveryTime ?: "Delivered",
                 isCompleted = true
             )
         )
     }
-    
+
     return steps
 }
 

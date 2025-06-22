@@ -115,7 +115,7 @@ class OnboardingManager @Inject constructor(
 
             try {
                 runBlocking {
-                    kotlinx.coroutines.withTimeout(1000) { // 1 second timeout for first launch
+                    kotlinx.coroutines.withTimeout(1000) {
                         userDataStore.edit { preferences ->
                             preferences[IS_LOGGED_IN_KEY] = false
                             preferences[USER_EMAIL_KEY] = ""

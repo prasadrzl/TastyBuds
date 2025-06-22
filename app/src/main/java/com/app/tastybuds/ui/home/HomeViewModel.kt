@@ -14,9 +14,7 @@ import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
-    private val homeUseCase: HomeUseCase
-) : ViewModel() {
+class HomeViewModel @Inject constructor(private val homeUseCase: HomeUseCase) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()

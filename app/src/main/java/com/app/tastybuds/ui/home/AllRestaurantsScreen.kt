@@ -2,32 +2,50 @@ package com.app.tastybuds.ui.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.app.tastybuds.R
 import com.app.tastybuds.domain.model.Restaurant
 import com.app.tastybuds.ui.theme.PrimaryColor
 import com.app.tastybuds.util.ui.AppTopBar
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
-import com.app.tastybuds.R
 
 @Composable
 fun AllRestaurantsScreen(
@@ -56,12 +74,14 @@ fun AllRestaurantsScreen(
                     CircularProgressIndicator(color = PrimaryColor)
                 }
             }
+
             uiState.error != null -> {
                 ErrorContent(
-                    error = uiState.error ?: "Unknown error",
+                    error = uiState.error ?: stringResource(R.string.unknown_error),
                     onRetry = { viewModel.retry() }
                 )
             }
+
             else -> {
                 RestaurantsContent(
                     restaurants = uiState.recommendedRestaurants,
@@ -101,13 +121,13 @@ fun RestaurantsContent(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "No restaurants available",
+                            text = stringResource(R.string.no_restaurants_available),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Medium,
                             color = Color.Gray
                         )
                         Text(
-                            text = "Check back later for new restaurants",
+                            text = stringResource(R.string.check_back_later_for_new_restaurants),
                             fontSize = 14.sp,
                             color = Color.Gray
                         )
@@ -204,7 +224,7 @@ fun RestaurantListItemCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Star,
-                        contentDescription = "Rating",
+                        contentDescription = stringResource(id = R.string.rating),
                         modifier = Modifier.size(16.dp),
                         tint = Color(0xFFFFC107)
                     )
