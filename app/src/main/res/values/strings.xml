@@ -429,5 +429,6 @@
     <string name="no_menu_items_found">No menu items found</string>
     <string name="items_found">%1$s items found</string>
     <string name="unknown_content_type">Unknown content type</string>
+    <string name="loading_vouchers">Loading vouchers...</string>
 
 </resources>

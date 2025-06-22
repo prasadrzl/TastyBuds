@@ -1,7 +1,12 @@
-package com.app.tastybuds.ui.vouchers
+package com.app.tastybuds.data.repo
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.app.tastybuds.common.TastyBudsApiService
+import com.app.tastybuds.domain.model.Voucher
+import com.app.tastybuds.data.model.VoucherUsageRequest
+import com.app.tastybuds.data.model.mapper.toVoucherDomainModelList
 import com.app.tastybuds.util.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -27,6 +32,7 @@ class VouchersRepositoryImpl @Inject constructor(
         private const val TAG = "VouchersRepository"
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun getUserVouchers(userId: String): Flow<Result<List<Voucher>>> = flow {
         emit(Result.Loading)
         try {
@@ -36,7 +42,6 @@ class VouchersRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 val vouchersApiResponse = response.body() ?: emptyList()
 
-                // Fetch restaurant names for vouchers that have restaurant_id
                 val restaurantIds = vouchersApiResponse
                     .mapNotNull { it.restaurantId }
                     .distinct()
@@ -48,24 +53,19 @@ class VouchersRepositoryImpl @Inject constructor(
                 }
 
                 val vouchers = vouchersApiResponse.toVoucherDomainModelList(restaurantNames)
-                Log.d(TAG, "Successfully fetched ${vouchers.size} vouchers")
                 emit(Result.Success(vouchers))
             } else {
                 val errorMessage = "Failed to fetch vouchers: ${response.message()}"
-                Log.e(TAG, errorMessage)
                 emit(Result.Error(errorMessage))
             }
         } catch (e: Exception) {
-            val errorMessage = "Network error: ${e.localizedMessage ?: "Unknown error"}"
-            Log.e(TAG, errorMessage, e)
-            emit(Result.Error(errorMessage))
+            emit(Result.Error(e.message ?: "unknown error"))
         }
     }
 
     override fun getActiveVouchers(userId: String): Flow<Result<List<Voucher>>> = flow {
         emit(Result.Loading)
         try {
-            Log.d(TAG, "Fetching active vouchers for user: $userId")
             val response = apiService.getActiveVouchers(userId = "eq.$userId")
 
             if (response.isSuccessful) {
@@ -84,7 +84,6 @@ class VouchersRepositoryImpl @Inject constructor(
                 val vouchers = vouchersApiResponse.toVoucherDomainModelList(restaurantNames)
                     .filter { it.canBeUsed } // Additional client-side filtering
 
-                Log.d(TAG, "Successfully fetched ${vouchers.size} active vouchers")
                 emit(Result.Success(vouchers))
             } else {
                 val errorMessage = "Failed to fetch active vouchers: ${response.message()}"
@@ -98,10 +97,10 @@ class VouchersRepositoryImpl @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun getUsedVouchers(userId: String): Flow<Result<List<Voucher>>> = flow {
         emit(Result.Loading)
         try {
-            Log.d(TAG, "Fetching used vouchers for user: $userId")
             val response = apiService.getUsedVouchers(userId = "eq.$userId")
 
             if (response.isSuccessful) {
@@ -118,7 +117,6 @@ class VouchersRepositoryImpl @Inject constructor(
                 }
 
                 val vouchers = vouchersApiResponse.toVoucherDomainModelList(restaurantNames)
-                Log.d(TAG, "Successfully fetched ${vouchers.size} used vouchers")
                 emit(Result.Success(vouchers))
             } else {
                 val errorMessage = "Failed to fetch used vouchers: ${response.message()}"
@@ -132,10 +130,13 @@ class VouchersRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getRestaurantVouchers(userId: String, restaurantId: String): Flow<Result<List<Voucher>>> = flow {
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun getRestaurantVouchers(
+        userId: String,
+        restaurantId: String
+    ): Flow<Result<List<Voucher>>> = flow {
         emit(Result.Loading)
         try {
-            Log.d(TAG, "Fetching restaurant vouchers for user: $userId, restaurant: $restaurantId")
             val response = apiService.getRestaurantVouchers(
                 userId = "eq.$userId",
                 restaurantId = "eq.$restaurantId"
@@ -151,7 +152,6 @@ class VouchersRepositoryImpl @Inject constructor(
                 }
 
                 val vouchers = vouchersApiResponse.toVoucherDomainModelList(restaurantNames)
-                Log.d(TAG, "Successfully fetched ${vouchers.size} restaurant vouchers")
                 emit(Result.Success(vouchers))
             } else {
                 val errorMessage = "Failed to fetch restaurant vouchers: ${response.message()}"
@@ -167,7 +167,6 @@ class VouchersRepositoryImpl @Inject constructor(
 
     override suspend fun markVoucherAsUsed(voucherId: String, orderId: String): Result<Voucher> {
         return try {
-            Log.d(TAG, "Marking voucher as used: $voucherId for order: $orderId")
             val voucherUsage = VoucherUsageRequest(
                 isUsed = true,
                 usedCount = 1
@@ -183,7 +182,6 @@ class VouchersRepositoryImpl @Inject constructor(
                 val updatedVoucher = updatedVouchersApi?.firstOrNull()
 
                 if (updatedVoucher != null) {
-                    Log.d(TAG, "Successfully marked voucher as used")
                     Result.Success(updatedVoucher)
                 } else {
                     Result.Error("Failed to get updated voucher")
@@ -202,7 +200,6 @@ class VouchersRepositoryImpl @Inject constructor(
 
     override suspend fun refreshVouchers(userId: String): Result<List<Voucher>> {
         return try {
-            Log.d(TAG, "Refreshing vouchers for user: $userId")
             val response = apiService.getUserVouchers(userId = "eq.$userId")
 
             if (response.isSuccessful) {
@@ -219,7 +216,6 @@ class VouchersRepositoryImpl @Inject constructor(
                 }
 
                 val vouchers = vouchersApiResponse.toVoucherDomainModelList(restaurantNames)
-                Log.d(TAG, "Successfully refreshed ${vouchers.size} vouchers")
                 Result.Success(vouchers)
             } else {
                 val errorMessage = "Failed to refresh vouchers: ${response.message()}"
@@ -241,7 +237,6 @@ class VouchersRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.associate { it.id to it.name } ?: emptyMap()
             } else {
-                Log.w(TAG, "Failed to fetch restaurant names: ${response.message()}")
                 emptyMap()
             }
         } catch (e: Exception) {

@@ -15,7 +15,6 @@ import com.app.tastybuds.data.model.FavoriteWithRestaurantResponse
 import com.app.tastybuds.data.model.MenuItemResponse
 import com.app.tastybuds.data.model.MenuItemWithRestaurantResponse
 import com.app.tastybuds.data.model.Order
-import com.app.tastybuds.data.model.OrderStatus
 import com.app.tastybuds.data.model.RestaurantDetailsResponse
 import com.app.tastybuds.data.model.RestaurantResponse
 import com.app.tastybuds.data.model.RestaurantReviewResponse
@@ -27,8 +26,8 @@ import com.app.tastybuds.domain.model.UpdateProfileRequest
 import com.app.tastybuds.domain.model.UserResponse
 import com.app.tastybuds.ui.resturants.FoodCustomizationResponse
 import com.app.tastybuds.ui.resturants.FoodDetailsResponse
-import com.app.tastybuds.ui.vouchers.VoucherApiResponse
-import com.app.tastybuds.ui.vouchers.VoucherUsageRequest
+import com.app.tastybuds.data.model.VoucherApiResponse
+import com.app.tastybuds.data.model.VoucherUsageRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE

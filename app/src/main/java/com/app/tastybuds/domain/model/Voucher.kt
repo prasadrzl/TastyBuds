@@ -1,4 +1,4 @@
-package com.app.tastybuds.ui.vouchers
+package com.app.tastybuds.domain.model
 
 import androidx.compose.ui.graphics.Color
 

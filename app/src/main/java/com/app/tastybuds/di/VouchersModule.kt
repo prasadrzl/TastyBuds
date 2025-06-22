@@ -1,6 +1,9 @@
-package com.app.tastybuds.ui.vouchers
+package com.app.tastybuds.di
 
 import com.app.tastybuds.common.TastyBudsApiService
+import com.app.tastybuds.data.repo.VouchersRepository
+import com.app.tastybuds.data.repo.VouchersRepositoryImpl
+import com.app.tastybuds.domain.VouchersUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

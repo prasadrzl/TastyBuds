@@ -2,9 +2,20 @@ package com.app.tastybuds.ui.vouchers
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
@@ -12,10 +23,18 @@ import androidx.compose.material.icons.sharp.Add
 import androidx.compose.material.icons.sharp.Build
 import androidx.compose.material.icons.sharp.Menu
 import androidx.compose.material.icons.sharp.Star
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.runtime.*
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,10 +51,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
+import com.app.tastybuds.domain.model.DiscountType
+import com.app.tastybuds.domain.model.Voucher
 import com.app.tastybuds.ui.theme.PrimaryColor
 import com.app.tastybuds.util.ui.AppTopBar
+import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-
 
 @Composable
 fun AllVouchersScreen(
@@ -45,13 +66,16 @@ fun AllVouchersScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val swipeRefreshState = rememberSwipeRefreshState(uiState.isRefreshing)
-    val activeVouchers = vouchers.filter { !it.isUsed }
-    val usedVouchers = vouchers.filter { it.isUsed }
 
-    var selectedTab by remember { mutableIntStateOf(0) }
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let { _ ->
+            viewModel.clearError()
+        }
+    }
+
     val tabs = listOf(
-        stringResource(R.string.active, activeVouchers.size),
-        stringResource(R.string.used, usedVouchers.size)
+        stringResource(R.string.active, uiState.activeVouchersCount),
+        stringResource(R.string.used, uiState.usedVouchersCount)
     )
 
     Column(
@@ -65,57 +89,63 @@ fun AllVouchersScreen(
         )
 
         TabRow(
-            selectedTabIndex = selectedTab,
+            selectedTabIndex = uiState.selectedTab,
             modifier = Modifier.fillMaxWidth(),
             containerColor = Color.White,
             contentColor = PrimaryColor,
             indicator = { tabPositions ->
                 SecondaryIndicator(
-                    Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
+                    Modifier.tabIndicatorOffset(tabPositions[uiState.selectedTab]),
                     color = PrimaryColor
                 )
             }
         ) {
             tabs.forEachIndexed { index, title ->
                 Tab(
-                    selected = selectedTab == index,
-                    onClick = { selectedTab = index },
+                    selected = uiState.selectedTab == index,
+                    onClick = { viewModel.selectTab(index) },
                     text = {
                         Text(
                             text = title,
-                            fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Normal,
-                            color = if (selectedTab == index) PrimaryColor else Color.Gray
+                            fontWeight = if (uiState.selectedTab == index) FontWeight.Bold else FontWeight.Normal,
+                            color = if (uiState.selectedTab == index) PrimaryColor else Color.Gray
                         )
                     }
                 )
             }
         }
 
-        when (uiState.selectedTab) {
-            0 -> {
-                VouchersContent(
-                    uiState = uiState, // ✅ Pass uiState
-                    vouchers = uiState.activeVouchers, // ✅ Use activeVouchers from uiState
-                    onVoucherClick = { voucherId ->
-                        viewModel.onVoucherClick(voucherId)
-                        onVoucherClick(voucherId)
-                    },
-                    emptyMessage = stringResource(R.string.no_active_vouchers_available),
-                    emptySubMessage = stringResource(R.string.check_back_later_for_new_vouchers_and_deals)
-                )
-            }
+        SwipeRefresh(
+            state = swipeRefreshState,
+            onRefresh = { viewModel.refreshVouchers() },
+            modifier = Modifier.fillMaxSize()
+        ) {
+            when (uiState.selectedTab) {
+                0 -> {
+                    VouchersContent(
+                        uiState = uiState,
+                        vouchers = uiState.activeVouchers,
+                        onVoucherClick = { voucherId ->
+                            viewModel.onVoucherClick(voucherId)
+                            onVoucherClick(voucherId)
+                        },
+                        emptyMessage = stringResource(R.string.no_active_vouchers_available),
+                        emptySubMessage = stringResource(R.string.check_back_later_for_new_vouchers_and_deals)
+                    )
+                }
 
-            1 -> {
-                VouchersContent(
-                    uiState = uiState, // ✅ Pass uiState
-                    vouchers = uiState.usedVouchers, // ✅ Use usedVouchers from uiState
-                    onVoucherClick = { voucherId ->
-                        viewModel.onVoucherClick(voucherId)
-                        onVoucherClick(voucherId)
-                    },
-                    emptyMessage = stringResource(R.string.no_used_vouchers),
-                    emptySubMessage = stringResource(R.string.your_used_vouchers_will_appear_here)
-                )
+                1 -> {
+                    VouchersContent(
+                        uiState = uiState,
+                        vouchers = uiState.usedVouchers,
+                        onVoucherClick = { voucherId ->
+                            viewModel.onVoucherClick(voucherId)
+                            onVoucherClick(voucherId)
+                        },
+                        emptyMessage = stringResource(R.string.no_used_vouchers),
+                        emptySubMessage = stringResource(R.string.your_used_vouchers_will_appear_here)
+                    )
+                }
             }
         }
     }
@@ -133,21 +163,23 @@ fun VouchersContent(
         uiState.isLoading && vouchers.isEmpty() -> {
             LoadingContent()
         }
+
         vouchers.isEmpty() -> {
             EmptyVouchersContent(
                 message = emptyMessage,
                 subMessage = emptySubMessage
             )
         }
+
         else -> {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(vouchers) { voucher -> // ✅ Now uses Voucher domain model
+                items(vouchers) { voucher ->
                     VoucherCard(
-                        voucher = voucher, // ✅ Pass Voucher directly to VoucherCard
+                        voucher = voucher,
                         onClick = { onVoucherClick(voucher.id) }
                     )
                 }
@@ -168,7 +200,7 @@ private fun LoadingContent() {
         ) {
             CircularProgressIndicator(color = PrimaryColor)
             Text(
-                text = "Loading vouchers...",
+                text = stringResource(R.string.loading_vouchers),
                 color = Color.Gray,
                 fontSize = 14.sp
             )
@@ -220,7 +252,7 @@ private fun EmptyVouchersContent(
 
 @Composable
 fun VoucherCard(
-    voucher: Voucher, // ✅ Use the new domain model
+    voucher: Voucher,
     onClick: () -> Unit
 ) {
     Card(
@@ -247,7 +279,7 @@ fun VoucherCard(
                     .clip(RoundedCornerShape(8.dp))
                     .background(
                         if (voucher.isUsed) Color.Gray.copy(alpha = 0.3f)
-                        else getVoucherIconBackground(voucher.discountType) // ✅ Use discountType
+                        else getVoucherIconBackground(voucher.discountType)
                     ),
                 contentAlignment = Alignment.Center
             ) {
@@ -255,7 +287,7 @@ fun VoucherCard(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
-                        imageVector = getVoucherIcon(voucher.discountType), // ✅ Use discountType
+                        imageVector = getVoucherIcon(voucher.discountType),
                         contentDescription = stringResource(R.string.voucher),
                         modifier = Modifier.size(24.dp),
                         tint = if (voucher.isUsed) Color.Gray else Color.White
@@ -264,7 +296,7 @@ fun VoucherCard(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = voucher.iconText, // ✅ Use iconText from domain model
+                        text = voucher.iconText,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = if (voucher.isUsed) Color.Gray else Color.White
@@ -296,7 +328,7 @@ fun VoucherCard(
                     overflow = TextOverflow.Ellipsis
                 )
 
-                voucher.minimumOrderText?.let { minOrder -> // ✅ Use minimumOrderText
+                voucher.minimumOrderText?.let { minOrder ->
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = minOrder,
@@ -306,7 +338,7 @@ fun VoucherCard(
                     )
                 }
 
-                if (voucher.validityText.isNotEmpty()) { // ✅ Use validityText
+                if (voucher.validityText.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = voucher.validityText,
@@ -334,7 +366,7 @@ fun VoucherCard(
                         text = if (voucher.isUsed) {
                             stringResource(R.string.used)
                         } else {
-                            voucher.expiryText // ✅ Use expiryText from domain model
+                            voucher.expiryText
                         },
                         fontSize = 12.sp,
                         color = if (voucher.isUsed) Color.Gray else Color.Gray
@@ -345,12 +377,14 @@ fun VoucherCard(
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (voucher.buttonEnabled) PrimaryColor else Color.Gray.copy(alpha = 0.2f)
+                    containerColor = if (voucher.buttonEnabled) PrimaryColor else Color.Gray.copy(
+                        alpha = 0.2f
+                    )
                 ),
                 modifier = if (voucher.buttonEnabled) Modifier.clickable { onClick() } else Modifier
             ) {
                 Text(
-                    text = voucher.buttonText, // ✅ Use buttonText from domain model
+                    text = voucher.buttonText,
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
@@ -361,7 +395,6 @@ fun VoucherCard(
     }
 }
 
-// ✅ Update helper functions to use DiscountType enum
 fun getVoucherIcon(type: DiscountType): ImageVector = when (type) {
     DiscountType.PERCENTAGE -> Icons.Sharp.Build
     DiscountType.FIXED_AMOUNT -> Icons.Sharp.Star
@@ -375,8 +408,6 @@ fun getVoucherIconBackground(type: DiscountType): Color = when (type) {
     DiscountType.FREE_DELIVERY -> PrimaryColor
     DiscountType.BUY_ONE_GET_ONE -> Color(0xFF9C27B0)
 }
-
-// ✅ Remove the getDummyVouchers() function - no longer needed
 
 @Preview(showBackground = true)
 @Composable
