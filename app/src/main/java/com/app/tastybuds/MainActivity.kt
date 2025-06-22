@@ -65,6 +65,7 @@ fun TastyBuddyMainScreen(navController: NavHostController, themeManager: ThemeMa
     Scaffold(
         topBar = {
             val hideTopBar = currentRoute == "splash" ||
+                    currentRoute == "onboarding" ||
                     currentRoute == "profile" ||
                     currentRoute == "profile_edit" ||
                     currentRoute == "login" ||
@@ -105,6 +106,7 @@ fun TastyBuddyMainScreen(navController: NavHostController, themeManager: ThemeMa
         },
         bottomBar = {
             val hideBottomBar = currentRoute == "splash" ||
+                    currentRoute == "onboarding" ||
                     currentRoute == "profile" ||
                     currentRoute == "profile_edit" ||
                     currentRoute == "login" ||

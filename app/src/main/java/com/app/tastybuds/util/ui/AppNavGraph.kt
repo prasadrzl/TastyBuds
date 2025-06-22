@@ -1,14 +1,5 @@
 package com.app.tastybuds.util.ui
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -16,11 +7,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -30,7 +19,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.app.tastybuds.BottomNavItem
 import com.app.tastybuds.R
-import com.app.tastybuds.ui.splash.TastyBudsSplashScreen
 import com.app.tastybuds.data.SearchResultType.FOOD_ITEM
 import com.app.tastybuds.data.SearchResultType.RESTAURANT
 import com.app.tastybuds.ui.favorites.FavoriteScreen
@@ -55,6 +43,8 @@ import com.app.tastybuds.ui.resturants.CategoryDetailsScreen
 import com.app.tastybuds.ui.resturants.RestaurantDetailsScreen
 import com.app.tastybuds.ui.resturants.SeeAllScreen
 import com.app.tastybuds.ui.resturants.search.SearchResultsScreen
+import com.app.tastybuds.ui.splash.TastyBudsSplashScreen
+import com.tastybuds.app.ui.screens.OnboardingScreen
 
 val items = listOf(
     BottomNavItem("home", "Home", R.drawable.ic_bn_home),
@@ -66,14 +56,31 @@ val items = listOf(
 @Composable
 fun AppNavGraph(navController: NavHostController) {
     val sharedCartViewModel: CartViewModel = hiltViewModel()
+    val context = LocalContext.current
 
     NavHost(navController = navController, startDestination = "splash") {
 
         composable("splash") {
             TastyBudsSplashScreen(
                 onSplashComplete = {
-                    navController.navigate("auth_check") {
+                    val destination = when {
+                        !OnboardingUtils.isOnboardingCompleted(context) -> "onboarding"
+                        OnboardingUtils.isUserLoggedIn(context) -> "home"
+                        else -> "auth_check"
+                    }
+
+                    navController.navigate(destination) {
                         popUpTo("splash") { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable("onboarding") {
+            OnboardingScreen(
+                onNavigateToLogin = {
+                    navController.navigate("login") {
+                        popUpTo("onboarding") { inclusive = true }
                     }
                 }
             )
@@ -97,6 +104,7 @@ fun AppNavGraph(navController: NavHostController) {
         composable("login") {
             LoginScreen(
                 onLoginSuccess = {
+                    OnboardingUtils.setUserLoggedIn(context, true)
                     navController.navigate("home") {
                         popUpTo("login") { inclusive = true }
                     }
@@ -227,6 +235,7 @@ fun AppNavGraph(navController: NavHostController) {
                     navController.navigate("profile_edit")
                 },
                 onSignOut = {
+                    OnboardingUtils.clearUserSession(context)
                     navController.navigate("login") {
                         popUpTo(0) { inclusive = true }
                     }

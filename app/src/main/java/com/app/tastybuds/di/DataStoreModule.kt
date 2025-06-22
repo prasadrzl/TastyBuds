@@ -5,8 +5,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.app.tastybuds.common.TastyBudsApiService
-import com.app.tastybuds.data.repo.LocalDataSource
-import com.app.tastybuds.data.repo.RemoteDataSource
+import com.app.tastybuds.data.repo.UserLocalDataSource
+import com.app.tastybuds.data.repo.UserRemoteDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,11 +35,11 @@ object DataStoreModule {
     fun provideLocalDataSource(
         context: Context,
         dataStore: DataStore<Preferences>
-    ): LocalDataSource = LocalDataSource(context, dataStore)
+    ): UserLocalDataSource = UserLocalDataSource(context, dataStore)
 
     @Provides
     @Singleton
     fun provideRemoteDataSource(
         apiService: TastyBudsApiService
-    ): RemoteDataSource = RemoteDataSource(apiService)
+    ): UserRemoteDataSource = UserRemoteDataSource(apiService)
 }

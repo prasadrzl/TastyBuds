@@ -9,8 +9,8 @@ import javax.inject.Singleton
 
 @Singleton
 class AuthRepository @Inject constructor(
-    private val localDataSource: LocalDataSource,
-    private val remoteDataSource: RemoteDataSource
+    private val localDataSource: UserLocalDataSource,
+    private val userRemoteDataSource: UserRemoteDataSource
 ) {
 
     suspend fun login(email: String, password: String): Result<User> {
@@ -20,7 +20,7 @@ class AuthRepository @Inject constructor(
                 return Result.Error("Invalid email or password")
             }
 
-            when (val userResult = remoteDataSource.getUserByEmail(email)) {
+            when (val userResult = userRemoteDataSource.getUserByEmail(email)) {
                 is Result.Success -> {
                     val user = userResult.data
                     localDataSource.saveLoginState(user)
@@ -49,7 +49,7 @@ class AuthRepository @Inject constructor(
     suspend fun getCurrentUser(): Result<User> {
         return try {
             val userId = localDataSource.getUserId()
-            remoteDataSource.getUserById(userId.first() ?: "")
+            userRemoteDataSource.getUserById(userId.first() ?: "")
         } catch (e: Exception) {
             Result.Error("Failed to get current user: ${e.localizedMessage}")
         }

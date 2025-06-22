@@ -9,7 +9,7 @@ import javax.inject.Singleton
 import com.app.tastybuds.util.*
 
 @Singleton
-class RemoteDataSource @Inject constructor(
+class UserRemoteDataSource @Inject constructor(
     private val apiService: TastyBudsApiService
 ) {
     suspend fun getUserByEmail(email: String): Result<User> {
