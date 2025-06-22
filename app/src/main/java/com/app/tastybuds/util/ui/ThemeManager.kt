@@ -22,12 +22,6 @@ class ThemeManager @Inject constructor(private val context: Context) {
         preferences[DARK_MODE_KEY] ?: false
     }
 
-    suspend fun setDarkMode(isDark: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[DARK_MODE_KEY] = isDark
-        }
-    }
-
     suspend fun toggleDarkMode() {
         context.dataStore.edit { preferences ->
             val current = preferences[DARK_MODE_KEY] ?: false

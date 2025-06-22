@@ -31,7 +31,9 @@ fun SeeAllButton(
             containerColor = buttonColor,
             contentColor = PrimaryColor
         ),
-        modifier = modifier.fillMaxWidth().height(36.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(36.dp),
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
     ) {

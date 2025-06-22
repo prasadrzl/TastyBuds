@@ -1,6 +1,5 @@
 package com.app.tastybuds.util.ui
 
-import android.util.Log
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -123,12 +122,8 @@ fun AppNavGraph(navController: NavHostController) {
         }
 
         composable("login") {
-            Log.d("Navigation", "📱 LoginScreen displayed")
-
             LoginScreen(
                 onLoginSuccess = {
-                    Log.d("Navigation", "✅ Login successful!")
-
                     navController.navigate("home") {
                         popUpTo("login") { inclusive = true }
                     }
