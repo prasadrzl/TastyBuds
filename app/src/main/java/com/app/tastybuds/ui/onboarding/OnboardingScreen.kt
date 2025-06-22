@@ -177,7 +177,7 @@ fun PageIndicators(
                     .clip(CircleShape)
                     .background(
                         if (isSelected) Color(0xFFFF6B35)
-                        else Color(0xFFE0E0E0)
+                        else Color(0xFF260303)
                     )
             )
             if (index < pageCount - 1) {

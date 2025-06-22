@@ -25,7 +25,7 @@ import com.app.tastybuds.ui.favorites.FavoriteScreen
 import com.app.tastybuds.ui.home.AllCollectionsScreen
 import com.app.tastybuds.ui.home.AllDealsScreen
 import com.app.tastybuds.ui.home.AllRestaurantsScreen
-import com.app.tastybuds.ui.home.AllVouchersScreen
+import com.app.tastybuds.ui.vouchers.AllVouchersScreen
 import com.app.tastybuds.ui.home.HomeScreen
 import com.app.tastybuds.ui.inbox.ChatBoxScreen
 import com.app.tastybuds.ui.location.LocationTrackerScreen
@@ -62,7 +62,6 @@ fun AppNavGraph(navController: NavHostController) {
 
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") {
-
             TastyBudsSplashScreen(
                 onSplashComplete = {
 
@@ -85,22 +84,6 @@ fun AppNavGraph(navController: NavHostController) {
                     onboardingViewModel.markOnboardingCompleted()
                     navController.navigate("login") {
                         popUpTo("onboarding") { inclusive = true }
-                    }
-                }
-            )
-        }
-
-        composable("profile") {
-            val scope = rememberCoroutineScope()
-            ProfileScreen(
-                onBackClick = { navController.popBackStack() },
-                onEditProfile = { navController.navigate("profile_edit") },
-                onSignOut = {
-                    scope.launch {
-                        onboardingViewModel.clearUserSession()
-                        navController.navigate("login") {
-                            popUpTo(0) { inclusive = true }
-                        }
                     }
                 }
             )
@@ -244,6 +227,22 @@ fun AppNavGraph(navController: NavHostController) {
         }
 
         composable("inbox") { ChatBoxScreen() }
+
+        composable("profile") {
+            val scope = rememberCoroutineScope()
+            ProfileScreen(
+                onBackClick = { navController.popBackStack() },
+                onEditProfile = { navController.navigate("profile_edit") },
+                onSignOut = {
+                    scope.launch {
+                        onboardingViewModel.clearUserSession()
+                        navController.navigate("login") {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
+                }
+            )
+        }
 
         composable("profile_edit") {
             ProfileSettingsScreen(

@@ -139,6 +139,8 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.coroutines.test)
+
+    implementation(libs.accompanist.swiperefresh)
 }
 
 kapt {

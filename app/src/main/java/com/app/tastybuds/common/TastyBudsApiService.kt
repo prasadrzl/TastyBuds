@@ -27,6 +27,8 @@ import com.app.tastybuds.domain.model.UpdateProfileRequest
 import com.app.tastybuds.domain.model.UserResponse
 import com.app.tastybuds.ui.resturants.FoodCustomizationResponse
 import com.app.tastybuds.ui.resturants.FoodDetailsResponse
+import com.app.tastybuds.ui.vouchers.VoucherApiResponse
+import com.app.tastybuds.ui.vouchers.VoucherUsageRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -294,6 +296,48 @@ interface TastyBudsApiService {
         @Query("id") orderId: String,
         @Body statusUpdate: UpdateOrderStatusRequest
     ): Response<List<Order>>
+
+    @GET("vouchers")
+    suspend fun getUserVouchers(
+        @Query("user_id") userId: String,
+        @Query("select") select: String = "*"
+    ): Response<List<VoucherApiResponse>>
+
+    @GET("vouchers")
+    suspend fun getActiveVouchers(
+        @Query("user_id") userId: String,
+        @Query("is_used") isUsed: String = "eq.false",
+        @Query("is_active") isActive: String = "eq.true",
+        @Query("select") select: String = "*"
+    ): Response<List<VoucherApiResponse>>
+
+    @GET("vouchers")
+    suspend fun getUsedVouchers(
+        @Query("user_id") userId: String,
+        @Query("is_used") isUsed: String = "eq.true",
+        @Query("select") select: String = "*"
+    ): Response<List<VoucherApiResponse>>
+
+    @GET("vouchers")
+    suspend fun getRestaurantVouchers(
+        @Query("user_id") userId: String,
+        @Query("restaurant_id") restaurantId: String,
+        @Query("is_used") isUsed: String = "eq.false",
+        @Query("is_active") isActive: String = "eq.true",
+        @Query("select") select: String = "*"
+    ): Response<List<VoucherApiResponse>>
+
+    @PATCH("vouchers")
+    suspend fun markVoucherAsUsed(
+        @Query("id") voucherId: String,
+        @Body voucherUsage: VoucherUsageRequest
+    ): Response<List<VoucherApiResponse>>
+
+    @GET("restaurants")
+    suspend fun getRestaurantsByIds(
+        @Query("id") restaurantIds: String,
+        @Query("select") select: String = "id,name"
+    ): Response<List<RestaurantResponse>>
 }
 
 data class UpdateOrderStatusRequest(
