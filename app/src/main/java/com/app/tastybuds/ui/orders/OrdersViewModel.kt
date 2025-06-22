@@ -1,6 +1,5 @@
 package com.app.tastybuds.ui.orders
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.tastybuds.data.model.Order
@@ -43,14 +42,12 @@ class OrdersViewModel @Inject constructor(
                     _userId.value = it.id
                     loadUserOrdersInternal()
                 }.onError {
-                    Log.e(TAG, "Failed to load current user: $it")
                     _uiState.update { it.copy(error = "Failed to load user data") }
                 }.onLoading {
                     _uiState.update { it.copy(isLoading = true) }
                 }
 
             } catch (e: Exception) {
-                Log.e(TAG, "Exception loading current user: ${e.message}")
                 _uiState.update { it.copy(error = "Failed to load user data") }
             }
         }
@@ -59,7 +56,6 @@ class OrdersViewModel @Inject constructor(
     fun loadUserOrders() {
         val userId = _userId.value
         if (userId.isEmpty()) {
-            Log.w(TAG, "User ID is empty, waiting for user to load first...")
             return
         }
         loadUserOrdersInternal()
@@ -68,11 +64,8 @@ class OrdersViewModel @Inject constructor(
     private fun loadUserOrdersInternal() {
         val userId = _userId.value
         if (userId.isEmpty()) {
-            Log.w(TAG, "User ID is still empty, cannot load orders")
             return
         }
-
-        Log.d(TAG, "Loading orders for user: $userId")
 
         viewModelScope.launch {
             try {
@@ -82,10 +75,6 @@ class OrdersViewModel @Inject constructor(
                             try {
                                 order.createdAt
                             } catch (e: Exception) {
-                                Log.w(
-                                    TAG,
-                                    "Could not parse date for order ${order.id}: ${e.message}"
-                                )
                                 order.createdAt
                             }
                         }
@@ -97,7 +86,6 @@ class OrdersViewModel @Inject constructor(
                                 error = null
                             )
                         }
-                        Log.d(TAG, "Successfully loaded ${sortedOrders.size} orders")
                     }.onError {
                         _uiState.update {
                             it.copy(
@@ -105,11 +93,9 @@ class OrdersViewModel @Inject constructor(
                                 error = it.error
                             )
                         }
-                        Log.e(TAG, "Error loading orders: ${it}")
                     }
                         .onLoading {
                             _uiState.update { it.copy(isLoading = true, error = null) }
-                            Log.d(TAG, "Loading user orders...")
                         }
                 }
             } catch (e: Exception) {
@@ -119,13 +105,11 @@ class OrdersViewModel @Inject constructor(
                         error = "Failed to load orders: ${e.message}"
                     )
                 }
-                Log.e(TAG, "Exception loading orders: ${e.message}")
             }
         }
     }
 
     fun refreshOrders() {
-        Log.d(TAG, "Refreshing orders...")
         loadUserOrdersInternal()
     }
 }

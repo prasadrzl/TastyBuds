@@ -40,6 +40,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -99,7 +100,7 @@ fun ProfileSettingsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Profile settings",
+                    text = stringResource(R.string.profile_settings),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
@@ -111,7 +112,7 @@ fun ProfileSettingsScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Close",
+                        contentDescription = stringResource(R.string.close),
                         tint = Color.Gray,
                         modifier = Modifier.size(24.dp)
                     )
@@ -133,7 +134,10 @@ fun ProfileSettingsScreen(
                 uiState.error != null -> {
                     Column {
                         Text(
-                            text = "Error: ${uiState.error}",
+                            text = stringResource(
+                                R.string.error_place_holder,
+                                uiState.error ?: "error"
+                            ),
                             color = Color.Red,
                             fontSize = 14.sp
                         )
@@ -144,7 +148,7 @@ fun ProfileSettingsScreen(
                                 viewModel.handleEvent(ProfileEvent.LoadProfile)
                             }
                         ) {
-                            Text("Retry")
+                            Text(stringResource(R.string.retry))
                         }
                     }
                 }
@@ -224,7 +228,7 @@ private fun ProfileSettingsContent(
             ) {
                 Icon(
                     imageVector = Icons.Default.Edit,
-                    contentDescription = "Edit Profile Image",
+                    contentDescription = stringResource(R.string.edit_profile_image),
                     modifier = Modifier.size(16.dp),
                     tint = Color.White
                 )
@@ -249,7 +253,7 @@ private fun ProfileSettingsContent(
             value = formState.name,
             onValueChange = onNameChange,
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("Enter your name") },
+            placeholder = { Text(stringResource(R.string.enter_your_name)) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFFFF7700),
                 unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
@@ -281,7 +285,7 @@ private fun ProfileSettingsContent(
             value = formState.email,
             onValueChange = onEmailChange,
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("Enter your email") },
+            placeholder = { Text(stringResource(R.string.enter_your_email)) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFFFF7700),
                 unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
@@ -302,7 +306,7 @@ private fun ProfileSettingsContent(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "Password",
+            text = stringResource(R.string.password),
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
             color = Color.Black,
@@ -325,8 +329,8 @@ private fun ProfileSettingsContent(
                         painter = painterResource(
                             id = if (isPasswordVisible) R.drawable.ic_hide else R.drawable.ic_show
                         ),
-                        contentDescription = if (isPasswordVisible) "Hide password"
-                        else "Show password"
+                        contentDescription = if (isPasswordVisible) stringResource(R.string.hide_password)
+                        else stringResource(R.string.show_password)
                     )
                 }
             },
@@ -350,7 +354,7 @@ private fun ProfileSettingsContent(
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
-                    text = "Cancel",
+                    text = stringResource(R.string.cancel),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(vertical = 4.dp)
@@ -374,7 +378,7 @@ private fun ProfileSettingsContent(
                     )
                 } else {
                     Text(
-                        text = "Save Changes",
+                        text = stringResource(R.string.save_changes),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(vertical = 4.dp)

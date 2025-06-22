@@ -41,11 +41,13 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.app.tastybuds.R
 import com.app.tastybuds.ui.theme.PrimaryColor
 import com.app.tastybuds.ui.theme.SetSystemBarColor
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -185,7 +187,6 @@ fun TastyBudsSplashScreen(
             .fillMaxSize()
             .background(SplashColors.BrandOrange)
     ) {
-        // Background pattern
         Canvas(
             modifier = Modifier
                 .fillMaxSize()
@@ -316,7 +317,7 @@ fun TastyBudsSplashScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Delicious food, delivered fast",
+                text = stringResource(R.string.delicious_food_delivered_fast),
                 fontSize = 14.sp,
                 color = SplashColors.Cream,
                 textAlign = TextAlign.Center

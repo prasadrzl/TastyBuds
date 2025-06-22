@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,13 +15,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.app.tastybuds.R
 import com.app.tastybuds.domain.model.CategoryMenuItem
 import com.app.tastybuds.domain.model.CategoryRestaurant
 import com.app.tastybuds.util.ui.AppTopBar
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SeeAllScreen(
     categoryId: String,
@@ -89,7 +89,7 @@ private fun ItemsList(
             "restaurants", "top_restaurants", "recommended_restaurants" -> {
                 if (restaurants.isEmpty()) {
                     item {
-                        EmptyContent("No restaurants found")
+                        EmptyContent(stringResource(R.string.no_restaurants_found))
                     }
                 } else {
                     item {
@@ -112,12 +112,12 @@ private fun ItemsList(
             "menu_items", "popular_items" -> {
                 if (menuItems.isEmpty()) {
                     item {
-                        EmptyContent("No menu items found")
+                        EmptyContent(stringResource(R.string.no_menu_items_found))
                     }
                 } else {
                     item {
                         Text(
-                            text = "${menuItems.size} items found",
+                            text = stringResource(R.string.items_found, menuItems.size),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(bottom = 8.dp)
@@ -136,7 +136,7 @@ private fun ItemsList(
 
             else -> {
                 item {
-                    EmptyContent("Unknown content type")
+                    EmptyContent(stringResource(R.string.unknown_content_type))
                 }
             }
         }

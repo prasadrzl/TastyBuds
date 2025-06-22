@@ -149,8 +149,7 @@ class ProfileViewModel @Inject constructor(
                     }
                 }
 
-                is Result.Loading -> { /* Already handling */
-                }
+                is Result.Loading -> {}
             }
         }
     }

@@ -43,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.app.tastybuds.R
 import com.app.tastybuds.data.model.Order
 import com.app.tastybuds.data.model.OrderStatus
 import com.app.tastybuds.ui.theme.PrimaryColor
@@ -123,7 +125,7 @@ private fun LoadingContent() {
                 modifier = Modifier.size(48.dp)
             )
             Text(
-                text = "Loading your orders...",
+                text = stringResource(R.string.loading_your_orders),
                 fontSize = 16.sp,
                 color = Color.Gray
             )
@@ -147,12 +149,12 @@ private fun ErrorContent(
         ) {
             Icon(
                 imageVector = Icons.Default.Star,
-                contentDescription = "Error",
+                contentDescription = stringResource(R.string.error),
                 tint = Color.Red,
                 modifier = Modifier.size(64.dp)
             )
             Text(
-                text = "Oops! Something went wrong",
+                text = stringResource(R.string.oops_something_went_wrong),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
@@ -186,18 +188,18 @@ private fun EmptyOrdersContent() {
         ) {
             Icon(
                 imageVector = Icons.Default.ShoppingCart,
-                contentDescription = "No orders",
+                contentDescription = stringResource(R.string.no_orders),
                 tint = Color.Gray,
                 modifier = Modifier.size(80.dp)
             )
             Text(
-                text = "No orders yet",
+                text = stringResource(R.string.no_orders_yet),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
             Text(
-                text = "When you place your first order, it will appear here",
+                text = stringResource(R.string.when_you_place_your_first_order_it_will_appear_here),
                 fontSize = 14.sp,
                 color = Color.Gray,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -236,7 +238,11 @@ private fun OrdersListContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${orders.size} order${if (orders.size != 1) "s" else ""}",
+                    text = stringResource(
+                        R.string.order_place_holder,
+                        orders.size,
+                        if (orders.size != 1) "s" else ""
+                    ),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.Gray
@@ -247,13 +253,13 @@ private fun OrdersListContent(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Refresh,
-                        contentDescription = "Refresh",
+                        contentDescription = stringResource(R.string.refresh),
                         tint = PrimaryColor,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Refresh",
+                        text = stringResource(R.string.refresh),
                         color = PrimaryColor,
                         fontSize = 14.sp
                     )
@@ -297,7 +303,10 @@ private fun OrderCard(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Order #${order.id.take(8).uppercase()}",
+                        text = stringResource(
+                            R.string.order_brackets,
+                            order.id.take(8).uppercase()
+                        ),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
@@ -315,7 +324,7 @@ private fun OrderCard(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = order.restaurantId ?: "Restaurant",
+                text = order.restaurantId ?: stringResource(R.string.restaurant),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color.Black,
@@ -339,7 +348,11 @@ private fun OrderCard(
 
                 if (order.orderItems.size > 2) {
                     Text(
-                        text = "and ${order.orderItems.size - 2} more item${if (order.orderItems.size - 2 != 1) "s" else ""}",
+                        text = stringResource(
+                            R.string.and_more_item,
+                            order.orderItems.size - 2,
+                            if (order.orderItems.size - 2 != 1) "s" else ""
+                        ),
                         fontSize = 12.sp,
                         color = Color.Gray,
                         fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
@@ -378,7 +391,7 @@ private fun OrderCard(
                             border = androidx.compose.foundation.BorderStroke(1.dp, PrimaryColor)
                         ) {
                             Text(
-                                text = "Track",
+                                text = stringResource(R.string.track),
                                 fontSize = 12.sp
                             )
                         }
@@ -390,7 +403,7 @@ private fun OrderCard(
                         colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
                     ) {
                         Text(
-                            text = "Reorder",
+                            text = stringResource(R.string.reorder),
                             fontSize = 12.sp
                         )
                     }

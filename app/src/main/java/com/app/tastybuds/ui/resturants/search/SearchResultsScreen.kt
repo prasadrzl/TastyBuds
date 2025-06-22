@@ -45,6 +45,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
@@ -90,7 +91,7 @@ fun SearchResultsScreen(
     }
 
     LaunchedEffect(searchText) {
-            viewModel.searchMenuItems(searchText)
+        viewModel.searchMenuItems(searchText)
     }
 
     Column(
@@ -149,7 +150,7 @@ fun SearchHeader(
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Back",
+                contentDescription = stringResource(R.string.back),
                 tint = Color.Black
             )
         }
@@ -164,7 +165,7 @@ fun SearchHeader(
                 .focusRequester(focusRequester),
             placeholder = {
                 Text(
-                    text = "Search for food, restaurants...",
+                    text = stringResource(R.string.search_for_food_restaurants),
                     color = Color.Gray,
                     fontSize = 16.sp
                 )
@@ -174,7 +175,7 @@ fun SearchHeader(
                     IconButton(onClick = onClearClick) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Clear",
+                            contentDescription = stringResource(R.string.clear),
                             tint = Color.Gray
                         )
                     }
@@ -195,7 +196,7 @@ fun SearchHeader(
 
         Icon(
             painter = painterResource(id = R.drawable.ic_filter),
-            contentDescription = "Filter",
+            contentDescription = stringResource(R.string.filter),
             tint = PrimaryColor,
             modifier = Modifier.size(32.dp)
         )
@@ -305,7 +306,7 @@ fun SearchResultsContent(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Error: ${uiState.error}",
+                        text = stringResource(R.string.error_place_holder, uiState.error),
                         color = Color.Red,
                         fontSize = 16.sp
                     )
@@ -318,7 +319,7 @@ fun SearchResultsContent(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "No results found for \"$searchText\"",
+                        text = stringResource(R.string.no_results_found_for, searchText),
                         color = Color.Gray,
                         fontSize = 16.sp
                     )

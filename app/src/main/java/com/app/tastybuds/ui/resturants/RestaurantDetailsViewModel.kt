@@ -7,10 +7,12 @@ import com.app.tastybuds.domain.RestaurantDetailsUseCase
 import com.app.tastybuds.ui.resturants.state.RestaurantDetailsUiState
 import com.app.tastybuds.util.Result
 import com.app.tastybuds.util.onError
-import com.app.tastybuds.util.onLoading
 import com.app.tastybuds.util.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -89,60 +91,6 @@ class RestaurantDetailsViewModel @Inject constructor(
                         )
                     }
                 }
-        }
-    }
-
-    fun toggleMenuItemFavorite(menuItemId: String) {
-        if (_userId.value.isEmpty()) return
-
-        viewModelScope.launch {
-            val currentData = _uiState.value.restaurantData
-            if (currentData != null) {
-                // Find and update the menu item optimistically
-                val updatedMenuItems = currentData.menuItems.map { item ->
-                    if (item.id == menuItemId) {
-                        item.copy(isFavorite = !item.isFavorite)
-                    } else {
-                        item
-                    }
-                }
-
-                val updatedForYouItems = currentData.forYouItems.map { item ->
-                    if (item.id == menuItemId) {
-                        item.copy(isFavorite = !item.isFavorite)
-                    } else {
-                        item
-                    }
-                }
-
-                _uiState.update {
-                    it.copy(
-                        restaurantData = currentData.copy(
-                            menuItems = updatedMenuItems,
-                            forYouItems = updatedForYouItems
-                        )
-                    )
-                }
-
-                favoritesUseCase.toggleMenuItemFavorite(
-                    userId = _userId.value,
-                    menuItemId = menuItemId,
-                    restaurantId = _restaurantId.value
-                ).onError { result ->
-                    _uiState.update {
-                        it.copy(
-                            restaurantData = currentData,
-                            error = it.error
-                        )
-                    }
-                }
-                    .onSuccess { result ->
-
-                    }
-                    .onLoading {
-
-                    }
-            }
         }
     }
 

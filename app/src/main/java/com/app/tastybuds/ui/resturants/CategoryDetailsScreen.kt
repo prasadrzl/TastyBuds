@@ -48,6 +48,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -78,7 +79,7 @@ fun CategoryDetailsScreen(
     categoryId: String = "",
     onBackClick: () -> Unit = {},
     onRestaurantClick: (String) -> Unit = {},
-    onSeeAllClick: (String, String) -> Unit = {_, _ ->},
+    onSeeAllClick: (String, String) -> Unit = { _, _ -> },
     viewModel: RestaurantViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -131,7 +132,7 @@ fun CategoryDetailsScreen(
 
             uiState.error != null -> {
                 ErrorContent(
-                    error = uiState.error ?: "Unknown error",
+                    error = uiState.error ?: stringResource(R.string.unknown_error),
                     onRetry = { viewModel.retry() }
                 )
             }
@@ -179,7 +180,7 @@ fun ErrorContent(
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_help),
-            contentDescription = "Error",
+            contentDescription = stringResource(R.string.error),
             tint = PrimaryColor,
             modifier = Modifier.size(64.dp)
         )
@@ -187,7 +188,7 @@ fun ErrorContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Something went wrong",
+            text = stringResource(R.string.oops_something_went_wrong),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black
@@ -210,7 +211,7 @@ fun ErrorContent(
             shape = RoundedCornerShape(24.dp)
         ) {
             Text(
-                text = "Try Again",
+                text = stringResource(R.string.try_again),
                 color = Color.White,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
@@ -229,7 +230,7 @@ fun EmptyContent(categoryName: String) {
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_search),
-            contentDescription = "Empty",
+            contentDescription = stringResource(R.string.empty),
             tint = Color.Gray,
             modifier = Modifier.size(64.dp)
         )
@@ -237,7 +238,7 @@ fun EmptyContent(categoryName: String) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "No restaurants found",
+            text = stringResource(R.string.no_restaurants_found),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black
@@ -246,7 +247,10 @@ fun EmptyContent(categoryName: String) {
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "No restaurants available in $categoryName category right now.",
+            text = stringResource(
+                R.string.no_restaurants_available_in_category_right_now,
+                categoryName
+            ),
             fontSize = 14.sp,
             color = Color.Gray,
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -401,7 +405,7 @@ fun CategoryRestaurantCard(
 
                     Icon(
                         imageVector = Icons.Default.Star,
-                        contentDescription = "Rating",
+                        contentDescription = stringResource(id = R.string.rating),
                         modifier = Modifier.size(14.dp),
                         tint = Color(0xFFFFC107)
                     )
@@ -501,7 +505,7 @@ fun MenuItemCard(
 
                     Icon(
                         imageVector = Icons.Default.Star,
-                        contentDescription = "Rating",
+                        contentDescription = stringResource(id = R.string.rating),
                         modifier = Modifier.size(12.dp),
                         tint = Color(0xFFFFC107)
                     )
@@ -599,7 +603,7 @@ fun RegularRestaurantCard(
 
                     Icon(
                         imageVector = Icons.Default.Star,
-                        contentDescription = "Rating",
+                        contentDescription = stringResource(id = R.string.rating),
                         modifier = Modifier.size(14.dp),
                         tint = Color(0xFFFFC107)
                     )
@@ -639,7 +643,7 @@ fun CategoryHeader(
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_back_arrow),
-                contentDescription = "Back",
+                contentDescription = stringResource(id = R.string.back),
                 tint = Color.Black
             )
         }
@@ -672,7 +676,7 @@ fun FilterSection(
         item {
             FilterChip(
                 selected = false,
-                onClick = { /* Handle sort dropdown */ },
+                onClick = { },
                 label = {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
@@ -685,7 +689,7 @@ fun FilterSection(
                         Spacer(modifier = Modifier.width(4.dp))
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = "Sort dropdown",
+                            contentDescription = stringResource(R.string.sort_dropdown),
                             modifier = Modifier.size(16.dp),
                             tint = PrimaryColor
                         )
@@ -857,13 +861,6 @@ fun FeaturedBannerCard(banner: CategoryMenuItem) {
         }
     }
 }
-
-data class FeaturedBanner(
-    val id: String,
-    val title: String,
-    val subtitle: String,
-    val imageRes: Int
-)
 
 @Preview(showBackground = true)
 @Composable

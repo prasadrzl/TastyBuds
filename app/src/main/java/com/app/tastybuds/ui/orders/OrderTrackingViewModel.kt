@@ -9,7 +9,10 @@ import com.app.tastybuds.domain.OrderUseCase
 import com.app.tastybuds.util.LocationUtils.calculateDistance
 import com.app.tastybuds.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -165,40 +168,5 @@ class OrderTrackingViewModel @Inject constructor(
 
     fun retry(orderId: String) {
         loadOrderDetails(orderId)
-    }
-
-    fun refreshOrderStatus(orderId: String) {
-        Log.d(TAG, "Refreshing order status for: $orderId")
-        loadOrderDetails(orderId)
-    }
-
-    fun getFormattedOrderId(orderId: String): String {
-        return "#${orderId.take(8).uppercase()}"
-    }
-
-    fun getStatusDisplayName(status: OrderStatus): String {
-        return status.displayName
-    }
-
-    fun getStatusColor(status: OrderStatus): androidx.compose.ui.graphics.Color {
-        return when (status) {
-            OrderStatus.PENDING -> androidx.compose.ui.graphics.Color.Gray
-            OrderStatus.CONFIRMED -> androidx.compose.ui.graphics.Color.Blue
-            OrderStatus.PREPARING -> androidx.compose.ui.graphics.Color(0xFFFF7700)
-            OrderStatus.READY -> androidx.compose.ui.graphics.Color.Green
-            OrderStatus.OUT_FOR_DELIVERY -> androidx.compose.ui.graphics.Color(0xFFFF7700)
-            OrderStatus.DELIVERED -> androidx.compose.ui.graphics.Color.Green
-            OrderStatus.CANCELLED -> androidx.compose.ui.graphics.Color.Red
-        }
-    }
-
-    fun isOrderActive(status: OrderStatus): Boolean {
-        return status in listOf(
-            OrderStatus.PENDING,
-            OrderStatus.CONFIRMED,
-            OrderStatus.PREPARING,
-            OrderStatus.READY,
-            OrderStatus.OUT_FOR_DELIVERY
-        )
     }
 }

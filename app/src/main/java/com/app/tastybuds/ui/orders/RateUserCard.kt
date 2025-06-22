@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,10 +54,7 @@ import com.app.tastybuds.util.ui.AppTopBar
 @Composable
 fun RatingScreen() {
     var rating by remember { mutableIntStateOf(4) }
-    var selectedTags by remember { mutableStateOf(setOf<String>()) }
     var feedback by remember { mutableStateOf("") }
-
-    val tags = listOf("Service", "Supportive", "Friendly", "Delivery", "Contactless")
 
     Column {
         AppTopBar()
@@ -69,7 +67,6 @@ fun RatingScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // Profile circle with icon
             Spacer(modifier = Modifier.height(64.dp))
             Box(
                 modifier = Modifier
@@ -88,7 +85,11 @@ fun RatingScreen() {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text("Rate DurgaPrasad", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+            Text(
+                stringResource(R.string.rate_durgaprasad),
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -112,7 +113,7 @@ fun RatingScreen() {
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            Text("Leave your feedback here", color = Color.Gray)
+            Text(stringResource(R.string.leave_your_feedback_here), color = Color.Gray)
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -120,14 +121,14 @@ fun RatingScreen() {
 
             Spacer(modifier = Modifier.height(56.dp))
 
-            Text("Care to share more?", fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.care_to_share_more), fontWeight = FontWeight.SemiBold)
 
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = feedback,
                 onValueChange = { feedback = it },
-                placeholder = { Text("Leave feedback about driver...") },
+                placeholder = { Text(stringResource(R.string.leave_feedback_about_driver)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp)
@@ -138,7 +139,7 @@ fun RatingScreen() {
             Spacer(modifier = Modifier.height(80.dp))
 
             Button(
-                onClick = { /* Submit logic */ },
+                onClick = { },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),

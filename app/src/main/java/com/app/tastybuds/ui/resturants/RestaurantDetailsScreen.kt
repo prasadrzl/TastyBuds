@@ -2,7 +2,17 @@ package com.app.tastybuds.ui.resturants
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -17,14 +27,28 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -142,14 +166,14 @@ private fun ErrorContent(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 OutlinedButton(onClick = onBackClick) {
-                    Text("Go Back")
+                    Text(stringResource(id = R.string.go_back))
                 }
 
                 Button(
                     onClick = onRetry,
                     colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
                 ) {
-                    Text("Retry")
+                    Text(stringResource(id = R.string.retry))
                 }
             }
         }
@@ -239,7 +263,7 @@ fun RestaurantImageHeader(
     ) {
         GlideImage(
             model = restaurant.imageUrl,
-            contentDescription = "Restaurant Image",
+            contentDescription = stringResource(R.string.restaurant_image),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(250.dp),
@@ -377,7 +401,7 @@ fun RestaurantInfoRows(
             title = "${restaurant.rating} (${restaurant.reviewCount} reviews)",
             iconColor = Color(0xFFFFC107),
             showArrow = true,
-            onClick = { /* Navigate to reviews */ }
+            onClick = {  }
         )
 
         HorizontalDivider(
@@ -388,10 +412,10 @@ fun RestaurantInfoRows(
 
         InfoRow(
             icon = R.drawable.ic_offer_percentage,
-            title = "$voucherCount discount voucher for restaurant",
+            title = stringResource(R.string.discount_voucher_for_restaurant, voucherCount),
             iconColor = PrimaryColor,
             showArrow = true,
-            onClick = { /* Navigate to vouchers */ }
+            onClick = {  }
         )
 
         HorizontalDivider(
@@ -405,7 +429,7 @@ fun RestaurantInfoRows(
             title = "Delivery on ${restaurant.deliveryTime}",
             iconColor = PrimaryColor,
             showArrow = true,
-            onClick = { /* Navigate to delivery info */ }
+            onClick = {  }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -446,7 +470,7 @@ fun InfoRow(
         if (showArrow) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "Arrow",
+                contentDescription = stringResource(R.string.arrow),
                 tint = Color.Gray,
                 modifier = Modifier.size(20.dp)
             )
@@ -476,7 +500,7 @@ fun ForYouSection(
 
             TextButton(onClick = { }) {
                 Text(
-                    text = "View all",
+                    text = stringResource(id = R.string.view_all),
                     fontSize = 14.sp,
                     color = PrimaryColor
                 )
@@ -583,7 +607,7 @@ fun MenuSection(
         modifier = Modifier.padding(horizontal = 20.dp)
     ) {
         Text(
-            text = "Menu",
+            text = stringResource(R.string.menu_section),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black
@@ -601,11 +625,11 @@ fun MenuSection(
 
         if (items.size > 2) {
             TextButton(
-                onClick = { /* See all */ },
+                onClick = {  },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
                 SeeAllButton(
-                    text = "See all",
+                    text = stringResource(id = R.string.see_all),
                     onClick = { }
                 )
             }
@@ -705,14 +729,14 @@ fun ReviewsSection(reviews: List<RestaurantReview>) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Reviews",
+                text = stringResource(id = R.string.reviews),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
 
             Text(
-                text = "See all",
+                text = stringResource(id = R.string.see_all),
                 fontSize = 14.sp,
                 color = PrimaryColor
             )
@@ -749,7 +773,7 @@ fun ReviewCard(review: RestaurantReview) {
             ) {
                 GlideImage(
                     model = review.userAvatar,
-                    contentDescription = "User Image",
+                    contentDescription = stringResource(R.string.user_image),
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape),
@@ -781,7 +805,7 @@ fun ReviewCard(review: RestaurantReview) {
                     repeat(5) { index ->
                         Icon(
                             imageVector = Icons.Default.Star,
-                            contentDescription = "Star",
+                            contentDescription = stringResource(R.string.star),
                             modifier = Modifier.size(12.dp),
                             tint = if (index < review.rating) Color(0xFFFFC107) else Color.Gray
                         )
@@ -811,7 +835,7 @@ fun ComboSection(
         modifier = Modifier.padding(horizontal = 20.dp)
     ) {
         Text(
-            text = "Combo",
+            text = stringResource(R.string.combo),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black
@@ -890,7 +914,7 @@ fun ComboItemCard(
 
                 Icon(
                     imageVector = Icons.Default.Star,
-                    contentDescription = "Rating",
+                    contentDescription = stringResource(id = R.string.rating),
                     modifier = Modifier.size(12.dp),
                     tint = Color(0xFFFFC107)
                 )

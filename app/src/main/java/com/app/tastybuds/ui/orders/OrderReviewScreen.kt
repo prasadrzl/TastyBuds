@@ -3,15 +3,41 @@ package com.app.tastybuds.ui.orders
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,7 +54,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
-import com.app.tastybuds.data.model.*
+import com.app.tastybuds.data.model.CartItem
+import com.app.tastybuds.data.model.OrderItemSize
+import com.app.tastybuds.data.model.OrderItemSpiceLevel
+import com.app.tastybuds.data.model.OrderItemTopping
+import com.app.tastybuds.data.model.RestaurantMenuItem
+import com.app.tastybuds.data.model.UserAddress
+import com.app.tastybuds.data.model.Voucher
 import com.app.tastybuds.ui.theme.PrimaryColor
 import com.app.tastybuds.util.ui.AppTopBar
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -75,7 +108,7 @@ fun OrderReviewScreen(
             .background(Color.White)
     ) {
         AppTopBar(
-            title = "Order review",
+            title = stringResource(R.string.order_review),
             onBackClick = onBackClick
         )
 
@@ -98,7 +131,7 @@ fun OrderReviewScreen(
                     onOrderNow = {
                         Toast.makeText(
                             context,
-                            "E-wallet payment is under development",
+                            context.getString(R.string.e_wallet_payment_is_under_development),
                             Toast.LENGTH_SHORT
                         ).show()
                         viewModel.createOrder()
@@ -134,20 +167,20 @@ private fun EmptyCartContent(onBackClick: () -> Unit) {
     ) {
         Icon(
             imageVector = Icons.Default.ShoppingCart,
-            contentDescription = "Empty Cart",
+            contentDescription = stringResource(R.string.empty_cart),
             modifier = Modifier.size(80.dp),
             tint = Color.Gray
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Your cart is empty",
+            text = stringResource(R.string.your_cart_is_empty),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Add some delicious items to your cart",
+            text = stringResource(R.string.add_some_delicious_items_to_your_cart),
             fontSize = 14.sp,
             color = Color.Gray
         )
@@ -156,7 +189,7 @@ private fun EmptyCartContent(onBackClick: () -> Unit) {
             onClick = onBackClick,
             colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
         ) {
-            Text("Browse Menu", color = Color.White)
+            Text(stringResource(R.string.browse_menu), color = Color.White)
         }
     }
 }
@@ -237,10 +270,14 @@ private fun OrderReviewContent(
                         strokeWidth = 2.dp
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Creating Order...", color = Color.White, fontSize = 16.sp)
+                    Text(
+                        text = stringResource(R.string.creating_order),
+                        color = Color.White,
+                        fontSize = 16.sp
+                    )
                 } else {
                     Text(
-                        text = "Order now",
+                        text = stringResource(R.string.order_now),
                         color = Color.White,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
@@ -264,13 +301,13 @@ private fun DeliveryAddressSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Delivered to",
+                text = stringResource(R.string.delivered_to),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
             Text(
-                text = "Change address",
+                text = stringResource(R.string.change_address),
                 fontSize = 14.sp,
                 color = PrimaryColor,
                 modifier = Modifier.clickable { onChangeAddress() }
@@ -284,13 +321,13 @@ private fun DeliveryAddressSection(
         ) {
             Icon(
                 imageVector = Icons.Default.LocationOn,
-                contentDescription = "Location",
+                contentDescription = stringResource(R.string.location),
                 tint = PrimaryColor,
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = address?.addressLine ?: "No address selected",
+                text = address?.addressLine ?: stringResource(R.string.no_address_selected),
                 fontSize = 14.sp,
                 color = Color.Black,
                 modifier = Modifier.weight(1f)
@@ -303,8 +340,8 @@ private fun DeliveryAddressSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_back_arrow), // Clock icon
-                contentDescription = "Time",
+                painter = painterResource(id = R.drawable.ic_back_arrow),
+                contentDescription = stringResource(R.string.time),
                 tint = PrimaryColor,
                 modifier = Modifier.size(20.dp)
             )
@@ -333,13 +370,13 @@ private fun OrderDetailsSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Order details",
+                text = stringResource(R.string.order_details),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
             Text(
-                text = "Add more",
+                text = stringResource(R.string.add_more),
                 fontSize = 14.sp,
                 color = PrimaryColor,
                 modifier = Modifier.clickable { onAddMore() }
@@ -395,7 +432,7 @@ private fun OrderItemCard(
 
             cartItem.selectedSize?.let { size ->
                 Text(
-                    text = "Size: ${size.name}",
+                    text = stringResource(R.string.size_brackets, size.name),
                     fontSize = 12.sp,
                     color = Color.Gray
                 )
@@ -404,7 +441,7 @@ private fun OrderItemCard(
             if (cartItem.selectedToppings.isNotEmpty()) {
                 val toppingsText = cartItem.selectedToppings.joinToString(", ") { it.name }
                 Text(
-                    text = "Topping: $toppingsText",
+                    text = stringResource(R.string.topping_brackets, toppingsText),
                     fontSize = 12.sp,
                     color = Color.Gray,
                     maxLines = 1,
@@ -414,7 +451,7 @@ private fun OrderItemCard(
 
             cartItem.selectedSpiceLevel?.let { spice ->
                 Text(
-                    text = "Spiciness: ${spice.name}",
+                    text = stringResource(R.string.spiciness_brackets, spice.name),
                     fontSize = 12.sp,
                     color = Color.Gray
                 )
@@ -435,7 +472,7 @@ private fun OrderItemCard(
         ) {
             Icon(
                 imageVector = Icons.Default.Edit,
-                contentDescription = "Edit",
+                contentDescription = stringResource(R.string.edit),
                 modifier = Modifier
                     .size(20.dp)
                     .clickable { onEdit() },
@@ -656,12 +693,12 @@ private fun PaymentDetailsSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Payment method",
+                text = stringResource(R.string.payment_method),
                 fontSize = 14.sp,
                 color = Color.Gray
             )
             Text(
-                text = "E-wallet",
+                text = stringResource(R.string.e_wallet),
                 fontSize = 14.sp,
                 color = Color.Black
             )

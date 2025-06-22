@@ -18,7 +18,6 @@ val Inter = FontFamily(
     Font(R.font.inter_regular, FontWeight.Normal)
 )
 
-// Typography Styles
 val AppTypography = Typography(
     displayLarge = TextStyle(
         fontFamily = Poppins,

@@ -44,31 +44,6 @@ class SearchResultsViewModel @Inject constructor(
         }
     }
 
-    fun toggleFilter(badgeId: String) {
-        val currentFilters = _uiState.value.selectedFilters
-        val newFilters = if (currentFilters.contains(badgeId)) {
-            currentFilters - badgeId
-        } else {
-            currentFilters + badgeId
-        }
-
-        _uiState.update {
-            it.copy(
-                selectedFilters = newFilters,
-                searchResults = applyFilters(originalSearchResults, newFilters)
-            )
-        }
-    }
-
-    fun clearFilters() {
-        _uiState.update {
-            it.copy(
-                selectedFilters = emptySet(),
-                searchResults = originalSearchResults
-            )
-        }
-    }
-
     private fun applyCurrentFilters(results: List<SearchResult>): List<SearchResult> {
         return applyFilters(results, _uiState.value.selectedFilters)
     }
@@ -113,19 +88,6 @@ class SearchResultsViewModel @Inject constructor(
                     }
                 }
             }
-        }
-    }
-
-    fun clearResults() {
-        originalSearchResults = emptyList()
-        _uiState.update {
-            it.copy(
-                searchResults = emptyList(),
-                isEmpty = false,
-                isLoading = false,
-                error = null,
-                selectedFilters = emptySet()
-            )
         }
     }
 }

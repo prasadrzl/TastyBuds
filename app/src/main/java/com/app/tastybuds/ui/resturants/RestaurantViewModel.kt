@@ -78,7 +78,7 @@ class RestaurantViewModel @Inject constructor(
         }
     }
 
-    fun searchRestaurants(query: String) {
+    private fun searchRestaurants(query: String) {
         viewModelScope.launch {
             _uiState.update {
                 it.copy(

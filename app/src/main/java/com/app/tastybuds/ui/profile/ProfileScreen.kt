@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.LocalThemeManager
 import com.app.tastybuds.R
+import com.app.tastybuds.domain.model.User
 import com.app.tastybuds.ui.login.LoginViewModel
 import com.app.tastybuds.ui.theme.PrimaryColor
 import com.app.tastybuds.util.ui.AppTopBar
@@ -109,7 +111,7 @@ fun ProfileScreen(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "Error loading profile",
+                            text = stringResource(R.string.error_loading_profile),
                             color = Color.Red,
                             fontSize = 16.sp
                         )
@@ -146,7 +148,7 @@ fun ProfileScreen(
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun ProfileContent(
-    user: com.app.tastybuds.domain.model.User?,
+    user: User?,
     isDarkMode: Boolean,
     onToggleDarkMode: (Boolean) -> Unit,
     onEditProfile: () -> Unit,
@@ -204,12 +206,12 @@ private fun ProfileContent(
 
     ProfileOption(
         icon = loadVector(R.drawable.ic_profile_setting),
-        label = "Edit profile",
+        label = stringResource(R.string.edit_profile),
         onClick = { onEditProfile() }
     )
     ProfileOption(
         icon = loadVector(R.drawable.ic_settings),
-        label = "Preferences",
+        label = stringResource(R.string.preferences),
         onClick = { context.showDevelopmentToast() }
     )
 
@@ -225,12 +227,16 @@ private fun ProfileContent(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 imageVector = loadVector(R.drawable.ic_night_mode),
-                contentDescription = "Dark mode",
+                contentDescription = stringResource(R.string.dark_mode),
                 modifier = Modifier.size(24.dp),
                 tint = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.width(16.dp))
-            Text(text = "Dark mode", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
+            Text(
+                text = stringResource(R.string.dark_mode),
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
         Switch(
             checked = isDarkMode,
@@ -246,21 +252,21 @@ private fun ProfileContent(
 
     ProfileOption(
         icon = loadVector(R.drawable.ic_help),
-        label = "Help & Support",
+        label = stringResource(R.string.help_support),
         onClick = { context.showDevelopmentToast() }
     )
     ProfileOption(
-        icon = loadVector(R.drawable.ic_go_pro), label = "Go Pro",
+        icon = loadVector(R.drawable.ic_go_pro), label = stringResource(R.string.go_pro),
         onClick = { context.showDevelopmentToast() })
     ProfileOption(
-        icon = loadVector(R.drawable.ic_help), label = "Help center",
+        icon = loadVector(R.drawable.ic_help), label = stringResource(R.string.help_center),
         onClick = { context.showDevelopmentToast() })
 
     HorizontalDivider(color = Color(0xFFE0E0E0))
 
     ProfileOption(
         icon = loadVector(R.drawable.ic_logout),
-        label = "Sign out",
+        label = stringResource(R.string.sign_out),
         onClick = {
             onLogout()
         },
