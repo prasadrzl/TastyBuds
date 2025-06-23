@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -147,8 +148,7 @@ fun FoodDetailsScreen(
                             onAddToCart(cartItem)
                         }
                     },
-                    onFavoriteClick = { viewModel.toggleFavorite() },
-                    onComboClick = {}
+                    onFavoriteClick = { viewModel.toggleFavorite() }
                 )
             }
         }
@@ -204,105 +204,106 @@ private fun FoodDetailsContent(
     onNoteChange: (String) -> Unit,
     onQuantityChange: (Int) -> Unit,
     onAddToCart: (CartItem) -> Unit,
-    onFavoriteClick: () -> Unit,
-    onComboClick: (String) -> Unit
+    onFavoriteClick: () -> Unit
 ) {
     val foodData = uiState.foodDetailsData!!
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        item {
-            FoodImageHeader(
-                imageUrl = foodData.foodDetails.imageUrl,
-                onCloseClick = onBackClick,
-                onFavoriteClick = onFavoriteClick,
-                isFavorite = foodData.foodDetails.isFavorite,
-            )
-        }
 
-        item {
-            FoodInfoCard(
-                foodDetails = foodData.foodDetails
-            )
-        }
-
-        if (foodData.customization.sizes.isNotEmpty()) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 180.dp)
+        ) {
             item {
-                SizeSelectionSection(
-                    selectedSize = uiState.selectedSize,
-                    sizeOptions = foodData.customization.sizes,
-                    onSizeSelected = onSizeSelected
+                FoodImageHeader(
+                    imageUrl = foodData.foodDetails.imageUrl,
+                    onCloseClick = onBackClick,
+                    onFavoriteClick = onFavoriteClick,
+                    isFavorite = foodData.foodDetails.isFavorite,
+                )
+            }
+
+            item {
+                FoodInfoCard(
+                    foodDetails = foodData.foodDetails
+                )
+            }
+
+            if (foodData.customization.sizes.isNotEmpty()) {
+                item {
+                    SizeSelectionSection(
+                        selectedSize = uiState.selectedSize,
+                        sizeOptions = foodData.customization.sizes,
+                        onSizeSelected = onSizeSelected
+                    )
+                }
+            }
+
+            item {
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    thickness = 1.dp,
+                    color = Color(0xFFE0E0E0)
+                )
+            }
+
+            if (foodData.customization.toppings.isNotEmpty()) {
+                item {
+                    ToppingsSection(
+                        toppingOptions = foodData.customization.toppings,
+                        selectedToppings = uiState.selectedToppings,
+                        onToppingToggled = onToppingToggled
+                    )
+                }
+            }
+
+            item {
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    thickness = 1.dp,
+                    color = Color(0xFFE0E0E0)
+                )
+            }
+
+            if (foodData.customization.spiceLevels.isNotEmpty()) {
+                item {
+                    SpicinessSection(
+                        selectedSpice = uiState.selectedSpiceLevel,
+                        spiceLevels = foodData.customization.spiceLevels,
+                        onSpiceSelected = onSpiceSelected
+                    )
+                }
+            }
+
+            item {
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    thickness = 1.dp,
+                    color = Color(0xFFE0E0E0)
+                )
+            }
+
+            item {
+                NoteSection(
+                    note = uiState.specialNote,
+                    onNoteChange = onNoteChange
                 )
             }
         }
 
-        item {
-            HorizontalDivider(
-                modifier = Modifier.padding(horizontal = 20.dp),
-                thickness = 1.dp,
-                color = Color(0xFFE0E0E0)
-            )
-        }
-
-        if (foodData.customization.toppings.isNotEmpty()) {
-            item {
-                ToppingsSection(
-                    toppingOptions = foodData.customization.toppings,
-                    selectedToppings = uiState.selectedToppings,
-                    onToppingToggled = onToppingToggled
-                )
-            }
-        }
-
-        item {
-            HorizontalDivider(
-                modifier = Modifier.padding(horizontal = 20.dp),
-                thickness = 1.dp,
-                color = Color(0xFFE0E0E0)
-            )
-        }
-
-        if (foodData.customization.spiceLevels.isNotEmpty()) {
-            item {
-                SpicinessSection(
-                    selectedSpice = uiState.selectedSpiceLevel,
-                    spiceLevels = foodData.customization.spiceLevels,
-                    onSpiceSelected = onSpiceSelected
-                )
-            }
-        }
-
-        item {
-            HorizontalDivider(
-                modifier = Modifier.padding(horizontal = 20.dp),
-                thickness = 1.dp,
-                color = Color(0xFFE0E0E0)
-            )
-        }
-
-        item {
-            NoteSection(
-                note = uiState.specialNote,
-                onNoteChange = onNoteChange
-            )
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(120.dp))
-        }
+        BottomControls(
+            quantity = uiState.quantity,
+            onQuantityChange = onQuantityChange,
+            totalPrice = uiState.totalPrice,
+            onAddToCart = onAddToCart,
+            createCartItem = {
+                createCartItemFromUiState(foodData, uiState)
+            },
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+        )
     }
-
-    BottomControls(
-        quantity = uiState.quantity,
-        onQuantityChange = onQuantityChange,
-        totalPrice = uiState.totalPrice,
-        onAddToCart = onAddToCart,
-        createCartItem = {
-            createCartItemFromUiState(foodData, uiState)
-        },
-        modifier = Modifier
-    )
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)

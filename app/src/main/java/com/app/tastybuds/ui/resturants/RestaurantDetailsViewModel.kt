@@ -2,7 +2,9 @@ package com.app.tastybuds.ui.resturants
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.tastybuds.data.MenuItem
 import com.app.tastybuds.domain.FavoritesUseCase
+import com.app.tastybuds.domain.GetMenuItemsUseCase
 import com.app.tastybuds.domain.RestaurantDetailsUseCase
 import com.app.tastybuds.ui.resturants.state.RestaurantDetailsUiState
 import com.app.tastybuds.util.Result
@@ -19,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class RestaurantDetailsViewModel @Inject constructor(
     private val restaurantDetailsUseCase: RestaurantDetailsUseCase,
-    private val favoritesUseCase: FavoritesUseCase
+    private val favoritesUseCase: FavoritesUseCase,
+    private val getMenuItemsUseCase: GetMenuItemsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RestaurantDetailsUiState())
@@ -27,6 +30,13 @@ class RestaurantDetailsViewModel @Inject constructor(
 
     private val _restaurantId = MutableStateFlow("")
     private val _userId = MutableStateFlow("")
+
+
+    private val _allMenuItems = MutableStateFlow<List<MenuItem>>(emptyList())
+    val allMenuItems: StateFlow<List<MenuItem>> = _allMenuItems.asStateFlow()
+
+    private val _isLoadingMenu = MutableStateFlow(false)
+    val isLoadingMenu: StateFlow<Boolean> = _isLoadingMenu.asStateFlow()
 
     fun loadRestaurantDetails(restaurantId: String, userId: String) {
         _restaurantId.value = restaurantId
@@ -99,6 +109,27 @@ class RestaurantDetailsViewModel @Inject constructor(
     fun retry() {
         if (_restaurantId.value.isNotEmpty() && _userId.value.isNotEmpty()) {
             loadRestaurantDetails(_restaurantId.value, _userId.value)
+        }
+    }
+
+    private fun loadCompleteMenuItems(restaurantId: String) {
+        viewModelScope.launch {
+            _isLoadingMenu.value = true
+            getMenuItemsUseCase(restaurantId).on { result ->
+                when (result) {
+                    is Result.Success -> {
+                        _allMenuItems.value = result.data
+                        _isLoadingMenu.value = false
+                    }
+                    is Result.Error -> {
+                        _isLoadingMenu.value = false
+                        // Handle error if needed
+                    }
+                    is Result.Loading -> {
+                        _isLoadingMenu.value = true
+                    }
+                }
+            }
         }
     }
 }

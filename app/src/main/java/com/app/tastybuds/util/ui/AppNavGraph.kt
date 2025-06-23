@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -46,6 +47,8 @@ import com.app.tastybuds.ui.resturants.SeeAllScreen
 import com.app.tastybuds.ui.resturants.search.SearchResultsScreen
 import com.app.tastybuds.ui.splash.TastyBudsSplashScreen
 import com.app.tastybuds.ui.onboarding.OnboardingScreen
+import com.app.tastybuds.ui.resturants.MenuListScreen
+import com.app.tastybuds.ui.resturants.RestaurantDetailsViewModel
 import kotlinx.coroutines.launch
 
 val items = listOf(
@@ -170,6 +173,30 @@ fun AppNavGraph(navController: NavHostController) {
                 onRestaurantClick = { restaurantId ->
                     navController.navigate("restaurant_details/$restaurantId")
                 }
+            )
+        }
+
+
+        composable(
+            "menu_list/{restaurantId}",
+            arguments = listOf(
+                navArgument("restaurantId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val restaurantId = backStackEntry.arguments?.getString("restaurantId") ?: ""
+
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry("restaurant_details/$restaurantId")
+            }
+            val restaurantViewModel: RestaurantDetailsViewModel = hiltViewModel(parentEntry)
+
+            MenuListScreen(
+                restaurantId = restaurantId,
+                onBackClick = { navController.popBackStack() },
+                onMenuItemClick = { menuItem ->
+                    navController.navigate("food_details/${menuItem.id}")
+                },
+                restaurantViewModel = restaurantViewModel
             )
         }
 

@@ -145,7 +145,7 @@ private fun ErrorContent(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Something went wrong",
+                text = stringResource(R.string.oops_something_went_wrong),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
@@ -428,8 +428,7 @@ fun RestaurantInfoRows(
             icon = R.drawable.ic_help,
             title = "Delivery on ${restaurant.deliveryTime}",
             iconColor = PrimaryColor,
-            showArrow = true,
-            onClick = {  }
+            showArrow = false,
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -492,13 +491,15 @@ fun ForYouSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "For you",
+                text = stringResource(R.string.for_you),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
 
-            TextButton(onClick = { }) {
+            TextButton(onClick = {
+
+            }) {
                 Text(
                     text = stringResource(id = R.string.view_all),
                     fontSize = 14.sp,

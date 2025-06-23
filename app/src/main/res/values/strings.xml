@@ -432,5 +432,6 @@
     <string name="loading_vouchers">Loading vouchers...</string>
     <string name="you_have_voucher_here">You have %1$s voucher here</string>
     <string name="sale_up_to_50">Sale up to 50%</string>
+    <string name="for_you">For you</string>
 
 </resources>

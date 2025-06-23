@@ -171,6 +171,7 @@ interface TastyBudsApiService {
     @GET("combos")
     suspend fun getRestaurantCombos(
         @Query("restaurant_id") restaurantId: String,
+        @Query("limit") limit: Int = 3,
         @Query("select") select: String = "*"
     ): Response<List<ComboResponse>>
 
