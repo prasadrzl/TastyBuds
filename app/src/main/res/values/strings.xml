@@ -433,5 +433,9 @@
     <string name="you_have_voucher_here">You have %1$s voucher here</string>
     <string name="sale_up_to_50">Sale up to 50%</string>
     <string name="for_you">For you</string>
+    <string name="all">All\n</string>
+    <string name="no_recommendations_available">No recommendations available</string>
+    <string name="no_menu_items_available">No menu items available</string>
+    <string name="no_items_found_in">No items found in %1$s</string>
 
 </resources>

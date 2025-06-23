@@ -1,16 +1,11 @@
 package com.app.tastybuds.domain
 
-import com.app.tastybuds.data.model.RestaurantCombo
-import com.app.tastybuds.data.model.RestaurantDetails
 import com.app.tastybuds.data.model.RestaurantDetailsData
 import com.app.tastybuds.data.model.RestaurantMenuItem
 import com.app.tastybuds.data.model.RestaurantReview
-import com.app.tastybuds.data.model.RestaurantVoucher
 import com.app.tastybuds.data.repo.RestaurantDetailsRepository
-import com.app.tastybuds.domain.model.*
 import com.app.tastybuds.util.Result
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class RestaurantDetailsUseCase @Inject constructor(
@@ -33,89 +28,11 @@ class RestaurantDetailsUseCase @Inject constructor(
         return repository.getRestaurantReviews(restaurantId)
     }
 
-    suspend fun getRestaurantVouchers(
-        restaurantId: String,
-        userId: String
-    ): Result<List<RestaurantVoucher>> {
-        return repository.getRestaurantVouchers(restaurantId, userId)
-    }
-
-    suspend fun getRestaurantCombos(restaurantId: String): Result<List<RestaurantCombo>> {
-        return repository.getRestaurantCombos(restaurantId)
-    }
-
-    suspend fun getRestaurantVoucherCount(restaurantId: String, userId: String): Result<Int> {
-        return when (val result = repository.getRestaurantVouchers(restaurantId, userId)) {
-            is Result.Success -> Result.Success(result.data.size)
-            is Result.Error -> Result.Error(result.message)
-            is Result.Loading -> Result.Loading
-        }
-    }
-
-    suspend fun getActiveVoucherCount(restaurantId: String, userId: String): Result<Int> {
-        return when (val result = repository.getRestaurantVouchers(restaurantId, userId)) {
-            is Result.Success -> {
-                val activeCount = result.data.count { voucher ->
-                    true
-                }
-                Result.Success(activeCount)
-            }
-
-            is Result.Error -> Result.Error(result.message)
-            is Result.Loading -> Result.Loading
-        }
-    }
-
     suspend fun getReviewCount(restaurantId: String): Result<Int> {
         return when (val result = repository.getRestaurantReviews(restaurantId)) {
             is Result.Success -> Result.Success(result.data.size)
             is Result.Error -> Result.Error(result.message)
             is Result.Loading -> Result.Loading
         }
-    }
-
-    suspend fun getAverageRating(restaurantId: String): Result<Float> {
-        return when (val result = repository.getRestaurantReviews(restaurantId)) {
-            is Result.Success -> {
-                val averageRating = if (result.data.isNotEmpty()) {
-                    result.data.map { it.rating }.average().toFloat()
-                } else {
-                    0.0f
-                }
-                Result.Success(averageRating)
-            }
-
-            is Result.Error -> Result.Error(result.message)
-            is Result.Loading -> Result.Loading
-        }
-    }
-
-    fun getRestaurantDetailsFlow(
-        restaurantId: String,
-        userId: String
-    ): Flow<Result<RestaurantDetailsData>> {
-        return repository.getRestaurantDetailsData(restaurantId, userId)
-    }
-
-    fun getVoucherCountFlow(restaurantId: String, userId: String): Flow<Result<Int>> {
-        return repository.getRestaurantDetailsData(restaurantId, userId)
-            .map { result ->
-                when (result) {
-                    is Result.Success -> Result.Success(result.data.vouchers.size)
-                    is Result.Error -> Result.Error(result.message)
-                    is Result.Loading -> Result.Loading
-                }
-            }
-    }
-
-    fun getReviewCountFlow(restaurantId: String, userId: String): Flow<Result<Int>> {
-        return repository.getRestaurantDetailsData(restaurantId, userId)
-            .map { result ->
-                when (result) {
-                    is Result.Success -> Result.Success(result.data.reviews.size)
-                    is Result.Error -> Result.Error(result.message)
-                    is Result.Loading -> Result.Loading
-                }
-            }
     }
 }

@@ -2,9 +2,8 @@ package com.app.tastybuds.ui.resturants
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.tastybuds.data.MenuItem
+import com.app.tastybuds.data.model.RestaurantMenuItem
 import com.app.tastybuds.domain.FavoritesUseCase
-import com.app.tastybuds.domain.GetMenuItemsUseCase
 import com.app.tastybuds.domain.RestaurantDetailsUseCase
 import com.app.tastybuds.ui.resturants.state.RestaurantDetailsUiState
 import com.app.tastybuds.util.Result
@@ -21,8 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RestaurantDetailsViewModel @Inject constructor(
     private val restaurantDetailsUseCase: RestaurantDetailsUseCase,
-    private val favoritesUseCase: FavoritesUseCase,
-    private val getMenuItemsUseCase: GetMenuItemsUseCase
+    private val favoritesUseCase: FavoritesUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RestaurantDetailsUiState())
@@ -31,105 +29,157 @@ class RestaurantDetailsViewModel @Inject constructor(
     private val _restaurantId = MutableStateFlow("")
     private val _userId = MutableStateFlow("")
 
-
-    private val _allMenuItems = MutableStateFlow<List<MenuItem>>(emptyList())
-    val allMenuItems: StateFlow<List<MenuItem>> = _allMenuItems.asStateFlow()
+    private val _allMenuItems = MutableStateFlow<List<RestaurantMenuItem>>(emptyList())
+    val allMenuItems: StateFlow<List<RestaurantMenuItem>> = _allMenuItems.asStateFlow()
 
     private val _isLoadingMenu = MutableStateFlow(false)
     val isLoadingMenu: StateFlow<Boolean> = _isLoadingMenu.asStateFlow()
+
+    private val _filteredMenuItems = MutableStateFlow<List<RestaurantMenuItem>>(emptyList())
+    val filteredMenuItems: StateFlow<List<RestaurantMenuItem>> = _filteredMenuItems.asStateFlow()
+
+    private val _selectedCategory = MutableStateFlow("All")
+    val selectedCategory: StateFlow<String> = _selectedCategory.asStateFlow()
+
+    private val _categories = MutableStateFlow<List<String>>(emptyList())
+    val categories: StateFlow<List<String>> = _categories.asStateFlow()
 
     fun loadRestaurantDetails(restaurantId: String, userId: String) {
         _restaurantId.value = restaurantId
         _userId.value = userId
 
         viewModelScope.launch {
-            restaurantDetailsUseCase(restaurantId, userId)
-                .collect { result ->
-                    when (result) {
-                        is Result.Loading -> {
-                            _uiState.update { it.copy(isLoading = true, error = null) }
-                        }
+            _uiState.update { it.copy(isLoading = true, error = null) }
 
-                        is Result.Success -> {
-                            _uiState.update {
-                                it.copy(
-                                    isLoading = false,
-                                    restaurantData = result.data,
-                                    error = null,
-                                    voucherCount = result.data.vouchers.size,
-                                    isFavorite = result.data.restaurant.isFavorite
-                                )
-                            }
-                        }
-
-                        is Result.Error -> {
-                            _uiState.update {
-                                it.copy(
-                                    isLoading = false,
-                                    error = result.message
-                                )
-                            }
-                        }
-                    }
-                }
-        }
-    }
-
-    private fun toggleRestaurantFavorite() {
-        if (_restaurantId.value.isEmpty() || _userId.value.isEmpty()) return
-
-        viewModelScope.launch {
-            val currentIsFavorite = _uiState.value.isFavorite
-            _uiState.update { it.copy(isFavorite = !currentIsFavorite) }
-
-            favoritesUseCase.toggleRestaurantFavorite(
-                userId = _userId.value,
-                restaurantId = _restaurantId.value
-            ).onSuccess { isNowFavorite ->
-                _uiState.update { state ->
-                    state.copy(
-                        isFavorite = isNowFavorite,
-                        error = null
-                    )
-                }
-            }
-                .onError {
-                    _uiState.update {
-                        it.copy(
-                            isFavorite = currentIsFavorite,
-                            error = it.error
-                        )
-                    }
-                }
-        }
-    }
-
-    fun toggleFavorite() = toggleRestaurantFavorite()
-
-    fun retry() {
-        if (_restaurantId.value.isNotEmpty() && _userId.value.isNotEmpty()) {
-            loadRestaurantDetails(_restaurantId.value, _userId.value)
-        }
-    }
-
-    private fun loadCompleteMenuItems(restaurantId: String) {
-        viewModelScope.launch {
-            _isLoadingMenu.value = true
-            getMenuItemsUseCase(restaurantId).on { result ->
+            restaurantDetailsUseCase(restaurantId, userId).collect { result ->
                 when (result) {
                     is Result.Success -> {
-                        _allMenuItems.value = result.data
-                        _isLoadingMenu.value = false
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                restaurantData = result.data,
+                                error = null
+                            )
+                        }
+                        loadMenuItems(restaurantId)
                     }
+
                     is Result.Error -> {
-                        _isLoadingMenu.value = false
-                        // Handle error if needed
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = result.message
+                            )
+                        }
                     }
+
                     is Result.Loading -> {
-                        _isLoadingMenu.value = true
+                        _uiState.update { it.copy(isLoading = true) }
                     }
                 }
             }
+        }
+    }
+
+    private fun loadMenuItems(restaurantId: String) {
+        viewModelScope.launch {
+            _isLoadingMenu.value = true
+
+            when (val result = restaurantDetailsUseCase.getRestaurantMenuItems(restaurantId)) {
+                is Result.Success -> {
+                    _allMenuItems.value = result.data
+                    _isLoadingMenu.value = false
+
+                    val uniqueCategories = result.data
+                        .map { it.category }
+                        .filter { it.isNotEmpty() }
+                        .distinct()
+                        .sorted()
+                    _categories.value = uniqueCategories
+
+                    applyFilter(_selectedCategory.value)
+                }
+
+                is Result.Error -> {
+                    _isLoadingMenu.value = false
+                    _uiState.update { currentState ->
+                        currentState.copy(error = "Failed to load menu: ${result.message}")
+                    }
+                }
+
+                is Result.Loading -> {
+                    _isLoadingMenu.value = true
+                }
+            }
+        }
+    }
+
+    fun selectCategory(category: String) {
+        _selectedCategory.value = category
+        applyFilter(category)
+    }
+
+    private fun applyFilter(category: String) {
+        val filtered = if (category == "All") {
+            _allMenuItems.value
+        } else {
+            _allMenuItems.value.filter { it.category == category }
+        }
+        _filteredMenuItems.value = filtered
+    }
+
+    fun toggleFavorite() {
+        val restaurantId = _restaurantId.value
+        val userId = _userId.value
+
+        if (restaurantId.isNotEmpty() && userId.isNotEmpty()) {
+            viewModelScope.launch {
+                favoritesUseCase.toggleRestaurantFavorite(userId, restaurantId)
+                    .onSuccess { isFavorite ->
+                        _uiState.update { currentState ->
+                            currentState.restaurantData?.let { data ->
+                                val updatedRestaurant =
+                                    data.restaurant.copy(isFavorite = isFavorite)
+                                val updatedData = data.copy(restaurant = updatedRestaurant)
+                                currentState.copy(restaurantData = updatedData)
+                            } ?: currentState
+                        }
+                    }
+                    .onError { error -> }
+            }
+        }
+    }
+
+    fun toggleMenuItemFavorite(menuItemId: String) {
+        val userId = _userId.value
+        val restaurantId = _restaurantId.value
+
+        if (userId.isNotEmpty() && menuItemId.isNotEmpty()) {
+            viewModelScope.launch {
+                favoritesUseCase.toggleMenuItemFavorite(userId, menuItemId, restaurantId)
+                    .onSuccess { isFavorite ->
+                        _allMenuItems.update { items ->
+                            items.map { item ->
+                                if (item.id == menuItemId) {
+                                    item.copy(isFavorite = isFavorite)
+                                } else {
+                                    item
+                                }
+                            }
+                        }
+
+                        applyFilter(_selectedCategory.value)
+                    }
+                    .onError { error -> }
+            }
+        }
+    }
+
+    fun retry() {
+        val restaurantId = _restaurantId.value
+        val userId = _userId.value
+        if (restaurantId.isNotEmpty() && userId.isNotEmpty()) {
+            loadRestaurantDetails(restaurantId, userId)
         }
     }
 }

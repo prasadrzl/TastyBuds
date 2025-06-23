@@ -76,6 +76,8 @@ fun RestaurantDetailsScreen(
     onBackClick: () -> Unit = {},
     onFoodItemClick: (String) -> Unit = {},
     onComboClick: (String) -> Unit = {},
+    onViewAllClick: (String) -> Unit = {},
+    onSellAllClick: (String) -> Unit = {},
     viewModel: RestaurantDetailsViewModel = hiltViewModel(),
     loginViewModel: LoginViewModel = hiltViewModel()
 
@@ -113,7 +115,9 @@ fun RestaurantDetailsScreen(
                     onBackClick = onBackClick,
                     onFavoriteClick = { viewModel.toggleFavorite() },
                     onFoodItemClick = onFoodItemClick,
-                    onComboClick = onComboClick
+                    onComboClick = onComboClick,
+                    onViewAllClick = onViewAllClick,
+                    onSellAllClick = onSellAllClick
                 )
             }
         }
@@ -188,7 +192,9 @@ private fun RestaurantDetailsContent(
     onFoodItemClick: (String) -> Unit,
     onComboClick: (String) -> Unit,
     isFavorite: Boolean = false,
-    onFavoriteClick: () -> Unit = {}
+    onFavoriteClick: () -> Unit = {},
+    onViewAllClick: (String) -> Unit = {},
+    onSellAllClick: (String) -> Unit = {}
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize()
@@ -212,8 +218,10 @@ private fun RestaurantDetailsContent(
         if (restaurantData.forYouItems.isNotEmpty()) {
             item {
                 ForYouSection(
+                    restaurantId = restaurantData.restaurant.id,
                     items = restaurantData.forYouItems,
-                    onItemClick = onFoodItemClick
+                    onItemClick = onFoodItemClick,
+                    onViewAllClick = onViewAllClick
                 )
             }
         }
@@ -221,8 +229,10 @@ private fun RestaurantDetailsContent(
         if (restaurantData.menuItems.isNotEmpty()) {
             item {
                 MenuSection(
+                    restaurantId = restaurantData.restaurant.id,
                     items = restaurantData.menuItems,
-                    onItemClick = onFoodItemClick
+                    onItemClick = onFoodItemClick,
+                    onSellAllClick = onSellAllClick
                 )
             }
         }
@@ -401,7 +411,7 @@ fun RestaurantInfoRows(
             title = "${restaurant.rating} (${restaurant.reviewCount} reviews)",
             iconColor = Color(0xFFFFC107),
             showArrow = true,
-            onClick = {  }
+            onClick = { }
         )
 
         HorizontalDivider(
@@ -415,7 +425,7 @@ fun RestaurantInfoRows(
             title = stringResource(R.string.discount_voucher_for_restaurant, voucherCount),
             iconColor = PrimaryColor,
             showArrow = true,
-            onClick = {  }
+            onClick = { }
         )
 
         HorizontalDivider(
@@ -479,8 +489,10 @@ fun InfoRow(
 
 @Composable
 fun ForYouSection(
+    restaurantId: String,
     items: List<RestaurantMenuItem>,
-    onItemClick: (String) -> Unit
+    onItemClick: (String) -> Unit,
+    onViewAllClick: (String) -> Unit
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 20.dp)
@@ -498,7 +510,7 @@ fun ForYouSection(
             )
 
             TextButton(onClick = {
-
+                onViewAllClick(restaurantId)
             }) {
                 Text(
                     text = stringResource(id = R.string.view_all),
@@ -601,8 +613,10 @@ fun ForYouItemCard(
 
 @Composable
 fun MenuSection(
+    restaurantId: String,
     items: List<RestaurantMenuItem>,
-    onItemClick: (String) -> Unit
+    onItemClick: (String) -> Unit,
+    onSellAllClick: (String) -> Unit
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 20.dp)
@@ -625,15 +639,10 @@ fun MenuSection(
         }
 
         if (items.size > 2) {
-            TextButton(
-                onClick = {  },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                SeeAllButton(
-                    text = stringResource(id = R.string.see_all),
-                    onClick = { }
-                )
-            }
+            SeeAllButton(
+                text = stringResource(id = R.string.see_all),
+                onClick = { onSellAllClick(restaurantId) }
+            )
         }
 
         Spacer(modifier = Modifier.height(24.dp))

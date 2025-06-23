@@ -185,18 +185,12 @@ fun AppNavGraph(navController: NavHostController) {
         ) { backStackEntry ->
             val restaurantId = backStackEntry.arguments?.getString("restaurantId") ?: ""
 
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry("restaurant_details/$restaurantId")
-            }
-            val restaurantViewModel: RestaurantDetailsViewModel = hiltViewModel(parentEntry)
-
             MenuListScreen(
                 restaurantId = restaurantId,
                 onBackClick = { navController.popBackStack() },
                 onMenuItemClick = { menuItem ->
                     navController.navigate("food_details/${menuItem.id}")
-                },
-                restaurantViewModel = restaurantViewModel
+                }
             )
         }
 
@@ -346,7 +340,9 @@ fun AppNavGraph(navController: NavHostController) {
                 },
                 onComboClick = { comboId ->
                     navController.navigate("food_details/$comboId")
-                }
+                },
+                onViewAllClick = { _ -> navController.navigate("menu_list/$restaurantId") },
+                onSellAllClick = { _ -> navController.navigate("menu_list/$restaurantId") }
             )
         }
 
