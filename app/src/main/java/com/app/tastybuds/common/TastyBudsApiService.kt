@@ -19,6 +19,7 @@ import com.app.tastybuds.data.model.RestaurantDetailsResponse
 import com.app.tastybuds.data.model.RestaurantResponse
 import com.app.tastybuds.data.model.RestaurantReviewResponse
 import com.app.tastybuds.data.model.RestaurantVoucherResponse
+import com.app.tastybuds.data.model.UpdateOrderStatusRequest
 import com.app.tastybuds.data.model.UserAddress
 import com.app.tastybuds.data.model.Voucher
 import com.app.tastybuds.data.model.VoucherCountResponse
@@ -340,8 +341,5 @@ interface TastyBudsApiService {
     ): Response<List<RestaurantResponse>>
 }
 
-data class UpdateOrderStatusRequest(
-    val status: String,
-    val updatedAt: String = ""
-)
+
 

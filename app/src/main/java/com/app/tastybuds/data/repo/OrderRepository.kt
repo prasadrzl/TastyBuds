@@ -3,7 +3,6 @@ package com.app.tastybuds.data.repo
 import android.content.ContentValues.TAG
 import android.util.Log
 import com.app.tastybuds.common.TastyBudsApiService
-import com.app.tastybuds.common.UpdateOrderStatusRequest
 import com.app.tastybuds.common.toApiString
 import com.app.tastybuds.data.model.CreateOrderRequest
 import com.app.tastybuds.data.model.Order
@@ -21,6 +20,7 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.app.tastybuds.data.model.UpdateOrderStatusRequest
 
 interface OrderRepository {
     suspend fun getUserAddresses(userId: String): Flow<Result<List<UserAddress>>>
