@@ -130,9 +130,6 @@ fun AppNavGraph(navController: NavHostController) {
                 onRestaurantClick = { restaurantId ->
                     navController.navigate("restaurant_details/$restaurantId")
                 },
-                onViewAllCollections = {
-                    navController.navigate("all_collections")
-                },
                 onViewAllRestaurants = {
                     navController.navigate("all_restaurants")
                 },
@@ -148,8 +145,8 @@ fun AppNavGraph(navController: NavHostController) {
                 onCollectionClick = { collectionId ->
                     navController.navigate("food_listing/collection/$collectionId")
                 },
-                onDealClick = { dealId ->
-                    navController.navigate("food_details/$dealId")
+                onDealClick = { dealId, menuItemId ->
+                    navController.navigate("food_details/$menuItemId")
                 }
             )
         }
@@ -181,8 +178,8 @@ fun AppNavGraph(navController: NavHostController) {
                 onBackClick = {
                     navController.popBackStack()
                 },
-                onDealClick = { dealId ->
-                    navController.navigate("food_details/$dealId")
+                onDealClick = { _, menuItemId ->
+                    navController.navigate("food_details/$menuItemId")
                 }
             )
         }

@@ -430,5 +430,7 @@
     <string name="items_found">%1$s items found</string>
     <string name="unknown_content_type">Unknown content type</string>
     <string name="loading_vouchers">Loading vouchers...</string>
+    <string name="you_have_voucher_here">You have %1$s voucher here</string>
+    <string name="sale_up_to_50">Sale up to 50%</string>
 
 </resources>

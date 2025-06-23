@@ -67,6 +67,8 @@ fun TastyBuddyMainScreen(navController: NavHostController, themeManager: ThemeMa
             val hideTopBar = currentRoute == "splash" ||
                     currentRoute == "onboarding" ||
                     currentRoute == "profile" ||
+                    currentRoute == "orders" ||
+                    currentRoute == "inbox" ||
                     currentRoute == "profile_edit" ||
                     currentRoute == "login" ||
                     currentRoute?.startsWith("food_listing/") == true ||

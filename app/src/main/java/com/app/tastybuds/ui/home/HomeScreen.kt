@@ -67,13 +67,12 @@ fun HomeScreen(
     onProfileClick: () -> Unit = {},
     onSearchClick: (String) -> Unit = {},
     onRestaurantClick: (String) -> Unit = {},
-    onViewAllCollections: () -> Unit = {},
     onViewAllRestaurants: () -> Unit = {},
     onViewAllDeals: () -> Unit = {},
     onViewAllVouchers: () -> Unit = {},
     onBannerClick: (String) -> Unit = {},
     onCollectionClick: (String) -> Unit = {},
-    onDealClick: (String) -> Unit = {},
+    onDealClick: (String, String) -> Unit = { _, _ -> },
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -95,12 +94,12 @@ fun HomeScreen(
                 uiState = uiState,
                 onCategoryClick = onCategoryClick,
                 onRestaurantClick = onRestaurantClick,
-                onViewAllCollections = onViewAllCollections,
                 onViewAllRestaurants = onViewAllRestaurants,
                 onViewAllDeals = onViewAllDeals,
                 onViewAllVouchers = onViewAllVouchers,
                 onBannerClick = onBannerClick,
                 onCollectionClick = onCollectionClick,
+                onDealClick = onDealClick
             )
         }
     }
@@ -177,12 +176,12 @@ fun HomeContent(
     uiState: HomeUiState,
     onCategoryClick: (String, String) -> Unit,
     onRestaurantClick: (String) -> Unit,
-    onViewAllCollections: () -> Unit,
     onViewAllRestaurants: () -> Unit,
     onViewAllDeals: () -> Unit,
     onViewAllVouchers: () -> Unit,
     onBannerClick: (String) -> Unit,
     onCollectionClick: (String) -> Unit,
+    onDealClick: (String, String) -> Unit = { _, _ -> }
 ) {
     LazyColumn(
         modifier = Modifier
@@ -219,7 +218,6 @@ fun HomeContent(
             item {
                 CollectionsSection(
                     collections = uiState.collections,
-                    onViewAllCollections = onViewAllCollections,
                     onCollectionClick = onCollectionClick
                 )
             }
@@ -237,7 +235,7 @@ fun HomeContent(
 
         if (uiState.deals.isNotEmpty()) {
             item {
-                SaleSection(deals = uiState.deals, onViewAllDeals)
+                SaleSection(deals = uiState.deals, onViewAllDeals, onDealClick)
             }
         }
 
@@ -268,7 +266,7 @@ fun VoucherSection(
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_offer_percentage),
-                contentDescription = "Voucher",
+                contentDescription = stringResource(R.string.vouchers),
                 modifier = Modifier.size(24.dp),
                 tint = PrimaryColor
             )
@@ -276,18 +274,19 @@ fun VoucherSection(
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
-                text = "You have $voucherCount voucher here",
+                text = stringResource(R.string.you_have_voucher_here, voucherCount),
                 fontSize = 14.sp,
                 color = Color.Black,
                 modifier = Modifier.weight(1f)
             )
 
-            Text(
-                text = "View all",
-                fontSize = 12.sp,
-                color = PrimaryColor,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.clickable { onViewAllClick() }
+            Icon(
+                painter = painterResource(id = R.drawable.ic_right_arrow),
+                contentDescription = stringResource(R.string.vouchers),
+                modifier = Modifier
+                    .size(16.dp)
+                    .clickable { onViewAllClick() },
+                tint = PrimaryColor,
             )
         }
     }
@@ -470,7 +469,6 @@ fun CategoryCard(
 @Composable
 fun CollectionsSection(
     collections: List<Collection>,
-    onViewAllCollections: () -> Unit,
     onCollectionClick: (String) -> Unit = {}
 ) {
     Column {
@@ -486,14 +484,6 @@ fun CollectionsSection(
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
-            )
-
-            Text(
-                text = stringResource(id = R.string.view_all),
-                fontSize = 14.sp,
-                color = PrimaryColor,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.clickable { onViewAllCollections() }
             )
         }
 
@@ -746,7 +736,7 @@ fun RestaurantCard(
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.material_starpurple500_sharp),
-                        contentDescription = "Rating",
+                        contentDescription = stringResource(R.string.rating),
                         modifier = Modifier.size(12.dp),
                         tint = Color(0xFFFFC107)
                     )
@@ -776,7 +766,7 @@ fun RestaurantCard(
 fun SaleSection(
     deals: List<Deal>,
     onViewAllClick: () -> Unit,
-    onDealClick: (String) -> Unit = {}
+    onDealClick: (String, String) -> Unit = { _, _ -> }
 ) {
     Column {
         Row(
@@ -787,14 +777,14 @@ fun SaleSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Sale up to 50%",
+                text = stringResource(R.string.sale_up_to_50),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
 
             Text(
-                text = "View all",
+                text = stringResource(R.string.view_all),
                 fontSize = 14.sp,
                 color = PrimaryColor,
                 fontWeight = FontWeight.Medium,
@@ -811,7 +801,7 @@ fun SaleSection(
             items(deals) { deal ->
                 SaleCard(
                     deal = deal,
-                    onClick = { onDealClick(deal.id) }
+                    onClick = { onDealClick(deal.id, deal.menuItemId) }
                 )
             }
         }

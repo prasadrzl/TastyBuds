@@ -49,7 +49,7 @@ import com.bumptech.glide.integration.compose.placeholder
 @Composable
 fun AllDealsScreen(
     onBackClick: () -> Unit = {},
-    onDealClick: (String) -> Unit = {},
+    onDealClick: (String, String) -> Unit = {_, _ ->},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -94,7 +94,7 @@ fun AllDealsScreen(
 @Composable
 fun DealsContent(
     deals: List<Deal>,
-    onDealClick: (String) -> Unit
+    onDealClick: (String, String) -> Unit = {_, _ ->},
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -106,7 +106,7 @@ fun DealsContent(
         items(deals) { deal ->
             DealGridItemCard(
                 deal = deal,
-                onClick = { onDealClick(deal.id) }
+                onClick = { onDealClick(deal.id, deal.menuItemId) }
             )
         }
 

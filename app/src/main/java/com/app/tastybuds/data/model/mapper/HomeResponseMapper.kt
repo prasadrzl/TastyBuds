@@ -60,6 +60,7 @@ fun RestaurantResponse.toDomainModel(): Restaurant {
 fun DealResponse.toDomainModel(): Deal {
     return Deal(
         id = id,
+        menuItemId = menuItemId,
         title = title,
         price = price,
         originalPrice = originalPrice,

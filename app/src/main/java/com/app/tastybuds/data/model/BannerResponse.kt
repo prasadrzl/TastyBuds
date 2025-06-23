@@ -71,6 +71,7 @@ data class CollectionResponse(
 @JsonClass(generateAdapter = true)
 data class DealResponse(
     @Json(name = "id") val id: String = "",
+    @Json(name = "menu_item_id") val menuItemId: String = "",
     @Json(name = "title") val title: String = "",
     @Json(name = "price") val price: String = "",
     @Json(name = "original_price") val originalPrice: String? = null,

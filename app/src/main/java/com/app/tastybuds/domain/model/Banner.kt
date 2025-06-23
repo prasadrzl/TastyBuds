@@ -40,6 +40,7 @@ data class Restaurant(
 
 data class Deal(
     val id: String = "",
+    val menuItemId: String = "",
     val title: String = "",
     val price: String = "",
     val originalPrice: String? = null,
