@@ -443,5 +443,10 @@
     <string name="mute">Mute</string>
     <string name="speaker">Speaker</string>
     <string name="user_name">User name</string>
+    <string name="all_deals">All deals</string>
+    <string name="all_restaurants">All Restaurants</string>
+    <string name="location_permission_required">Location permission required</string>
+    <string name="enter_your_address">Enter your address</string>
+    <string name="also_ordered">Also Ordered</string>
 
 </resources>

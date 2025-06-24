@@ -53,7 +53,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
 import com.app.tastybuds.domain.model.DiscountType
 import com.app.tastybuds.domain.model.Voucher
-import com.app.tastybuds.ui.theme.PrimaryColor
+import com.app.tastybuds.ui.theme.*
 import com.app.tastybuds.util.ui.AppTopBar
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -81,7 +81,7 @@ fun AllVouchersScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(backgroundColor())
     ) {
         AppTopBar(
             title = stringResource(id = R.string.my_vouchers),
@@ -91,12 +91,12 @@ fun AllVouchersScreen(
         TabRow(
             selectedTabIndex = uiState.selectedTab,
             modifier = Modifier.fillMaxWidth(),
-            containerColor = Color.White,
-            contentColor = PrimaryColor,
+            containerColor = surfaceColor(),
+            contentColor = primaryColor(),
             indicator = { tabPositions ->
                 SecondaryIndicator(
                     Modifier.tabIndicatorOffset(tabPositions[uiState.selectedTab]),
-                    color = PrimaryColor
+                    color = primaryColor()
                 )
             }
         ) {
@@ -108,7 +108,7 @@ fun AllVouchersScreen(
                         Text(
                             text = title,
                             fontWeight = if (uiState.selectedTab == index) FontWeight.Bold else FontWeight.Normal,
-                            color = if (uiState.selectedTab == index) PrimaryColor else Color.Gray
+                            color = if (uiState.selectedTab == index) primaryColor() else textSecondaryColor()
                         )
                     }
                 )
@@ -198,10 +198,10 @@ private fun LoadingContent() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            CircularProgressIndicator(color = PrimaryColor)
+            CircularProgressIndicator(color = loadingIndicatorColor())
             Text(
                 text = stringResource(R.string.loading_vouchers),
-                color = Color.Gray,
+                color = textSecondaryColor(),
                 fontSize = 14.sp
             )
         }
@@ -225,7 +225,7 @@ private fun EmptyVouchersContent(
                 painter = painterResource(id = R.drawable.ic_offer_percentage),
                 contentDescription = stringResource(R.string.no_vouchers),
                 modifier = Modifier.size(64.dp),
-                tint = Color.Gray
+                tint = textSecondaryColor()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -234,7 +234,7 @@ private fun EmptyVouchersContent(
                 text = message,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color.Gray,
+                color = captionTextColor(),
                 textAlign = TextAlign.Center
             )
 
@@ -243,7 +243,7 @@ private fun EmptyVouchersContent(
             Text(
                 text = subMessage,
                 fontSize = 14.sp,
-                color = Color.Gray,
+                color = textSecondaryColor(),
                 textAlign = TextAlign.Center
             )
         }
@@ -261,7 +261,7 @@ fun VoucherCard(
             .clickable(enabled = voucher.buttonEnabled) { onClick() },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (voucher.isUsed) Color(0xFFF5F5F5) else voucher.backgroundColor
+            containerColor = if (voucher.isUsed) disabledBorderColor() else voucher.backgroundColor
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = if (voucher.isUsed) 1.dp else 3.dp
@@ -278,7 +278,7 @@ fun VoucherCard(
                     .size(80.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(
-                        if (voucher.isUsed) Color.Gray.copy(alpha = 0.3f)
+                        if (voucher.isUsed) disabledTextColor().copy(alpha = 0.3f)
                         else getVoucherIconBackground(voucher.discountType)
                     ),
                 contentAlignment = Alignment.Center
@@ -290,7 +290,7 @@ fun VoucherCard(
                         imageVector = getVoucherIcon(voucher.discountType),
                         contentDescription = stringResource(R.string.voucher),
                         modifier = Modifier.size(24.dp),
-                        tint = if (voucher.isUsed) Color.Gray else Color.White
+                        tint = if (voucher.isUsed) disabledTextColor() else onPrimaryColor()
                     )
 
                     Spacer(modifier = Modifier.height(4.dp))
@@ -299,7 +299,7 @@ fun VoucherCard(
                         text = voucher.iconText,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color = if (voucher.isUsed) Color.Gray else Color.White
+                        color = if (voucher.isUsed) disabledTextColor() else onPrimaryColor()
                     )
                 }
             }
@@ -313,7 +313,7 @@ fun VoucherCard(
                     text = voucher.title,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (voucher.isUsed) Color.Gray else Color.Black,
+                    color = if (voucher.isUsed) disabledTextColor() else cardContentColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -323,7 +323,7 @@ fun VoucherCard(
                 Text(
                     text = voucher.description,
                     fontSize = 13.sp,
-                    color = if (voucher.isUsed) Color.Gray else Color.Gray,
+                    color = if (voucher.isUsed) disabledTextColor() else textSecondaryColor(),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -333,7 +333,7 @@ fun VoucherCard(
                     Text(
                         text = minOrder,
                         fontSize = 12.sp,
-                        color = if (voucher.isUsed) Color.Gray else Color.Gray,
+                        color = if (voucher.isUsed) disabledTextColor() else textSecondaryColor(),
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -343,7 +343,7 @@ fun VoucherCard(
                     Text(
                         text = voucher.validityText,
                         fontSize = 12.sp,
-                        color = if (voucher.isUsed) Color.Gray else PrimaryColor,
+                        color = if (voucher.isUsed) disabledTextColor() else primaryColor(),
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -357,7 +357,7 @@ fun VoucherCard(
                         imageVector = Icons.Default.Star,
                         contentDescription = stringResource(R.string.expiry),
                         modifier = Modifier.size(14.dp),
-                        tint = if (voucher.isUsed) Color.Gray else Color.Gray
+                        tint = if (voucher.isUsed) disabledTextColor() else textSecondaryColor()
                     )
 
                     Spacer(modifier = Modifier.width(4.dp))
@@ -369,7 +369,7 @@ fun VoucherCard(
                             voucher.expiryText
                         },
                         fontSize = 12.sp,
-                        color = if (voucher.isUsed) Color.Gray else Color.Gray
+                        color = if (voucher.isUsed) disabledTextColor() else textSecondaryColor()
                     )
                 }
             }
@@ -377,9 +377,7 @@ fun VoucherCard(
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (voucher.buttonEnabled) PrimaryColor else Color.Gray.copy(
-                        alpha = 0.2f
-                    )
+                    containerColor = if (voucher.buttonEnabled) primaryColor() else disabledBorderColor()
                 ),
                 modifier = if (voucher.buttonEnabled) Modifier.clickable { onClick() } else Modifier
             ) {
@@ -388,7 +386,7 @@ fun VoucherCard(
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (voucher.buttonEnabled) Color.White else Color.Gray
+                    color = if (voucher.buttonEnabled) onPrimaryColor() else disabledTextColor()
                 )
             }
         }
@@ -402,11 +400,12 @@ fun getVoucherIcon(type: DiscountType): ImageVector = when (type) {
     DiscountType.BUY_ONE_GET_ONE -> Icons.Sharp.Add
 }
 
-fun getVoucherIconBackground(type: DiscountType): Color = when (type) {
-    DiscountType.PERCENTAGE -> Color(0xFF4CAF50)
-    DiscountType.FIXED_AMOUNT -> Color(0xFF2196F3)
-    DiscountType.FREE_DELIVERY -> PrimaryColor
-    DiscountType.BUY_ONE_GET_ONE -> Color(0xFF9C27B0)
+@Composable
+fun getVoucherIconBackground(type: DiscountType): androidx.compose.ui.graphics.Color = when (type) {
+    DiscountType.PERCENTAGE -> successColor()
+    DiscountType.FIXED_AMOUNT -> infoColor()
+    DiscountType.FREE_DELIVERY -> primaryColor()
+    DiscountType.BUY_ONE_GET_ONE -> Color(0xFF9C27B0) // Purple - could add to ColorExtensions as tertiaryColor()
 }
 
 @Preview(showBackground = true)

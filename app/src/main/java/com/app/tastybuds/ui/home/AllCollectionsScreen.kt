@@ -1,6 +1,5 @@
 package com.app.tastybuds.ui.home
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,25 +21,39 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
 import com.app.tastybuds.domain.model.Collection
-import com.app.tastybuds.ui.theme.PrimaryColor
+import com.app.tastybuds.ui.theme.backgroundColor
+import com.app.tastybuds.ui.theme.captionTextColor
+import com.app.tastybuds.ui.theme.cardBackgroundColor
+import com.app.tastybuds.ui.theme.cardContentColor
+import com.app.tastybuds.ui.theme.loadingIndicatorColor
+import com.app.tastybuds.ui.theme.onBackgroundColor
+import com.app.tastybuds.ui.theme.onPrimaryColor
+import com.app.tastybuds.ui.theme.onSuccessColor
+import com.app.tastybuds.ui.theme.primaryColor
+import com.app.tastybuds.ui.theme.successColor
+import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.app.tastybuds.util.ui.AppTopBar
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -52,94 +65,117 @@ fun AllCollectionsScreen(
     onCollectionClick: (String) -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = backgroundColor()
     ) {
-        AppTopBar(
-            title = stringResource(id = R.string.all_collections),
-            onBackClick = onBackClick
-        )
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            AppTopBar(
+                title = stringResource(id = R.string.all_collections),
+                onBackClick = onBackClick
+            )
 
-        when {
-            uiState.isLoading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = PrimaryColor)
+            when {
+                uiState.isLoading -> {
+                    LoadingContent()
                 }
-            }
 
-            uiState.error != null -> {
-                ErrorContent(
-                    error = uiState.error ?: stringResource(R.string.unknown_error),
-                    onRetry = { viewModel.retry() }
-                )
-            }
+                uiState.error != null -> {
+                    ErrorContent(
+                        error = uiState.error ?: stringResource(R.string.unknown_error),
+                        onRetry = { viewModel.retry() }
+                    )
+                }
 
-            else -> {
-                CollectionsContent(
-                    collections = uiState.collections,
-                    onCollectionClick = onCollectionClick
-                )
+                else -> {
+                    CollectionsContent(
+                        collections = uiState.collections,
+                        onCollectionClick = onCollectionClick
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun CollectionsContent(
+private fun LoadingContent() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .semantics { contentDescription = "Loading collections" },
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            color = loadingIndicatorColor(),
+            modifier = Modifier.size(48.dp)
+        )
+    }
+}
+
+@Composable
+private fun CollectionsContent(
     collections: List<Collection>,
     onCollectionClick: (String) -> Unit
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(collections) { collection ->
-            CollectionItemCard(
-                collection = collection,
-                onClick = { onCollectionClick(collection.id) }
-            )
-        }
-
-        if (collections.isEmpty()) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 40.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = stringResource(R.string.no_collections_available),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.Gray
-                        )
-                        Text(
-                            text = stringResource(R.string.check_back_later_for_new_collections),
-                            fontSize = 14.sp,
-                            color = Color.Gray
-                        )
-                    }
-                }
+    if (collections.isEmpty()) {
+        EmptyStateContent()
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(
+                items = collections,
+                key = { collection -> collection.id }
+            ) { collection ->
+                CollectionItemCard(
+                    collection = collection,
+                    onClick = { onCollectionClick(collection.id) }
+                )
             }
         }
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun CollectionItemCard(
+private fun EmptyStateContent() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = stringResource(R.string.no_collections_available),
+                style = MaterialTheme.typography.headlineSmall,
+                color = captionTextColor(),
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = stringResource(R.string.check_back_later_for_new_collections),
+                style = MaterialTheme.typography.bodyMedium,
+                color = textSecondaryColor(),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+private fun CollectionItemCard(
     collection: Collection,
     onClick: () -> Unit
 ) {
@@ -147,10 +183,18 @@ fun CollectionItemCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(120.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            .clickable { onClick() }
+            .semantics {
+                contentDescription = "Collection: ${collection.title}"
+            },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = cardBackgroundColor()
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp,
+            pressedElevation = 8.dp
+        )
     ) {
         Row(
             modifier = Modifier
@@ -158,63 +202,100 @@ fun CollectionItemCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box {
-                GlideImage(
-                    model = collection.imageUrl,
-                    contentDescription = collection.title,
-                    modifier = Modifier
-                        .size(88.dp)
-                        .clip(RoundedCornerShape(8.dp)),
-                    contentScale = ContentScale.Crop,
-                    failure = placeholder(R.drawable.default_food),
-                    loading = placeholder(R.drawable.default_food)
-                )
-
-                collection.badge?.let { badge ->
-                    Card(
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .align(Alignment.TopStart),
-                        shape = RoundedCornerShape(4.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFF4CAF50))
-                    ) {
-                        Text(
-                            text = badge,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                            fontSize = 10.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
-            }
+            CollectionImage(
+                collection = collection,
+                modifier = Modifier.size(88.dp)
+            )
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = collection.title,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = collection.subtitle,
-                    fontSize = 14.sp,
-                    color = Color.Gray,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
+            CollectionInfo(
+                collection = collection,
+                modifier = Modifier.weight(1f)
+            )
         }
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+private fun CollectionImage(
+    collection: Collection,
+    modifier: Modifier = Modifier
+) {
+    Box(modifier = modifier) {
+        GlideImage(
+            model = collection.imageUrl,
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(12.dp)),
+            contentScale = ContentScale.Crop,
+            failure = placeholder(R.drawable.default_food),
+            loading = placeholder(R.drawable.default_food)
+        )
+
+        collection.badge?.let { badge ->
+            BadgeLabel(
+                text = badge,
+                modifier = Modifier
+                    .padding(6.dp)
+                    .align(Alignment.TopStart)
+            )
+        }
+    }
+}
+
+@Composable
+private fun BadgeLabel(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(6.dp),
+        color = successColor()
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            style = MaterialTheme.typography.labelSmall.copy(
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Medium
+            ),
+            color = onSuccessColor()
+        )
+    }
+}
+
+@Composable
+private fun CollectionInfo(
+    collection: Collection,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = collection.title,
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            color = cardContentColor(),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = collection.subtitle,
+            style = MaterialTheme.typography.bodyMedium,
+            color = textSecondaryColor(),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
 
@@ -231,32 +312,37 @@ fun ErrorContent(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Something went wrong",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
+            text = stringResource(R.string.something_went_wrong),
+            style = MaterialTheme.typography.headlineSmall.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            color = onBackgroundColor(),
+            textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = error,
-            fontSize = 14.sp,
-            color = Color.Gray,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            style = MaterialTheme.typography.bodyMedium,
+            color = textSecondaryColor(),
+            textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = onRetry,
-            colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
-            shape = RoundedCornerShape(24.dp)
+            colors = ButtonDefaults.buttonColors(
+                containerColor = primaryColor()
+            ),
+            shape = RoundedCornerShape(28.dp)
         ) {
             Text(
-                text = "Try Again",
-                color = Color.White,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                text = stringResource(R.string.try_again),
+                color = onPrimaryColor(),
+                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
             )
         }
     }
@@ -264,6 +350,25 @@ fun ErrorContent(
 
 @Preview(showBackground = true)
 @Composable
-fun AllCollectionsScreenPreview() {
-    AllCollectionsScreen()
+private fun AllCollectionsScreenPreview() {
+    MaterialTheme {
+        AllCollectionsScreen()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun CollectionItemCardPreview() {
+    MaterialTheme {
+        CollectionItemCard(
+            collection = Collection(
+                id = "1",
+                title = "Popular Dishes",
+                subtitle = "Most ordered items in your area",
+                imageUrl = "",
+                badge = "NEW"
+            ),
+            onClick = {}
+        )
+    }
 }

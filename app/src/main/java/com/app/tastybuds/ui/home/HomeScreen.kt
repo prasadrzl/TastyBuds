@@ -29,10 +29,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,12 +42,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
 import com.app.tastybuds.domain.model.Banner
 import com.app.tastybuds.domain.model.Category
@@ -54,7 +59,7 @@ import com.app.tastybuds.domain.model.Collection
 import com.app.tastybuds.domain.model.Deal
 import com.app.tastybuds.domain.model.Restaurant
 import com.app.tastybuds.ui.home.state.HomeUiState
-import com.app.tastybuds.ui.theme.PrimaryColor
+import com.app.tastybuds.ui.theme.*
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -75,65 +80,69 @@ fun HomeScreen(
     onDealClick: (String, String) -> Unit = { _, _ -> },
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    when {
-        uiState.isLoading -> {
-            LoadingScreen()
-        }
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = backgroundColor()
+    ) {
+        when {
+            uiState.isLoading -> {
+                LoadingScreen()
+            }
 
-        uiState.error != null -> {
-            ErrorScreen(
-                error = uiState.error ?: stringResource(id = R.string.unknown_error),
-                onRetry = { viewModel.retry() }
-            )
-        }
+            uiState.error != null -> {
+                ErrorScreen(
+                    error = uiState.error ?: stringResource(R.string.unknown_error),
+                    onRetry = { viewModel.retry() }
+                )
+            }
 
-        else -> {
-            HomeContent(
-                uiState = uiState,
-                onCategoryClick = onCategoryClick,
-                onRestaurantClick = onRestaurantClick,
-                onViewAllRestaurants = onViewAllRestaurants,
-                onViewAllDeals = onViewAllDeals,
-                onViewAllVouchers = onViewAllVouchers,
-                onBannerClick = onBannerClick,
-                onCollectionClick = onCollectionClick,
-                onDealClick = onDealClick
-            )
+            else -> {
+                HomeContent(
+                    uiState = uiState,
+                    onCategoryClick = onCategoryClick,
+                    onRestaurantClick = onRestaurantClick,
+                    onViewAllRestaurants = onViewAllRestaurants,
+                    onViewAllDeals = onViewAllDeals,
+                    onViewAllVouchers = onViewAllVouchers,
+                    onBannerClick = onBannerClick,
+                    onCollectionClick = onCollectionClick,
+                    onDealClick = onDealClick
+                )
+            }
         }
     }
 }
 
 @Composable
-fun LoadingScreen() {
+private fun LoadingScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White),
+            .semantics { contentDescription = "Loading home screen" },
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
-            color = PrimaryColor,
+            color = loadingIndicatorColor(),
             modifier = Modifier.size(48.dp)
         )
     }
 }
 
 @Composable
-fun ErrorScreen(error: String, onRetry: () -> Unit) {
+private fun ErrorScreen(error: String, onRetry: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_help),
-            contentDescription = "Error",
-            tint = PrimaryColor,
+            contentDescription = stringResource(R.string.error),
+            tint = primaryColor(),
             modifier = Modifier.size(64.dp)
         )
 
@@ -141,30 +150,35 @@ fun ErrorScreen(error: String, onRetry: () -> Unit) {
 
         Text(
             text = stringResource(R.string.oops_something_went_wrong),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
+            style = MaterialTheme.typography.headlineSmall.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            color = onBackgroundColor(),
+            textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = error,
-            fontSize = 14.sp,
-            color = Color.Gray,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            style = MaterialTheme.typography.bodyMedium,
+            color = textSecondaryColor(),
+            textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = onRetry,
-            colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
-            shape = RoundedCornerShape(24.dp)
+            colors = ButtonDefaults.buttonColors(
+                containerColor = primaryColor()
+            ),
+            shape = RoundedCornerShape(28.dp)
         ) {
             Text(
-                text = "Try Again",
-                color = Color.White,
+                text = stringResource(R.string.try_again),
+                color = onPrimaryColor(),
+                style = MaterialTheme.typography.labelLarge,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
         }
@@ -172,7 +186,7 @@ fun ErrorScreen(error: String, onRetry: () -> Unit) {
 }
 
 @Composable
-fun HomeContent(
+private fun HomeContent(
     uiState: HomeUiState,
     onCategoryClick: (String, String) -> Unit,
     onRestaurantClick: (String) -> Unit,
@@ -184,9 +198,7 @@ fun HomeContent(
     onDealClick: (String, String) -> Unit = { _, _ -> }
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         if (uiState.banners.isNotEmpty()) {
@@ -214,6 +226,7 @@ fun HomeContent(
                 onViewAllClick = onViewAllVouchers
             )
         }
+
         if (uiState.collections.isNotEmpty()) {
             item {
                 CollectionsSection(
@@ -235,7 +248,11 @@ fun HomeContent(
 
         if (uiState.deals.isNotEmpty()) {
             item {
-                SaleSection(deals = uiState.deals, onViewAllDeals, onDealClick)
+                SaleSection(
+                    deals = uiState.deals,
+                    onViewAllDeals = onViewAllDeals,
+                    onDealClick = onDealClick
+                )
             }
         }
 
@@ -246,7 +263,7 @@ fun HomeContent(
 }
 
 @Composable
-fun VoucherSection(
+private fun VoucherSection(
     voucherCount: Int,
     onViewAllClick: () -> Unit = {}
 ) {
@@ -254,39 +271,42 @@ fun VoucherSection(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .clickable { onViewAllClick() },
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0))
+            .clickable { onViewAllClick() }
+            .semantics { contentDescription = "Voucher section" },
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = offerBackgroundColor()
+        )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_offer_percentage),
                 contentDescription = stringResource(R.string.vouchers),
                 modifier = Modifier.size(24.dp),
-                tint = PrimaryColor
+                tint = primaryColor()
             )
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             Text(
                 text = stringResource(R.string.you_have_voucher_here, voucherCount),
-                fontSize = 14.sp,
-                color = Color.Black,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = FontWeight.Medium
+                ),
+                color = offerTextColor(),
                 modifier = Modifier.weight(1f)
             )
 
             Icon(
                 painter = painterResource(id = R.drawable.ic_right_arrow),
-                contentDescription = stringResource(R.string.vouchers),
-                modifier = Modifier
-                    .size(16.dp)
-                    .clickable { onViewAllClick() },
-                tint = PrimaryColor,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = primaryColor()
             )
         }
     }
@@ -294,7 +314,7 @@ fun VoucherSection(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun DealBannerSection(
+private fun DealBannerSection(
     banners: List<Banner>,
     onBannerClick: (String) -> Unit = {}
 ) {
@@ -339,7 +359,8 @@ fun DealBannerSection(
                         .size(if (isSelected) 8.dp else 6.dp)
                         .clip(CircleShape)
                         .background(
-                            if (isSelected) PrimaryColor else Color.Gray.copy(alpha = 0.5f)
+                            if (isSelected) primaryColor()
+                            else outlineVariantColor()
                         )
                 )
                 if (index < banners.size - 1) {
@@ -352,7 +373,7 @@ fun DealBannerSection(
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun DealBannerCard(
+private fun DealBannerCard(
     banner: Banner,
     onClick: () -> Unit
 ) {
@@ -360,9 +381,12 @@ fun DealBannerCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(144.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = banner.backgroundColor)
+            .clickable { onClick() }
+            .semantics { contentDescription = "Banner: ${banner.title}" },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = banner.backgroundColor
+        )
     ) {
         Row(
             modifier = Modifier
@@ -376,28 +400,30 @@ fun DealBannerCard(
                 Text(
                     text = banner.title,
                     color = Color.White,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    )
                 )
                 Text(
                     text = banner.price,
                     color = Color.White,
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    )
                 )
                 Text(
                     text = banner.description,
                     color = Color.White,
-                    fontSize = 14.sp
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
 
             GlideImage(
                 model = banner.imageUrl,
-                contentDescription = banner.title,
+                contentDescription = null,
                 modifier = Modifier
                     .size(80.dp)
-                    .clip(RoundedCornerShape(8.dp)),
+                    .clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop,
                 failure = placeholder(R.drawable.default_food),
                 loading = placeholder(R.drawable.default_food)
@@ -407,7 +433,7 @@ fun DealBannerCard(
 }
 
 @Composable
-fun CategoriesSection(
+private fun CategoriesSection(
     categories: List<Category>,
     onCategoryClick: (String, String) -> Unit
 ) {
@@ -416,7 +442,10 @@ fun CategoriesSection(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(horizontal = 4.dp)
     ) {
-        items(categories) { category ->
+        items(
+            items = categories,
+            key = { category -> category.id }
+        ) { category ->
             CategoryCard(
                 category = category,
                 onClick = { onCategoryClick(category.id, category.name) }
@@ -427,7 +456,7 @@ fun CategoriesSection(
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun CategoryCard(
+private fun CategoryCard(
     category: Category,
     onClick: () -> Unit
 ) {
@@ -435,7 +464,8 @@ fun CategoryCard(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .clickable { onClick() }
-            .width(64.dp)
+            .width(72.dp)
+            .semantics { contentDescription = "Category: ${category.name}" }
     ) {
         Box(
             modifier = Modifier
@@ -446,7 +476,7 @@ fun CategoryCard(
         ) {
             GlideImage(
                 model = category.imageUrl,
-                contentDescription = category.name,
+                contentDescription = null,
                 modifier = Modifier.size(32.dp),
                 failure = placeholder(R.drawable.ic_rice),
                 loading = placeholder(R.drawable.ic_rice)
@@ -457,35 +487,27 @@ fun CategoryCard(
 
         Text(
             text = category.name,
-            fontSize = 12.sp,
-            color = Color.Black,
-            fontWeight = FontWeight.Medium,
+            style = MaterialTheme.typography.labelMedium.copy(
+                fontWeight = FontWeight.Medium
+            ),
+            color = cardContentColor(),
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center
         )
     }
 }
 
 @Composable
-fun CollectionsSection(
+private fun CollectionsSection(
     collections: List<Collection>,
     onCollectionClick: (String) -> Unit = {}
 ) {
     Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(id = R.string.collections),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-        }
+        SectionHeader(
+            title = stringResource(R.string.collections),
+            showViewAll = false
+        )
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -497,7 +519,7 @@ fun CollectionsSection(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                if (collections.size > 0) {
+                if (collections.isNotEmpty()) {
                     StaticCollectionCard(
                         collection = collections[0],
                         onClick = { onCollectionClick(collections[0].id) },
@@ -513,23 +535,25 @@ fun CollectionsSection(
                 }
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                if (collections.size > 2) {
+            if (collections.size > 2) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     StaticCollectionCard(
                         collection = collections[2],
                         onClick = { onCollectionClick(collections[2].id) },
                         modifier = Modifier.weight(1f)
                     )
-                }
-                if (collections.size > 3) {
-                    StaticCollectionCard(
-                        collection = collections[3],
-                        onClick = { onCollectionClick(collections[3].id) },
-                        modifier = Modifier.weight(1f)
-                    )
+                    if (collections.size > 3) {
+                        StaticCollectionCard(
+                            collection = collections[3],
+                            onClick = { onCollectionClick(collections[3].id) },
+                            modifier = Modifier.weight(1f)
+                        )
+                    } else {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
                 }
             }
         }
@@ -538,7 +562,7 @@ fun CollectionsSection(
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun StaticCollectionCard(
+private fun StaticCollectionCard(
     collection: FoodCollection,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -546,11 +570,14 @@ fun StaticCollectionCard(
     Card(
         modifier = modifier
             .height(80.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        border = BorderStroke(1.dp, Color(0xFFE0E0E0))
+            .clickable { onClick() }
+            .semantics { contentDescription = "Collection: ${collection.title}" },
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = cardBackgroundColor()
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = BorderStroke(1.dp, borderColor())
     ) {
         Row(
             modifier = Modifier
@@ -561,7 +588,7 @@ fun StaticCollectionCard(
             Box {
                 GlideImage(
                     model = collection.imageUrl,
-                    contentDescription = collection.title,
+                    contentDescription = null,
                     modifier = Modifier
                         .size(56.dp)
                         .clip(RoundedCornerShape(8.dp)),
@@ -571,34 +598,38 @@ fun StaticCollectionCard(
                 )
 
                 collection.badge?.let { badge ->
-                    Card(
+                    Surface(
                         modifier = Modifier
                             .padding(4.dp)
                             .align(Alignment.TopStart),
                         shape = RoundedCornerShape(4.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFF4CAF50))
+                        color = newBadgeColor()
                     ) {
                         Text(
                             text = badge,
                             modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
-                            fontSize = 8.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.Medium
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontSize = 8.sp,
+                                fontWeight = FontWeight.Medium
+                            ),
+                            color = onErrorColor()
                         )
                     }
                 }
             }
 
             Spacer(modifier = Modifier.width(12.dp))
+
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = collection.title,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = cardContentColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -607,8 +638,8 @@ fun StaticCollectionCard(
 
                 Text(
                     text = collection.subtitle,
-                    fontSize = 12.sp,
-                    color = Color.Gray,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = textSecondaryColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -618,34 +649,51 @@ fun StaticCollectionCard(
 }
 
 @Composable
-fun RecommendedSection(
+private fun SectionHeader(
+    title: String,
+    showViewAll: Boolean = true,
+    onViewAllClick: () -> Unit = {}
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            color = onBackgroundColor()
+        )
+
+        if (showViewAll) {
+            Text(
+                text = stringResource(R.string.view_all),
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = FontWeight.Medium
+                ),
+                color = linkTextColor(),
+                modifier = Modifier.clickable { onViewAllClick() }
+            )
+        }
+    }
+}
+
+@Composable
+private fun RecommendedSection(
     restaurants: List<Restaurant>,
     onRestaurantClick: (String) -> Unit,
     onViewAllClick: () -> Unit
 ) {
     Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.recommended_for_you),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-
-            Text(
-                text = stringResource(id = R.string.view_all),
-                fontSize = 14.sp,
-                color = PrimaryColor,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.clickable { onViewAllClick() }
-            )
-        }
+        SectionHeader(
+            title = stringResource(R.string.recommended_for_you),
+            showViewAll = true,
+            onViewAllClick = onViewAllClick
+        )
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -653,7 +701,10 @@ fun RecommendedSection(
             modifier = Modifier.padding(start = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(restaurants) { restaurant ->
+            items(
+                items = restaurants,
+                key = { restaurant -> restaurant.id }
+            ) { restaurant ->
                 RestaurantCard(
                     restaurant = restaurant,
                     onClick = { onRestaurantClick(restaurant.id) }
@@ -665,23 +716,26 @@ fun RecommendedSection(
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun RestaurantCard(
+private fun RestaurantCard(
     restaurant: Restaurant,
     onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .width(160.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            .clickable { onClick() }
+            .semantics { contentDescription = "Restaurant: ${restaurant.name}" },
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = cardBackgroundColor()
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column {
             Box {
                 GlideImage(
                     model = restaurant.imageUrl,
-                    contentDescription = restaurant.name,
+                    contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(100.dp),
@@ -691,40 +745,42 @@ fun RestaurantCard(
                 )
 
                 restaurant.badge?.let { badge ->
-                    Card(
+                    Surface(
                         modifier = Modifier
                             .padding(8.dp)
                             .align(Alignment.TopStart),
-                        shape = RoundedCornerShape(4.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFF4CAF50))
+                        shape = RoundedCornerShape(6.dp),
+                        color = popularBadgeColor()
                     ) {
                         Text(
                             text = badge,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                            fontSize = 10.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.Medium
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Medium
+                            ),
+                            color = onPrimaryColor()
                         )
                     }
                 }
             }
 
             Column(
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier.padding(12.dp)
             ) {
                 Text(
                     text = restaurant.name,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Medium
+                    ),
+                    color = cardContentColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
                 Text(
                     text = restaurant.cuisine,
-                    fontSize = 12.sp,
-                    color = Color.Gray,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = textSecondaryColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -738,23 +794,23 @@ fun RestaurantCard(
                         painter = painterResource(id = R.drawable.material_starpurple500_sharp),
                         contentDescription = stringResource(R.string.rating),
                         modifier = Modifier.size(12.dp),
-                        tint = Color(0xFFFFC107)
+                        tint = starRatingColor()
                     )
 
                     Spacer(modifier = Modifier.width(4.dp))
 
                     Text(
                         text = restaurant.rating.toString(),
-                        fontSize = 12.sp,
-                        color = Color.Black
+                        style = MaterialTheme.typography.labelSmall,
+                        color = cardContentColor()
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
 
                     Text(
                         text = restaurant.deliveryTime,
-                        fontSize = 12.sp,
-                        color = Color.Gray
+                        style = MaterialTheme.typography.labelSmall,
+                        color = textSecondaryColor()
                     )
                 }
             }
@@ -763,34 +819,17 @@ fun RestaurantCard(
 }
 
 @Composable
-fun SaleSection(
+private fun SaleSection(
     deals: List<Deal>,
-    onViewAllClick: () -> Unit,
+    onViewAllDeals: () -> Unit,
     onDealClick: (String, String) -> Unit = { _, _ -> }
 ) {
     Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.sale_up_to_50),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-
-            Text(
-                text = stringResource(R.string.view_all),
-                fontSize = 14.sp,
-                color = PrimaryColor,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.clickable { onViewAllClick() }
-            )
-        }
+        SectionHeader(
+            title = stringResource(R.string.sale_up_to_50),
+            showViewAll = true,
+            onViewAllClick = onViewAllDeals
+        )
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -798,7 +837,10 @@ fun SaleSection(
             modifier = Modifier.padding(start = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(deals) { deal ->
+            items(
+                items = deals,
+                key = { deal -> deal.id }
+            ) { deal ->
                 SaleCard(
                     deal = deal,
                     onClick = { onDealClick(deal.id, deal.menuItemId) }
@@ -810,23 +852,26 @@ fun SaleSection(
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun SaleCard(
+private fun SaleCard(
     deal: Deal,
     onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .width(160.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            .clickable { onClick() }
+            .semantics { contentDescription = "Deal: ${deal.title}" },
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = cardBackgroundColor()
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column {
             Box {
                 GlideImage(
                     model = deal.imageUrl,
-                    contentDescription = deal.title,
+                    contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(100.dp),
@@ -835,71 +880,79 @@ fun SaleCard(
                     loading = placeholder(R.drawable.default_food)
                 )
 
-                deal.badge?.let { badge ->
-                    Card(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .align(Alignment.TopStart),
-                        shape = RoundedCornerShape(4.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFF4CAF50))
-                    ) {
-                        Text(
-                            text = badge,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                            fontSize = 10.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.Medium
-                        )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Top
+                ) {
+                    deal.badge?.let { badge ->
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = newBadgeColor()
+                        ) {
+                            Text(
+                                text = badge,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = FontWeight.Medium
+                                ),
+                                color = onErrorColor()
+                            )
+                        }
                     }
-                }
 
-                deal.discountPercentage?.let { percentage ->
-                    Card(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .align(Alignment.TopStart),
-                        shape = RoundedCornerShape(4.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFF4CAF50))
-                    ) {
-                        Text(
-                            text = "-$percentage%",
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                            fontSize = 10.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.Medium
-                        )
+                    deal.discountPercentage?.let { percentage ->
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = discountTextColor()
+                        ) {
+                            Text(
+                                text = "-$percentage%",
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = FontWeight.Medium
+                                ),
+                                color = onErrorColor()
+                            )
+                        }
                     }
                 }
             }
 
             Column(
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier.padding(12.dp)
             ) {
                 Text(
                     text = deal.title,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Medium
+                    ),
+                    color = cardContentColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+
+                Spacer(modifier = Modifier.height(4.dp))
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = deal.price,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = PrimaryColor
+                        style = MaterialTheme.typography.titleSmall.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = priceTextColor()
                     )
 
                     deal.originalPrice?.let { originalPrice ->
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = originalPrice,
-                            fontSize = 12.sp,
-                            color = Color.Gray,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = originalPriceTextColor(),
                             textDecoration = TextDecoration.LineThrough
                         )
                     }

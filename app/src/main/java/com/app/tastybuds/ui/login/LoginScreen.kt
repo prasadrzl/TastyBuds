@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.R
-import com.app.tastybuds.ui.theme.PrimaryColor
+import com.app.tastybuds.ui.theme.*
 import com.app.tastybuds.util.ui.showErrorToast
 
 @Composable
@@ -86,7 +86,7 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(backgroundColor())
             .padding(12.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -94,7 +94,7 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxSize(),
             shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = cardBackgroundColor()),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             Column(
@@ -107,13 +107,13 @@ fun LoginScreen(
                     text = stringResource(R.string.hello),
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = cardContentColor()
                 )
 
                 Text(
                     text = stringResource(R.string.welcome_back),
                     fontSize = 18.sp,
-                    color = Color.Gray,
+                    color = textSecondaryColor(),
                     modifier = Modifier.padding(bottom = 32.dp)
                 )
 
@@ -121,7 +121,7 @@ fun LoginScreen(
                     text = stringResource(R.string.email),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color.Black,
+                    color = cardContentColor(),
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
@@ -134,20 +134,22 @@ fun LoginScreen(
                     placeholder = {
                         Text(
                             text = stringResource(R.string.enter_email),
-                            color = Color.Gray.copy(alpha = 0.6f)
+                            color = placeholderTextColor()
                         )
                     },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Email,
                             contentDescription = stringResource(R.string.email),
-                            tint = Color.Gray
+                            tint = onSurfaceVariantColor()
                         )
                     },
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = PrimaryColor,
-                        unfocusedBorderColor = Color.Gray.copy(alpha = 0.3f),
-                        cursorColor = PrimaryColor
+                        focusedBorderColor = focusedBorderColor(),
+                        unfocusedBorderColor = unfocusedBorderColor(),
+                        focusedTextColor = enabledTextColor(),
+                        unfocusedTextColor = enabledTextColor(),
+                        cursorColor = primaryColor()
                     ),
                     shape = RoundedCornerShape(12.dp),
                     keyboardOptions = KeyboardOptions(
@@ -166,7 +168,7 @@ fun LoginScreen(
                     text = stringResource(R.string.password),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color.Black,
+                    color = cardContentColor(),
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
@@ -179,14 +181,14 @@ fun LoginScreen(
                     placeholder = {
                         Text(
                             text = stringResource(R.string.enter_password),
-                            color = Color.Gray.copy(alpha = 0.6f)
+                            color = placeholderTextColor()
                         )
                     },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Lock,
                             contentDescription = stringResource(R.string.password),
-                            tint = Color.Gray
+                            tint = onSurfaceVariantColor()
                         )
                     },
                     trailingIcon = {
@@ -198,16 +200,18 @@ fun LoginScreen(
                                 contentDescription = if (isPasswordVisible)
                                     stringResource(R.string.hide_password)
                                 else stringResource(R.string.show_password),
-                                tint = Color.Gray
+                                tint = onSurfaceVariantColor()
                             )
                         }
                     },
                     visualTransformation = if (isPasswordVisible) VisualTransformation.None
                     else PasswordVisualTransformation(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = PrimaryColor,
-                        unfocusedBorderColor = Color.Gray.copy(alpha = 0.3f),
-                        cursorColor = PrimaryColor
+                        focusedBorderColor = focusedBorderColor(),
+                        unfocusedBorderColor = unfocusedBorderColor(),
+                        focusedTextColor = enabledTextColor(),
+                        unfocusedTextColor = enabledTextColor(),
+                        cursorColor = primaryColor()
                     ),
                     shape = RoundedCornerShape(12.dp),
                     keyboardOptions = KeyboardOptions(
@@ -234,7 +238,10 @@ fun LoginScreen(
                         .fillMaxWidth()
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = PrimaryColor
+                        containerColor = primaryColor(),
+                        contentColor = onPrimaryColor(),
+                        disabledContainerColor = primaryColor().copy(alpha = 0.6f),
+                        disabledContentColor = onPrimaryColor().copy(alpha = 0.6f)
                     ),
                     shape = RoundedCornerShape(12.dp),
                     enabled = !uiState.isLoading && email.isNotBlank() && password.isNotBlank()
@@ -242,14 +249,15 @@ fun LoginScreen(
                     if (uiState.isLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(20.dp),
-                            color = Color.White,
+                            color = onPrimaryColor(),
                             strokeWidth = 2.dp
                         )
                     } else {
                         Text(
                             text = stringResource(R.string.sign_in),
                             fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Medium,
+                            color = onPrimaryColor()
                         )
                     }
                 }

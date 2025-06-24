@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Star
@@ -35,7 +35,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,7 +45,23 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
 import com.app.tastybuds.ui.orders.OrderTrackingUiState
 import com.app.tastybuds.ui.orders.OrderTrackingViewModel
-import com.app.tastybuds.ui.theme.PrimaryColor
+import com.app.tastybuds.ui.theme.bottomSheetBackgroundColor
+import com.app.tastybuds.ui.theme.bottomSheetContentColor
+import com.app.tastybuds.ui.theme.cancelledStatusColor
+import com.app.tastybuds.ui.theme.deliveredStatusColor
+import com.app.tastybuds.ui.theme.deliveryStatusColor
+import com.app.tastybuds.ui.theme.deliveryTrackingActiveColor
+import com.app.tastybuds.ui.theme.dividerColor
+import com.app.tastybuds.ui.theme.loadingIndicatorColor
+import com.app.tastybuds.ui.theme.onBackgroundColor
+import com.app.tastybuds.ui.theme.onPrimaryColor
+import com.app.tastybuds.ui.theme.onSurfaceColor
+import com.app.tastybuds.ui.theme.orderTotalTextColor
+import com.app.tastybuds.ui.theme.preparingStatusColor
+import com.app.tastybuds.ui.theme.primaryColor
+import com.app.tastybuds.ui.theme.starRatingColor
+import com.app.tastybuds.ui.theme.surfaceColor
+import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -56,6 +71,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
+import java.util.Locale
 
 @Composable
 fun OrderTrackingScreen(
@@ -108,7 +124,7 @@ fun OrderTrackingScreen(
 
                         Polyline(
                             points = listOf(restaurantLatLng, deliveryLatLng),
-                            color = PrimaryColor,
+                            color = deliveryTrackingActiveColor(),
                             width = 6f
                         )
 
@@ -176,13 +192,13 @@ private fun TopHeader(onBackClick: () -> Unit) {
         IconButton(
             onClick = onBackClick,
             modifier = Modifier
-                .background(Color.White, CircleShape)
+                .background(surfaceColor(), CircleShape)
                 .size(48.dp)
         ) {
             Icon(
-                imageVector = Icons.Default.ArrowBack,
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(R.string.back),
-                tint = Color.Black
+                tint = onSurfaceColor()
             )
         }
     }
@@ -197,12 +213,12 @@ private fun LoadingContent() {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CircularProgressIndicator(color = PrimaryColor)
+            CircularProgressIndicator(color = loadingIndicatorColor())
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = stringResource(R.string.loading_order_details),
                 fontSize = 16.sp,
-                color = Color.Gray
+                color = textSecondaryColor()
             )
         }
     }
@@ -225,13 +241,14 @@ private fun ErrorContent(
             Text(
                 text = stringResource(R.string.failed_to_load_order),
                 fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = onBackgroundColor()
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = error,
                 fontSize = 14.sp,
-                color = Color.Gray
+                color = textSecondaryColor()
             )
             Spacer(modifier = Modifier.height(24.dp))
             Row {
@@ -241,9 +258,9 @@ private fun ErrorContent(
                 Spacer(modifier = Modifier.width(16.dp))
                 Button(
                     onClick = onRetry,
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
+                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor())
                 ) {
-                    Text(text = stringResource(R.string.retry), color = Color.White)
+                    Text(text = stringResource(R.string.retry), color = onPrimaryColor())
                 }
             }
         }
@@ -258,7 +275,7 @@ private fun DeliveryTrackingBottomSheet(
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-        color = Color.White,
+        color = bottomSheetBackgroundColor(),
         shadowElevation = 16.dp
     ) {
         Column(
@@ -268,7 +285,7 @@ private fun DeliveryTrackingBottomSheet(
                 text = stringResource(R.string.delivery_tracking),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = bottomSheetContentColor()
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -279,7 +296,7 @@ private fun DeliveryTrackingBottomSheet(
                 Icon(
                     imageVector = Icons.Default.ThumbUp,
                     contentDescription = stringResource(R.string.time),
-                    tint = PrimaryColor,
+                    tint = deliveryStatusColor(),
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
@@ -287,17 +304,15 @@ private fun DeliveryTrackingBottomSheet(
                     Text(
                         text = stringResource(R.string.delivery_time),
                         fontSize = 14.sp,
-                        color = Color.Gray
+                        color = textSecondaryColor()
                     )
                     Text(
-                        text = if (uiState.estimatedDeliveryTime.isNotEmpty()) {
-                            uiState.estimatedDeliveryTime
-                        } else {
+                        text = uiState.estimatedDeliveryTime.ifEmpty {
                             stringResource(R.string.calculating)
                         },
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Color.Black
+                        color = bottomSheetContentColor()
                     )
                 }
             }
@@ -310,7 +325,7 @@ private fun DeliveryTrackingBottomSheet(
                 Icon(
                     imageVector = Icons.Default.LocationOn,
                     contentDescription = stringResource(R.string.location),
-                    tint = PrimaryColor,
+                    tint = deliveryStatusColor(),
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
@@ -318,17 +333,15 @@ private fun DeliveryTrackingBottomSheet(
                     Text(
                         text = stringResource(R.string.delivery_address),
                         fontSize = 14.sp,
-                        color = Color.Gray
+                        color = textSecondaryColor()
                     )
                     Text(
-                        text = if (uiState.deliveryAddress.isNotEmpty()) {
-                            uiState.deliveryAddress
-                        } else {
+                        text = uiState.deliveryAddress.ifEmpty {
                             stringResource(R.string.loading_address)
                         },
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Color.Black,
+                        color = bottomSheetContentColor(),
                         maxLines = 2
                     )
                 }
@@ -346,13 +359,13 @@ private fun DeliveryTrackingBottomSheet(
                             Text(
                                 text = stringResource(R.string.distance),
                                 fontSize = 12.sp,
-                                color = Color.Gray
+                                color = textSecondaryColor()
                             )
                             Text(
                                 text = uiState.distance,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Medium,
-                                color = Color.Black
+                                color = bottomSheetContentColor()
                             )
                         }
                     }
@@ -361,18 +374,17 @@ private fun DeliveryTrackingBottomSheet(
                         Text(
                             text = stringResource(R.string.order_total),
                             fontSize = 12.sp,
-                            color = Color.Gray
+                            color = textSecondaryColor()
                         )
                         Text(
-                            text = "${
-                                String.format(
-                                    "%.2f",
-                                    uiState.order!!.totalAmount
-                                )
-                            }",
+                            text = String.format(
+                                Locale.getDefault(),
+                                "%.2f",
+                                uiState.order.totalAmount
+                            ),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
-                            color = PrimaryColor
+                            color = orderTotalTextColor()
                         )
                     }
 
@@ -380,16 +392,17 @@ private fun DeliveryTrackingBottomSheet(
                         Text(
                             text = stringResource(R.string.status),
                             fontSize = 12.sp,
-                            color = Color.Gray
+                            color = textSecondaryColor()
                         )
                         Text(
                             text = uiState.order.status.displayName,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
                             color = when (uiState.order.status.name) {
-                                "DELIVERED" -> Color.Green
-                                "CANCELLED" -> Color.Red
-                                else -> PrimaryColor
+                                "DELIVERED" -> deliveredStatusColor()
+                                "CANCELLED" -> cancelledStatusColor()
+                                "PREPARING" -> preparingStatusColor()
+                                else -> deliveryStatusColor()
                             }
                         )
                     }
@@ -398,7 +411,7 @@ private fun DeliveryTrackingBottomSheet(
 
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 20.dp),
-                color = Color.Gray.copy(alpha = 0.2f)
+                color = dividerColor()
             )
 
             DriverInfoSection(
@@ -425,18 +438,18 @@ private fun DriverInfoSection(
             Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .background(PrimaryColor, CircleShape),
+                    .background(primaryColor(), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = if (customerName.isNotEmpty()) {
                         customerName.first().uppercase()
                     } else {
-                        "Prasad"
+                        "C"
                     },
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = onPrimaryColor()
                 )
             }
 
@@ -444,14 +457,12 @@ private fun DriverInfoSection(
 
             Column {
                 Text(
-                    text = if (customerName.isNotEmpty()) {
-                        customerName
-                    } else {
+                    text = customerName.ifEmpty {
                         stringResource(R.string.loading)
                     },
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = bottomSheetContentColor()
                 )
                 Text(
                     text = if (orderId.isNotEmpty()) {
@@ -460,7 +471,7 @@ private fun DriverInfoSection(
                         stringResource(R.string.food_delivery)
                     },
                     fontSize = 14.sp,
-                    color = Color.Gray
+                    color = textSecondaryColor()
                 )
             }
         }
@@ -473,7 +484,7 @@ private fun DriverInfoSection(
                 Icon(
                     imageVector = Icons.Default.Phone,
                     contentDescription = "Call",
-                    tint = PrimaryColor,
+                    tint = primaryColor(),
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -485,7 +496,7 @@ private fun DriverInfoSection(
                 Icon(
                     imageVector = Icons.Default.Star,
                     contentDescription = stringResource(R.string.rate),
-                    tint = PrimaryColor,
+                    tint = starRatingColor(),
                     modifier = Modifier.size(24.dp)
                 )
             }

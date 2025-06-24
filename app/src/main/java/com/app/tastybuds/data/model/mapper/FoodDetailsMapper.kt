@@ -1,11 +1,11 @@
 package com.app.tastybuds.data.model.mapper
 
 import com.app.tastybuds.domain.model.*
-import com.app.tastybuds.ui.resturants.FoodCustomizationResponse
-import com.app.tastybuds.ui.resturants.FoodDetailsResponse
-import com.app.tastybuds.ui.resturants.SizeOptionResponse
-import com.app.tastybuds.ui.resturants.SpiceLevelResponse
-import com.app.tastybuds.ui.resturants.ToppingOptionResponse
+import com.app.tastybuds.data.model.FoodCustomizationResponse
+import com.app.tastybuds.data.model.FoodDetailsResponse
+import com.app.tastybuds.data.model.SizeOptionResponse
+import com.app.tastybuds.data.model.SpiceLevelResponse
+import com.app.tastybuds.data.model.ToppingOptionResponse
 
 fun FoodDetailsResponse.toFoodDetails() = FoodDetails(
     id = id,

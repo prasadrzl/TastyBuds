@@ -30,7 +30,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Surface
@@ -43,16 +45,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import com.app.tastybuds.R
+import com.app.tastybuds.ui.theme.*
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -124,44 +129,95 @@ fun UserLocationMapView(onConfirm: () -> Unit) {
         address = getAddressFromLatLng(context, target)
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        if (permissionGranted.value) {
-            GoogleMap(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState
-            ) {
-                currentLocation?.let {
-                    Marker(
-                        state = MarkerState(position = it),
-                        icon = bitmapDescriptorFromVector(
-                            context,
-                            R.drawable.ic_user_location
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = backgroundColor()
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (permissionGranted.value) {
+                GoogleMap(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .semantics {
+                            contentDescription = "Map for selecting delivery location"
+                        },
+                    cameraPositionState = cameraPositionState
+                ) {
+                    currentLocation?.let {
+                        Marker(
+                            state = MarkerState(position = it),
+                            icon = bitmapDescriptorFromVector(
+                                context,
+                                R.drawable.ic_user_location
+                            )
                         )
-                    )
+                    }
                 }
+            } else {
+                PermissionRequiredContent()
             }
-        } else {
-            Text(stringResource(R.string.location_permission_required_to_display_map))
+
+            CenterPinOverlay(modifier = Modifier.align(Alignment.Center))
+
+            BottomSheetCard(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                selectedType = selectedType,
+                onTypeSelected = { selectedType = it },
+                address = address,
+                onAddressChange = { address = it },
+                onConfirm = onConfirm
+            )
         }
-
-        CenterPinOverlay(modifier = Modifier.align(Alignment.Center))
-
-        BottomSheetCard(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .padding(16.dp),
-            selectedType = selectedType,
-            onTypeSelected = { selectedType = it },
-            address = address,
-            onAddressChange = { address = it },
-            onConfirm = onConfirm
-        )
     }
 }
 
 @Composable
-fun BottomSheetCard(
+private fun PermissionRequiredContent() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_user_location),
+                contentDescription = null,
+                modifier = Modifier.size(64.dp),
+                tint = primaryColor()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = stringResource(R.string.location_permission_required),
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                color = onBackgroundColor(),
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = stringResource(R.string.location_permission_required_to_display_map),
+                style = MaterialTheme.typography.bodyMedium,
+                color = textSecondaryColor(),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+private fun BottomSheetCard(
     modifier: Modifier,
     selectedType: String,
     address: String,
@@ -170,64 +226,194 @@ fun BottomSheetCard(
     onConfirm: () -> Unit
 ) {
     Surface(
-        modifier,
+        modifier = modifier,
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-        color = Color.White,
+        color = bottomSheetBackgroundColor(),
         shadowElevation = 8.dp
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(stringResource(R.string.select_location), fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
-                value = address,
-                onValueChange = onAddressChange,
-                modifier = Modifier.fillMaxWidth(),
-                trailingIcon = {
-                    Icon(
-                        Icons.Default.Edit,
-                        contentDescription = stringResource(id = R.string.edit)
-                    )
-                },
-                shape = RoundedCornerShape(8.dp)
+        Column(
+            modifier = Modifier.padding(20.dp)
+        ) {
+            LocationHeader()
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            AddressTextField(
+                address = address,
+                onAddressChange = onAddressChange
             )
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                listOf(
-                    stringResource(R.string.home),
-                    stringResource(R.string.work),
-                    stringResource(R.string.other)
-                ).forEach {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable { onTypeSelected(it) }
-                    ) {
-                        RadioButton(
-                            selected = selectedType == it,
-                            onClick = null,
-                            colors = RadioButtonDefaults.colors(selectedColor = Color(0xFFFF7700))
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(it)
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            Button(
-                onClick = onConfirm,
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7700))
-            ) {
-                Text(stringResource(R.string.confirm), color = Color.White)
-            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                color = dividerColor()
+            )
+
+            LocationTypeSelector(
+                selectedType = selectedType,
+                onTypeSelected = onTypeSelected
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            ConfirmButton(onConfirm = onConfirm)
         }
     }
 }
 
-fun bitmapDescriptorFromVector(context: Context, @DrawableRes vectorResId: Int): BitmapDescriptor {
+@Composable
+private fun LocationHeader() {
+    Text(
+        text = stringResource(R.string.select_location),
+        style = MaterialTheme.typography.titleLarge.copy(
+            fontWeight = FontWeight.Bold
+        ),
+        color = bottomSheetContentColor()
+    )
+}
+
+@Composable
+private fun AddressTextField(
+    address: String,
+    onAddressChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = address,
+        onValueChange = onAddressChange,
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics { contentDescription = "Address input field" },
+        placeholder = {
+            Text(
+                text = stringResource(R.string.enter_your_address),
+                color = placeholderTextColor()
+            )
+        },
+        trailingIcon = {
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = stringResource(R.string.edit),
+                tint = primaryColor()
+            )
+        },
+        shape = RoundedCornerShape(12.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = focusedBorderColor(),
+            unfocusedBorderColor = unfocusedBorderColor(),
+            focusedTextColor = enabledTextColor(),
+            unfocusedTextColor = enabledTextColor(),
+            cursorColor = primaryColor()
+        )
+    )
+}
+
+@Composable
+private fun LocationTypeSelector(
+    selectedType: String,
+    onTypeSelected: (String) -> Unit
+) {
+    val locationTypes = listOf(
+        stringResource(R.string.home),
+        stringResource(R.string.work),
+        stringResource(R.string.other)
+    )
+
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        locationTypes.forEach { type ->
+            LocationTypeOption(
+                type = type,
+                isSelected = selectedType == type,
+                onTypeSelected = onTypeSelected
+            )
+        }
+    }
+}
+
+@Composable
+private fun LocationTypeOption(
+    type: String,
+    isSelected: Boolean,
+    onTypeSelected: (String) -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .clickable { onTypeSelected(type) }
+            .semantics { contentDescription = "Location type: $type" }
+    ) {
+        RadioButton(
+            selected = isSelected,
+            onClick = null,
+            colors = RadioButtonDefaults.colors(
+                selectedColor = radioButtonSelectedColor(),
+                unselectedColor = radioButtonUnselectedColor()
+            )
+        )
+
+        Spacer(modifier = Modifier.width(6.dp))
+
+        Text(
+            text = type,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
+            ),
+            color = if (isSelected) bottomSheetContentColor() else textSecondaryColor()
+        )
+    }
+}
+
+@Composable
+private fun ConfirmButton(onConfirm: () -> Unit) {
+    Button(
+        onClick = onConfirm,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .semantics { contentDescription = "Confirm location selection" },
+        shape = RoundedCornerShape(28.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = primaryColor()
+        )
+    ) {
+        Text(
+            text = stringResource(R.string.confirm),
+            color = onPrimaryColor(),
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Medium
+            )
+        )
+    }
+}
+
+@Composable
+private fun CenterPinOverlay(modifier: Modifier = Modifier) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .size(56.dp)
+            .background(
+                color = primaryColor(),
+                shape = CircleShape
+            )
+            .semantics { contentDescription = "Location pin marker" }
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_user_location),
+            contentDescription = null,
+            tint = onPrimaryColor(),
+            modifier = Modifier.size(24.dp)
+        )
+    }
+}
+
+fun bitmapDescriptorFromVector(
+    context: Context,
+    @DrawableRes vectorResId: Int
+): BitmapDescriptor {
     val drawable = AppCompatResources.getDrawable(context, vectorResId)!!
     val size = (32 * context.resources.displayMetrics.density).toInt() // 32dp
     drawable.setBounds(0, 0, size, size)
@@ -239,7 +425,6 @@ fun bitmapDescriptorFromVector(context: Context, @DrawableRes vectorResId: Int):
     return BitmapDescriptorFactory.fromBitmap(bitmap)
 }
 
-
 fun getAddressFromLatLng(context: Context, latLng: LatLng): String {
     return try {
         val geocoder = Geocoder(context, Locale.getDefault())
@@ -247,22 +432,5 @@ fun getAddressFromLatLng(context: Context, latLng: LatLng): String {
         address?.firstOrNull()?.getAddressLine(0) ?: context.getString(R.string.location_not_found)
     } catch (e: Exception) {
         context.getString(R.string.unable_to_fetch_address)
-    }
-}
-
-@Composable
-fun CenterPinOverlay(modifier: Modifier = Modifier) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .size(56.dp)
-            .background(color = Color(0xFFFF7700), shape = CircleShape)
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_user_location),
-            contentDescription = null,
-            tint = Color.White,
-            modifier = Modifier.size(24.dp)
-        )
     }
 }

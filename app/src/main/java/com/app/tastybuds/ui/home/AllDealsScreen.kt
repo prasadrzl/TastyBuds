@@ -1,6 +1,5 @@
 package com.app.tastybuds.ui.home
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,24 +11,26 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -38,9 +39,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
 import com.app.tastybuds.domain.model.Deal
-import com.app.tastybuds.ui.theme.PrimaryColor
+import com.app.tastybuds.ui.theme.backgroundColor
+import com.app.tastybuds.ui.theme.captionTextColor
+import com.app.tastybuds.ui.theme.cardBackgroundColor
+import com.app.tastybuds.ui.theme.cardContentColor
+import com.app.tastybuds.ui.theme.discountTextColor
+import com.app.tastybuds.ui.theme.loadingIndicatorColor
+import com.app.tastybuds.ui.theme.newBadgeColor
+import com.app.tastybuds.ui.theme.onErrorColor
+import com.app.tastybuds.ui.theme.originalPriceTextColor
+import com.app.tastybuds.ui.theme.priceTextColor
+import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.app.tastybuds.util.ui.AppTopBar
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -49,42 +61,83 @@ import com.bumptech.glide.integration.compose.placeholder
 @Composable
 fun AllDealsScreen(
     onBackClick: () -> Unit = {},
-    onDealClick: (String, String) -> Unit = {_, _ ->},
+    onDealClick: (String, String) -> Unit = { _, _ -> },
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Column(
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = backgroundColor()
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            AppTopBar(
+                title = stringResource(R.string.all_deals),
+                onBackClick = onBackClick
+            )
+
+            when {
+                uiState.isLoading -> {
+                    LoadingContent()
+                }
+
+                uiState.error != null -> {
+                    ErrorContent(
+                        error = uiState.error ?: stringResource(R.string.unknown_error),
+                        onRetry = { viewModel.retry() }
+                    )
+                }
+
+                else -> {
+                    DealsContent(
+                        deals = uiState.deals,
+                        onDealClick = onDealClick
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun LoadingContent() {
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .semantics { contentDescription = "Loading deals" },
+        contentAlignment = Alignment.Center
     ) {
-        AppTopBar(
-            title = "All Deals",
-            onBackClick = onBackClick
+        CircularProgressIndicator(
+            color = loadingIndicatorColor(),
+            modifier = Modifier.size(48.dp)
         )
+    }
+}
 
-        when {
-            uiState.isLoading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = PrimaryColor)
-                }
-            }
-
-            uiState.error != null -> {
-                ErrorContent(
-                    error = uiState.error ?: stringResource(id = R.string.unknown_error),
-                    onRetry = { viewModel.retry() }
-                )
-            }
-
-            else -> {
-                DealsContent(
-                    deals = uiState.deals,
-                    onDealClick = onDealClick
+@Composable
+private fun DealsContent(
+    deals: List<Deal>,
+    onDealClick: (String, String) -> Unit = { _, _ -> },
+) {
+    if (deals.isEmpty()) {
+        EmptyStateContent()
+    } else {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(
+                items = deals,
+                key = { deal -> deal.id }
+            ) { deal ->
+                DealGridItemCard(
+                    deal = deal,
+                    onClick = { onDealClick(deal.id, deal.menuItemId) }
                 )
             }
         }
@@ -92,58 +145,38 @@ fun AllDealsScreen(
 }
 
 @Composable
-fun DealsContent(
-    deals: List<Deal>,
-    onDealClick: (String, String) -> Unit = {_, _ ->},
-) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+private fun EmptyStateContent() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        contentAlignment = Alignment.Center
     ) {
-        items(deals) { deal ->
-            DealGridItemCard(
-                deal = deal,
-                onClick = { onDealClick(deal.id, deal.menuItemId) }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = stringResource(R.string.no_deals_available),
+                style = MaterialTheme.typography.headlineSmall,
+                color = captionTextColor(),
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = stringResource(R.string.check_back_later_for_new_deals),
+                style = MaterialTheme.typography.bodyMedium,
+                color = textSecondaryColor(),
+                textAlign = TextAlign.Center
             )
         }
-
-        if (deals.isEmpty()) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 40.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = stringResource(R.string.no_deals_available),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.Gray,
-                            textAlign = TextAlign.Center
-                        )
-                        Text(
-                            text = stringResource(R.string.check_back_later_for_new_deals),
-                            fontSize = 14.sp,
-                            color = Color.Gray,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-            }
-        }
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun DealGridItemCard(
+private fun DealGridItemCard(
     deal: Deal,
     onClick: () -> Unit
 ) {
@@ -151,104 +184,198 @@ fun DealGridItemCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(220.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            .clickable { onClick() }
+            .semantics {
+                contentDescription = "Deal: ${deal.title}"
+            },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = cardBackgroundColor()
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp,
+            pressedElevation = 8.dp
+        )
     ) {
         Column {
-            Box {
-                GlideImage(
-                    model = deal.imageUrl,
-                    contentDescription = deal.title,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(130.dp),
-                    contentScale = ContentScale.Crop,
-                    failure = placeholder(R.drawable.default_food),
-                    loading = placeholder(R.drawable.default_food)
-                )
+            DealImageSection(
+                deal = deal,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(130.dp)
+            )
 
-                deal.badge?.let { badge ->
-                    Card(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .align(Alignment.TopStart),
-                        shape = RoundedCornerShape(4.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFF4CAF50))
-                    ) {
-                        Text(
-                            text = badge,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                            fontSize = 10.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
-
-                deal.discountPercentage?.let { percentage ->
-                    Card(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .align(Alignment.TopEnd),
-                        shape = RoundedCornerShape(4.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFE53935))
-                    ) {
-                        Text(
-                            text = "-$percentage%",
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                            fontSize = 10.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
-            }
-
-            Column(
+            DealInfoSection(
+                deal = deal,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp)
-            ) {
-                Text(
-                    text = deal.title,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
+            )
+        }
+    }
+}
 
-                Spacer(modifier = Modifier.height(8.dp))
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+private fun DealImageSection(
+    deal: Deal,
+    modifier: Modifier = Modifier
+) {
+    Box(modifier = modifier) {
+        GlideImage(
+            model = deal.imageUrl,
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop,
+            failure = placeholder(R.drawable.default_food),
+            loading = placeholder(R.drawable.default_food)
+        )
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = deal.price,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = PrimaryColor
-                    )
+        deal.badge?.let { badge ->
+            BadgeLabel(
+                text = badge,
+                backgroundColor = newBadgeColor(),
+                textColor = onErrorColor(),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .align(Alignment.TopStart)
+            )
+        }
 
-                    deal.originalPrice?.let { originalPrice ->
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = originalPrice,
-                            fontSize = 14.sp,
-                            color = Color.Gray,
-                            textDecoration = TextDecoration.LineThrough
-                        )
-                    }
-                }
-            }
+        deal.discountPercentage?.let { percentage ->
+            DiscountBadge(
+                percentage = percentage,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .align(Alignment.TopEnd)
+            )
+        }
+    }
+}
+
+@Composable
+private fun BadgeLabel(
+    text: String,
+    backgroundColor: androidx.compose.ui.graphics.Color,
+    textColor: androidx.compose.ui.graphics.Color,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(6.dp),
+        color = backgroundColor
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            style = MaterialTheme.typography.labelSmall.copy(
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Medium
+            ),
+            color = textColor
+        )
+    }
+}
+
+@Composable
+private fun DiscountBadge(
+    percentage: Int,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(6.dp),
+        color = discountTextColor()
+    ) {
+        Text(
+            text = "-$percentage%",
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            style = MaterialTheme.typography.labelSmall.copy(
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Medium
+            ),
+            color = onErrorColor()
+        )
+    }
+}
+
+@Composable
+private fun DealInfoSection(
+    deal: Deal,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = deal.title,
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Medium
+            ),
+            color = cardContentColor(),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        PriceSection(
+            price = deal.price,
+            originalPrice = deal.originalPrice
+        )
+    }
+}
+
+@Composable
+private fun PriceSection(
+    price: String,
+    originalPrice: String? = null
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = price,
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            color = priceTextColor()
+        )
+
+        originalPrice?.let { original ->
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = original,
+                style = MaterialTheme.typography.bodyMedium,
+                color = originalPriceTextColor(),
+                textDecoration = TextDecoration.LineThrough
+            )
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun AllDealsScreenPreview() {
-    AllDealsScreen()
+private fun AllDealsScreenPreview() {
+    MaterialTheme {
+        AllDealsScreen()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun DealGridItemCardPreview() {
+    MaterialTheme {
+        DealGridItemCard(
+            deal = Deal(
+                id = "1",
+                title = "Pizza Margherita Special",
+                price = "$12.99",
+                originalPrice = "$16.99",
+                imageUrl = "",
+                badge = "HOT",
+                discountPercentage = 25,
+                menuItemId = "menu_1"
+            ),
+            onClick = {}
+        )
+    }
 }

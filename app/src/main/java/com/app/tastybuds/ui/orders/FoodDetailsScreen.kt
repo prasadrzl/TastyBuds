@@ -36,7 +36,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -49,7 +48,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -67,11 +65,29 @@ import com.app.tastybuds.domain.model.SpiceLevel
 import com.app.tastybuds.domain.model.ToppingOption
 import com.app.tastybuds.ui.resturants.FoodDetailsViewModel
 import com.app.tastybuds.ui.resturants.state.FoodDetailsUiState
-import com.app.tastybuds.ui.theme.PrimaryColor
-import com.app.tastybuds.ui.theme.favoriteColor
+import com.app.tastybuds.ui.theme.addToCartButtonColor
+import com.app.tastybuds.ui.theme.addToCartButtonTextColor
+import com.app.tastybuds.ui.theme.cardBackgroundColor
+import com.app.tastybuds.ui.theme.cardContentColor
+import com.app.tastybuds.ui.theme.checkboxSelectedColor
+import com.app.tastybuds.ui.theme.checkboxUnselectedColor
+import com.app.tastybuds.ui.theme.dividerColor
+import com.app.tastybuds.ui.theme.enabledTextColor
+import com.app.tastybuds.ui.theme.focusedBorderColor
+import com.app.tastybuds.ui.theme.heartFavoriteColor
+import com.app.tastybuds.ui.theme.loadingIndicatorColor
+import com.app.tastybuds.ui.theme.onBackgroundColor
+import com.app.tastybuds.ui.theme.onPrimaryColor
+import com.app.tastybuds.ui.theme.placeholderTextColor
+import com.app.tastybuds.ui.theme.priceTextColor
 import com.app.tastybuds.ui.theme.primaryColor
-import com.app.tastybuds.ui.theme.textDisabledColor
+import com.app.tastybuds.ui.theme.quantityButtonBackgroundColor
+import com.app.tastybuds.ui.theme.quantityButtonTextColor
+import com.app.tastybuds.ui.theme.radioButtonSelectedColor
+import com.app.tastybuds.ui.theme.radioButtonUnselectedColor
+import com.app.tastybuds.ui.theme.scrimColor
 import com.app.tastybuds.ui.theme.textSecondaryColor
+import com.app.tastybuds.ui.theme.unfocusedBorderColor
 import com.app.tastybuds.util.createCartItemFromUiState
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -166,7 +182,7 @@ private fun LoadingContent() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        CircularProgressIndicator(color = PrimaryColor)
+        CircularProgressIndicator(color = loadingIndicatorColor())
     }
 }
 
@@ -184,15 +200,24 @@ private fun ErrorContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(32.dp)
         ) {
-            Text(text = stringResource(R.string.error, error))
+            Text(
+                text = stringResource(R.string.error, error),
+                color = onBackgroundColor()
+            )
             Spacer(modifier = Modifier.height(16.dp))
             Row {
                 OutlinedButton(onClick = onBackClick) {
                     Text(stringResource(R.string.go_back))
                 }
                 Spacer(modifier = Modifier.width(16.dp))
-                Button(onClick = onRetry) {
-                    Text(stringResource(R.string.retry))
+                Button(
+                    onClick = onRetry,
+                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor())
+                ) {
+                    Text(
+                        text = stringResource(R.string.retry),
+                        color = onPrimaryColor()
+                    )
                 }
             }
         }
@@ -248,7 +273,7 @@ private fun FoodDetailsContent(
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 20.dp),
                     thickness = 1.dp,
-                    color = Color(0xFFE0E0E0)
+                    color = dividerColor()
                 )
             }
 
@@ -266,7 +291,7 @@ private fun FoodDetailsContent(
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 20.dp),
                     thickness = 1.dp,
-                    color = Color(0xFFE0E0E0)
+                    color = dividerColor()
                 )
             }
 
@@ -284,7 +309,7 @@ private fun FoodDetailsContent(
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 20.dp),
                     thickness = 1.dp,
-                    color = Color(0xFFE0E0E0)
+                    color = dividerColor()
                 )
             }
 
@@ -345,14 +370,14 @@ fun FoodImageHeader(
                 modifier = Modifier
                     .padding(16.dp)
                     .background(
-                        color = Color.Black.copy(alpha = 0.3f),
+                        color = scrimColor().copy(alpha = 0.3f),
                         shape = CircleShape
                     )
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = "Close",
-                    tint = Color.White
+                    tint = onPrimaryColor()
                 )
             }
 
@@ -360,7 +385,7 @@ fun FoodImageHeader(
                 onClick = onFavoriteClick,
                 modifier = Modifier
                     .background(
-                        color = Color.Black.copy(alpha = 0.3f),
+                        color = scrimColor().copy(alpha = 0.3f),
                         shape = CircleShape
                     )
             ) {
@@ -371,7 +396,7 @@ fun FoodImageHeader(
                     else stringResource(
                         R.string.add_to_favorites
                     ),
-                    tint = if (isFavorite) favoriteColor() else MaterialTheme.colorScheme.onPrimary
+                    tint = if (isFavorite) heartFavoriteColor() else onPrimaryColor()
                 )
             }
         }
@@ -385,7 +410,7 @@ fun FoodInfoCard(foodDetails: FoodDetails) {
             .fillMaxWidth()
             .offset(y = (-20).dp),
         shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = cardBackgroundColor()),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Row(
@@ -402,7 +427,7 @@ fun FoodInfoCard(foodDetails: FoodDetails) {
                     text = foodDetails.name,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = cardContentColor()
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -410,7 +435,7 @@ fun FoodInfoCard(foodDetails: FoodDetails) {
                 Text(
                     text = foodDetails.description,
                     fontSize = 14.sp,
-                    color = Color.Gray
+                    color = textSecondaryColor()
                 )
             }
 
@@ -421,13 +446,13 @@ fun FoodInfoCard(foodDetails: FoodDetails) {
                     text = "$${foodDetails.basePrice.toInt()}",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = priceTextColor()
                 )
 
                 Text(
                     text = stringResource(R.string.base_price),
                     fontSize = 12.sp,
-                    color = Color.Gray
+                    color = textSecondaryColor()
                 )
             }
         }
@@ -450,7 +475,7 @@ fun SizeSelectionSection(
                 text = stringResource(R.string.size),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = cardContentColor()
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -458,7 +483,7 @@ fun SizeSelectionSection(
             Text(
                 text = stringResource(R.string.pick_1),
                 fontSize = 14.sp,
-                color = Color.Gray
+                color = textSecondaryColor()
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -467,7 +492,7 @@ fun SizeSelectionSection(
                 modifier = Modifier
                     .size(24.dp)
                     .background(
-                        color = PrimaryColor,
+                        color = primaryColor(),
                         shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
@@ -475,7 +500,7 @@ fun SizeSelectionSection(
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = stringResource(R.string.required),
-                    tint = Color.White,
+                    tint = onPrimaryColor(),
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -495,8 +520,8 @@ fun SizeSelectionSection(
                     selected = selectedSize == size.id,
                     onClick = { onSizeSelected(size.id) },
                     colors = RadioButtonDefaults.colors(
-                        selectedColor = primaryColor(),
-                        unselectedColor = textSecondaryColor()
+                        selectedColor = radioButtonSelectedColor(),
+                        unselectedColor = radioButtonUnselectedColor()
                     )
                 )
 
@@ -505,7 +530,7 @@ fun SizeSelectionSection(
                 Text(
                     text = size.name,
                     fontSize = 16.sp,
-                    color = Color.Black,
+                    color = cardContentColor(),
                     modifier = Modifier.weight(1f)
                 )
 
@@ -513,7 +538,7 @@ fun SizeSelectionSection(
                     Text(
                         text = "+$${size.additionalPrice.toInt()}",
                         fontSize = 14.sp,
-                        color = Color.Gray
+                        color = textSecondaryColor()
                     )
                 }
             }
@@ -537,7 +562,7 @@ fun ToppingsSection(
                 text = stringResource(R.string.topping),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = cardContentColor()
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -563,8 +588,8 @@ fun ToppingsSection(
                     checked = selectedToppings.contains(topping.id),
                     onCheckedChange = { onToppingToggled(topping.id) },
                     colors = CheckboxDefaults.colors(
-                        checkedColor = primaryColor(),
-                        uncheckedColor = textSecondaryColor()
+                        checkedColor = checkboxSelectedColor(),
+                        uncheckedColor = checkboxUnselectedColor()
                     )
                 )
 
@@ -573,7 +598,7 @@ fun ToppingsSection(
                 Text(
                     text = topping.name,
                     fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = cardContentColor(),
                     modifier = Modifier.weight(1f)
                 )
 
@@ -603,7 +628,7 @@ fun SpicinessSection(
                 text = stringResource(R.string.spiciness),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = cardContentColor()
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -620,7 +645,7 @@ fun SpicinessSection(
                 modifier = Modifier
                     .size(24.dp)
                     .background(
-                        color = PrimaryColor,
+                        color = primaryColor(),
                         shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
@@ -628,7 +653,7 @@ fun SpicinessSection(
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = stringResource(R.string.required),
-                    tint = Color.White,
+                    tint = onPrimaryColor(),
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -648,8 +673,8 @@ fun SpicinessSection(
                     selected = selectedSpice == spice.id,
                     onClick = { onSpiceSelected(spice.id) },
                     colors = RadioButtonDefaults.colors(
-                        selectedColor = primaryColor(),
-                        unselectedColor = textSecondaryColor()
+                        selectedColor = radioButtonSelectedColor(),
+                        unselectedColor = radioButtonUnselectedColor()
                     )
                 )
 
@@ -658,7 +683,7 @@ fun SpicinessSection(
                 Text(
                     text = spice.name,
                     fontSize = 16.sp,
-                    color = Color.Black
+                    color = cardContentColor()
                 )
             }
         }
@@ -677,7 +702,7 @@ fun NoteSection(
             text = stringResource(R.string.note_for_restaurant),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black
+            color = cardContentColor()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -688,16 +713,18 @@ fun NoteSection(
             placeholder = {
                 Text(
                     text = stringResource(R.string.special_note),
-                    color = Color.Gray
+                    color = placeholderTextColor()
                 )
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(100.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = PrimaryColor,
-                unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
-                cursorColor = PrimaryColor
+                focusedBorderColor = focusedBorderColor(),
+                unfocusedBorderColor = unfocusedBorderColor(),
+                focusedTextColor = enabledTextColor(),
+                unfocusedTextColor = enabledTextColor(),
+                cursorColor = primaryColor()
             ),
             shape = RoundedCornerShape(8.dp)
         )
@@ -722,7 +749,7 @@ fun BottomControls(
         Card(
             modifier = modifier.fillMaxWidth(),
             shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = cardBackgroundColor()),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             Column(
@@ -739,12 +766,12 @@ fun BottomControls(
                         onClick = { if (quantity > 1) onQuantityChange(quantity - 1) },
                         modifier = Modifier
                             .size(40.dp)
-                            .border(1.dp, Color.Gray.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                            .border(1.dp, unfocusedBorderColor(), RoundedCornerShape(8.dp))
                     ) {
                         Text(
                             text = "−",
                             fontSize = 20.sp,
-                            color = Color.Gray
+                            color = textSecondaryColor()
                         )
                     }
 
@@ -752,6 +779,7 @@ fun BottomControls(
                         text = quantity.toString(),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Medium,
+                        color = cardContentColor(),
                         modifier = Modifier.padding(horizontal = 24.dp),
                         textAlign = TextAlign.Center
                     )
@@ -760,12 +788,12 @@ fun BottomControls(
                         onClick = { onQuantityChange(quantity + 1) },
                         modifier = Modifier
                             .size(40.dp)
-                            .background(PrimaryColor, RoundedCornerShape(8.dp))
+                            .background(quantityButtonBackgroundColor(), RoundedCornerShape(8.dp))
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
                             contentDescription = stringResource(R.string.add),
-                            tint = Color.White
+                            tint = quantityButtonTextColor()
                         )
                     }
                 }
@@ -788,14 +816,14 @@ fun BottomControls(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
+                    colors = ButtonDefaults.buttonColors(containerColor = addToCartButtonColor()),
                     shape = RoundedCornerShape(25.dp)
                 ) {
                     Text(
                         text = stringResource(R.string.add_to_cart_brackets, totalPrice.toInt()),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Color.White
+                        color = addToCartButtonTextColor()
                     )
                 }
             }

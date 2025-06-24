@@ -34,6 +34,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,6 +48,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -61,11 +63,12 @@ import com.app.tastybuds.data.model.OrderItemTopping
 import com.app.tastybuds.data.model.RestaurantMenuItem
 import com.app.tastybuds.data.model.UserAddress
 import com.app.tastybuds.data.model.Voucher
-import com.app.tastybuds.ui.theme.PrimaryColor
+import com.app.tastybuds.ui.theme.*
 import com.app.tastybuds.util.ui.AppTopBar
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
+import java.util.Locale
 
 @Composable
 fun OrderReviewScreen(
@@ -105,7 +108,7 @@ fun OrderReviewScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(backgroundColor())
     ) {
         AppTopBar(
             title = stringResource(R.string.order_review),
@@ -152,7 +155,7 @@ private fun LoadingContent() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        CircularProgressIndicator(color = PrimaryColor)
+        CircularProgressIndicator(color = loadingIndicatorColor())
     }
 }
 
@@ -169,27 +172,32 @@ private fun EmptyCartContent(onBackClick: () -> Unit) {
             imageVector = Icons.Default.ShoppingCart,
             contentDescription = stringResource(R.string.empty_cart),
             modifier = Modifier.size(80.dp),
-            tint = Color.Gray
+            tint = onSurfaceVariantColor()
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(R.string.your_cart_is_empty),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
+            style = MaterialTheme.typography.headlineSmall.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            color = onBackgroundColor()
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = stringResource(R.string.add_some_delicious_items_to_your_cart),
-            fontSize = 14.sp,
-            color = Color.Gray
+            style = MaterialTheme.typography.bodyMedium,
+            color = onSurfaceVariantColor(),
+            textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(24.dp))
         Button(
             onClick = onBackClick,
-            colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
+            colors = ButtonDefaults.buttonColors(containerColor = primaryColor())
         ) {
-            Text(stringResource(R.string.browse_menu), color = Color.White)
+            Text(
+                text = stringResource(R.string.browse_menu),
+                color = onPrimaryColor()
+            )
         }
     }
 }
@@ -259,28 +267,29 @@ private fun OrderReviewContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
+                colors = ButtonDefaults.buttonColors(containerColor = primaryColor()),
                 shape = RoundedCornerShape(28.dp),
                 enabled = !isCreatingOrder && uiState.userAddress != null
             ) {
                 if (isCreatingOrder) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(20.dp),
-                        color = Color.White,
+                        color = onPrimaryColor(),
                         strokeWidth = 2.dp
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = stringResource(R.string.creating_order),
-                        color = Color.White,
-                        fontSize = 16.sp
+                        color = onPrimaryColor(),
+                        style = MaterialTheme.typography.titleMedium
                     )
                 } else {
                     Text(
                         text = stringResource(R.string.order_now),
-                        color = Color.White,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium
+                        color = onPrimaryColor(),
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Medium
+                        )
                     )
                 }
             }
@@ -302,14 +311,15 @@ private fun DeliveryAddressSection(
         ) {
             Text(
                 text = stringResource(R.string.delivered_to),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                color = onBackgroundColor()
             )
             Text(
                 text = stringResource(R.string.change_address),
-                fontSize = 14.sp,
-                color = PrimaryColor,
+                style = MaterialTheme.typography.bodyMedium,
+                color = linkTextColor(),
                 modifier = Modifier.clickable { onChangeAddress() }
             )
         }
@@ -322,14 +332,14 @@ private fun DeliveryAddressSection(
             Icon(
                 imageVector = Icons.Default.LocationOn,
                 contentDescription = stringResource(R.string.location),
-                tint = PrimaryColor,
+                tint = deliveryStatusColor(),
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = address?.addressLine ?: stringResource(R.string.no_address_selected),
-                fontSize = 14.sp,
-                color = Color.Black,
+                style = MaterialTheme.typography.bodyMedium,
+                color = onBackgroundColor(),
                 modifier = Modifier.weight(1f)
             )
         }
@@ -342,14 +352,14 @@ private fun DeliveryAddressSection(
             Icon(
                 painter = painterResource(id = R.drawable.ic_back_arrow),
                 contentDescription = stringResource(R.string.time),
-                tint = PrimaryColor,
+                tint = deliveryStatusColor(),
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = deliveryTime,
-                fontSize = 14.sp,
-                color = Color.Black
+                style = MaterialTheme.typography.bodyMedium,
+                color = onBackgroundColor()
             )
         }
     }
@@ -371,14 +381,15 @@ private fun OrderDetailsSection(
         ) {
             Text(
                 text = stringResource(R.string.order_details),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                color = onBackgroundColor()
             )
             Text(
                 text = stringResource(R.string.add_more),
-                fontSize = 14.sp,
-                color = PrimaryColor,
+                style = MaterialTheme.typography.bodyMedium,
+                color = linkTextColor(),
                 modifier = Modifier.clickable { onAddMore() }
             )
         }
@@ -425,16 +436,17 @@ private fun OrderItemCard(
         ) {
             Text(
                 text = cartItem.name,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color.Black
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Medium
+                ),
+                color = onBackgroundColor()
             )
 
             cartItem.selectedSize?.let { size ->
                 Text(
                     text = stringResource(R.string.size_brackets, size.name),
-                    fontSize = 12.sp,
-                    color = Color.Gray
+                    style = MaterialTheme.typography.bodySmall,
+                    color = onSurfaceVariantColor()
                 )
             }
 
@@ -442,8 +454,8 @@ private fun OrderItemCard(
                 val toppingsText = cartItem.selectedToppings.joinToString(", ") { it.name }
                 Text(
                     text = stringResource(R.string.topping_brackets, toppingsText),
-                    fontSize = 12.sp,
-                    color = Color.Gray,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = onSurfaceVariantColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -452,8 +464,8 @@ private fun OrderItemCard(
             cartItem.selectedSpiceLevel?.let { spice ->
                 Text(
                     text = stringResource(R.string.spiciness_brackets, spice.name),
-                    fontSize = 12.sp,
-                    color = Color.Gray
+                    style = MaterialTheme.typography.bodySmall,
+                    color = onSurfaceVariantColor()
                 )
             }
 
@@ -461,9 +473,10 @@ private fun OrderItemCard(
 
             Text(
                 text = "$${cartItem.calculateItemTotal()}",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                color = priceTextColor()
             )
         }
 
@@ -476,7 +489,7 @@ private fun OrderItemCard(
                 modifier = Modifier
                     .size(20.dp)
                     .clickable { onEdit() },
-                tint = Color.Gray
+                tint = onSurfaceVariantColor()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -498,16 +511,17 @@ private fun OrderItemCard(
                     Icon(
                         imageVector = if (cartItem.quantity > 1) Icons.Default.Add else Icons.Default.Delete,
                         contentDescription = if (cartItem.quantity > 1) "Decrease" else "Remove",
-                        tint = Color.Gray,
+                        tint = if (cartItem.quantity > 1) onSurfaceVariantColor() else removeFromCartButtonColor(),
                         modifier = Modifier.size(16.dp)
                     )
                 }
 
                 Text(
                     text = cartItem.quantity.toString(),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Medium
+                    ),
+                    color = onBackgroundColor()
                 )
 
                 IconButton(
@@ -517,7 +531,7 @@ private fun OrderItemCard(
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Increase",
-                        tint = PrimaryColor,
+                        tint = addToCartButtonColor(),
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -533,10 +547,11 @@ private fun AlsoOrderedSection(
 ) {
     Column {
         Text(
-            text = "Also ordered",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
+            text = stringResource(R.string.also_ordered),
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            color = onBackgroundColor()
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -551,6 +566,7 @@ private fun AlsoOrderedSection(
                         .width(120.dp)
                         .clickable { /* Handle item click */ },
                     shape = RoundedCornerShape(8.dp),
+                    colors = CardDefaults.cardColors(containerColor = surfaceColor()),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
                     Column(
@@ -572,18 +588,20 @@ private fun AlsoOrderedSection(
 
                         Text(
                             text = item.name,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.Black,
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontWeight = FontWeight.Medium
+                            ),
+                            color = onSurfaceColor(),
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
                         )
 
                         Text(
                             text = "$${item.price}",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = PrimaryColor
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = priceTextColor()
                         )
                     }
                 }
@@ -603,10 +621,11 @@ private fun PaymentDetailsSection(
 ) {
     Column {
         Text(
-            text = "Payment details",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
+            text = stringResource(R.string.payment_details),
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            color = onBackgroundColor()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -625,20 +644,20 @@ private fun PaymentDetailsSection(
                 Icon(
                     imageVector = Icons.Default.ShoppingCart,
                     contentDescription = "E-wallet",
-                    tint = Color.Gray,
+                    tint = onSurfaceVariantColor(),
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "E-wallet",
-                    fontSize = 16.sp,
-                    color = Color.Black
+                    text = stringResource(R.string.e_wallet),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = onBackgroundColor()
                 )
             }
             Icon(
                 imageVector = Icons.Default.Check,
                 contentDescription = "Change",
-                tint = Color.Gray,
+                tint = onSurfaceVariantColor(),
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -657,20 +676,20 @@ private fun PaymentDetailsSection(
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = "Promotion",
-                    tint = Color.Gray,
+                    tint = onSurfaceVariantColor(),
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
                     text = selectedVoucher?.title ?: "- 30% for bill over $50",
-                    fontSize = 16.sp,
-                    color = Color.Black
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = onBackgroundColor()
                 )
             }
             Icon(
                 imageVector = Icons.Default.Check,
                 contentDescription = "Change",
-                tint = Color.Gray,
+                tint = onSurfaceVariantColor(),
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -684,7 +703,7 @@ private fun PaymentDetailsSection(
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-        HorizontalDivider(color = Color.Gray.copy(alpha = 0.3f))
+        HorizontalDivider(color = outlineVariantColor())
         Spacer(modifier = Modifier.height(8.dp))
 
         Row(
@@ -694,13 +713,13 @@ private fun PaymentDetailsSection(
         ) {
             Text(
                 text = stringResource(R.string.payment_method),
-                fontSize = 14.sp,
-                color = Color.Gray
+                style = MaterialTheme.typography.bodyMedium,
+                color = onSurfaceVariantColor()
             )
             Text(
                 text = stringResource(R.string.e_wallet),
-                fontSize = 14.sp,
-                color = Color.Black
+                style = MaterialTheme.typography.bodyMedium,
+                color = onBackgroundColor()
             )
         }
 
@@ -712,16 +731,18 @@ private fun PaymentDetailsSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Total",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
+                text = stringResource(R.string.total),
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                color = onBackgroundColor()
             )
             Text(
-                text = "$${String.format("%.1f", totalAmount)}",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
+                text = "$${String.format(Locale.getDefault(), "%.1f", totalAmount)}",
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                color = orderTotalTextColor()
             )
         }
     }
@@ -742,14 +763,20 @@ private fun PaymentBreakdownRow(
     ) {
         Text(
             text = label,
-            fontSize = 14.sp,
-            color = Color.Gray
+            style = MaterialTheme.typography.bodyMedium,
+            color = onSurfaceVariantColor()
         )
         Text(
-            text = if (isDiscount) "-$${String.format("%.1f", amount.coerceAtLeast(0.0))}"
-            else "$${String.format("%.1f", amount)}",
-            fontSize = 14.sp,
-            color = if (isDiscount) Color.Red else Color.Black
+            text = if (isDiscount) "-$${
+                String.format(
+                    Locale.getDefault(),
+                    "%.1f",
+                    amount.coerceAtLeast(0.0)
+                )
+            }"
+            else "$${String.format(Locale.getDefault(), "%.1f", amount)}",
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (isDiscount) discountTextColor() else onBackgroundColor()
         )
     }
 }

@@ -25,8 +25,8 @@ import com.app.tastybuds.data.model.Voucher
 import com.app.tastybuds.data.model.VoucherCountResponse
 import com.app.tastybuds.domain.model.UpdateProfileRequest
 import com.app.tastybuds.domain.model.UserResponse
-import com.app.tastybuds.ui.resturants.FoodCustomizationResponse
-import com.app.tastybuds.ui.resturants.FoodDetailsResponse
+import com.app.tastybuds.data.model.FoodCustomizationResponse
+import com.app.tastybuds.data.model.FoodDetailsResponse
 import com.app.tastybuds.data.model.VoucherApiResponse
 import com.app.tastybuds.data.model.VoucherUsageRequest
 import retrofit2.Response

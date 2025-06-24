@@ -28,6 +28,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -42,19 +43,38 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
 import com.app.tastybuds.data.model.Order
 import com.app.tastybuds.data.model.OrderStatus
-import com.app.tastybuds.ui.theme.PrimaryColor
+import com.app.tastybuds.ui.theme.backgroundColor
+import com.app.tastybuds.ui.theme.errorColor
+import com.app.tastybuds.ui.theme.errorContainerColor
+import com.app.tastybuds.ui.theme.infoContainerColor
+import com.app.tastybuds.ui.theme.loadingIndicatorColor
+import com.app.tastybuds.ui.theme.offerBackgroundColor
+import com.app.tastybuds.ui.theme.offerTextColor
+import com.app.tastybuds.ui.theme.onBackgroundColor
+import com.app.tastybuds.ui.theme.onErrorContainerColor
+import com.app.tastybuds.ui.theme.onInfoContainerColor
+import com.app.tastybuds.ui.theme.onPrimaryColor
+import com.app.tastybuds.ui.theme.onSuccessContainerColor
+import com.app.tastybuds.ui.theme.onSurfaceColor
+import com.app.tastybuds.ui.theme.onSurfaceVariantColor
+import com.app.tastybuds.ui.theme.onWarningContainerColor
+import com.app.tastybuds.ui.theme.orderTotalTextColor
+import com.app.tastybuds.ui.theme.outlineVariantColor
+import com.app.tastybuds.ui.theme.primaryColor
+import com.app.tastybuds.ui.theme.successContainerColor
+import com.app.tastybuds.ui.theme.surfaceColor
+import com.app.tastybuds.ui.theme.warningContainerColor
 import com.app.tastybuds.util.formatOrderDate
 import kotlinx.coroutines.delay
 
@@ -71,7 +91,9 @@ fun OrdersScreen(
         viewModel.loadUserOrders()
     }
 
-    Scaffold { paddingValues ->
+    Scaffold(
+        containerColor = backgroundColor()
+    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -121,13 +143,13 @@ private fun LoadingContent() {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             CircularProgressIndicator(
-                color = PrimaryColor,
+                color = loadingIndicatorColor(),
                 modifier = Modifier.size(48.dp)
             )
             Text(
                 text = stringResource(R.string.loading_your_orders),
-                fontSize = 16.sp,
-                color = Color.Gray
+                style = MaterialTheme.typography.bodyLarge,
+                color = onBackgroundColor()
             )
         }
     }
@@ -150,26 +172,30 @@ private fun ErrorContent(
             Icon(
                 imageVector = Icons.Default.Star,
                 contentDescription = stringResource(R.string.error),
-                tint = Color.Red,
+                tint = errorColor(),
                 modifier = Modifier.size(64.dp)
             )
             Text(
                 text = stringResource(R.string.oops_something_went_wrong),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                color = onBackgroundColor()
             )
             Text(
                 text = error,
-                fontSize = 14.sp,
-                color = Color.Gray,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                style = MaterialTheme.typography.bodyMedium,
+                color = onSurfaceVariantColor(),
+                textAlign = TextAlign.Center
             )
             Button(
                 onClick = onRetry,
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
+                colors = ButtonDefaults.buttonColors(containerColor = primaryColor())
             ) {
-                Text("Try Again")
+                Text(
+                    text = stringResource(R.string.try_again),
+                    color = onPrimaryColor()
+                )
             }
         }
     }
@@ -189,20 +215,21 @@ private fun EmptyOrdersContent() {
             Icon(
                 imageVector = Icons.Default.ShoppingCart,
                 contentDescription = stringResource(R.string.no_orders),
-                tint = Color.Gray,
+                tint = onSurfaceVariantColor(),
                 modifier = Modifier.size(80.dp)
             )
             Text(
                 text = stringResource(R.string.no_orders_yet),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                color = onBackgroundColor()
             )
             Text(
                 text = stringResource(R.string.when_you_place_your_first_order_it_will_appear_here),
-                fontSize = 14.sp,
-                color = Color.Gray,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                style = MaterialTheme.typography.bodyMedium,
+                color = onSurfaceVariantColor(),
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -243,9 +270,10 @@ private fun OrdersListContent(
                         orders.size,
                         if (orders.size != 1) "s" else ""
                     ),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Gray
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Medium
+                    ),
+                    color = onSurfaceVariantColor()
                 )
 
                 TextButton(
@@ -254,14 +282,14 @@ private fun OrdersListContent(
                     Icon(
                         imageVector = Icons.Default.Refresh,
                         contentDescription = stringResource(R.string.refresh),
-                        tint = PrimaryColor,
+                        tint = primaryColor(),
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = stringResource(R.string.refresh),
-                        color = PrimaryColor,
-                        fontSize = 14.sp
+                        color = primaryColor(),
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
             }
@@ -290,7 +318,7 @@ private fun OrderCard(
             .fillMaxWidth()
             .clickable { onOrderClick() },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = surfaceColor()),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -307,14 +335,15 @@ private fun OrderCard(
                             R.string.order_brackets,
                             order.id.take(8).uppercase()
                         ),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = onSurfaceColor()
                     )
                     Text(
                         text = formatOrderDate(order.createdAt),
-                        fontSize = 12.sp,
-                        color = Color.Gray
+                        style = MaterialTheme.typography.bodySmall,
+                        color = onSurfaceVariantColor()
                     )
                 }
 
@@ -325,9 +354,10 @@ private fun OrderCard(
 
             Text(
                 text = order.restaurantId ?: stringResource(R.string.restaurant),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color.Black,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = FontWeight.Medium
+                ),
+                color = onSurfaceColor(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -339,8 +369,8 @@ private fun OrderCard(
                 displayItems.forEach { item ->
                     Text(
                         text = "${item.quantity}× ${item.name}",
-                        fontSize = 12.sp,
-                        color = Color.Gray,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = onSurfaceVariantColor(),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -353,16 +383,17 @@ private fun OrderCard(
                             order.orderItems.size - 2,
                             if (order.orderItems.size - 2 != 1) "s" else ""
                         ),
-                        fontSize = 12.sp,
-                        color = Color.Gray,
-                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                        ),
+                        color = onSurfaceVariantColor()
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            HorizontalDivider(color = Color(0xFFE0E0E0))
+            HorizontalDivider(color = outlineVariantColor())
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -373,9 +404,10 @@ private fun OrderCard(
             ) {
                 Text(
                     text = "$${"%.2f".format(order.totalAmount)}",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = PrimaryColor
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = orderTotalTextColor()
                 )
 
                 Row(
@@ -386,13 +418,13 @@ private fun OrderCard(
                             onClick = onTrackOrder,
                             modifier = Modifier.height(32.dp),
                             colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = PrimaryColor
+                                contentColor = primaryColor()
                             ),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, PrimaryColor)
+                            border = androidx.compose.foundation.BorderStroke(1.dp, primaryColor())
                         ) {
                             Text(
                                 text = stringResource(R.string.track),
-                                fontSize = 12.sp
+                                style = MaterialTheme.typography.labelSmall
                             )
                         }
                     }
@@ -400,11 +432,12 @@ private fun OrderCard(
                     Button(
                         onClick = onReorderClick,
                         modifier = Modifier.height(32.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
+                        colors = ButtonDefaults.buttonColors(containerColor = primaryColor())
                     ) {
                         Text(
                             text = stringResource(R.string.reorder),
-                            fontSize = 12.sp
+                            color = onPrimaryColor(),
+                            style = MaterialTheme.typography.labelSmall
                         )
                     }
                 }
@@ -416,13 +449,13 @@ private fun OrderCard(
 @Composable
 private fun OrderStatusChip(status: OrderStatus) {
     val (backgroundColor, textColor) = when (status) {
-        OrderStatus.PENDING -> Color(0xFFFFF3CD) to Color(0xFF856404)
-        OrderStatus.CONFIRMED -> Color(0xFFD1ECF1) to Color(0xFF0C5460)
-        OrderStatus.PREPARING -> Color(0xFFFFE6CC) to PrimaryColor
-        OrderStatus.READY -> Color(0xFFD4EDDA) to Color(0xFF155724)
-        OrderStatus.OUT_FOR_DELIVERY -> Color(0xFFFFE6CC) to PrimaryColor
-        OrderStatus.DELIVERED -> Color(0xFFD4EDDA) to Color(0xFF155724)
-        OrderStatus.CANCELLED -> Color(0xFFF8D7DA) to Color(0xFF721C24)
+        OrderStatus.PENDING -> warningContainerColor() to onWarningContainerColor()
+        OrderStatus.CONFIRMED -> infoContainerColor() to onInfoContainerColor()
+        OrderStatus.PREPARING -> offerBackgroundColor() to offerTextColor()
+        OrderStatus.READY -> successContainerColor() to onSuccessContainerColor()
+        OrderStatus.OUT_FOR_DELIVERY -> offerBackgroundColor() to offerTextColor()
+        OrderStatus.DELIVERED -> successContainerColor() to onSuccessContainerColor()
+        OrderStatus.CANCELLED -> errorContainerColor() to onErrorContainerColor()
     }
 
     Surface(
@@ -433,8 +466,9 @@ private fun OrderStatusChip(status: OrderStatus) {
     ) {
         Text(
             text = status.displayName,
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Medium,
+            style = MaterialTheme.typography.labelSmall.copy(
+                fontWeight = FontWeight.Medium
+            ),
             color = textColor,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
         )
