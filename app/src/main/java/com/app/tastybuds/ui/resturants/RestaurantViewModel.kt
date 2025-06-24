@@ -21,7 +21,7 @@ class RestaurantViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(RestaurantUiState())
     val uiState: StateFlow<RestaurantUiState> = _uiState.asStateFlow()
 
-    fun loadRestaurantsByCategory(categoryId: String, categoryName: String) {
+    private fun loadRestaurantsByCategory(categoryId: String, categoryName: String) {
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
@@ -106,7 +106,7 @@ class RestaurantViewModel @Inject constructor(
         }
     }
 
-    fun loadAllRestaurants() {
+    private fun loadAllRestaurants() {
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
@@ -151,10 +151,10 @@ class RestaurantViewModel @Inject constructor(
         when {
             !currentState.currentCategoryId.isNullOrBlank() -> {
                 if (currentState.categoryDetails != null) {
-                    loadCategoryDetails(currentState.currentCategoryId!!, currentState.categoryName)
+                    loadCategoryDetails(currentState.currentCategoryId, currentState.categoryName)
                 } else {
                     loadRestaurantsByCategory(
-                        currentState.currentCategoryId!!,
+                        currentState.currentCategoryId,
                         currentState.categoryName
                     )
                 }

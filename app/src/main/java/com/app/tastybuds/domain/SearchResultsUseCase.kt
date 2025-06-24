@@ -1,6 +1,6 @@
 package com.app.tastybuds.domain
 
-import com.app.tastybuds.data.SearchResult
+import com.app.tastybuds.domain.model.SearchResult
 import com.app.tastybuds.data.SearchResultsMapper
 import com.app.tastybuds.data.repo.SearchRepository
 import kotlinx.coroutines.flow.Flow

@@ -1,6 +1,6 @@
 package com.app.tastybuds.util
 
-import com.app.tastybuds.data.model.CartItem
+import com.app.tastybuds.domain.model.CartItem
 import com.app.tastybuds.data.model.OrderItemSize
 import com.app.tastybuds.data.model.OrderItemTopping
 import com.app.tastybuds.data.model.OrderItemSpiceLevel

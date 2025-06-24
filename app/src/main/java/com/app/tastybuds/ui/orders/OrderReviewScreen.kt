@@ -54,7 +54,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
-import com.app.tastybuds.data.model.CartItem
+import com.app.tastybuds.domain.model.CartItem
 import com.app.tastybuds.data.model.OrderItemSize
 import com.app.tastybuds.data.model.OrderItemSpiceLevel
 import com.app.tastybuds.data.model.OrderItemTopping

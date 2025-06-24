@@ -30,12 +30,6 @@ import com.app.tastybuds.util.ui.ThemeManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-data class BottomNavItem(val route: String, val label: String, val iconRes: Int)
-
-val LocalThemeManager = compositionLocalOf<ThemeManager> {
-    error("ThemeManager not provided")
-}
-
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @Inject
@@ -141,4 +135,10 @@ fun TastyBuddyMainScreen(navController: NavHostController, themeManager: ThemeMa
             }
         }
     }
+}
+
+data class BottomNavItem(val route: String, val label: String, val iconRes: Int)
+
+val LocalThemeManager = compositionLocalOf<ThemeManager> {
+    error("ThemeManager not provided")
 }

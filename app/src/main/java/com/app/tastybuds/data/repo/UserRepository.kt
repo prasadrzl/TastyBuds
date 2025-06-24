@@ -5,6 +5,7 @@ import com.app.tastybuds.data.model.mapper.toUpdateUserDataModel
 import com.app.tastybuds.data.model.mapper.toUserDomainModel
 import com.app.tastybuds.domain.model.UpdateUserRequest
 import com.app.tastybuds.domain.model.User
+import com.app.tastybuds.util.ErrorHandler
 import com.app.tastybuds.util.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -36,7 +37,7 @@ class UserRepositoryImpl @Inject constructor(
                 Result.Error("Failed to fetch user: ${response.message()}")
             }
         } catch (e: Exception) {
-            Result.Error("Network error: ${e.localizedMessage ?: "Unknown error"}")
+            Result.Error(ErrorHandler.handleApiError(e))
         }
     }
 
@@ -58,7 +59,7 @@ class UserRepositoryImpl @Inject constructor(
                 Result.Error("Update failed: ${response.message()}")
             }
         } catch (e: Exception) {
-            Result.Error("Network error: ${e.localizedMessage ?: "Unknown error"}")
+            Result.Error(ErrorHandler.handleApiError(e))
         }
     }
 
@@ -68,7 +69,7 @@ class UserRepositoryImpl @Inject constructor(
             val result = getUser(userId)
             emit(result)
         } catch (e: Exception) {
-            emit(Result.Error("Failed to load user: ${e.localizedMessage ?: "Unknown error"}"))
+            emit(Result.Error(ErrorHandler.handleApiError(e)))
         }
     }
 }

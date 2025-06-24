@@ -8,6 +8,7 @@ import com.app.tastybuds.data.model.RestaurantMenuItem
 import com.app.tastybuds.data.model.RestaurantReview
 import com.app.tastybuds.data.model.RestaurantVoucher
 import com.app.tastybuds.data.model.mapper.toDomain
+import com.app.tastybuds.util.ErrorHandler
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -15,7 +16,11 @@ import javax.inject.Singleton
 import com.app.tastybuds.util.Result
 
 interface RestaurantDetailsRepository {
-    suspend fun getRestaurantDetails(restaurantId: String, userId: String): Result<RestaurantDetails>
+    suspend fun getRestaurantDetails(
+        restaurantId: String,
+        userId: String
+    ): Result<RestaurantDetails>
+
     suspend fun getRestaurantMenuItems(restaurantId: String): Result<List<RestaurantMenuItem>>
     suspend fun getForYouMenuItems(restaurantId: String): Result<List<RestaurantMenuItem>>
     suspend fun getRestaurantReviews(restaurantId: String): Result<List<RestaurantReview>>
@@ -36,7 +41,10 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
     private val apiService: TastyBudsApiService
 ) : RestaurantDetailsRepository {
 
-    override suspend fun getRestaurantDetails(restaurantId: String, userId: String): Result<RestaurantDetails> {
+    override suspend fun getRestaurantDetails(
+        restaurantId: String,
+        userId: String
+    ): Result<RestaurantDetails> {
         return try {
             val restaurantResponse = apiService.getRestaurantDetails("eq.$restaurantId")
 
@@ -57,7 +65,7 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
                 Result.Error("Failed to get restaurant details")
             }
         } catch (e: Exception) {
-            Result.Error("Network error: ${e.message}")
+            Result.Error(ErrorHandler.handleApiError(e))
         }
     }
 
@@ -71,7 +79,7 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
                 Result.Error("Failed to fetch menu items: ${response.message()}")
             }
         } catch (e: Exception) {
-            Result.Error("Network error: ${e.message}")
+            Result.Error(ErrorHandler.handleApiError(e))
         }
     }
 
@@ -85,7 +93,7 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
                 Result.Error("Failed to fetch for you items: ${response.message()}")
             }
         } catch (e: Exception) {
-            Result.Error("Network error: ${e.message}")
+            Result.Error(ErrorHandler.handleApiError(e))
         }
     }
 
@@ -99,7 +107,7 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
                 Result.Error("Failed to fetch reviews: ${response.message()}")
             }
         } catch (e: Exception) {
-            Result.Error("Network error: ${e.message}")
+            Result.Error(ErrorHandler.handleApiError(e))
         }
     }
 
@@ -116,7 +124,7 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
                 Result.Error("Failed to fetch vouchers: ${response.message()}")
             }
         } catch (e: Exception) {
-            Result.Error("Network error: ${e.message}")
+            Result.Error(ErrorHandler.handleApiError(e))
         }
     }
 
@@ -130,7 +138,7 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
                 Result.Error("Failed to fetch combos: ${response.message()}")
             }
         } catch (e: Exception) {
-            Result.Error("Network error: ${e.message}")
+            Result.Error(ErrorHandler.handleApiError(e))
         }
     }
 
@@ -167,7 +175,7 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
             emit(Result.Success(restaurantDetailsData))
 
         } catch (e: Exception) {
-            emit(Result.Error("Failed to load restaurant data: ${e.message}"))
+            Result.Error(ErrorHandler.handleApiError(e))
         }
     }
 }

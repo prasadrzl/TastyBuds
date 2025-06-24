@@ -2,20 +2,21 @@ package com.app.tastybuds.data
 
 import com.app.tastybuds.data.model.MenuItemWithRestaurantResponse
 import com.app.tastybuds.data.model.RestaurantResponse
+import com.app.tastybuds.domain.model.MenuItem
+import com.app.tastybuds.domain.model.SearchRestaurant
+import com.app.tastybuds.domain.model.SearchResult
+import com.app.tastybuds.domain.model.SearchResultType
 import javax.inject.Inject
-import kotlin.text.*
 
 class SearchResultsMapper @Inject constructor() {
 
     fun mapToSearchResults(
         menuItemsResponse: List<MenuItemWithRestaurantResponse>
     ): List<SearchResult> {
-        // Group menu items by restaurant
         val groupedByRestaurant = menuItemsResponse
             .filter { it.restaurant != null }
             .groupBy { it.restaurant!! }
 
-        // Convert to SearchResult list
         return groupedByRestaurant.map { (restaurantResponse, menuItems) ->
             SearchResult(
                 id = restaurantResponse.id,
@@ -25,8 +26,8 @@ class SearchResultsMapper @Inject constructor() {
         }.sortedByDescending { it.restaurant?.rating ?: 0f }
     }
 
-    private fun mapToRestaurant(restaurantResponse: RestaurantResponse): Restaurant {
-        return Restaurant(
+    private fun mapToRestaurant(restaurantResponse: RestaurantResponse): SearchRestaurant {
+        return SearchRestaurant(
             id = restaurantResponse.id,
             name = restaurantResponse.name,
             description = restaurantResponse.description,

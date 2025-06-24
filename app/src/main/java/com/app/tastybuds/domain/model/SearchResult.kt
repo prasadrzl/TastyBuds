@@ -1,13 +1,13 @@
-package com.app.tastybuds.data
+package com.app.tastybuds.domain.model
 
 
 data class SearchResult(
     val id: String,
-    val restaurant: Restaurant? = null,
+    val restaurant: SearchRestaurant? = null,
     val menuItemList: List<MenuItem> = emptyList()
 )
 
-data class Restaurant(
+data class SearchRestaurant(
     val id: String,
     val name: String,
     val description: String,

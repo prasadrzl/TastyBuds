@@ -53,8 +53,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.R
-import com.app.tastybuds.data.SearchResult
-import com.app.tastybuds.data.SearchResultType
+import com.app.tastybuds.domain.model.MenuItem
+import com.app.tastybuds.domain.model.Restaurant
+import com.app.tastybuds.domain.model.SearchRestaurant
+import com.app.tastybuds.domain.model.SearchResult
+import com.app.tastybuds.domain.model.SearchResultType
 import com.app.tastybuds.ui.resturants.state.SearchUiState
 import com.app.tastybuds.ui.theme.PrimaryColor
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -361,7 +364,7 @@ fun SearchResultsContent(
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun RestaurantCard(
-    restaurant: com.app.tastybuds.data.Restaurant,
+    restaurant: SearchRestaurant,
     onClick: () -> Unit
 ) {
     Card(
@@ -450,7 +453,7 @@ fun RestaurantCard(
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MenuItemCard(
-    menuItem: com.app.tastybuds.data.MenuItem,
+    menuItem: MenuItem,
     onClick: () -> Unit
 ) {
     Row(

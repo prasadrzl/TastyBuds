@@ -13,7 +13,3 @@ fun Context.showDevelopmentToast() {
 fun Context.showErrorToast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }
-
-fun Context.showSuccessToast(message: String) {
-    Toast.makeText(this, "Success: $message", Toast.LENGTH_SHORT).show()
-}

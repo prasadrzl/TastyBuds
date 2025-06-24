@@ -3,7 +3,9 @@ package com.app.tastybuds.data.repo
 import com.app.tastybuds.common.TastyBudsApiService
 import com.app.tastybuds.data.model.mapper.toFoodCustomization
 import com.app.tastybuds.data.model.mapper.toFoodDetails
-import com.app.tastybuds.domain.model.*
+import com.app.tastybuds.domain.model.FoodCustomization
+import com.app.tastybuds.domain.model.FoodDetails
+import com.app.tastybuds.domain.model.FoodDetailsData
 import com.app.tastybuds.util.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

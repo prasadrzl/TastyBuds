@@ -55,7 +55,7 @@ class OnboardingManager @Inject constructor(
     fun isOnboardingCompleted(): Boolean {
         return try {
             if (isFirstLaunch()) {
-                Log.d(TAG, "🆕 FIRST LAUNCH DETECTED - Clearing all user data")
+                Log.d(TAG, "FIRST LAUNCH DETECTED - Clearing all user data")
                 clearAllUserData()
                 markFirstLaunchComplete()
                 return false
@@ -64,7 +64,7 @@ class OnboardingManager @Inject constructor(
             val result = getOnboardingPrefs().getBoolean(KEY_ONBOARDING_COMPLETED, false)
             result
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Error reading onboarding completion", e)
+            Log.e(TAG, "Error reading onboarding completion", e)
             false
         }
     }
@@ -77,7 +77,7 @@ class OnboardingManager @Inject constructor(
 
             getOnboardingPrefs().getBoolean(KEY_ONBOARDING_COMPLETED, false)
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Error saving onboarding completion", e)
+            Log.e(TAG, "Error saving onboarding completion", e)
         }
     }
 
@@ -90,7 +90,7 @@ class OnboardingManager @Inject constructor(
             }
             result
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Error reading login state", e)
+            Log.e(TAG, "Error reading login state", e)
             false
         }
     }
@@ -103,7 +103,7 @@ class OnboardingManager @Inject constructor(
                 preferences[USER_ID_KEY] = ""
             }
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Error clearing user session", e)
+            Log.e(TAG, "Error clearing user session", e)
         }
     }
 
@@ -128,7 +128,7 @@ class OnboardingManager @Inject constructor(
             }
 
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Error clearing all user data", e)
+            Log.e(TAG, "Error clearing all user data", e)
         }
     }
 }

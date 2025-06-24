@@ -1,6 +1,6 @@
 package com.app.tastybuds.domain
 
-import com.app.tastybuds.data.model.CartItem
+import com.app.tastybuds.domain.model.CartItem
 import com.app.tastybuds.data.model.CreateOrderRequest
 import com.app.tastybuds.data.model.DeliveryAddress
 import com.app.tastybuds.data.model.Order

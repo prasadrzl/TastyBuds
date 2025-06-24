@@ -7,7 +7,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -20,8 +19,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.app.tastybuds.BottomNavItem
 import com.app.tastybuds.R
-import com.app.tastybuds.data.SearchResultType.FOOD_ITEM
-import com.app.tastybuds.data.SearchResultType.RESTAURANT
+import com.app.tastybuds.domain.model.SearchResultType.FOOD_ITEM
+import com.app.tastybuds.domain.model.SearchResultType.RESTAURANT
 import com.app.tastybuds.ui.favorites.FavoriteScreen
 import com.app.tastybuds.ui.home.AllCollectionsScreen
 import com.app.tastybuds.ui.home.AllDealsScreen
@@ -48,7 +47,6 @@ import com.app.tastybuds.ui.resturants.search.SearchResultsScreen
 import com.app.tastybuds.ui.splash.TastyBudsSplashScreen
 import com.app.tastybuds.ui.onboarding.OnboardingScreen
 import com.app.tastybuds.ui.resturants.MenuListScreen
-import com.app.tastybuds.ui.resturants.RestaurantDetailsViewModel
 import kotlinx.coroutines.launch
 
 val items = listOf(

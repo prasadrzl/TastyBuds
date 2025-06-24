@@ -1,5 +1,8 @@
 package com.app.tastybuds.data.repo
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -7,9 +10,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import android.content.Context
-import android.content.SharedPreferences
-import android.util.Log
 import com.app.tastybuds.domain.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -95,7 +95,7 @@ class UserLocalDataSource @Inject constructor(
         }
     }
 
-    suspend fun validatePassword(email: String, password: String): Boolean {
+    fun validatePassword(email: String, password: String): Boolean {
         return try {
             val storedHashedPassword = securePrefs.getString("password_$email", null)
             if (storedHashedPassword == null) {
@@ -107,7 +107,6 @@ class UserLocalDataSource @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to validate password", e)
-            // On validation error, allow login to proceed
             true
         }
     }
@@ -123,12 +122,6 @@ class UserLocalDataSource @Inject constructor(
     fun isLoggedIn(): Flow<Boolean> {
         return dataStore.data.map { preferences ->
             preferences[IS_LOGGED_IN_KEY] ?: false
-        }
-    }
-
-    fun getUserEmail(): Flow<String?> {
-        return dataStore.data.map { preferences ->
-            preferences[USER_EMAIL_KEY]
         }
     }
 

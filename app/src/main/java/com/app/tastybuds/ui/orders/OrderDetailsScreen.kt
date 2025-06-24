@@ -25,7 +25,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -57,8 +57,6 @@ import com.app.tastybuds.util.ui.AppTopBar
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 @Composable
 fun OrderDetailsScreen(
@@ -406,7 +404,7 @@ private fun OrderItemsCard(orderItems: List<OrderItemRequest>) {
             orderItems.forEach { item ->
                 OrderItemRow(item = item)
                 if (item != orderItems.last()) {
-                    Divider(
+                    HorizontalDivider(
                         color = Color.Gray.copy(alpha = 0.2f),
                         modifier = Modifier.padding(vertical = 12.dp)
                     )
@@ -462,7 +460,7 @@ private fun OrderItemRow(item: OrderItemRequest) {
 
             if (item.customizations.size != null) {
                 Text(
-                    text = "Size: ${item.customizations.size?.name ?: stringResource(R.string.regular)}",
+                    text = "Size: ${item.customizations.size.name}",
                     fontSize = 12.sp,
                     color = Color.Gray,
                     modifier = Modifier.padding(top = 2.dp)
@@ -609,7 +607,7 @@ private fun PaymentSummaryCard(order: Order) {
                 )
             }
 
-            Divider(
+            HorizontalDivider(
                 color = Color.Gray.copy(alpha = 0.3f),
                 modifier = Modifier.padding(vertical = 12.dp)
             )

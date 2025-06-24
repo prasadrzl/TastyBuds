@@ -437,5 +437,7 @@
     <string name="no_recommendations_available">No recommendations available</string>
     <string name="no_menu_items_available">No menu items available</string>
     <string name="no_items_found_in">No items found in %1$s</string>
+    <string name="search">Search</string>
+    <string name="search_icon">Search Icon</string>
 
 </resources>

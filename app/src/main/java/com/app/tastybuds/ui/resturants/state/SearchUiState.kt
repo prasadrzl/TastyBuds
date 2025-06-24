@@ -1,6 +1,6 @@
 package com.app.tastybuds.ui.resturants.state
 
-import com.app.tastybuds.data.SearchResult
+import com.app.tastybuds.domain.model.SearchResult
 
 data class SearchUiState(
     val isLoading: Boolean = false,

@@ -7,6 +7,7 @@ import com.app.tastybuds.domain.model.DiscountType
 import com.app.tastybuds.domain.model.Voucher
 import com.app.tastybuds.data.model.VoucherApiResponse
 import com.app.tastybuds.domain.model.VoucherType
+import com.app.tastybuds.util.ErrorHandler
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -36,6 +37,7 @@ fun VoucherApiResponse.toVoucherDomainModel(restaurantName: String? = null): Vou
                 try {
                     return LocalDateTime.parse(cleanedDate, DateTimeFormatter.ofPattern(pattern))
                 } catch (e: DateTimeParseException) {
+                    ErrorHandler.handleApiError(e)
                 }
             }
             LocalDateTime.parse(dateString.substring(0, 19))
@@ -47,9 +49,7 @@ fun VoucherApiResponse.toVoucherDomainModel(restaurantName: String? = null): Vou
     val expiryDateTime = parseCustomDate(expiryDate)
     val startDateTime = parseCustomDate(startDate)
 
-    val isExpiredCalculated = expiryDateTime?.let { expiry ->
-        expiry.isBefore(LocalDateTime.now())
-    } ?: false
+    val isExpiredCalculated = expiryDateTime?.isBefore(LocalDateTime.now()) ?: false
 
     val isStarted = startDateTime?.let { start ->
         start.isBefore(LocalDateTime.now()) || start.isEqual(LocalDateTime.now())

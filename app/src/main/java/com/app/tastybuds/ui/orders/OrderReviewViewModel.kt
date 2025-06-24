@@ -3,12 +3,18 @@ package com.app.tastybuds.ui.orders
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.tastybuds.data.model.*
+import com.app.tastybuds.data.model.UserAddress
 import com.app.tastybuds.data.repo.AuthRepository
 import com.app.tastybuds.domain.OrderUseCase
+import com.app.tastybuds.domain.model.CartItem
 import com.app.tastybuds.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -43,7 +49,6 @@ class OrderReviewViewModel @Inject constructor(
     }
 
     fun loadOrderReviewData(cartItems: List<CartItem>) {
-        Log.d(TAG, "Loading order review data for ${cartItems.size} items")
 
         _cartItems.value = cartItems
         _uiState.update {
@@ -105,7 +110,7 @@ class OrderReviewViewModel @Inject constructor(
 
                             if (result.data.isNotEmpty()) {
                                 val defaultAddress = result.data.find { it.isDefault }
-                                    ?: result.data.first() // Use first address if no default
+                                    ?: result.data.first()
 
                                 _uiState.update {
                                     it.copy(userAddress = defaultAddress)
@@ -227,44 +232,6 @@ class OrderReviewViewModel @Inject constructor(
         Log.d(TAG, "Removed item from cart")
     }
 
-    fun selectVoucher(voucher: Voucher?) {
-        val currentSubtotal = _uiState.value.subtotal
-
-        if (voucher != null) {
-            when (val validationResult =
-                orderUseCase.validateVoucherForOrder(voucher, currentSubtotal)) {
-                is Result.Success -> {
-                    _uiState.update {
-                        it.copy(
-                            selectedVoucher = voucher,
-                            error = null
-                        ).calculateTotals()
-                    }
-                    Log.d(TAG, "Voucher selected: ${voucher.title}")
-                }
-
-                is Result.Error -> {
-                    _uiState.update { it.copy(error = validationResult.message) }
-                    Log.e(TAG, "Voucher validation failed: ${validationResult.message}")
-                }
-
-                is Result.Loading -> {}
-            }
-        } else {
-            _uiState.update {
-                it.copy(selectedVoucher = null).calculateTotals()
-            }
-            Log.d(TAG, "Voucher removed")
-        }
-    }
-
-    fun changeDeliveryAddress(address: UserAddress) {
-        _uiState.update {
-            it.copy(userAddress = address)
-        }
-        Log.d(TAG, "Delivery address changed to: ${address.addressLine}")
-    }
-
     fun createOrder(specialNotes: String? = null) {
         val currentState = _uiState.value
 
@@ -290,9 +257,7 @@ class OrderReviewViewModel @Inject constructor(
                     specialNotes = specialNotes
                 ).collect { result ->
                     when (result) {
-                        is Result.Loading -> {
-                            // Already set isCreatingOrder = true
-                        }
+                        is Result.Loading -> {}
 
                         is Result.Success -> {
                             _uiState.update {

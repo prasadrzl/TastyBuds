@@ -16,7 +16,9 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 @Singleton
 class ThemeManager @Inject constructor(private val context: Context) {
 
-    private val DARK_MODE_KEY = booleanPreferencesKey("dark_mode")
+    companion object {
+        private val DARK_MODE_KEY = booleanPreferencesKey("dark_mode")
+    }
 
     val isDarkMode: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[DARK_MODE_KEY] ?: false

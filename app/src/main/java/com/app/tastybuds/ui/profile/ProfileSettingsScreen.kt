@@ -93,7 +93,6 @@ fun ProfileSettingsScreen(
                 .fillMaxSize()
                 .padding(24.dp)
         ) {
-            // Header
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -274,7 +273,7 @@ private fun ProfileSettingsContent(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "Email",
+            text = stringResource(R.string.email),
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
             color = Color.Black,

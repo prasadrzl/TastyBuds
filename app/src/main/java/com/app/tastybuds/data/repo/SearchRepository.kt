@@ -20,9 +20,7 @@ class SearchRepositoryImpl @Inject constructor(
 
             val result =
                 apiService.searchMenuItemsWithRestaurants(nameQuery = formattedQuery, limit = limit)
-
             result
-
         } catch (e: Exception) {
             emptyList()
         }

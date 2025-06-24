@@ -1,4 +1,10 @@
-package com.app.tastybuds.data.model
+package com.app.tastybuds.domain.model
+
+import com.app.tastybuds.data.model.OrderItemCustomization
+import com.app.tastybuds.data.model.OrderItemRequest
+import com.app.tastybuds.data.model.OrderItemSize
+import com.app.tastybuds.data.model.OrderItemSpiceLevel
+import com.app.tastybuds.data.model.OrderItemTopping
 
 data class CartItem(
     val menuItemId: String,

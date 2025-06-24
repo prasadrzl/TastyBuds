@@ -9,5 +9,5 @@ data class FavoriteWithMenuItemResponse(
     @Json(name = "user_id") val userId: String = "",
     @Json(name = "menu_item_id") val menuItemId: String? = null,
     @Json(name = "created_at") val createdAt: String = "",
-    @Json(name = "menu_items") val menuItem: MenuItemWithRestaurantResponse? = null // ✅ Full menu item data!
+    @Json(name = "menu_items") val menuItem: MenuItemWithRestaurantResponse? = null
 )

@@ -2,7 +2,7 @@ package com.app.tastybuds.ui.resturants.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.tastybuds.data.SearchResult
+import com.app.tastybuds.domain.model.SearchResult
 import com.app.tastybuds.domain.SearchResultsUseCase
 import com.app.tastybuds.ui.resturants.state.SearchUiState
 import com.app.tastybuds.util.isRestaurantNear

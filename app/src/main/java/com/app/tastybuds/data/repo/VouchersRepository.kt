@@ -82,7 +82,7 @@ class VouchersRepositoryImpl @Inject constructor(
                 }
 
                 val vouchers = vouchersApiResponse.toVoucherDomainModelList(restaurantNames)
-                    .filter { it.canBeUsed } // Additional client-side filtering
+                    .filter { it.canBeUsed }
 
                 emit(Result.Success(vouchers))
             } else {

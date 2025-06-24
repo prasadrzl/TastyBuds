@@ -1,13 +1,10 @@
 package com.app.tastybuds.util
 
-import android.os.Build
-import androidx.annotation.RequiresExtension
 import okio.IOException
 import retrofit2.HttpException
 
 object ErrorHandler {
 
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     fun handleApiError(exception: Throwable): String {
         return when (exception) {
             is HttpException -> {

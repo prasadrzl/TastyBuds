@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -84,7 +85,7 @@ class OrderTrackingViewModel @Inject constructor(
                 restaurantLocation.first, restaurantLocation.second,
                 deliveryLocation.first, deliveryLocation.second
             )
-            String.format("%.1f km", distanceKm)
+            String.format(Locale.getDefault(), "%.1f km", distanceKm)
         } else {
             "Unknown"
         }

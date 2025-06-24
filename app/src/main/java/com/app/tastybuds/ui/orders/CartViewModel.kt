@@ -2,7 +2,7 @@ package com.app.tastybuds.ui.orders
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.app.tastybuds.data.model.CartItem
+import com.app.tastybuds.domain.model.CartItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +23,6 @@ class CartViewModel @Inject constructor() : ViewModel() {
     }
 
     fun addToCart(item: CartItem) {
-        Log.d(TAG, "Adding item to cart: ${item.name} (quantity: ${item.quantity})")
 
         val currentItems = _cartItems.value.toMutableList()
 
@@ -74,24 +73,6 @@ class CartViewModel @Inject constructor() : ViewModel() {
         }
 
         clearEditingItem()
-    }
-
-    private fun removeFromCart(item: CartItem) {
-
-        val currentItems = _cartItems.value.toMutableList()
-        val removed = currentItems.removeAll { cartItem ->
-            cartItem.menuItemId == item.menuItemId &&
-                    cartItem.selectedSize?.id == item.selectedSize?.id &&
-                    cartItem.selectedToppings == item.selectedToppings &&
-                    cartItem.selectedSpiceLevel?.id == item.selectedSpiceLevel?.id
-        }
-
-        if (removed) {
-            _cartItems.value = currentItems
-            Log.d(TAG, "Item removed successfully. Cart now has ${currentItems.size} items")
-        } else {
-            Log.w(TAG, "Item not found for removal")
-        }
     }
 
     fun clearCart() {

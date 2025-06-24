@@ -70,9 +70,7 @@ data class RestaurantCombo(
 )
 
 enum class VoucherDiscountType {
-    PERCENTAGE,
-    FIXED,
-    FREE_DELIVERY
+    PERCENTAGE, FIXED, FREE_DELIVERY
 }
 
 data class RestaurantDetailsData(

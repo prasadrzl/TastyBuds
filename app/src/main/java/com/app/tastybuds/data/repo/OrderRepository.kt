@@ -7,8 +7,10 @@ import com.app.tastybuds.common.toApiString
 import com.app.tastybuds.data.model.CreateOrderRequest
 import com.app.tastybuds.data.model.Order
 import com.app.tastybuds.data.model.OrderStatus
+import com.app.tastybuds.data.model.UpdateOrderStatusRequest
 import com.app.tastybuds.data.model.UserAddress
 import com.app.tastybuds.data.model.Voucher
+import com.app.tastybuds.util.ErrorHandler
 import com.app.tastybuds.util.Result
 import com.app.tastybuds.util.getGlobalVouchersExt
 import com.app.tastybuds.util.getOrderByExt
@@ -16,11 +18,8 @@ import com.app.tastybuds.util.getUserAddressesExt
 import com.app.tastybuds.util.getUserOrdersExt
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import retrofit2.HttpException
-import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.app.tastybuds.data.model.UpdateOrderStatusRequest
 
 interface OrderRepository {
     suspend fun getUserAddresses(userId: String): Flow<Result<List<UserAddress>>>
@@ -29,7 +28,11 @@ interface OrderRepository {
     suspend fun getAvailableVouchers(userId: String): Flow<Result<List<Voucher>>>
     suspend fun getOrderById(orderId: String): Flow<Result<Order>>
     suspend fun getActiveUserOrders(userId: String): Flow<Result<List<Order>>>
-    suspend fun getUserOrdersByStatus(userId: String, status: OrderStatus): Flow<Result<List<Order>>>
+    suspend fun getUserOrdersByStatus(
+        userId: String,
+        status: OrderStatus
+    ): Flow<Result<List<Order>>>
+
     suspend fun updateOrderStatus(orderId: String, newStatus: OrderStatus): Flow<Result<Order>>
 }
 
@@ -47,12 +50,8 @@ class OrderRepositoryImpl @Inject constructor(
             } else {
                 emit(Result.Error("Failed to fetch addresses: ${response.message()}"))
             }
-        } catch (e: HttpException) {
-            emit(Result.Error("Network error: ${e.message()}"))
-        } catch (e: IOException) {
-            emit(Result.Error("Please check your internet connection"))
         } catch (e: Exception) {
-            emit(Result.Error("An unexpected error occurred: ${e.message}"))
+            emit(Result.Error(ErrorHandler.handleApiError(e)))
         }
     }
 
@@ -70,12 +69,8 @@ class OrderRepositoryImpl @Inject constructor(
             } else {
                 emit(Result.Error("Failed to create order: ${response.message()}"))
             }
-        } catch (e: HttpException) {
-            emit(Result.Error("Network error: ${e.message()}"))
-        } catch (e: IOException) {
-            emit(Result.Error("Please check your internet connection"))
         } catch (e: Exception) {
-            emit(Result.Error("An unexpected error occurred: ${e.message}"))
+            emit(Result.Error(ErrorHandler.handleApiError(e)))
         }
     }
 
@@ -88,27 +83,19 @@ class OrderRepositoryImpl @Inject constructor(
             } else {
                 emit(Result.Error("Failed to fetch vouchers: ${response.message()}"))
             }
-        } catch (e: HttpException) {
-            emit(Result.Error("Network error: ${e.message()}"))
-        } catch (e: IOException) {
-            emit(Result.Error("Please check your internet connection"))
         } catch (e: Exception) {
-            emit(Result.Error("An unexpected error occurred: ${e.message}"))
+            emit(Result.Error(ErrorHandler.handleApiError(e)))
         }
     }
 
     override suspend fun getUserOrders(userId: String): Flow<Result<List<Order>>> = flow {
         try {
             emit(Result.Loading)
-            Log.d(TAG, "Fetching orders for user: $userId")
 
             val response = apiService.getUserOrdersExt(userId)
 
             if (response.isSuccessful) {
                 val orders = response.body() ?: emptyList()
-                Log.d(TAG, "Successfully fetched ${orders.size} orders")
-
-                // Sort orders by creation date (newest first)
                 val sortedOrders = orders.sortedByDescending { it.createdAt }
                 emit(Result.Success(sortedOrders))
             } else {
@@ -116,34 +103,20 @@ class OrderRepositoryImpl @Inject constructor(
                 Log.e(TAG, errorMsg)
                 emit(Result.Error(errorMsg))
             }
-        } catch (e: HttpException) {
-            val errorMsg = "Network error: ${e.code()} - ${e.message()}"
-            Log.e(TAG, errorMsg, e)
-            emit(Result.Error(errorMsg))
-        } catch (e: IOException) {
-            val errorMsg = "Please check your internet connection"
-            Log.e(TAG, errorMsg, e)
-            emit(Result.Error(errorMsg))
         } catch (e: Exception) {
-            val errorMsg =
-                "An unexpected error occurred: ${e.localizedMessage ?: e.message ?: "Unknown error"}"
-            Log.e(TAG, errorMsg, e)
-            emit(Result.Error(errorMsg))
+            emit(Result.Error(ErrorHandler.handleApiError(e)))
         }
     }
 
     override suspend fun getOrderById(orderId: String): Flow<Result<Order>> = flow {
         try {
             emit(Result.Loading)
-            Log.d(TAG, "Fetching order details for ID: $orderId")
-
             val response = apiService.getOrderByExt(orderId)
 
             if (response.isSuccessful) {
                 val orders = response.body() ?: emptyList()
                 if (orders.isNotEmpty()) {
                     val order = orders.first()
-                    Log.d(TAG, "Successfully fetched order: ${order.id}")
                     emit(Result.Success(order))
                 } else {
                     val errorMsg = "Order not found with ID: $orderId"
@@ -155,19 +128,8 @@ class OrderRepositoryImpl @Inject constructor(
                 Log.e(TAG, errorMsg)
                 emit(Result.Error(errorMsg))
             }
-        } catch (e: HttpException) {
-            val errorMsg = "Network error: ${e.code()} - ${e.message()}"
-            Log.e(TAG, errorMsg, e)
-            emit(Result.Error(errorMsg))
-        } catch (e: IOException) {
-            val errorMsg = "Please check your internet connection"
-            Log.e(TAG, errorMsg, e)
-            emit(Result.Error(errorMsg))
         } catch (e: Exception) {
-            val errorMsg =
-                "An unexpected error occurred: ${e.localizedMessage ?: e.message ?: "Unknown error"}"
-            Log.e(TAG, errorMsg, e)
-            emit(Result.Error(errorMsg))
+            emit(Result.Error(ErrorHandler.handleApiError(e)))
         }
     }
 
@@ -177,8 +139,6 @@ class OrderRepositoryImpl @Inject constructor(
     ): Flow<Result<List<Order>>> = flow {
         try {
             emit(Result.Loading)
-            Log.d(TAG, "Fetching orders for user: $userId with status: $status")
-
             val response = apiService.getUserOrdersByStatus(
                 userId = userId,
                 status = "eq.${status.toApiString()}"
@@ -186,39 +146,24 @@ class OrderRepositoryImpl @Inject constructor(
 
             if (response.isSuccessful) {
                 val orders = response.body() ?: emptyList()
-                Log.d(TAG, "Successfully fetched ${orders.size} orders with status $status")
                 emit(Result.Success(orders.sortedByDescending { it.createdAt }))
             } else {
                 val errorMsg = "Failed to fetch orders: ${response.code()} - ${response.message()}"
                 Log.e(TAG, errorMsg)
                 emit(Result.Error(errorMsg))
             }
-        } catch (e: HttpException) {
-            val errorMsg = "Network error: ${e.code()} - ${e.message()}"
-            Log.e(TAG, errorMsg, e)
-            emit(Result.Error(errorMsg))
-        } catch (e: IOException) {
-            val errorMsg = "Please check your internet connection"
-            Log.e(TAG, errorMsg, e)
-            emit(Result.Error(errorMsg))
         } catch (e: Exception) {
-            val errorMsg =
-                "An unexpected error occurred: ${e.localizedMessage ?: e.message ?: "Unknown error"}"
-            Log.e(TAG, errorMsg, e)
-            emit(Result.Error(errorMsg))
+            emit(Result.Error(ErrorHandler.handleApiError(e)))
         }
     }
 
     override suspend fun getActiveUserOrders(userId: String): Flow<Result<List<Order>>> = flow {
         try {
             emit(Result.Loading)
-            Log.d(TAG, "Fetching active orders for user: $userId")
-
             val response = apiService.getActiveUserOrders(userId)
 
             if (response.isSuccessful) {
                 val orders = response.body() ?: emptyList()
-                Log.d(TAG, "Successfully fetched ${orders.size} active orders")
                 emit(Result.Success(orders.sortedByDescending { it.createdAt }))
             } else {
                 val errorMsg =
@@ -226,19 +171,8 @@ class OrderRepositoryImpl @Inject constructor(
                 Log.e(TAG, errorMsg)
                 emit(Result.Error(errorMsg))
             }
-        } catch (e: HttpException) {
-            val errorMsg = "Network error: ${e.code()} - ${e.message()}"
-            Log.e(TAG, errorMsg, e)
-            emit(Result.Error(errorMsg))
-        } catch (e: IOException) {
-            val errorMsg = "Please check your internet connection"
-            Log.e(TAG, errorMsg, e)
-            emit(Result.Error(errorMsg))
         } catch (e: Exception) {
-            val errorMsg =
-                "An unexpected error occurred: ${e.localizedMessage ?: e.message ?: "Unknown error"}"
-            Log.e(TAG, errorMsg, e)
-            emit(Result.Error(errorMsg))
+            emit(Result.Error(ErrorHandler.handleApiError(e)))
         }
     }
 
@@ -248,8 +182,6 @@ class OrderRepositoryImpl @Inject constructor(
     ): Flow<Result<Order>> = flow {
         try {
             emit(Result.Loading)
-            Log.d(TAG, "Updating order $orderId status to $newStatus")
-
             val updateRequest = UpdateOrderStatusRequest(
                 status = newStatus.toApiString()
             )
@@ -260,7 +192,6 @@ class OrderRepositoryImpl @Inject constructor(
                 val orders = response.body() ?: emptyList()
                 if (orders.isNotEmpty()) {
                     val updatedOrder = orders.first()
-                    Log.d(TAG, "Successfully updated order status: ${updatedOrder.id}")
                     emit(Result.Success(updatedOrder))
                 } else {
                     val errorMsg = "Failed to update order status"
@@ -273,19 +204,8 @@ class OrderRepositoryImpl @Inject constructor(
                 Log.e(TAG, errorMsg)
                 emit(Result.Error(errorMsg))
             }
-        } catch (e: HttpException) {
-            val errorMsg = "Network error: ${e.code()} - ${e.message()}"
-            Log.e(TAG, errorMsg, e)
-            emit(Result.Error(errorMsg))
-        } catch (e: IOException) {
-            val errorMsg = "Please check your internet connection"
-            Log.e(TAG, errorMsg, e)
-            emit(Result.Error(errorMsg))
         } catch (e: Exception) {
-            val errorMsg =
-                "An unexpected error occurred: ${e.localizedMessage ?: e.message ?: "Unknown error"}"
-            Log.e(TAG, errorMsg, e)
-            emit(Result.Error(errorMsg))
+            emit(Result.Error(ErrorHandler.handleApiError(e)))
         }
     }
 }
