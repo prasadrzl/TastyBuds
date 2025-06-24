@@ -36,6 +36,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -67,6 +68,10 @@ import com.app.tastybuds.domain.model.ToppingOption
 import com.app.tastybuds.ui.resturants.FoodDetailsViewModel
 import com.app.tastybuds.ui.resturants.state.FoodDetailsUiState
 import com.app.tastybuds.ui.theme.PrimaryColor
+import com.app.tastybuds.ui.theme.favoriteColor
+import com.app.tastybuds.ui.theme.primaryColor
+import com.app.tastybuds.ui.theme.textDisabledColor
+import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.app.tastybuds.util.createCartItemFromUiState
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -366,7 +371,7 @@ fun FoodImageHeader(
                     else stringResource(
                         R.string.add_to_favorites
                     ),
-                    tint = if (isFavorite) Color.Red else Color.White
+                    tint = if (isFavorite) favoriteColor() else MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
@@ -490,8 +495,8 @@ fun SizeSelectionSection(
                     selected = selectedSize == size.id,
                     onClick = { onSizeSelected(size.id) },
                     colors = RadioButtonDefaults.colors(
-                        selectedColor = PrimaryColor,
-                        unselectedColor = Color.Gray
+                        selectedColor = primaryColor(),
+                        unselectedColor = textSecondaryColor()
                     )
                 )
 
@@ -532,7 +537,7 @@ fun ToppingsSection(
                 text = stringResource(R.string.topping),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -540,7 +545,7 @@ fun ToppingsSection(
             Text(
                 text = stringResource(R.string.optional),
                 fontSize = 14.sp,
-                color = Color.Gray
+                color = textSecondaryColor()
             )
         }
 
@@ -558,8 +563,8 @@ fun ToppingsSection(
                     checked = selectedToppings.contains(topping.id),
                     onCheckedChange = { onToppingToggled(topping.id) },
                     colors = CheckboxDefaults.colors(
-                        checkedColor = PrimaryColor,
-                        uncheckedColor = Color.Gray
+                        checkedColor = primaryColor(),
+                        uncheckedColor = textSecondaryColor()
                     )
                 )
 
@@ -568,14 +573,14 @@ fun ToppingsSection(
                 Text(
                     text = topping.name,
                     fontSize = 16.sp,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f)
                 )
 
                 Text(
                     text = "+$${topping.price.toInt()}",
                     fontSize = 14.sp,
-                    color = Color.Gray
+                    color = textSecondaryColor()
                 )
             }
         }
@@ -598,7 +603,7 @@ fun SpicinessSection(
                 text = stringResource(R.string.spiciness),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -606,7 +611,7 @@ fun SpicinessSection(
             Text(
                 text = stringResource(R.string.pick_1_brackets),
                 fontSize = 14.sp,
-                color = Color.Gray
+                color = textSecondaryColor()
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -643,8 +648,8 @@ fun SpicinessSection(
                     selected = selectedSpice == spice.id,
                     onClick = { onSpiceSelected(spice.id) },
                     colors = RadioButtonDefaults.colors(
-                        selectedColor = PrimaryColor,
-                        unselectedColor = Color.Gray
+                        selectedColor = primaryColor(),
+                        unselectedColor = textSecondaryColor()
                     )
                 )
 

@@ -32,10 +32,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.tastybuds.R
+import com.app.tastybuds.ui.theme.primaryColor
 
 @Composable
 fun LookingForDriverScreen(onCancel: () -> Unit, onHelp: () -> Unit) {
-    val brandOrange = Color(0xFFFF7700)
+    val brandOrange = primaryColor()
     val stageLabels =
         listOf("Confirm order", "Look for driver", "Prepare food", "Deliver", "Arrived")
     val currentStage = 1

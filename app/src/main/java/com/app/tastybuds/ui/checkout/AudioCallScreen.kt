@@ -10,10 +10,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.tastybuds.R
+import com.app.tastybuds.ui.theme.primaryColor
 
 @Composable
 fun AudioCallScreen(
@@ -39,7 +41,7 @@ fun AudioCallScreen(
             modifier = Modifier
                 .size(120.dp)
                 .clip(CircleShape)
-                .background(Color(0xFFFF7700)),
+                .background(primaryColor()),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -57,7 +59,7 @@ fun AudioCallScreen(
                 IconButton(onClick = onSpeakerToggle) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_speaker_high),
-                        contentDescription = "Speaker"
+                        contentDescription = stringResource(R.string.speaker)
                     )
                 }
                 Text("Speaker")
@@ -67,7 +69,7 @@ fun AudioCallScreen(
                 IconButton(onClick = onMuteToggle) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_microphone_off),
-                        contentDescription = "Mute"
+                        contentDescription = stringResource(R.string.mute)
                     )
                 }
                 Text("Mute")
@@ -81,11 +83,11 @@ fun AudioCallScreen(
             modifier = Modifier
                 .size(64.dp)
                 .clip(CircleShape)
-                .background(Color(0xFFE53935))
+                .background(primaryColor())
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_end_call),
-                contentDescription = "End Call",
+                contentDescription = stringResource(R.string.end_call),
                 tint = Color.White,
                 modifier = Modifier.size(24.dp)
             )

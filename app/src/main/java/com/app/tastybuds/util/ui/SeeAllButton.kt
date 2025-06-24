@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,8 +17,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.app.tastybuds.ui.theme.PrimaryColor
-import com.app.tastybuds.ui.theme.buttonColor
+import com.app.tastybuds.ui.theme.buttonBackgroundColor
+import com.app.tastybuds.ui.theme.primaryColor
+import com.app.tastybuds.ui.theme.textDisabledColor
 
 @Composable
 fun SeeAllButton(
@@ -28,8 +30,8 @@ fun SeeAllButton(
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = buttonColor,
-            contentColor = PrimaryColor
+            containerColor = buttonBackgroundColor(),
+            contentColor = primaryColor()
         ),
         modifier = modifier
             .fillMaxWidth()
@@ -56,10 +58,10 @@ fun PrimaryButton(
         onClick = onClick,
         enabled = enabled,
         colors = ButtonDefaults.buttonColors(
-            containerColor = PrimaryColor,
-            contentColor = Color.White,
-            disabledContainerColor = Color.Gray,
-            disabledContentColor = Color.White
+            containerColor = primaryColor(),
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            disabledContainerColor = textDisabledColor(),
+            disabledContentColor = MaterialTheme.colorScheme.onPrimary
         ),
         shape = RoundedCornerShape(28.dp),
         modifier = modifier

@@ -56,7 +56,8 @@ import com.app.tastybuds.R
 import com.app.tastybuds.data.model.FavoriteMenuItemUi
 import com.app.tastybuds.data.model.FavoriteRestaurantUi
 import com.app.tastybuds.ui.login.LoginViewModel
-import com.app.tastybuds.ui.theme.PrimaryColor
+import com.app.tastybuds.ui.theme.extendedColors
+import com.app.tastybuds.ui.theme.primaryColor
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -127,7 +128,7 @@ fun FavoritesTabRow(
             if (selectedTabIndex < tabPositions.size) {
                 TabRowDefaults.SecondaryIndicator(
                     modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
-                    color = PrimaryColor
+                    color = primaryColor()
                 )
             }
         }
@@ -145,14 +146,14 @@ fun FavoritesTabRow(
                     text = stringResource(id = R.string.favorite_item_tab),
                     fontSize = 16.sp,
                     fontWeight = if (selectedTabIndex == 0) FontWeight.Bold else FontWeight.Normal,
-                    color = if (selectedTabIndex == 0) PrimaryColor else Color.Gray
+                    color = if (selectedTabIndex == 0) primaryColor() else Color.Gray
                 )
                 if (favoriteItemsCount > 0) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Box(
                         modifier = Modifier
                             .background(
-                                color = if (selectedTabIndex == 0) PrimaryColor else Color.Gray,
+                                color = if (selectedTabIndex == 0) primaryColor() else Color.Gray,
                                 shape = CircleShape
                             )
                             .padding(horizontal = 6.dp, vertical = 2.dp),
@@ -181,14 +182,14 @@ fun FavoritesTabRow(
                     text = stringResource(id = R.string.restaurants),
                     fontSize = 16.sp,
                     fontWeight = if (selectedTabIndex == 1) FontWeight.Bold else FontWeight.Normal,
-                    color = if (selectedTabIndex == 1) PrimaryColor else Color.Gray
+                    color = if (selectedTabIndex == 1) primaryColor() else Color.Gray
                 )
                 if (favoriteRestaurantsCount > 0) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Box(
                         modifier = Modifier
                             .background(
-                                color = if (selectedTabIndex == 1) PrimaryColor else Color.Gray,
+                                color = if (selectedTabIndex == 1) primaryColor() else Color.Gray,
                                 shape = CircleShape
                             )
                             .padding(horizontal = 6.dp, vertical = 2.dp),
@@ -220,7 +221,7 @@ fun FavoriteItemsTab(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = PrimaryColor)
+                CircularProgressIndicator(color = primaryColor())
             }
         }
 
@@ -263,7 +264,7 @@ fun FavoriteRestaurantsTab(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = PrimaryColor)
+                CircularProgressIndicator(color = primaryColor())
             }
         }
 
@@ -358,7 +359,7 @@ fun FavoriteRestaurantCard(
                             imageVector = Icons.Default.Star,
                             contentDescription = stringResource(id = R.string.rating),
                             modifier = Modifier.size(12.dp),
-                            tint = Color(0xFFFFC107)
+                            tint = extendedColors.textSecondary
                         )
 
                         Spacer(modifier = Modifier.width(4.dp))
@@ -385,7 +386,7 @@ fun FavoriteRestaurantCard(
                     text = favorite.priceRange,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryColor
+                    color = primaryColor()
                 )
             }
 
@@ -487,7 +488,7 @@ fun FavoriteMenuItemCard(
                         text = favorite.priceText,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = PrimaryColor
+                        color = primaryColor()
                     )
                 }
             }

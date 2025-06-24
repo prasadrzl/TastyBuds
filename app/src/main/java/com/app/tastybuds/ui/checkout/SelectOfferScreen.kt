@@ -40,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.app.tastybuds.R
+import com.app.tastybuds.ui.theme.primaryColor
 import com.app.tastybuds.util.ui.AppTopBar
 
 @Composable
@@ -133,7 +134,7 @@ fun SelectOfferScreen(offers: List<OfferItem>, onUseNowClick: () -> Unit) {
                 .fillMaxWidth()
                 .padding(16.dp)
                 .height(48.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7700)),
+            colors = ButtonDefaults.buttonColors(containerColor = primaryColor()),
             shape = RoundedCornerShape(24.dp)
         ) {
             Text("Use now", color = Color.White)
