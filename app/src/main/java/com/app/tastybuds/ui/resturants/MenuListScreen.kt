@@ -42,7 +42,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -52,7 +51,22 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.R
 import com.app.tastybuds.data.model.RestaurantMenuItem
-import com.app.tastybuds.ui.theme.PrimaryColor
+import com.app.tastybuds.ui.theme.backgroundColor
+import com.app.tastybuds.ui.theme.borderColor
+import com.app.tastybuds.ui.theme.cardBackgroundColor
+import com.app.tastybuds.ui.theme.cardContentColor
+import com.app.tastybuds.ui.theme.categoryChipSelectedColor
+import com.app.tastybuds.ui.theme.categoryChipUnselectedColor
+import com.app.tastybuds.ui.theme.emptyHeartColor
+import com.app.tastybuds.ui.theme.errorColor
+import com.app.tastybuds.ui.theme.heartFavoriteColor
+import com.app.tastybuds.ui.theme.onPrimaryColor
+import com.app.tastybuds.ui.theme.onSurfaceColor
+import com.app.tastybuds.ui.theme.popularBadgeColor
+import com.app.tastybuds.ui.theme.priceTextColor
+import com.app.tastybuds.ui.theme.primaryColor
+import com.app.tastybuds.ui.theme.starRatingColor
+import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.app.tastybuds.util.ui.AppTopBar
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -99,7 +113,7 @@ fun MenuListScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(backgroundColor())
     ) {
         AppTopBar(
             title = when (section) {
@@ -108,7 +122,6 @@ fun MenuListScreen(
             },
             onBackClick = onBackClick
         )
-
 
         if (section == MenuSectionType.FULL_MENU && categories.isNotEmpty()) {
             CategoryFilterRow(
@@ -234,7 +247,7 @@ private fun EmptyContent(
                     }
                 },
                 fontSize = 16.sp,
-                color = Color.Gray
+                color = textSecondaryColor()
             )
         }
     }
@@ -257,14 +270,14 @@ fun CategoryChip(
         },
         selected = isSelected,
         colors = FilterChipDefaults.filterChipColors(
-            selectedContainerColor = PrimaryColor,
-            selectedLabelColor = Color.White,
-            containerColor = Color.White,
-            labelColor = Color.Black
+            selectedContainerColor = categoryChipSelectedColor(),
+            selectedLabelColor = onPrimaryColor(),
+            containerColor = categoryChipUnselectedColor(),
+            labelColor = onSurfaceColor()
         ),
         border = FilterChipDefaults.filterChipBorder(
-            borderColor = if (isSelected) PrimaryColor else Color.Gray.copy(alpha = 0.3f),
-            selectedBorderColor = PrimaryColor,
+            borderColor = if (isSelected) primaryColor() else borderColor(),
+            selectedBorderColor = primaryColor(),
             enabled = false,
             selected = true
         )
@@ -283,7 +296,7 @@ fun MenuItemGridCard(
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = cardBackgroundColor()),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -309,7 +322,7 @@ fun MenuItemGridCard(
                     Icon(
                         imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = "Toggle favorite",
-                        tint = if (item.isFavorite) Color.Red else Color.White,
+                        tint = if (item.isFavorite) heartFavoriteColor() else emptyHeartColor(),
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -321,7 +334,7 @@ fun MenuItemGridCard(
                 text = item.name,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color.Black,
+                color = cardContentColor(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -334,7 +347,7 @@ fun MenuItemGridCard(
                     Icon(
                         imageVector = Icons.Default.Star,
                         contentDescription = "Rating",
-                        tint = Color(0xFFFFD700),
+                        tint = starRatingColor(),
                         modifier = Modifier.size(14.dp)
                     )
 
@@ -343,13 +356,13 @@ fun MenuItemGridCard(
                     Text(
                         text = "${item.rating}",
                         fontSize = 12.sp,
-                        color = Color.Black
+                        color = cardContentColor()
                     )
 
                     Text(
                         text = " (${item.reviewCount})",
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = textSecondaryColor()
                     )
                 }
             }
@@ -360,19 +373,19 @@ fun MenuItemGridCard(
                 text = "$${"%.0f".format(item.price)}",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = PrimaryColor
+                color = priceTextColor()
             )
 
             if (item.isPopular) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Surface(
                     shape = RoundedCornerShape(4.dp),
-                    color = PrimaryColor.copy(alpha = 0.1f)
+                    color = popularBadgeColor().copy(alpha = 0.1f)
                 ) {
                     Text(
                         text = "Popular",
                         fontSize = 10.sp,
-                        color = PrimaryColor,
+                        color = popularBadgeColor(),
                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                     )
                 }
@@ -392,7 +405,7 @@ fun MenuItemListCard(
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = cardBackgroundColor()),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -421,7 +434,7 @@ fun MenuItemListCard(
                     text = item.name,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color.Black
+                    color = cardContentColor()
                 )
 
                 if (item.description.isNotEmpty()) {
@@ -429,7 +442,7 @@ fun MenuItemListCard(
                     Text(
                         text = item.description,
                         fontSize = 12.sp,
-                        color = Color.Gray,
+                        color = textSecondaryColor(),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -444,7 +457,7 @@ fun MenuItemListCard(
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = "Rating",
-                            tint = Color(0xFFFFD700),
+                            tint = starRatingColor(),
                             modifier = Modifier.size(16.dp)
                         )
 
@@ -453,13 +466,13 @@ fun MenuItemListCard(
                         Text(
                             text = "${item.rating}",
                             fontSize = 12.sp,
-                            color = Color.Black
+                            color = cardContentColor()
                         )
 
                         Text(
                             text = " (${item.reviewCount})",
                             fontSize = 12.sp,
-                            color = Color.Gray
+                            color = textSecondaryColor()
                         )
 
                         Spacer(modifier = Modifier.width(8.dp))
@@ -468,7 +481,7 @@ fun MenuItemListCard(
                     Text(
                         text = item.prepTime,
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = textSecondaryColor()
                     )
                 }
 
@@ -478,12 +491,12 @@ fun MenuItemListCard(
                         if (item.isPopular) {
                             Surface(
                                 shape = RoundedCornerShape(4.dp),
-                                color = PrimaryColor.copy(alpha = 0.1f)
+                                color = popularBadgeColor().copy(alpha = 0.1f)
                             ) {
                                 Text(
                                     text = "Popular",
                                     fontSize = 10.sp,
-                                    color = PrimaryColor,
+                                    color = popularBadgeColor(),
                                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                 )
                             }
@@ -496,12 +509,12 @@ fun MenuItemListCard(
                         if (item.isSpicy) {
                             Surface(
                                 shape = RoundedCornerShape(4.dp),
-                                color = Color.Red.copy(alpha = 0.1f)
+                                color = errorColor().copy(alpha = 0.1f)
                             ) {
                                 Text(
                                     text = "Spicy",
                                     fontSize = 10.sp,
-                                    color = Color.Red,
+                                    color = errorColor(),
                                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                 )
                             }
@@ -519,7 +532,7 @@ fun MenuItemListCard(
                     text = "$${"%.0f".format(item.price)}",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryColor
+                    color = priceTextColor()
                 )
             }
         }

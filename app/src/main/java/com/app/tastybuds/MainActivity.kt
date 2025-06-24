@@ -72,6 +72,7 @@ fun TastyBuddyMainScreen(navController: NavHostController, themeManager: ThemeMa
                     currentRoute?.startsWith("see_all/") == true ||
                     currentRoute?.startsWith("order_tracking/") == true ||
                     currentRoute?.startsWith("menu_list/") == true ||
+                    currentRoute?.startsWith("order_details/") == true ||
                     currentRoute == "location" ||
                     currentRoute == "favorites" ||
                     currentRoute == "order_review" ||
@@ -113,6 +114,7 @@ fun TastyBuddyMainScreen(navController: NavHostController, themeManager: ThemeMa
                     currentRoute?.startsWith("food_details/") == true ||
                     currentRoute?.startsWith("order_tracking/") == true ||
                     currentRoute?.startsWith("menu_list/") == true ||
+                    currentRoute?.startsWith("order_details/") == true ||
                     currentRoute == "location" ||
                     currentRoute == "order_review" ||
                     currentRoute == "all_collections" ||

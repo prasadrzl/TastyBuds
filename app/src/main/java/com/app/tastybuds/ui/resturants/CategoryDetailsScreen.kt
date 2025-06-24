@@ -60,7 +60,21 @@ import com.app.tastybuds.domain.model.CategoryMenuItem
 import com.app.tastybuds.domain.model.CategoryRestaurant
 import com.app.tastybuds.domain.model.Restaurant
 import com.app.tastybuds.ui.resturants.state.RestaurantUiState
-import com.app.tastybuds.ui.theme.PrimaryColor
+import com.app.tastybuds.ui.theme.backgroundColor
+import com.app.tastybuds.ui.theme.badgeTextColor
+import com.app.tastybuds.ui.theme.cardBackgroundColor
+import com.app.tastybuds.ui.theme.cardContentColor
+import com.app.tastybuds.ui.theme.chipSelectedBackgroundColor
+import com.app.tastybuds.ui.theme.chipSelectedContentColor
+import com.app.tastybuds.ui.theme.chipUnselectedBackgroundColor
+import com.app.tastybuds.ui.theme.chipUnselectedContentColor
+import com.app.tastybuds.ui.theme.loadingIndicatorColor
+import com.app.tastybuds.ui.theme.onBackgroundColor
+import com.app.tastybuds.ui.theme.onPrimaryColor
+import com.app.tastybuds.ui.theme.primaryColor
+import com.app.tastybuds.ui.theme.starRatingColor
+import com.app.tastybuds.ui.theme.textSecondaryColor
+import com.app.tastybuds.ui.theme.*
 import com.app.tastybuds.util.ui.SeeAllButton
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -104,7 +118,7 @@ fun CategoryDetailsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(backgroundColor())
     ) {
         CategoryHeader(
             categoryName = uiState.categoryName.ifBlank { categoryName },
@@ -160,7 +174,7 @@ fun LoadingContent() {
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
-            color = PrimaryColor,
+            color = loadingIndicatorColor(),
             modifier = Modifier.size(48.dp)
         )
     }
@@ -181,7 +195,7 @@ fun ErrorContent(
         Icon(
             painter = painterResource(id = R.drawable.ic_help),
             contentDescription = stringResource(R.string.error),
-            tint = PrimaryColor,
+            tint = primaryColor(),
             modifier = Modifier.size(64.dp)
         )
 
@@ -191,7 +205,7 @@ fun ErrorContent(
             text = stringResource(R.string.oops_something_went_wrong),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black
+            color = onBackgroundColor()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -199,7 +213,7 @@ fun ErrorContent(
         Text(
             text = error,
             fontSize = 14.sp,
-            color = Color.Gray,
+            color = textSecondaryColor(),
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
 
@@ -207,12 +221,12 @@ fun ErrorContent(
 
         Button(
             onClick = onRetry,
-            colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
+            colors = ButtonDefaults.buttonColors(containerColor = primaryColor()),
             shape = RoundedCornerShape(24.dp)
         ) {
             Text(
                 text = stringResource(R.string.try_again),
-                color = Color.White,
+                color = onPrimaryColor(),
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
         }
@@ -231,7 +245,7 @@ fun EmptyContent(categoryName: String) {
         Icon(
             painter = painterResource(id = R.drawable.ic_search),
             contentDescription = stringResource(R.string.empty),
-            tint = Color.Gray,
+            tint = textSecondaryColor(),
             modifier = Modifier.size(64.dp)
         )
 
@@ -241,7 +255,7 @@ fun EmptyContent(categoryName: String) {
             text = stringResource(R.string.no_restaurants_found),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black
+            color = onBackgroundColor()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -252,7 +266,7 @@ fun EmptyContent(categoryName: String) {
                 categoryName
             ),
             fontSize = 14.sp,
-            color = Color.Gray,
+            color = textSecondaryColor(),
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
     }
@@ -304,7 +318,6 @@ fun CategoryContent(
             }
         }
 
-
         item {
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -319,7 +332,7 @@ fun CategoryContent(
                         text = "Recommended for you",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black,
+                        color = onBackgroundColor(),
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
                 }
@@ -346,7 +359,7 @@ fun CategoryRestaurantCard(
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = cardBackgroundColor()),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -375,7 +388,7 @@ fun CategoryRestaurantCard(
                     text = restaurant.name,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    color = cardContentColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -385,7 +398,7 @@ fun CategoryRestaurantCard(
                 Text(
                     text = restaurant.cuisine,
                     fontSize = 14.sp,
-                    color = Color.Gray,
+                    color = textSecondaryColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -398,7 +411,7 @@ fun CategoryRestaurantCard(
                     Text(
                         text = restaurant.deliveryTime,
                         fontSize = 12.sp,
-                        color = Color.Black
+                        color = cardContentColor()
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -407,7 +420,7 @@ fun CategoryRestaurantCard(
                         imageVector = Icons.Default.Star,
                         contentDescription = stringResource(id = R.string.rating),
                         modifier = Modifier.size(14.dp),
-                        tint = Color(0xFFFFC107)
+                        tint = starRatingColor()
                     )
 
                     Spacer(modifier = Modifier.width(2.dp))
@@ -415,7 +428,7 @@ fun CategoryRestaurantCard(
                     Text(
                         text = "${restaurant.rating} (${restaurant.reviewCount})",
                         fontSize = 12.sp,
-                        color = Color.Black
+                        color = cardContentColor()
                     )
                 }
 
@@ -444,7 +457,7 @@ fun MenuItemCard(
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = cardBackgroundColor()),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -473,7 +486,7 @@ fun MenuItemCard(
                     text = menuItem.name,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    color = cardContentColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -483,7 +496,7 @@ fun MenuItemCard(
                     Text(
                         text = menuItem.description,
                         fontSize = 12.sp,
-                        color = Color.Gray,
+                        color = textSecondaryColor(),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -498,7 +511,7 @@ fun MenuItemCard(
                         text = "$${menuItem.price.toInt()}",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                        color = priceTextColor()
                     )
 
                     Spacer(modifier = Modifier.width(16.dp))
@@ -507,7 +520,7 @@ fun MenuItemCard(
                         imageVector = Icons.Default.Star,
                         contentDescription = stringResource(id = R.string.rating),
                         modifier = Modifier.size(12.dp),
-                        tint = Color(0xFFFFC107)
+                        tint = starRatingColor()
                     )
 
                     Spacer(modifier = Modifier.width(4.dp))
@@ -515,7 +528,7 @@ fun MenuItemCard(
                     Text(
                         text = "${menuItem.rating} (${menuItem.reviewCount})",
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = textSecondaryColor()
                     )
                 }
 
@@ -524,7 +537,7 @@ fun MenuItemCard(
                     Text(
                         text = "From ${menuItem.restaurantName}",
                         fontSize = 12.sp,
-                        color = PrimaryColor,
+                        color = primaryColor(),
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -544,7 +557,7 @@ fun RegularRestaurantCard(
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = cardBackgroundColor()),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -573,7 +586,7 @@ fun RegularRestaurantCard(
                     text = restaurant.name,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    color = cardContentColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -583,7 +596,7 @@ fun RegularRestaurantCard(
                 Text(
                     text = restaurant.cuisine,
                     fontSize = 14.sp,
-                    color = Color.Gray,
+                    color = textSecondaryColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -596,7 +609,7 @@ fun RegularRestaurantCard(
                     Text(
                         text = restaurant.deliveryTime,
                         fontSize = 12.sp,
-                        color = Color.Black
+                        color = cardContentColor()
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -605,7 +618,7 @@ fun RegularRestaurantCard(
                         imageVector = Icons.Default.Star,
                         contentDescription = stringResource(id = R.string.rating),
                         modifier = Modifier.size(14.dp),
-                        tint = Color(0xFFFFC107)
+                        tint = starRatingColor()
                     )
 
                     Spacer(modifier = Modifier.width(2.dp))
@@ -613,7 +626,7 @@ fun RegularRestaurantCard(
                     Text(
                         text = "${restaurant.rating} (${restaurant.reviewCount})",
                         fontSize = 12.sp,
-                        color = Color.Black
+                        color = cardContentColor()
                     )
                 }
 
@@ -644,7 +657,7 @@ fun CategoryHeader(
             Icon(
                 painter = painterResource(id = R.drawable.ic_back_arrow),
                 contentDescription = stringResource(id = R.string.back),
-                tint = Color.Black
+                tint = onBackgroundColor()
             )
         }
 
@@ -654,7 +667,7 @@ fun CategoryHeader(
             text = categoryName,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black
+            color = onBackgroundColor()
         )
     }
 }
@@ -684,26 +697,26 @@ fun FilterSection(
                         Text(
                             text = selectedSortBy,
                             fontSize = 14.sp,
-                            color = PrimaryColor
+                            color = primaryColor()
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowDown,
                             contentDescription = stringResource(R.string.sort_dropdown),
                             modifier = Modifier.size(16.dp),
-                            tint = PrimaryColor
+                            tint = primaryColor()
                         )
                     }
                 },
                 colors = FilterChipDefaults.filterChipColors(
-                    containerColor = Color.White,
-                    labelColor = PrimaryColor
+                    containerColor = cardBackgroundColor(),
+                    labelColor = primaryColor()
                 ),
                 border = FilterChipDefaults.filterChipBorder(
                     enabled = true,
                     selected = true,
-                    borderColor = PrimaryColor,
-                    selectedBorderColor = PrimaryColor
+                    borderColor = primaryColor(),
+                    selectedBorderColor = primaryColor()
                 ),
                 shape = RoundedCornerShape(20.dp)
             )
@@ -718,14 +731,14 @@ fun FilterSection(
                     Text(
                         text = filter.name,
                         fontSize = 14.sp,
-                        color = if (isSelected) Color.White else Color.Gray
+                        color = if (isSelected) onPrimaryColor() else textSecondaryColor()
                     )
                 },
                 colors = FilterChipDefaults.filterChipColors(
-                    containerColor = Color(0xFFF5F5F5),
-                    selectedContainerColor = PrimaryColor,
-                    labelColor = Color.Gray,
-                    selectedLabelColor = Color.White
+                    containerColor = chipUnselectedBackgroundColor(),
+                    selectedContainerColor = chipSelectedBackgroundColor(),
+                    labelColor = chipUnselectedContentColor(),
+                    selectedLabelColor = chipSelectedContentColor()
                 ),
                 shape = RoundedCornerShape(20.dp)
             )
@@ -736,10 +749,10 @@ fun FilterSection(
 @Composable
 fun BadgeChip(text: String) {
     val backgroundColor = when (text.lowercase()) {
-        "freeship" -> Color(0xFF4CAF50)
-        "near you" -> PrimaryColor
-        "popular" -> Color(0xFF9C27B0)
-        else -> Color(0xFF4CAF50)
+        "freeship" -> freeshippingBadgeColor()
+        "near you" -> primaryColor()
+        "popular" -> popularBadgeColor()
+        else -> successColor()
     }
 
     Card(
@@ -750,7 +763,7 @@ fun BadgeChip(text: String) {
             text = text,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             fontSize = 10.sp,
-            color = Color.White,
+            color = badgeTextColor(),
             fontWeight = FontWeight.Medium
         )
     }
@@ -794,7 +807,7 @@ fun FeaturedBannerSection(menuItems: List<CategoryMenuItem>) {
                         .size(if (isSelected) 8.dp else 6.dp)
                         .clip(CircleShape)
                         .background(
-                            if (isSelected) PrimaryColor else Color.Gray.copy(alpha = 0.5f)
+                            if (isSelected) primaryColor() else textSecondaryColor().copy(alpha = 0.5f)
                         )
                 )
                 if (index < banners.size - 1) {
@@ -820,9 +833,7 @@ fun FeaturedBannerCard(banner: CategoryMenuItem) {
             GlideImage(
                 model = banner.imageUrl,
                 contentDescription = banner.name,
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(RoundedCornerShape(8.dp)),
+                modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
                 failure = placeholder(R.drawable.default_food),
                 loading = placeholder(R.drawable.default_food)

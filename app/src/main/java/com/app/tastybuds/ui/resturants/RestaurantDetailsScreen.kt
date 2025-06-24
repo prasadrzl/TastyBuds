@@ -64,8 +64,7 @@ import com.app.tastybuds.data.model.RestaurantDetailsData
 import com.app.tastybuds.data.model.RestaurantMenuItem
 import com.app.tastybuds.data.model.RestaurantReview
 import com.app.tastybuds.ui.login.LoginViewModel
-import com.app.tastybuds.ui.theme.PrimaryColor
-import com.app.tastybuds.ui.theme.favoriteColor
+import com.app.tastybuds.ui.theme.*
 import com.app.tastybuds.util.ui.SeeAllButton
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -144,7 +143,7 @@ private fun ErrorContent(
                 painter = painterResource(id = R.drawable.ic_help),
                 contentDescription = null,
                 modifier = Modifier.size(64.dp),
-                tint = Color.Gray
+                tint = textSecondaryColor()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -153,7 +152,8 @@ private fun ErrorContent(
                 text = stringResource(R.string.oops_something_went_wrong),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = onBackgroundColor()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -161,7 +161,7 @@ private fun ErrorContent(
             Text(
                 text = error,
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray,
+                color = textSecondaryColor(),
                 textAlign = TextAlign.Center
             )
 
@@ -176,9 +176,12 @@ private fun ErrorContent(
 
                 Button(
                     onClick = onRetry,
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
+                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor())
                 ) {
-                    Text(stringResource(id = R.string.retry))
+                    Text(
+                        text = stringResource(id = R.string.retry),
+                        color = onPrimaryColor()
+                    )
                 }
             }
         }
@@ -315,7 +318,7 @@ fun RestaurantImageHeader(
                 Icon(
                     imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
-                    tint = if (isFavorite) favoriteColor() else MaterialTheme.colorScheme.onPrimary
+                    tint = if (isFavorite) heartFavoriteColor() else Color.White
                 )
             }
         }
@@ -326,7 +329,7 @@ fun RestaurantImageHeader(
                 .align(Alignment.BottomCenter)
                 .padding(horizontal = 16.dp),
             shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = cardBackgroundColor()),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             Column(
@@ -339,7 +342,7 @@ fun RestaurantImageHeader(
                     text = restaurant.name,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    color = cardContentColor(),
                     textAlign = TextAlign.Center
                 )
 
@@ -353,19 +356,19 @@ fun RestaurantImageHeader(
                     InfoItem(
                         icon = R.drawable.ic_bn_home,
                         text = restaurant.deliveryTime,
-                        color = PrimaryColor
+                        color = primaryColor()
                     )
 
                     InfoItem(
                         icon = R.drawable.ic_user_location,
                         text = restaurant.distance,
-                        color = PrimaryColor
+                        color = primaryColor()
                     )
 
                     InfoItem(
                         icon = R.drawable.ic_offer_percentage,
                         text = restaurant.priceRange,
-                        color = PrimaryColor
+                        color = primaryColor()
                     )
                 }
             }
@@ -394,7 +397,7 @@ fun InfoItem(
         Text(
             text = text,
             fontSize = 14.sp,
-            color = Color.Gray
+            color = textSecondaryColor()
         )
     }
 }
@@ -410,35 +413,35 @@ fun RestaurantInfoRows(
         InfoRow(
             icon = R.drawable.material_starpurple500_sharp,
             title = "${restaurant.rating} (${restaurant.reviewCount} reviews)",
-            iconColor = Color(0xFFFFC107),
+            iconColor = starRatingColor(),
             showArrow = true,
             onClick = { }
         )
 
         HorizontalDivider(
             thickness = 1.dp,
-            color = Color(0xFFE0E0E0),
+            color = dividerColor(),
             modifier = Modifier.padding(vertical = 12.dp)
         )
 
         InfoRow(
             icon = R.drawable.ic_offer_percentage,
             title = stringResource(R.string.discount_voucher_for_restaurant, voucherCount),
-            iconColor = PrimaryColor,
+            iconColor = primaryColor(),
             showArrow = true,
             onClick = { }
         )
 
         HorizontalDivider(
             thickness = 1.dp,
-            color = Color(0xFFE0E0E0),
+            color = dividerColor(),
             modifier = Modifier.padding(vertical = 12.dp)
         )
 
         InfoRow(
             icon = R.drawable.ic_help,
             title = "Delivery on ${restaurant.deliveryTime}",
-            iconColor = PrimaryColor,
+            iconColor = primaryColor(),
             showArrow = false,
         )
 
@@ -473,7 +476,7 @@ fun InfoRow(
         Text(
             text = title,
             fontSize = 16.sp,
-            color = Color.Black,
+            color = onBackgroundColor(),
             modifier = Modifier.weight(1f)
         )
 
@@ -481,7 +484,7 @@ fun InfoRow(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = stringResource(R.string.arrow),
-                tint = Color.Gray,
+                tint = textSecondaryColor(),
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -507,7 +510,7 @@ fun ForYouSection(
                 text = stringResource(R.string.for_you),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = onBackgroundColor()
             )
 
             TextButton(onClick = {
@@ -516,7 +519,7 @@ fun ForYouSection(
                 Text(
                     text = stringResource(id = R.string.view_all),
                     fontSize = 14.sp,
-                    color = PrimaryColor
+                    color = primaryColor()
                 )
             }
         }
@@ -552,7 +555,7 @@ fun ForYouItemCard(
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = cardBackgroundColor()),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column {
@@ -573,7 +576,7 @@ fun ForYouItemCard(
                     text = item.name,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color.Black,
+                    color = cardContentColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -587,7 +590,7 @@ fun ForYouItemCard(
                         imageVector = Icons.Default.Star,
                         contentDescription = "Rating",
                         modifier = Modifier.size(12.dp),
-                        tint = Color(0xFFFFC107)
+                        tint = starRatingColor()
                     )
 
                     Spacer(modifier = Modifier.width(4.dp))
@@ -595,16 +598,16 @@ fun ForYouItemCard(
                     Text(
                         text = "${item.rating} (${item.reviewCount})",
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = textSecondaryColor()
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
 
                     Text(
-                        text = "$${item.price.toInt()}",
+                        text = "${item.price.toInt()}",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                        color = priceTextColor()
                     )
                 }
             }
@@ -626,7 +629,7 @@ fun MenuSection(
             text = stringResource(R.string.menu_section),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black
+            color = onBackgroundColor()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -682,7 +685,7 @@ fun MenuItemCard(
                 text = item.name,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color.Black
+                color = onBackgroundColor()
             )
 
             if (item.description.isNotEmpty()) {
@@ -690,7 +693,7 @@ fun MenuItemCard(
                 Text(
                     text = item.description,
                     fontSize = 12.sp,
-                    color = Color.Gray,
+                    color = textSecondaryColor(),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -702,10 +705,10 @@ fun MenuItemCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "$${item.price.toInt()}",
+                    text = "${item.price.toInt()}",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = priceTextColor()
                 )
 
                 Spacer(modifier = Modifier.width(16.dp))
@@ -714,7 +717,7 @@ fun MenuItemCard(
                     imageVector = Icons.Default.Star,
                     contentDescription = "Rating",
                     modifier = Modifier.size(12.dp),
-                    tint = Color(0xFFFFC107)
+                    tint = starRatingColor()
                 )
 
                 Spacer(modifier = Modifier.width(4.dp))
@@ -722,7 +725,7 @@ fun MenuItemCard(
                 Text(
                     text = "${item.rating} (${item.reviewCount})",
                     fontSize = 12.sp,
-                    color = Color.Gray
+                    color = textSecondaryColor()
                 )
             }
         }
@@ -743,13 +746,13 @@ fun ReviewsSection(reviews: List<RestaurantReview>) {
                 text = stringResource(id = R.string.reviews),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = onBackgroundColor()
             )
 
             Text(
                 text = stringResource(id = R.string.see_all),
                 fontSize = 14.sp,
-                color = PrimaryColor
+                color = primaryColor()
             )
         }
 
@@ -773,7 +776,7 @@ fun ReviewCard(review: RestaurantReview) {
     Card(
         modifier = Modifier.width(250.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = cardBackgroundColor()),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -800,13 +803,13 @@ fun ReviewCard(review: RestaurantReview) {
                         text = review.userName,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Color.Black
+                        color = cardContentColor()
                     )
 
                     Text(
                         text = review.timeAgo,
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = textSecondaryColor()
                     )
                 }
 
@@ -818,7 +821,7 @@ fun ReviewCard(review: RestaurantReview) {
                             imageVector = Icons.Default.Star,
                             contentDescription = stringResource(R.string.star),
                             modifier = Modifier.size(12.dp),
-                            tint = if (index < review.rating) Color(0xFFFFC107) else Color.Gray
+                            tint = if (index < review.rating) starRatingColor() else emptyStarColor()
                         )
                     }
                 }
@@ -829,7 +832,7 @@ fun ReviewCard(review: RestaurantReview) {
             Text(
                 text = review.comment,
                 fontSize = 14.sp,
-                color = Color.Black,
+                color = cardContentColor(),
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis
             )
@@ -849,7 +852,7 @@ fun ComboSection(
             text = stringResource(R.string.combo),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black
+            color = onBackgroundColor()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -896,7 +899,7 @@ fun ComboItemCard(
                 text = combo.name,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color.Black
+                color = onBackgroundColor()
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -904,7 +907,7 @@ fun ComboItemCard(
             Text(
                 text = combo.description,
                 fontSize = 12.sp,
-                color = Color.Gray,
+                color = textSecondaryColor(),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
@@ -915,10 +918,10 @@ fun ComboItemCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "$${combo.price.toInt()}",
+                    text = "${combo.price.toInt()}",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = priceTextColor()
                 )
 
                 Spacer(modifier = Modifier.width(16.dp))
@@ -927,7 +930,7 @@ fun ComboItemCard(
                     imageVector = Icons.Default.Star,
                     contentDescription = stringResource(id = R.string.rating),
                     modifier = Modifier.size(12.dp),
-                    tint = Color(0xFFFFC107)
+                    tint = starRatingColor()
                 )
 
                 Spacer(modifier = Modifier.width(4.dp))
@@ -935,7 +938,7 @@ fun ComboItemCard(
                 Text(
                     text = "${combo.rating} (${combo.reviewCount})",
                     fontSize = 12.sp,
-                    color = Color.Gray
+                    color = textSecondaryColor()
                 )
             }
         }

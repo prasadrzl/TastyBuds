@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.R
 import com.app.tastybuds.ui.login.LoginViewModel
+import com.app.tastybuds.ui.theme.*
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -86,7 +87,7 @@ fun ProfileSettingsScreen(
             .padding(16.dp),
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = dialogBackgroundColor())
     ) {
         Column(
             modifier = Modifier
@@ -102,7 +103,7 @@ fun ProfileSettingsScreen(
                     text = stringResource(R.string.profile_settings),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = dialogContentColor()
                 )
 
                 IconButton(
@@ -112,7 +113,7 @@ fun ProfileSettingsScreen(
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = stringResource(R.string.close),
-                        tint = Color.Gray,
+                        tint = textSecondaryColor(),
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -126,7 +127,9 @@ fun ProfileSettingsScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(
+                            color = loadingIndicatorColor()
+                        )
                     }
                 }
 
@@ -137,7 +140,7 @@ fun ProfileSettingsScreen(
                                 R.string.error_place_holder,
                                 uiState.error ?: "error"
                             ),
-                            color = Color.Red,
+                            color = errorColor(),
                             fontSize = 14.sp
                         )
                         Spacer(modifier = Modifier.height(16.dp))
@@ -145,9 +148,15 @@ fun ProfileSettingsScreen(
                             onClick = {
                                 viewModel.handleEvent(ProfileEvent.DismissError)
                                 viewModel.handleEvent(ProfileEvent.LoadProfile)
-                            }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = primaryColor()
+                            )
                         ) {
-                            Text(stringResource(R.string.retry))
+                            Text(
+                                text = stringResource(R.string.retry),
+                                color = onPrimaryColor()
+                            )
                         }
                     }
                 }
@@ -222,14 +231,14 @@ private fun ProfileSettingsContent(
                     .offset(x = (-4).dp, y = 4.dp)
                     .size(32.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFFF7700)),
+                    .background(primaryColor()),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Edit,
                     contentDescription = stringResource(R.string.edit_profile_image),
                     modifier = Modifier.size(16.dp),
-                    tint = Color.White
+                    tint = onPrimaryColor()
                 )
             }
         }
@@ -244,7 +253,7 @@ private fun ProfileSettingsContent(
             text = "Name",
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
-            color = Color.Black,
+            color = dialogContentColor(),
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
@@ -252,10 +261,18 @@ private fun ProfileSettingsContent(
             value = formState.name,
             onValueChange = onNameChange,
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text(stringResource(R.string.enter_your_name)) },
+            placeholder = {
+                Text(
+                    text = stringResource(R.string.enter_your_name),
+                    color = placeholderTextColor()
+                )
+            },
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFFFF7700),
-                unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
+                focusedBorderColor = focusedBorderColor(),
+                unfocusedBorderColor = unfocusedBorderColor(),
+                focusedTextColor = enabledTextColor(),
+                unfocusedTextColor = enabledTextColor(),
+                errorBorderColor = errorColor()
             ),
             singleLine = true,
             isError = uiState.validationErrors.nameError != null
@@ -264,7 +281,7 @@ private fun ProfileSettingsContent(
         uiState.validationErrors.nameError?.let { error ->
             Text(
                 text = error,
-                color = Color.Red,
+                color = errorColor(),
                 fontSize = 12.sp,
                 modifier = Modifier.padding(top = 4.dp)
             )
@@ -276,7 +293,7 @@ private fun ProfileSettingsContent(
             text = stringResource(R.string.email),
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
-            color = Color.Black,
+            color = dialogContentColor(),
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
@@ -284,10 +301,18 @@ private fun ProfileSettingsContent(
             value = formState.email,
             onValueChange = onEmailChange,
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text(stringResource(R.string.enter_your_email)) },
+            placeholder = {
+                Text(
+                    text = stringResource(R.string.enter_your_email),
+                    color = placeholderTextColor()
+                )
+            },
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFFFF7700),
-                unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
+                focusedBorderColor = focusedBorderColor(),
+                unfocusedBorderColor = unfocusedBorderColor(),
+                focusedTextColor = enabledTextColor(),
+                unfocusedTextColor = enabledTextColor(),
+                errorBorderColor = errorColor()
             ),
             singleLine = true,
             isError = uiState.validationErrors.emailError != null
@@ -296,7 +321,7 @@ private fun ProfileSettingsContent(
         uiState.validationErrors.emailError?.let { error ->
             Text(
                 text = error,
-                color = Color.Red,
+                color = errorColor(),
                 fontSize = 12.sp,
                 modifier = Modifier.padding(top = 4.dp)
             )
@@ -308,7 +333,7 @@ private fun ProfileSettingsContent(
             text = stringResource(R.string.password),
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
-            color = Color.Black,
+            color = dialogContentColor(),
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
@@ -317,8 +342,12 @@ private fun ProfileSettingsContent(
             onValueChange = { },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFFFF7700),
-                unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
+                focusedBorderColor = focusedBorderColor(),
+                unfocusedBorderColor = unfocusedBorderColor(),
+                focusedTextColor = enabledTextColor(),
+                unfocusedTextColor = enabledTextColor(),
+                disabledTextColor = disabledTextColor(),
+                disabledBorderColor = disabledBorderColor()
             ),
             visualTransformation = if (isPasswordVisible) VisualTransformation.None
             else PasswordVisualTransformation(),
@@ -329,7 +358,8 @@ private fun ProfileSettingsContent(
                             id = if (isPasswordVisible) R.drawable.ic_hide else R.drawable.ic_show
                         ),
                         contentDescription = if (isPasswordVisible) stringResource(R.string.hide_password)
-                        else stringResource(R.string.show_password)
+                        else stringResource(R.string.show_password),
+                        tint = textSecondaryColor()
                     )
                 }
             },
@@ -347,8 +377,8 @@ private fun ProfileSettingsContent(
                 onClick = onCancelClick,
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Gray.copy(alpha = 0.2f),
-                    contentColor = Color.Black
+                    containerColor = surfaceVariantColor(),
+                    contentColor = onSurfaceVariantColor()
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -364,7 +394,10 @@ private fun ProfileSettingsContent(
                 onClick = onSaveClick,
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFF7700)
+                    containerColor = primaryColor(),
+                    contentColor = onPrimaryColor(),
+                    disabledContainerColor = disabledBorderColor(),
+                    disabledContentColor = disabledTextColor()
                 ),
                 shape = RoundedCornerShape(12.dp),
                 enabled = !uiState.isUpdating && formState.isValid()
@@ -372,7 +405,7 @@ private fun ProfileSettingsContent(
                 if (uiState.isUpdating) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(16.dp),
-                        color = Color.White,
+                        color = onPrimaryColor(),
                         strokeWidth = 2.dp
                     )
                 } else {

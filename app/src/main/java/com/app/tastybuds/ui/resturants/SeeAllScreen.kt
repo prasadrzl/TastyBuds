@@ -21,6 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.R
 import com.app.tastybuds.domain.model.CategoryMenuItem
 import com.app.tastybuds.domain.model.CategoryRestaurant
+import com.app.tastybuds.ui.theme.*
 import com.app.tastybuds.util.ui.AppTopBar
 
 @Composable
@@ -42,7 +43,7 @@ fun SeeAllScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(backgroundColor())
     ) {
 
         AppTopBar(title = title, onBackClick = onBackClick)
@@ -96,7 +97,7 @@ private fun ItemsList(
                         Text(
                             text = "${restaurants.size} restaurants found",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = textSecondaryColor(),
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                     }
@@ -119,7 +120,7 @@ private fun ItemsList(
                         Text(
                             text = stringResource(R.string.items_found, menuItems.size),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = textSecondaryColor(),
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                     }

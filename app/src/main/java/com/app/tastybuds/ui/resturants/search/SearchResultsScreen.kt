@@ -59,7 +59,7 @@ import com.app.tastybuds.domain.model.SearchRestaurant
 import com.app.tastybuds.domain.model.SearchResult
 import com.app.tastybuds.domain.model.SearchResultType
 import com.app.tastybuds.ui.resturants.state.SearchUiState
-import com.app.tastybuds.ui.theme.PrimaryColor
+import com.app.tastybuds.ui.theme.*
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -100,7 +100,7 @@ fun SearchResultsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(backgroundColor())
     ) {
         SearchHeader(
             searchText = searchText,
@@ -154,7 +154,7 @@ fun SearchHeader(
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = stringResource(R.string.back),
-                tint = Color.Black
+                tint = onBackgroundColor()
             )
         }
 
@@ -169,7 +169,7 @@ fun SearchHeader(
             placeholder = {
                 Text(
                     text = stringResource(R.string.search_for_food_restaurants),
-                    color = Color.Gray,
+                    color = searchBarHintColor(),
                     fontSize = 16.sp
                 )
             },
@@ -179,7 +179,7 @@ fun SearchHeader(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = stringResource(R.string.clear),
-                            tint = Color.Gray
+                            tint = textSecondaryColor()
                         )
                     }
                 }
@@ -187,8 +187,10 @@ fun SearchHeader(
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color.Transparent,
                 unfocusedBorderColor = Color.Transparent,
-                focusedContainerColor = Color(0xFFF5F5F5),
-                unfocusedContainerColor = Color(0xFFF5F5F5)
+                focusedContainerColor = searchBarBackgroundColor(),
+                unfocusedContainerColor = searchBarBackgroundColor(),
+                focusedTextColor = searchBarTextColor(),
+                unfocusedTextColor = searchBarTextColor()
             ),
             shape = RoundedCornerShape(8.dp),
             singleLine = true,
@@ -200,7 +202,7 @@ fun SearchHeader(
         Icon(
             painter = painterResource(id = R.drawable.ic_filter),
             contentDescription = stringResource(R.string.filter),
-            tint = PrimaryColor,
+            tint = primaryColor(),
             modifier = Modifier.size(32.dp)
         )
     }
@@ -243,8 +245,8 @@ fun FilterChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val backgroundColor = if (isSelected) Color(0xFFFFE7D2) else Color(0xFFF5F5F5)
-    val textColor = if (isSelected) PrimaryColor else Color.Gray
+    val backgroundColor = if (isSelected) chipSelectedBackgroundColor() else chipUnselectedBackgroundColor()
+    val textColor = if (isSelected) chipSelectedContentColor() else chipUnselectedContentColor()
 
     Row(
         modifier = Modifier
@@ -288,7 +290,7 @@ fun SearchResultsContent(
                 text = "$menuItemsCount results for \"$searchText\"",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color.Black,
+                color = onBackgroundColor(),
                 modifier = Modifier.padding(vertical = 8.dp)
             )
         }
@@ -299,7 +301,7 @@ fun SearchResultsContent(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = PrimaryColor)
+                    CircularProgressIndicator(color = loadingIndicatorColor())
                 }
             }
 
@@ -310,7 +312,7 @@ fun SearchResultsContent(
                 ) {
                     Text(
                         text = stringResource(R.string.error_place_holder, uiState.error),
-                        color = Color.Red,
+                        color = errorColor(),
                         fontSize = 16.sp
                     )
                 }
@@ -323,7 +325,7 @@ fun SearchResultsContent(
                 ) {
                     Text(
                         text = stringResource(R.string.no_results_found_for, searchText),
-                        color = Color.Gray,
+                        color = textSecondaryColor(),
                         fontSize = 16.sp
                     )
                 }
@@ -371,7 +373,7 @@ fun RestaurantCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = cardBackgroundColor()),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
@@ -396,7 +398,7 @@ fun RestaurantCard(
                     text = restaurant.name,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.Black,
+                    color = cardContentColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -404,7 +406,7 @@ fun RestaurantCard(
                 Text(
                     text = restaurant.description,
                     fontSize = 14.sp,
-                    color = Color.Gray,
+                    color = textSecondaryColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.padding(top = 2.dp)
@@ -417,7 +419,7 @@ fun RestaurantCard(
                     Text(
                         text = restaurant.deliveryTime,
                         fontSize = 14.sp,
-                        color = Color.Gray
+                        color = textSecondaryColor()
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -425,14 +427,14 @@ fun RestaurantCard(
                     Icon(
                         imageVector = Icons.Default.Star,
                         contentDescription = null,
-                        tint = Color(0xFFFFD700),
+                        tint = starRatingColor(),
                         modifier = Modifier.size(14.dp)
                     )
 
                     Text(
                         text = restaurant.rating.toString(),
                         fontSize = 14.sp,
-                        color = Color.Gray,
+                        color = textSecondaryColor(),
                         modifier = Modifier.padding(start = 2.dp)
                     )
                 }
@@ -482,7 +484,7 @@ fun MenuItemCard(
                 text = menuItem.name,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color.Black,
+                color = cardContentColor(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -491,7 +493,7 @@ fun MenuItemCard(
                 text = "${menuItem.price.toInt()}",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.Black,
+                color = priceTextColor(),
                 modifier = Modifier.padding(top = 2.dp)
             )
         }
@@ -501,18 +503,18 @@ fun MenuItemCard(
 @Composable
 fun BadgeChip(text: String) {
     val backgroundColor = when (text.lowercase()) {
-        "freeship" -> Color(0xFF4CAF50)
-        "near you" -> PrimaryColor
-        "favorite" -> Color(0xFFE91E63)
-        "partner" -> Color(0xFF2196F3)
-        else -> Color.Gray
+        "freeship" -> freeshippingBadgeColor()
+        "near you" -> primaryColor()
+        "favorite" -> heartFavoriteColor()
+        "partner" -> infoColor()
+        else -> textSecondaryColor()
     }
 
     Text(
         text = text,
         fontSize = 10.sp,
         fontWeight = FontWeight.Medium,
-        color = Color.White,
+        color = badgeTextColor(),
         modifier = Modifier
             .background(backgroundColor, RoundedCornerShape(4.dp))
             .padding(horizontal = 6.dp, vertical = 2.dp)
