@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.tastybuds.R
+import com.app.tastybuds.ui.theme.*
 
 @Preview
 @Composable
@@ -33,27 +34,43 @@ fun HomeSearchBar(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFFFF6F00))
+            .background(primaryColor())
             .padding(horizontal = 20.dp, vertical = 16.dp)
     ) {
         TextField(
             value = "",
             onValueChange = { },
-            placeholder = { Text(stringResource(R.string.search), color = Color(0xBCC1CAFF), fontSize = 12.sp) },
+            placeholder = {
+                Text(
+                    text = stringResource(R.string.search),
+                    color = placeholderTextColor(),
+                    fontSize = 12.sp
+                )
+            },
             leadingIcon = {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_search),
                     contentDescription = stringResource(R.string.search_icon),
-                    tint = Color.Gray
+                    tint = onSurfaceVariantColor()
                 )
             },
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
+                focusedContainerColor = surfaceColor(),
+                unfocusedContainerColor = surfaceColor(),
+                disabledContainerColor = surfaceColor(),
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,
-                cursorColor = Color.Black
+                cursorColor = onSurfaceColor(),
+                focusedTextColor = onSurfaceColor(),
+                unfocusedTextColor = onSurfaceColor(),
+                disabledTextColor = onSurfaceColor(),
+                focusedLeadingIconColor = onSurfaceVariantColor(),
+                unfocusedLeadingIconColor = onSurfaceVariantColor(),
+                disabledLeadingIconColor = onSurfaceVariantColor(),
+                focusedPlaceholderColor = placeholderTextColor(),
+                unfocusedPlaceholderColor = placeholderTextColor(),
+                disabledPlaceholderColor = placeholderTextColor()
             ),
             shape = RoundedCornerShape(22.dp),
             modifier = Modifier

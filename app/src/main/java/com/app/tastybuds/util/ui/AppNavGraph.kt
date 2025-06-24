@@ -448,35 +448,3 @@ fun AppNavGraph(navController: NavHostController) {
         }
     }
 }
-
-@Composable
-fun BottomBar(navController: NavHostController) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
-
-    NavigationBar {
-        items.forEach { item ->
-            val selected = currentRoute == item.route
-            NavigationBarItem(
-                icon = {
-                    Icon(
-                        painter = painterResource(id = item.iconRes),
-                        contentDescription = item.label,
-                        tint = if (selected) Color(0xFFFF6F00) else Color(0xFF333333)
-                    )
-                },
-                label = { Text(item.label) },
-                selected = selected,
-                onClick = {
-                    if (currentRoute != item.route) {
-                        navController.navigate(item.route) {
-                            popUpTo(navController.graph.startDestinationId) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
-                }
-            )
-        }
-    }
-}
