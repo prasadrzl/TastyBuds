@@ -3,6 +3,7 @@ package com.app.tastybuds.ui.profile
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -26,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,7 +49,7 @@ import com.app.tastybuds.LocalThemeManager
 import com.app.tastybuds.R
 import com.app.tastybuds.domain.model.User
 import com.app.tastybuds.ui.login.LoginViewModel
-import com.app.tastybuds.ui.theme.PrimaryColor
+import com.app.tastybuds.ui.theme.*
 import com.app.tastybuds.util.ui.AppTopBar
 import com.app.tastybuds.util.ui.showDevelopmentToast
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -89,10 +92,10 @@ fun ProfileScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(backgroundColor())
     ) {
 
-        AppTopBar(title = "Profile", onBackClick = onBackClick)
+        AppTopBar(title = stringResource(R.string.profile), onBackClick = onBackClick)
 
         when {
             uiState.isLoading -> {
@@ -100,7 +103,7 @@ fun ProfileScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = PrimaryColor)
+                    CircularProgressIndicator(color = primaryColor())
                 }
             }
 
@@ -112,12 +115,12 @@ fun ProfileScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = stringResource(R.string.error_loading_profile),
-                            color = Color.Red,
+                            color = errorColor(),
                             fontSize = 16.sp
                         )
                         Text(
                             text = uiState.error ?: "",
-                            color = Color.Gray,
+                            color = textSecondaryColor(),
                             fontSize = 14.sp
                         )
                     }
@@ -187,14 +190,15 @@ private fun ProfileContent(
 
         Column {
             Text(
-                text = user?.name ?: "User name",
+                text = user?.name ?: stringResource(R.string.user_name),
                 fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
+                fontSize = 16.sp,
+                color = onSurfaceColor()
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = user?.email ?: "example@gmail.com",
-                color = Color.Gray,
+                color = textSecondaryColor(),
                 fontSize = 14.sp
             )
         }
@@ -202,7 +206,7 @@ private fun ProfileContent(
 
     Spacer(modifier = Modifier.height(24.dp))
 
-    HorizontalDivider(color = Color(0xFFE0E0E0))
+    HorizontalDivider(color = dividerColor())
 
     ProfileOption(
         icon = loadVector(R.drawable.ic_profile_setting),
@@ -215,7 +219,7 @@ private fun ProfileContent(
         onClick = { context.showDevelopmentToast() }
     )
 
-    HorizontalDivider(color = Color(0xFFE0E0E0))
+    HorizontalDivider(color = dividerColor())
 
     Row(
         modifier = Modifier
@@ -229,26 +233,28 @@ private fun ProfileContent(
                 imageVector = loadVector(R.drawable.ic_night_mode),
                 contentDescription = stringResource(R.string.dark_mode),
                 modifier = Modifier.size(24.dp),
-                tint = MaterialTheme.colorScheme.onSurface
+                tint = onSurfaceVariantColor()
             )
             Spacer(modifier = Modifier.width(16.dp))
             Text(
                 text = stringResource(R.string.dark_mode),
                 fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onSurface
+                color = onSurfaceColor()
             )
         }
         Switch(
             checked = isDarkMode,
             onCheckedChange = onToggleDarkMode,
             colors = SwitchDefaults.colors(
-                checkedThumbColor = MaterialTheme.colorScheme.primary,
-                checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                checkedThumbColor = primaryColor(),
+                checkedTrackColor = primaryColor().copy(alpha = 0.5f),
+                uncheckedThumbColor = onSurfaceVariantColor(),
+                uncheckedTrackColor = surfaceVariantColor()
             )
         )
     }
 
-    HorizontalDivider(color = Color(0xFFE0E0E0))
+    HorizontalDivider(color = dividerColor())
 
     ProfileOption(
         icon = loadVector(R.drawable.ic_help),
@@ -256,13 +262,17 @@ private fun ProfileContent(
         onClick = { context.showDevelopmentToast() }
     )
     ProfileOption(
-        icon = loadVector(R.drawable.ic_go_pro), label = stringResource(R.string.go_pro),
-        onClick = { context.showDevelopmentToast() })
+        icon = loadVector(R.drawable.ic_go_pro),
+        label = stringResource(R.string.go_pro),
+        onClick = { context.showDevelopmentToast() }
+    )
     ProfileOption(
-        icon = loadVector(R.drawable.ic_help), label = stringResource(R.string.help_center),
-        onClick = { context.showDevelopmentToast() })
+        icon = loadVector(R.drawable.ic_help),
+        label = stringResource(R.string.help_center),
+        onClick = { context.showDevelopmentToast() }
+    )
 
-    HorizontalDivider(color = Color(0xFFE0E0E0))
+    HorizontalDivider(color = dividerColor())
 
     ProfileOption(
         icon = loadVector(R.drawable.ic_logout),
@@ -270,7 +280,7 @@ private fun ProfileContent(
         onClick = {
             onLogout()
         },
-        textColor = Color.Red
+        isDestructive = true
     )
 }
 
@@ -279,12 +289,29 @@ private fun ProfileOption(
     icon: ImageVector,
     label: String,
     onClick: () -> Unit = {},
-    textColor: Color = Color.Black
+    isDestructive: Boolean = false
 ) {
+    val textColor = if (isDestructive) {
+        errorColor()
+    } else {
+        onSurfaceColor()
+    }
+
+    val iconTint = if (isDestructive) {
+        errorColor()
+    } else {
+        onSurfaceVariantColor()
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable(
+                indication = rememberRipple(
+                    color = rippleColor()
+                ),
+                interactionSource = remember { MutableInteractionSource() }
+            ) { onClick() }
             .padding(horizontal = 24.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -292,7 +319,7 @@ private fun ProfileOption(
             imageVector = icon,
             contentDescription = label,
             modifier = Modifier.size(24.dp),
-            tint = if (textColor == Color.Red) Color.Red else Color.Gray
+            tint = iconTint
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(
