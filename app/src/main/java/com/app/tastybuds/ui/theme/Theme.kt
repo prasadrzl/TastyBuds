@@ -1,6 +1,5 @@
 package com.app.tastybuds.ui.theme
 
-import AppTypography
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

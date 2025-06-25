@@ -450,4 +450,17 @@
     <string name="also_ordered">Also Ordered</string>
     <string name="add_or_search_for_voucher">Add or search for voucher</string>
 
+    <!-- Looking for Driver Screen -->
+    <string name="looking_for_driver">Looking for driver</string>
+    <string name="looking_icon_desc">Looking for driver icon</string>
+    <string name="need_help">Need help?</string>
+    <string name="cancel_order">✕ Cancel</string>
+
+    <!-- Order stages -->
+    <string name="confirm_order">Confirm order</string>
+    <string name="look_for_driver">Look for driver</string>
+    <string name="prepare_food">Prepare food</string>
+    <string name="deliver">Deliver</string>
+    <string name="arrived">Arrived</string>
+
 </resources>

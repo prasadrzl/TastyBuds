@@ -26,101 +26,127 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.app.tastybuds.R
 import com.app.tastybuds.ui.theme.primaryColor
+import com.app.tastybuds.ui.theme.Spacing
+import com.app.tastybuds.ui.theme.ComponentSizes
+import com.app.tastybuds.ui.theme.bodyMedium
+import com.app.tastybuds.ui.theme.screenTitle
+import com.app.tastybuds.ui.theme.buttonText
+import com.app.tastybuds.ui.theme.statusLabel
+import com.app.tastybuds.ui.theme.textSecondaryColor
+import com.app.tastybuds.ui.theme.surfaceColor
 
 @Composable
 fun LookingForDriverScreen(onCancel: () -> Unit, onHelp: () -> Unit) {
     val brandOrange = primaryColor()
-    val stageLabels =
-        listOf("Confirm order", "Look for driver", "Prepare food", "Deliver", "Arrived")
+    val stageLabels = listOf(
+        stringResource(R.string.confirm_order),
+        stringResource(R.string.look_for_driver),
+        stringResource(R.string.prepare_food),
+        stringResource(R.string.deliver),
+        stringResource(R.string.arrived)
+    )
     val currentStage = 1
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
-            .padding(horizontal = 24.dp),
+            .background(surfaceColor())
+            .padding(horizontal = Spacing.large),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(Spacing.xl))
 
         Image(
-            painter = painterResource(id = R.drawable.ic_check_mark), // <-- your icon
-            contentDescription = "Order confirmed", modifier = Modifier.size(32.dp)
+            painter = painterResource(id = R.drawable.ic_check_mark),
+            contentDescription = stringResource(R.string.order_confirmed),
+            modifier = Modifier.size(ComponentSizes.iconMedium)
         )
 
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text("Order confirmed", color = Color.Gray, fontSize = 16.sp)
-
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Spacing.small))
 
         Text(
-            "Looking for driver",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
+            text = stringResource(R.string.order_confirmed),
+            style = bodyMedium(),
+            color = textSecondaryColor()
+        )
+
+        Spacer(modifier = Modifier.height(Spacing.small))
+
+        Text(
+            text = stringResource(R.string.looking_for_driver),
+            style = screenTitle(),
             color = Color.Black
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(Spacing.xl))
 
         Image(
             painter = painterResource(id = R.drawable.ic_search_driver),
-            contentDescription = "Looking icon",
+            contentDescription = stringResource(R.string.looking_icon_desc),
             contentScale = ContentScale.Fit,
-            modifier = Modifier.size(96.dp)
+            modifier = Modifier.size(ComponentSizes.iconLarge)
         )
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(Spacing.xxl))
 
         StageProgressBar(
-            stageLabels = stageLabels, currentStage = currentStage, brandColor = brandOrange
+            stageLabels = stageLabels,
+            currentStage = currentStage,
+            brandColor = brandOrange
         )
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(Spacing.xxl))
 
         OutlinedButton(
             onClick = onHelp,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp),
-            shape = RoundedCornerShape(24.dp),
-            border = BorderStroke(1.dp, brandOrange),
+                .height(ComponentSizes.buttonHeight),
+            shape = RoundedCornerShape(ComponentSizes.cornerRadius),
+            border = BorderStroke(ComponentSizes.strokeWidth, brandOrange),
             colors = ButtonDefaults.outlinedButtonColors(contentColor = brandOrange)
         ) {
-            Text("Need help?", fontWeight = FontWeight.Medium)
+            Text(
+                text = stringResource(R.string.need_help),
+                style = buttonText(),
+                color = primaryColor()
+            )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Spacing.small))
 
         TextButton(onClick = onCancel) {
-            Text("\u2715 Cancel", color = Color.Gray)
+            Text(
+                text = stringResource(R.string.cancel_order),
+                style = buttonText(),
+                color = textSecondaryColor()
+            )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(Spacing.large))
     }
 }
 
 @Composable
 fun StageProgressBar(
-    stageLabels: List<String>, currentStage: Int, brandColor: Color
+    stageLabels: List<String>,
+    currentStage: Int,
+    brandColor: Color
 ) {
-    val dotSize = 16.dp
-    val lineThickness = 3.dp
+    val dotSize = ComponentSizes.progressDotSize
+    val lineThickness = ComponentSizes.progressLineThickness
     val lineColorPending = Color.LightGray
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp),
+                .padding(horizontal = Spacing.large),
             verticalAlignment = Alignment.CenterVertically
         ) {
             stageLabels.forEachIndexed { index, _ ->
@@ -129,7 +155,10 @@ fun StageProgressBar(
                         if (index <= currentStage) {
                             drawCircle(color = brandColor)
                         } else {
-                            drawCircle(color = Color.LightGray, style = Stroke(width = 3f))
+                            drawCircle(
+                                color = Color.LightGray,
+                                style = Stroke(width = 3f)
+                            )
                         }
                     }
                 }
@@ -151,26 +180,24 @@ fun StageProgressBar(
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Spacing.small))
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp),
+                .padding(horizontal = Spacing.large),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             stageLabels.forEachIndexed { index, label ->
                 Text(
                     text = label,
-                    fontSize = 11.sp,
-                    color = if (index <= currentStage) Color.Black else Color.Gray,
-                    fontWeight = if (index <= currentStage) FontWeight.Medium else FontWeight.Normal,
+                    style = statusLabel(),
+                    color = if (index <= currentStage) Color.Black else textSecondaryColor(),
                     maxLines = 2,
                     softWrap = true,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.width(60.dp)
+                    modifier = Modifier.width(ComponentSizes.labelWidth)
                 )
-
             }
         }
     }

@@ -37,93 +37,140 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.app.tastybuds.R
-import com.app.tastybuds.ui.theme.focusedBorderColor
 import com.app.tastybuds.ui.theme.primaryColor
+import com.app.tastybuds.ui.theme.primaryContainerColor
+import com.app.tastybuds.ui.theme.surfaceColor
 import com.app.tastybuds.ui.theme.surfaceVariantColor
+import com.app.tastybuds.ui.theme.onSurfaceColor
+import com.app.tastybuds.ui.theme.textSecondaryColor
+import com.app.tastybuds.ui.theme.textDisabledColor
+import com.app.tastybuds.ui.theme.borderColor
+import com.app.tastybuds.ui.theme.borderFocusColor
+import com.app.tastybuds.ui.theme.onPrimaryColor
+import com.app.tastybuds.ui.theme.Spacing
+import com.app.tastybuds.ui.theme.ComponentSizes
+import com.app.tastybuds.ui.theme.bodyMedium
+import com.app.tastybuds.ui.theme.buttonText
+import com.app.tastybuds.ui.theme.inputLabel
 import com.app.tastybuds.util.ui.AppTopBar
 
+object OfferScreenDimensions {
+    val offerIconSize = 60.dp
+    val offerItemCornerRadius = 8.dp
+    val offerItemSpacing = 6.dp
+    val offerItemContentPadding = 16.dp
+    val offerIconSpacing = 12.dp
+}
+
 @Composable
-fun SelectOfferScreen(offers: List<OfferItem>, onUseNowClick: () -> Unit) {
+fun SelectOfferScreen(
+    offers: List<OfferItem>,
+    onUseNowClick: () -> Unit
+) {
     var selectedOffer by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(surfaceColor())
     ) {
-        AppTopBar(title = "Select offer", onBackClick = { })
+        AppTopBar(
+            title = stringResource(R.string.select_offer),
+            onBackClick = { }
+        )
 
         OutlinedTextField(
             value = "",
             onValueChange = {},
-            placeholder = { Text(stringResource(R.string.add_or_search_for_voucher)) },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+            placeholder = {
+                Text(
+                    text = stringResource(R.string.add_or_search_for_voucher),
+                    style = inputLabel(),
+                    color = textSecondaryColor()
+                )
+            },
+            leadingIcon = {
+                Icon(
+                    Icons.Default.Search,
+                    contentDescription = stringResource(R.string.cd_search)
+                )
+            },
             modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(
+                    horizontal = Spacing.medium,
+                    vertical = Spacing.small
+                )
                 .fillMaxWidth(),
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(ComponentSizes.cornerRadius),
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedContainerColor = surfaceVariantColor(),
                 focusedContainerColor = surfaceVariantColor(),
                 unfocusedBorderColor = Color.Transparent,
-                focusedBorderColor = focusedBorderColor()
+                focusedBorderColor = borderFocusColor()
             )
         )
 
-
-
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(offers) { offer ->
-
                 val isSelected = selectedOffer == offer.id
                 val backgroundColor = when {
-                    isSelected -> Color(0xFFFFF3E0)
-                    offer.enabled -> Color(0xFFFDFDFD)
-                    else -> Color(0xFFF2F2F2)
+                    isSelected -> primaryContainerColor()
+                    offer.enabled -> surfaceColor()
+                    else -> surfaceVariantColor()
                 }
 
                 val borderStroke = when {
-                    isSelected -> BorderStroke(1.dp, Color(0xFFFF7700))
-                    offer.enabled -> BorderStroke(1.dp, Color(0xFFE0E0E0))
+                    isSelected -> BorderStroke(ComponentSizes.strokeWidth, primaryColor())
+                    offer.enabled -> BorderStroke(ComponentSizes.strokeWidth, borderColor())
                     else -> null
                 }
 
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 6.dp),
-                    shape = RoundedCornerShape(8.dp),
+                        .padding(
+                            horizontal = Spacing.medium,
+                            vertical = OfferScreenDimensions.offerItemSpacing
+                        ),
+                    shape = RoundedCornerShape(OfferScreenDimensions.offerItemCornerRadius),
                     color = backgroundColor,
                     border = borderStroke
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable(enabled = offer.enabled) { selectedOffer = offer.id }
-                            .padding(16.dp),
+                            .clickable(enabled = offer.enabled) {
+                                selectedOffer = offer.id
+                            }
+                            .padding(OfferScreenDimensions.offerItemContentPadding),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Image(
                             painter = painterResource(id = offer.iconRes),
-                            contentDescription = null,
-                            modifier = Modifier.size(60.dp)
+                            contentDescription = stringResource(R.string.voucher),
+                            modifier = Modifier.size(OfferScreenDimensions.offerIconSize)
                         )
-                        Spacer(modifier = Modifier.width(12.dp))
+
+                        Spacer(modifier = Modifier.width(OfferScreenDimensions.offerIconSpacing))
+
                         Text(
                             text = offer.label,
-                            color = if (offer.enabled) Color.Black else Color.Gray,
-                            fontWeight = FontWeight.Medium
+                            style = bodyMedium(),
+                            color = if (offer.enabled) onSurfaceColor() else textDisabledColor()
                         )
+
                         Spacer(modifier = Modifier.weight(1f))
+
                         if (offer.enabled) {
                             RadioButton(
                                 selected = isSelected,
                                 onClick = { selectedOffer = offer.id },
-                                colors = RadioButtonDefaults.colors(selectedColor = Color(0xFFFF7700))
+                                colors = RadioButtonDefaults.colors(
+                                    selectedColor = primaryColor()
+                                )
                             )
                         }
                     }
@@ -135,12 +182,18 @@ fun SelectOfferScreen(offers: List<OfferItem>, onUseNowClick: () -> Unit) {
             onClick = onUseNowClick,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-                .height(48.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = primaryColor()),
-            shape = RoundedCornerShape(24.dp)
+                .padding(Spacing.medium)
+                .height(ComponentSizes.buttonHeight),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = primaryColor()
+            ),
+            shape = RoundedCornerShape(ComponentSizes.cornerRadius)
         ) {
-            Text("Use now", color = Color.White)
+            Text(
+                text = stringResource(R.string.use_now),
+                style = buttonText(),
+                color = onPrimaryColor()
+            )
         }
     }
 }
