@@ -26,6 +26,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -47,7 +48,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.tastybuds.R
-import com.app.tastybuds.ui.theme.PrimaryColor
+import com.app.tastybuds.ui.theme.*
 import com.app.tastybuds.util.ui.AppTopBar
 
 @Preview
@@ -62,7 +63,7 @@ fun RatingScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .background(Color.White)
+                .background(backgroundColor())
                 .padding(horizontal = 24.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -72,23 +73,24 @@ fun RatingScreen() {
                 modifier = Modifier
                     .size(100.dp)
                     .clip(CircleShape)
-                    .background(PrimaryColor),
+                    .background(primaryColor()),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_profile_person),
                     contentDescription = null,
                     modifier = Modifier.size(48.dp),
-                    colorFilter = ColorFilter.tint(Color.White)
+                    colorFilter = ColorFilter.tint(onPrimaryColor())
                 )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                stringResource(R.string.rate_durgaprasad),
+                text = stringResource(R.string.rate_durgaprasad),
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
+                fontSize = 20.sp,
+                color = onBackgroundColor()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -99,7 +101,7 @@ fun RatingScreen() {
             Row {
                 repeat(5) {
                     val icon = if (it < rating) Icons.Default.Star else starIcon
-                    val tint = if (it < rating) Color(0xFFFFC107) else Color(0xFF686583)
+                    val tint = if (it < rating) reviewStarFilledColor() else reviewStarEmptyColor()
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
@@ -113,7 +115,10 @@ fun RatingScreen() {
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            Text(stringResource(R.string.leave_your_feedback_here), color = Color.Gray)
+            Text(
+                text = stringResource(R.string.leave_your_feedback_here),
+                color = textSecondaryColor()
+            )
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -121,19 +126,35 @@ fun RatingScreen() {
 
             Spacer(modifier = Modifier.height(56.dp))
 
-            Text(stringResource(R.string.care_to_share_more), fontWeight = FontWeight.SemiBold)
+            Text(
+                text = stringResource(R.string.care_to_share_more),
+                fontWeight = FontWeight.SemiBold,
+                color = onBackgroundColor()
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = feedback,
                 onValueChange = { feedback = it },
-                placeholder = { Text(stringResource(R.string.leave_feedback_about_driver)) },
+                placeholder = {
+                    Text(
+                        text = stringResource(R.string.leave_feedback_about_driver),
+                        color = placeholderTextColor()
+                    )
+                },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp)
-                    .background(Color(0xFFF3F4F6)),
-                shape = RoundedCornerShape(4.dp)
+                    .height(120.dp),
+                shape = RoundedCornerShape(4.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = focusedBorderColor(),
+                    unfocusedBorderColor = unfocusedBorderColor(),
+                    focusedContainerColor = surfaceVariantColor(),
+                    unfocusedContainerColor = surfaceVariantColor(),
+                    focusedTextColor = enabledTextColor(),
+                    unfocusedTextColor = enabledTextColor()
+                )
             )
 
             Spacer(modifier = Modifier.height(80.dp))
@@ -143,14 +164,15 @@ fun RatingScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = addToCartButtonColor(),
+                    contentColor = addToCartButtonTextColor()
+                )
             ) {
-                Text("Submit", color = Color.White)
+                Text("Submit")
             }
         }
     }
-
-
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -176,8 +198,14 @@ fun FeedbackChipGroup() {
                 label = {
                     Text(
                         text = tag,
-                        color = if (isSelected && tag != "Supportive" && tag != "Contactless")
-                            PrimaryColor else Color.DarkGray,
+                        color = if (isSelected) {
+                            when (tag) {
+                                "Supportive", "Contactless" -> textSecondaryColor()
+                                else -> primaryColor()
+                            }
+                        } else {
+                            onSurfaceVariantColor()
+                        },
                         fontSize = 14.sp
                     )
                 },
@@ -185,20 +213,31 @@ fun FeedbackChipGroup() {
                     Icon(
                         imageVector = Icons.Default.Check,
                         contentDescription = null,
-                        tint = if (isSelected && tag != "Supportive" && tag != "Contactless")
-                            PrimaryColor else Color.DarkGray,
+                        tint = if (isSelected) {
+                            when (tag) {
+                                "Supportive", "Contactless" -> textSecondaryColor()
+                                else -> primaryColor()
+                            }
+                        } else {
+                            onSurfaceVariantColor()
+                        },
                         modifier = Modifier.size(16.dp)
                     )
                 },
                 shape = RoundedCornerShape(50),
                 colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = if (tag == "Supportive" || tag == "Contactless")
-                        Color(0xFFF2F2F2) else Color(0xFFFFF3E0),
-                    containerColor = Color(0xFFF2F2F2)
+                    selectedContainerColor = when (tag) {
+                        "Supportive", "Contactless" -> surfaceVariantColor()
+                        else -> primaryContainerColor()
+                    },
+                    containerColor = surfaceVariantColor(),
+                    labelColor = onSurfaceVariantColor(),
+                    selectedLabelColor = when (tag) {
+                        "Supportive", "Contactless" -> textSecondaryColor()
+                        else -> primaryColor()
+                    }
                 )
             )
         }
     }
 }
-
-
