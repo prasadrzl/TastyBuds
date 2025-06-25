@@ -367,7 +367,8 @@ private fun FilterAndSortRow(
             OutlinedButton(
                 onClick = onSortClick,
                 colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = primaryColor()
+                    contentColor = primaryColor(),
+                    containerColor = surfaceVariantColor()
                 ),
                 border = BorderStroke(1.dp, primaryColor()),
                 shape = RoundedCornerShape(20.dp),
@@ -376,13 +377,15 @@ private fun FilterAndSortRow(
                 Text(
                     text = stringResource(currentSortText),
                     style = buttonText(),
-                    fontSize = 12.sp
+                    fontSize = 12.sp,
+                    color = primaryColor()
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
                     contentDescription = stringResource(R.string.sort_dropdown),
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(16.dp),
+                    tint = primaryColor()
                 )
             }
         }
@@ -404,7 +407,7 @@ private fun FilterAndSortRow(
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = primaryColor(),
                     selectedLabelColor = Color.White,
-                    containerColor = Color.White,
+                    containerColor = surfaceVariantColor(),
                     labelColor = onSurfaceColor()
                 ),
                 shape = RoundedCornerShape(20.dp),
