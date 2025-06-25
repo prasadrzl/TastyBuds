@@ -396,8 +396,7 @@ fun RestaurantCard(
             ) {
                 Text(
                     text = restaurant.name,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    style = restaurantName(),
                     color = cardContentColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis

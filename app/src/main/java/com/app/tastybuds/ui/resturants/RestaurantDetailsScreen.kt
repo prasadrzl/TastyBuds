@@ -110,7 +110,7 @@ fun RestaurantDetailsScreen(
             uiState.restaurantData != null -> {
                 RestaurantDetailsContent(
                     restaurantData = uiState.restaurantData!!,
-                    isFavorite = uiState.isFavorite,
+                    isFavorite = uiState.restaurantData?.restaurant?.isFavorite ?: false,
                     voucherCount = uiState.voucherCount,
                     onBackClick = onBackClick,
                     onFavoriteClick = { viewModel.toggleFavorite() },
