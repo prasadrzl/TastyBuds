@@ -83,10 +83,6 @@ class SearchResultsViewModel @Inject constructor(
         }
     }
 
-    private fun applyCurrentFilters(results: List<SearchResult>): List<SearchResult> {
-        return applyFilters(results, _uiState.value.selectedFilters)
-    }
-
     private fun applyFilters(
         results: List<SearchResult>,
         selectedBadges: Set<String>

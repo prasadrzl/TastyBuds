@@ -295,7 +295,6 @@ fun AppNavGraph(navController: NavHostController) {
                 onBackClick = {
                     navController.popBackStack()
                 },
-                onFilterClick = {},
                 onResultClick = { resultId, resultType ->
                     when (resultType) {
                         RESTAURANT -> {

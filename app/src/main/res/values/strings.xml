@@ -463,5 +463,6 @@
     <string name="arrived">Arrived</string>
     <string name="sort_relevance">Relevance</string>
     <string name="sort_distance">Distance</string>
+    <string name="clear_all">Clear All</string>
 
 </resources>
