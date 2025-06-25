@@ -207,7 +207,6 @@
     <string name="under_30_min">Under 30 min</string>
     <string name="under_60_min">Under 60 min</string>
     <string name="price_low_to_high">Price: Low to High</string>
-    <string name="price_high_to_low">Price: High to Low</string>
     <string name="rating_high_to_low">Rating: High to Low</string>
     <string name="delivery_time_asc">Delivery Time: Fast to Slow</string>
 

@@ -35,12 +35,51 @@ class SearchResultsViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            searchResults = applyCurrentFilters(results),
+                            searchResults = results,
                             isEmpty = results.isEmpty(),
                             error = null
                         )
                     }
+                    applyFiltersAndSorting()
                 }
+        }
+    }
+
+    fun updateSortOption(sortId: String) {
+        _uiState.update { it.copy(selectedSortId = sortId) }
+        applyFiltersAndSorting()
+    }
+
+    fun toggleFilter(filter: String) {
+        val currentFilters = _uiState.value.selectedFilters
+        val newFilters = if (currentFilters.contains(filter)) {
+            currentFilters - filter
+        } else {
+            currentFilters + filter
+        }
+        _uiState.update { it.copy(selectedFilters = newFilters) }
+        applyFiltersAndSorting()
+    }
+
+    fun clearAllFilters() {
+        _uiState.update {
+            it.copy(
+                selectedFilters = emptySet(),
+                selectedSortId = SortOptionIds.RELEVANCE
+            )
+        }
+        applyFiltersAndSorting()
+    }
+
+    private fun applyFiltersAndSorting() {
+        val currentState = _uiState.value
+
+        val filteredResults = applyFilters(currentState.searchResults, currentState.selectedFilters)
+
+        val sortedResults = applySorting(filteredResults, currentState.selectedSortId)
+
+        _uiState.update {
+            it.copy(filteredAndSortedResults = sortedResults)
         }
     }
 
@@ -89,5 +128,78 @@ class SearchResultsViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun applySorting(
+        results: List<SearchResult>,
+        sortId: String
+    ): List<SearchResult> {
+        return when (sortId) {
+            SortOptionIds.RATING -> {
+                results.sortedWith(compareByDescending { it.restaurant?.rating ?: 0f })
+            }
+
+            SortOptionIds.DISTANCE -> {
+                results.sortedWith(compareBy {
+                    val distanceStr =
+                        it.restaurant?.distance?.replace("[^0-9.]".toRegex(), "") ?: "999999"
+                    distanceStr.toFloatOrNull() ?: Float.MAX_VALUE
+                })
+            }
+
+            SortOptionIds.DELIVERY_TIME -> {
+                results.sortedWith(compareBy {
+                    val timeStr =
+                        it.restaurant?.deliveryTime?.replace("[^0-9]".toRegex(), "") ?: "999999"
+                    timeStr.toIntOrNull() ?: Int.MAX_VALUE
+                })
+            }
+
+            SortOptionIds.PRICE_LOW_TO_HIGH -> {
+                results.sortedWith(compareBy {
+                    if (it.menuItemList.isNotEmpty()) {
+                        it.menuItemList.minByOrNull { menuItem -> menuItem.price }?.price
+                            ?: Float.MAX_VALUE
+                    } else {
+                        Float.MAX_VALUE
+                    }
+                })
+            }
+
+            SortOptionIds.RELEVANCE -> results
+
+            else -> results
+        }
+    }
+
+    fun getAvailableFilters(): List<String> {
+        return _uiState.value.searchResults
+            .mapNotNull { it.restaurant }
+            .flatMap { it.badges }
+            .distinct()
+            .sorted()
+    }
+
+    fun getResultsCount(): Int {
+        val results = _uiState.value.filteredAndSortedResults
+        val restaurantCount = results.size
+        val menuItemsCount = results.sumOf { it.menuItemList.size }
+        return restaurantCount + menuItemsCount
+    }
+
+    fun getCurrentSortDisplayText(sortOptions: List<SortOption>): Int {
+        return sortOptions.find { it.id == _uiState.value.selectedSortId }?.displayTextRes
+            ?: com.app.tastybuds.R.string.sort_by
+    }
+
+    fun resetSearch() {
+        _uiState.update {
+            SearchUiState()
+        }
+        originalSearchResults = emptyList()
+    }
+
+    fun clearError() {
+        _uiState.update { it.copy(error = null) }
     }
 }

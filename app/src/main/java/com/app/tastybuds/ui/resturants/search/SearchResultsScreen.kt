@@ -104,7 +104,7 @@ import com.bumptech.glide.integration.compose.placeholder
 
 data class SortOption(
     val id: String,
-    val displayTextRes: Int // String resource ID
+    val displayTextRes: Int
 )
 
 object SortOptionIds {
@@ -113,7 +113,6 @@ object SortOptionIds {
     const val DISTANCE = "distance"
     const val DELIVERY_TIME = "delivery_time"
     const val PRICE_LOW_TO_HIGH = "price_low_to_high"
-    const val PRICE_HIGH_TO_LOW = "price_high_to_low"
 }
 
 object SearchDimensions {
@@ -245,7 +244,6 @@ fun SearchResultsScreen(
             SortOption(SortOptionIds.DISTANCE, R.string.sort_distance),
             SortOption(SortOptionIds.DELIVERY_TIME, R.string.delivery_time_asc),
             SortOption(SortOptionIds.PRICE_LOW_TO_HIGH, R.string.price_low_to_high),
-            SortOption(SortOptionIds.PRICE_HIGH_TO_LOW, R.string.price_high_to_low)
         )
     }
 
@@ -292,16 +290,6 @@ fun SearchResultsScreen(
                             ?: Float.MAX_VALUE
                     } else {
                         Float.MAX_VALUE
-                    }
-                })
-            }
-
-            SortOptionIds.PRICE_HIGH_TO_LOW -> {
-                filteredResults.sortedWith(compareByDescending {
-                    if (it.menuItemList.isNotEmpty()) {
-                        it.menuItemList.maxByOrNull { menuItem -> menuItem.price }?.price ?: 0f
-                    } else {
-                        0f
                     }
                 })
             }
