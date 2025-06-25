@@ -4,10 +4,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-// =============================================
-// Material 3 ColorScheme Extensions
-// =============================================
-
 @Composable
 fun primaryColor(): Color = MaterialTheme.colorScheme.primary
 
@@ -33,18 +29,6 @@ fun secondaryContainerColor(): Color = MaterialTheme.colorScheme.secondaryContai
 fun onSecondaryContainerColor(): Color = MaterialTheme.colorScheme.onSecondaryContainer
 
 @Composable
-fun tertiaryColor(): Color = MaterialTheme.colorScheme.tertiary
-
-@Composable
-fun onTertiaryColor(): Color = MaterialTheme.colorScheme.onTertiary
-
-@Composable
-fun tertiaryContainerColor(): Color = MaterialTheme.colorScheme.tertiaryContainer
-
-@Composable
-fun onTertiaryContainerColor(): Color = MaterialTheme.colorScheme.onTertiaryContainer
-
-@Composable
 fun backgroundColor(): Color = MaterialTheme.colorScheme.background
 
 @Composable
@@ -62,17 +46,6 @@ fun surfaceVariantColor(): Color = MaterialTheme.colorScheme.surfaceVariant
 @Composable
 fun onSurfaceVariantColor(): Color = MaterialTheme.colorScheme.onSurfaceVariant
 
-@Composable
-fun surfaceTintColor(): Color = MaterialTheme.colorScheme.surfaceTint
-
-@Composable
-fun inverseSurfaceColor(): Color = MaterialTheme.colorScheme.inverseSurface
-
-@Composable
-fun inverseOnSurfaceColor(): Color = MaterialTheme.colorScheme.inverseOnSurface
-
-@Composable
-fun inversePrimaryColor(): Color = MaterialTheme.colorScheme.inversePrimary
 
 @Composable
 fun errorColor(): Color = MaterialTheme.colorScheme.error
@@ -87,19 +60,10 @@ fun errorContainerColor(): Color = MaterialTheme.colorScheme.errorContainer
 fun onErrorContainerColor(): Color = MaterialTheme.colorScheme.onErrorContainer
 
 @Composable
-fun outlineColor(): Color = MaterialTheme.colorScheme.outline
-
-@Composable
 fun outlineVariantColor(): Color = MaterialTheme.colorScheme.outlineVariant
 
 @Composable
 fun scrimColor(): Color = MaterialTheme.colorScheme.scrim
-
-@Composable
-fun surfaceBrightColor(): Color = MaterialTheme.colorScheme.surfaceBright
-
-@Composable
-fun surfaceDimColor(): Color = MaterialTheme.colorScheme.surfaceDim
 
 @Composable
 fun surfaceContainerColor(): Color = MaterialTheme.colorScheme.surfaceContainer
@@ -108,17 +72,7 @@ fun surfaceContainerColor(): Color = MaterialTheme.colorScheme.surfaceContainer
 fun surfaceContainerHighColor(): Color = MaterialTheme.colorScheme.surfaceContainerHigh
 
 @Composable
-fun surfaceContainerHighestColor(): Color = MaterialTheme.colorScheme.surfaceContainerHighest
-
-@Composable
 fun surfaceContainerLowColor(): Color = MaterialTheme.colorScheme.surfaceContainerLow
-
-@Composable
-fun surfaceContainerLowestColor(): Color = MaterialTheme.colorScheme.surfaceContainerLowest
-
-// =============================================
-// Extended Colors Extensions
-// =============================================
 
 @Composable
 fun successColor(): Color = extendedColors.success
@@ -136,9 +90,6 @@ fun onSuccessContainerColor(): Color = extendedColors.onSuccessContainer
 fun infoColor(): Color = extendedColors.info
 
 @Composable
-fun onInfoColor(): Color = extendedColors.onInfo
-
-@Composable
 fun infoContainerColor(): Color = extendedColors.infoContainer
 
 @Composable
@@ -148,37 +99,16 @@ fun onInfoContainerColor(): Color = extendedColors.onInfoContainer
 fun warningColor(): Color = extendedColors.warning
 
 @Composable
-fun onWarningColor(): Color = extendedColors.onWarning
-
-@Composable
 fun warningContainerColor(): Color = extendedColors.warningContainer
 
 @Composable
 fun onWarningContainerColor(): Color = extendedColors.onWarningContainer
 
 @Composable
-fun extendedErrorColor(): Color = extendedColors.error
-
-@Composable
-fun onExtendedErrorColor(): Color = extendedColors.onError
-
-@Composable
-fun extendedErrorContainerColor(): Color = extendedColors.errorContainer
-
-@Composable
-fun onExtendedErrorContainerColor(): Color = extendedColors.onErrorContainer
-
-@Composable
 fun ratingColor(): Color = extendedColors.rating
 
 @Composable
-fun onRatingColor(): Color = extendedColors.onRating
-
-@Composable
 fun buttonBackgroundColor(): Color = extendedColors.buttonBackground
-
-@Composable
-fun onButtonBackgroundColor(): Color = extendedColors.onButtonBackground
 
 @Composable
 fun textSecondaryColor(): Color = extendedColors.textSecondary
@@ -193,20 +123,7 @@ fun borderColor(): Color = extendedColors.border
 fun borderFocusColor(): Color = extendedColors.borderFocus
 
 @Composable
-fun extendedSurfaceVariantColor(): Color = extendedColors.surfaceVariant
-
-@Composable
-fun onExtendedSurfaceVariantColor(): Color = extendedColors.onSurfaceVariant
-
-@Composable
 fun favoriteColor(): Color = extendedColors.favorite
-
-@Composable
-fun onFavoriteColor(): Color = extendedColors.onFavorite
-
-// =============================================
-// Convenience Extensions for Common UI Patterns
-// =============================================
 
 @Composable
 fun cardBackgroundColor(): Color = surfaceColor()
@@ -231,12 +148,6 @@ fun topAppBarBackgroundColor(): Color = surfaceColor()
 
 @Composable
 fun topAppBarContentColor(): Color = onSurfaceColor()
-
-@Composable
-fun bottomAppBarBackgroundColor(): Color = surfaceContainerHighColor()
-
-@Composable
-fun bottomAppBarContentColor(): Color = onSurfaceColor()
 
 @Composable
 fun navigationBarBackgroundColor(): Color = surfaceContainerColor()
@@ -280,15 +191,8 @@ fun captionTextColor(): Color = textSecondaryColor()
 @Composable
 fun linkTextColor(): Color = primaryColor()
 
-// =============================================
-// Status Colors for Common UI States
-// =============================================
-
 @Composable
 fun loadingIndicatorColor(): Color = primaryColor()
-
-@Composable
-fun progressBarColor(): Color = primaryColor()
 
 @Composable
 fun chipSelectedBackgroundColor(): Color = secondaryContainerColor()
@@ -303,12 +207,6 @@ fun chipUnselectedBackgroundColor(): Color = surfaceVariantColor()
 fun chipUnselectedContentColor(): Color = onSurfaceVariantColor()
 
 @Composable
-fun toggleButtonSelectedColor(): Color = primaryColor()
-
-@Composable
-fun toggleButtonUnselectedColor(): Color = surfaceVariantColor()
-
-@Composable
 fun checkboxSelectedColor(): Color = primaryColor()
 
 @Composable
@@ -321,28 +219,6 @@ fun radioButtonSelectedColor(): Color = primaryColor()
 fun radioButtonUnselectedColor(): Color = onSurfaceVariantColor()
 
 @Composable
-fun sliderActiveColor(): Color = primaryColor()
-
-@Composable
-fun sliderInactiveColor(): Color = primaryColor().copy(alpha = 0.24f)
-
-@Composable
-fun switchThumbSelectedColor(): Color = primaryColor()
-
-@Composable
-fun switchThumbUnselectedColor(): Color = outlineColor()
-
-@Composable
-fun switchTrackSelectedColor(): Color = primaryColor().copy(alpha = 0.24f)
-
-@Composable
-fun switchTrackUnselectedColor(): Color = surfaceVariantColor()
-
-// =============================================
-// Food App Specific Colors
-// =============================================
-
-@Composable
 fun deliveryStatusColor(): Color = infoColor()
 
 @Composable
@@ -353,9 +229,6 @@ fun cancelledStatusColor(): Color = errorColor()
 
 @Composable
 fun preparingStatusColor(): Color = warningColor()
-
-@Composable
-fun badgeBackgroundColor(): Color = primaryColor()
 
 @Composable
 fun badgeTextColor(): Color = onPrimaryColor()
@@ -412,22 +285,11 @@ fun searchBarTextColor(): Color = onSurfaceColor()
 fun searchBarHintColor(): Color = onSurfaceVariantColor()
 
 @Composable
-fun orderTotalBackgroundColor(): Color = primaryContainerColor()
-
-@Composable
 fun orderTotalTextColor(): Color = onPrimaryContainerColor()
 
-@Composable
-fun paymentMethodSelectedColor(): Color = primaryContainerColor()
-
-@Composable
-fun paymentMethodUnselectedColor(): Color = surfaceVariantColor()
 
 @Composable
 fun deliveryTrackingActiveColor(): Color = primaryColor()
-
-@Composable
-fun deliveryTrackingInactiveColor(): Color = surfaceVariantColor()
 
 @Composable
 fun reviewStarFilledColor(): Color = ratingColor()
@@ -449,6 +311,3 @@ fun addToCartButtonTextColor(): Color = onPrimaryColor()
 
 @Composable
 fun removeFromCartButtonColor(): Color = errorColor()
-
-@Composable
-fun removeFromCartButtonTextColor(): Color = onErrorColor()

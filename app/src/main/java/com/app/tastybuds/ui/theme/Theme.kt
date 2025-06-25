@@ -131,7 +131,7 @@ fun TastyBudsTheme(
             content = content
         )
     }
-    SetSystemBarColor(colorScheme.background)
+    SetSystemBarColor(colorScheme.primary)
 }
 
 val extendedColors: ExtendedColors
