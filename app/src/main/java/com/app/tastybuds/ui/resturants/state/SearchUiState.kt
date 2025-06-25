@@ -6,9 +6,9 @@ import com.app.tastybuds.ui.resturants.search.SortOptionIds
 data class SearchUiState(
     val isLoading: Boolean = false,
     val searchResults: List<SearchResult> = emptyList(),
-    val filteredAndSortedResults: List<SearchResult> = emptyList(), // Add this
-    val selectedSortId: String = SortOptionIds.RELEVANCE, // Add this
-    val selectedFilters: Set<String> = emptySet(), // Add this
+    val filteredAndSortedResults: List<SearchResult> = emptyList(),
+    val selectedSortId: String = SortOptionIds.RELEVANCE,
+    val selectedFilters: Set<String> = emptySet(),
     val isEmpty: Boolean = false,
     val error: String? = null
 )

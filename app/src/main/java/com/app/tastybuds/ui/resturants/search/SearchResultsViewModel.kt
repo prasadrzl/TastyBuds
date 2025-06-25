@@ -176,11 +176,8 @@ class SearchResultsViewModel @Inject constructor(
             .sorted()
     }
 
-    fun getResultsCount(): Int {
-        val results = _uiState.value.filteredAndSortedResults
-        val restaurantCount = results.size
-        val menuItemsCount = results.sumOf { it.menuItemList.size }
-        return restaurantCount + menuItemsCount
+    fun getMenuItemsCount(): Int {
+        return _uiState.value.filteredAndSortedResults.sumOf { it.menuItemList.size }
     }
 
     fun getCurrentSortDisplayText(sortOptions: List<SortOption>): Int {

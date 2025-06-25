@@ -169,7 +169,7 @@ fun SearchResultsScreen(
     }
 
     val resultsCount = remember(uiState.filteredAndSortedResults) {
-        viewModel.getResultsCount()
+        viewModel.getMenuItemsCount()
     }
 
     val currentSortText = remember(uiState.selectedSortId) {
@@ -186,7 +186,6 @@ fun SearchResultsScreen(
 
     LaunchedEffect(uiState.error) {
         if (uiState.error != null) {
-            // Auto-clear error after 3 seconds
             kotlinx.coroutines.delay(3000)
             viewModel.clearError()
         }
