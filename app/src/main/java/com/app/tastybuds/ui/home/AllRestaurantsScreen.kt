@@ -18,8 +18,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -36,21 +34,53 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
 import com.app.tastybuds.domain.model.Restaurant
-import com.app.tastybuds.ui.theme.*
+import com.app.tastybuds.ui.checkout.OfferScreenDimensions
+import com.app.tastybuds.ui.favorites.FavoritesDimensions
+import com.app.tastybuds.ui.theme.Spacing
+import com.app.tastybuds.ui.theme.backgroundColor
+import com.app.tastybuds.ui.theme.captionTextColor
+import com.app.tastybuds.ui.theme.cardBackgroundColor
+import com.app.tastybuds.ui.theme.cardContentColor
+import com.app.tastybuds.ui.theme.dividerColor
+import com.app.tastybuds.ui.theme.emptyStateDescription
+import com.app.tastybuds.ui.theme.emptyStateTitle
+import com.app.tastybuds.ui.theme.loadingIndicatorColor
+import com.app.tastybuds.ui.theme.onPrimaryColor
+import com.app.tastybuds.ui.theme.popularBadge
+import com.app.tastybuds.ui.theme.popularBadgeColor
+import com.app.tastybuds.ui.theme.restaurantCuisine
+import com.app.tastybuds.ui.theme.restaurantDeliveryTime
+import com.app.tastybuds.ui.theme.restaurantName
+import com.app.tastybuds.ui.theme.restaurantRating
+import com.app.tastybuds.ui.theme.starRatingColor
+import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.app.tastybuds.util.ui.AppTopBar
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
+
+object AllRestaurantsDimensions {
+    val cardHeight = 140.dp
+    val cardCornerRadius = 16.dp
+    val cardElevation = 4.dp
+    val cardPressedElevation = 8.dp
+    val cardContentPadding = 16.dp
+    val restaurantImageSize = 108.dp
+    val imageCornerRadius = 12.dp
+    val badgeCornerRadius = 6.dp
+    val loadingIndicatorSize = 48.dp
+    val ratingIconSize = 16.dp
+    val separatorSpacing = 8.dp
+    val metadataSpacing = 16.dp
+}
 
 @Composable
 fun AllRestaurantsScreen(
@@ -105,7 +135,7 @@ private fun LoadingContent() {
     ) {
         CircularProgressIndicator(
             color = loadingIndicatorColor(),
-            modifier = Modifier.size(48.dp)
+            modifier = Modifier.size(AllRestaurantsDimensions.loadingIndicatorSize)
         )
     }
 }
@@ -120,8 +150,8 @@ private fun RestaurantsContent(
     } else {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            contentPadding = PaddingValues(Spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(FavoritesDimensions.cardSpacing)
         ) {
             items(
                 items = restaurants,
@@ -141,7 +171,7 @@ private fun EmptyStateContent() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(Spacing.large),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -150,16 +180,16 @@ private fun EmptyStateContent() {
         ) {
             Text(
                 text = stringResource(R.string.no_restaurants_available),
-                style = MaterialTheme.typography.headlineSmall,
+                style = emptyStateTitle(),
                 color = captionTextColor(),
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Spacing.small))
 
             Text(
                 text = stringResource(R.string.check_back_later_for_new_restaurants),
-                style = MaterialTheme.typography.bodyMedium,
+                style = emptyStateDescription(),
                 color = textSecondaryColor(),
                 textAlign = TextAlign.Center
             )
@@ -167,7 +197,6 @@ private fun EmptyStateContent() {
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun RestaurantListItemCard(
     restaurant: Restaurant,
@@ -176,32 +205,32 @@ private fun RestaurantListItemCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(140.dp)
+            .height(AllRestaurantsDimensions.cardHeight)
             .clickable { onClick() }
             .semantics {
                 contentDescription = "Restaurant: ${restaurant.name}"
             },
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(AllRestaurantsDimensions.cardCornerRadius),
         colors = CardDefaults.cardColors(
             containerColor = cardBackgroundColor()
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp,
-            pressedElevation = 8.dp
+            defaultElevation = AllRestaurantsDimensions.cardElevation,
+            pressedElevation = AllRestaurantsDimensions.cardPressedElevation
         )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(AllRestaurantsDimensions.cardContentPadding),
             verticalAlignment = Alignment.CenterVertically
         ) {
             RestaurantImage(
                 restaurant = restaurant,
-                modifier = Modifier.size(108.dp)
+                modifier = Modifier.size(AllRestaurantsDimensions.restaurantImageSize)
             )
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(Spacing.medium))
 
             RestaurantInfo(
                 restaurant = restaurant,
@@ -220,10 +249,10 @@ private fun RestaurantImage(
     Box(modifier = modifier) {
         GlideImage(
             model = restaurant.imageUrl,
-            contentDescription = null, // Decorative image
+            contentDescription = stringResource(R.string.cd_restaurant_image),
             modifier = Modifier
                 .fillMaxSize()
-                .clip(RoundedCornerShape(12.dp)),
+                .clip(RoundedCornerShape(AllRestaurantsDimensions.imageCornerRadius)),
             contentScale = ContentScale.Crop,
             failure = placeholder(R.drawable.default_food),
             loading = placeholder(R.drawable.default_food)
@@ -233,7 +262,7 @@ private fun RestaurantImage(
             RestaurantBadge(
                 text = badge,
                 modifier = Modifier
-                    .padding(6.dp)
+                    .padding(OfferScreenDimensions.offerItemSpacing)
                     .align(Alignment.TopStart)
             )
         }
@@ -247,16 +276,16 @@ private fun RestaurantBadge(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(6.dp),
+        shape = RoundedCornerShape(AllRestaurantsDimensions.badgeCornerRadius),
         color = popularBadgeColor()
     ) {
         Text(
             text = text,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.labelSmall.copy(
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Medium
+            modifier = Modifier.padding(
+                horizontal = Spacing.small,
+                vertical = Spacing.xs
             ),
+            style = popularBadge(),
             color = onPrimaryColor()
         )
     }
@@ -273,7 +302,7 @@ private fun RestaurantInfo(
     ) {
         RestaurantBasicInfo(restaurant = restaurant)
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(FavoritesDimensions.cardSpacing))
 
         RestaurantMetadata(restaurant = restaurant)
     }
@@ -286,19 +315,17 @@ private fun RestaurantBasicInfo(
     Column {
         Text(
             text = restaurant.name,
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Bold
-            ),
+            style = restaurantName(),
             color = cardContentColor(),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(Spacing.xs))
 
         Text(
             text = restaurant.cuisine,
-            style = MaterialTheme.typography.bodyMedium,
+            style = restaurantCuisine(),
             color = textSecondaryColor(),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
@@ -318,7 +345,7 @@ private fun RestaurantMetadata(
             reviewCount = restaurant.reviewCount
         )
 
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(AllRestaurantsDimensions.metadataSpacing))
 
         DeliveryInfoSection(
             deliveryTime = restaurant.deliveryTime,
@@ -337,18 +364,16 @@ private fun RatingSection(
     ) {
         Icon(
             imageVector = Icons.Default.Star,
-            contentDescription = stringResource(R.string.rating),
-            modifier = Modifier.size(16.dp),
+            contentDescription = stringResource(R.string.cd_rating_star),
+            modifier = Modifier.size(AllRestaurantsDimensions.ratingIconSize),
             tint = starRatingColor()
         )
 
-        Spacer(modifier = Modifier.width(4.dp))
+        Spacer(modifier = Modifier.width(Spacing.xs))
 
         Text(
             text = "$rating ($reviewCount)",
-            style = MaterialTheme.typography.labelMedium.copy(
-                fontWeight = FontWeight.Medium
-            ),
+            style = restaurantRating(),
             color = cardContentColor()
         )
     }
@@ -364,28 +389,27 @@ private fun DeliveryInfoSection(
     ) {
         Text(
             text = deliveryTime,
-            style = MaterialTheme.typography.labelMedium,
+            style = restaurantDeliveryTime(),
             color = textSecondaryColor()
         )
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(AllRestaurantsDimensions.separatorSpacing))
 
         Text(
             text = "•",
-            style = MaterialTheme.typography.labelMedium,
+            style = restaurantDeliveryTime(),
             color = dividerColor()
         )
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(AllRestaurantsDimensions.separatorSpacing))
 
         Text(
             text = distance,
-            style = MaterialTheme.typography.labelMedium,
+            style = restaurantDeliveryTime(),
             color = textSecondaryColor()
         )
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

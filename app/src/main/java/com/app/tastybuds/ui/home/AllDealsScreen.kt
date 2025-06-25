@@ -31,22 +31,27 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
 import com.app.tastybuds.domain.model.Deal
+import com.app.tastybuds.ui.theme.Spacing
 import com.app.tastybuds.ui.theme.backgroundColor
+import com.app.tastybuds.ui.theme.badgeText
 import com.app.tastybuds.ui.theme.captionTextColor
 import com.app.tastybuds.ui.theme.cardBackgroundColor
 import com.app.tastybuds.ui.theme.cardContentColor
+import com.app.tastybuds.ui.theme.discountBadge
 import com.app.tastybuds.ui.theme.discountTextColor
+import com.app.tastybuds.ui.theme.emptyStateDescription
+import com.app.tastybuds.ui.theme.emptyStateTitle
+import com.app.tastybuds.ui.theme.foodItemName
+import com.app.tastybuds.ui.theme.foodItemOriginalPrice
+import com.app.tastybuds.ui.theme.foodItemPrice
 import com.app.tastybuds.ui.theme.loadingIndicatorColor
 import com.app.tastybuds.ui.theme.newBadgeColor
 import com.app.tastybuds.ui.theme.onErrorColor
@@ -57,6 +62,20 @@ import com.app.tastybuds.util.ui.AppTopBar
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
+
+object AllDealsDimensions {
+    val gridColumns = 2
+    val cardHeight = 220.dp
+    val cardCornerRadius = 16.dp
+    val cardElevation = 4.dp
+    val cardPressedElevation = 8.dp
+    val cardContentPadding = 12.dp
+    val imageHeight = 130.dp
+    val badgeCornerRadius = 6.dp
+    val loadingIndicatorSize = 48.dp
+    val gridSpacingHorizontal = 12.dp
+    val gridSpacingVertical = 16.dp
+}
 
 @Composable
 fun AllDealsScreen(
@@ -111,7 +130,7 @@ private fun LoadingContent() {
     ) {
         CircularProgressIndicator(
             color = loadingIndicatorColor(),
-            modifier = Modifier.size(48.dp)
+            modifier = Modifier.size(AllDealsDimensions.loadingIndicatorSize)
         )
     }
 }
@@ -125,11 +144,11 @@ private fun DealsContent(
         EmptyStateContent()
     } else {
         LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+            columns = GridCells.Fixed(AllDealsDimensions.gridColumns),
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            contentPadding = PaddingValues(Spacing.medium),
+            horizontalArrangement = Arrangement.spacedBy(AllDealsDimensions.gridSpacingHorizontal),
+            verticalArrangement = Arrangement.spacedBy(AllDealsDimensions.gridSpacingVertical)
         ) {
             items(
                 items = deals,
@@ -149,7 +168,7 @@ private fun EmptyStateContent() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(Spacing.large),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -158,16 +177,16 @@ private fun EmptyStateContent() {
         ) {
             Text(
                 text = stringResource(R.string.no_deals_available),
-                style = MaterialTheme.typography.headlineSmall,
+                style = emptyStateTitle(),
                 color = captionTextColor(),
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Spacing.small))
 
             Text(
                 text = stringResource(R.string.check_back_later_for_new_deals),
-                style = MaterialTheme.typography.bodyMedium,
+                style = emptyStateDescription(),
                 color = textSecondaryColor(),
                 textAlign = TextAlign.Center
             )
@@ -183,18 +202,18 @@ private fun DealGridItemCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(220.dp)
+            .height(AllDealsDimensions.cardHeight)
             .clickable { onClick() }
             .semantics {
                 contentDescription = "Deal: ${deal.title}"
             },
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(AllDealsDimensions.cardCornerRadius),
         colors = CardDefaults.cardColors(
             containerColor = cardBackgroundColor()
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp,
-            pressedElevation = 8.dp
+            defaultElevation = AllDealsDimensions.cardElevation,
+            pressedElevation = AllDealsDimensions.cardPressedElevation
         )
     ) {
         Column {
@@ -202,14 +221,14 @@ private fun DealGridItemCard(
                 deal = deal,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(130.dp)
+                    .height(AllDealsDimensions.imageHeight)
             )
 
             DealInfoSection(
                 deal = deal,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp)
+                    .padding(AllDealsDimensions.cardContentPadding)
             )
         }
     }
@@ -224,7 +243,7 @@ private fun DealImageSection(
     Box(modifier = modifier) {
         GlideImage(
             model = deal.imageUrl,
-            contentDescription = null,
+            contentDescription = stringResource(R.string.cd_food_image),
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
             failure = placeholder(R.drawable.default_food),
@@ -237,7 +256,7 @@ private fun DealImageSection(
                 backgroundColor = newBadgeColor(),
                 textColor = onErrorColor(),
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(Spacing.small)
                     .align(Alignment.TopStart)
             )
         }
@@ -246,7 +265,7 @@ private fun DealImageSection(
             DiscountBadge(
                 percentage = percentage,
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(Spacing.small)
                     .align(Alignment.TopEnd)
             )
         }
@@ -262,16 +281,16 @@ private fun BadgeLabel(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(6.dp),
+        shape = RoundedCornerShape(AllDealsDimensions.badgeCornerRadius),
         color = backgroundColor
     ) {
         Text(
             text = text,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.labelSmall.copy(
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Medium
+            modifier = Modifier.padding(
+                horizontal = Spacing.small,
+                vertical = Spacing.xs
             ),
+            style = badgeText(),
             color = textColor
         )
     }
@@ -284,16 +303,16 @@ private fun DiscountBadge(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(6.dp),
+        shape = RoundedCornerShape(AllDealsDimensions.badgeCornerRadius),
         color = discountTextColor()
     ) {
         Text(
             text = "-$percentage%",
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.labelSmall.copy(
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Medium
+            modifier = Modifier.padding(
+                horizontal = Spacing.small,
+                vertical = Spacing.xs
             ),
+            style = discountBadge(),
             color = onErrorColor()
         )
     }
@@ -307,15 +326,13 @@ private fun DealInfoSection(
     Column(modifier = modifier) {
         Text(
             text = deal.title,
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Medium
-            ),
+            style = foodItemName(),
             color = cardContentColor(),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Spacing.small))
 
         PriceSection(
             price = deal.price,
@@ -334,19 +351,16 @@ private fun PriceSection(
     ) {
         Text(
             text = price,
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Bold
-            ),
+            style = foodItemPrice(),
             color = priceTextColor()
         )
 
         originalPrice?.let { original ->
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(Spacing.small))
             Text(
                 text = original,
-                style = MaterialTheme.typography.bodyMedium,
-                color = originalPriceTextColor(),
-                textDecoration = TextDecoration.LineThrough
+                style = foodItemOriginalPrice(),
+                color = originalPriceTextColor()
             )
         }
     }

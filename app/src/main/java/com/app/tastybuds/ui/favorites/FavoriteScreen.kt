@@ -27,7 +27,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
@@ -46,20 +45,52 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.R
 import com.app.tastybuds.data.model.FavoriteMenuItemUi
 import com.app.tastybuds.data.model.FavoriteRestaurantUi
 import com.app.tastybuds.ui.login.LoginViewModel
-import com.app.tastybuds.ui.theme.*
+import com.app.tastybuds.ui.theme.Spacing
+import com.app.tastybuds.ui.theme.badgeText
+import com.app.tastybuds.ui.theme.bodyMedium
+import com.app.tastybuds.ui.theme.cardBackgroundColor
+import com.app.tastybuds.ui.theme.emptyStateDescription
+import com.app.tastybuds.ui.theme.emptyStateTitle
+import com.app.tastybuds.ui.theme.favoriteColor
+import com.app.tastybuds.ui.theme.foodItemName
+import com.app.tastybuds.ui.theme.foodItemPrice
+import com.app.tastybuds.ui.theme.onPrimaryColor
+import com.app.tastybuds.ui.theme.onSurfaceColor
+import com.app.tastybuds.ui.theme.onSurfaceVariantColor
+import com.app.tastybuds.ui.theme.primaryColor
+import com.app.tastybuds.ui.theme.ratingColor
+import com.app.tastybuds.ui.theme.restaurantCuisine
+import com.app.tastybuds.ui.theme.restaurantDeliveryTime
+import com.app.tastybuds.ui.theme.restaurantName
+import com.app.tastybuds.ui.theme.restaurantRating
+import com.app.tastybuds.ui.theme.subTitle
+import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
+
+object FavoritesDimensions {
+    val cardImageSize = 60.dp
+    val cardCornerRadius = 12.dp
+    val cardElevation = 2.dp
+    val cardContentPadding = 12.dp
+    val cardImageCornerRadius = 8.dp
+    val cardSpacing = 12.dp
+    val emptyStateIconSize = 64.dp
+    val favoriteIconSize = 20.dp
+    val ratingIconSize = 12.dp
+    val favoriteButtonSize = 32.dp
+    val badgePaddingHorizontal = 6.dp
+    val badgePaddingVertical = 2.dp
+}
 
 @Composable
 fun FavoriteScreen(
@@ -81,7 +112,6 @@ fun FavoriteScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-
         FavoritesTabRow(
             selectedTabIndex = selectedTabIndex,
             onTabSelected = { selectedTabIndex = it },
@@ -89,7 +119,7 @@ fun FavoriteScreen(
             favoriteRestaurantsCount = uiState.favoriteRestaurants.size
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.medium))
 
         when (selectedTabIndex) {
             0 -> FavoriteItemsTab(
@@ -138,30 +168,31 @@ fun FavoritesTabRow(
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(Spacing.medium)
             ) {
                 Text(
                     text = stringResource(id = R.string.favorite_item_tab),
-                    fontSize = 16.sp,
-                    fontWeight = if (selectedTabIndex == 0) FontWeight.Bold else FontWeight.Normal,
+                    style = if (selectedTabIndex == 0) subTitle() else bodyMedium(),
                     color = if (selectedTabIndex == 0) primaryColor() else textSecondaryColor()
                 )
                 if (favoriteItemsCount > 0) {
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(Spacing.small))
                     Box(
                         modifier = Modifier
                             .background(
                                 color = if (selectedTabIndex == 0) primaryColor() else onSurfaceVariantColor(),
                                 shape = CircleShape
                             )
-                            .padding(horizontal = 6.dp, vertical = 2.dp),
+                            .padding(
+                                horizontal = FavoritesDimensions.badgePaddingHorizontal,
+                                vertical = FavoritesDimensions.badgePaddingVertical
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = favoriteItemsCount.toString(),
-                            color = if (selectedTabIndex == 0) onPrimaryColor() else onSurfaceColor(),
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold
+                            style = badgeText(),
+                            color = if (selectedTabIndex == 0) onPrimaryColor() else onSurfaceColor()
                         )
                     }
                 }
@@ -174,30 +205,31 @@ fun FavoritesTabRow(
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(Spacing.medium)
             ) {
                 Text(
                     text = stringResource(id = R.string.restaurants),
-                    fontSize = 16.sp,
-                    fontWeight = if (selectedTabIndex == 1) FontWeight.Bold else FontWeight.Normal,
+                    style = if (selectedTabIndex == 1) subTitle() else bodyMedium(),
                     color = if (selectedTabIndex == 1) primaryColor() else textSecondaryColor()
                 )
                 if (favoriteRestaurantsCount > 0) {
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(Spacing.small))
                     Box(
                         modifier = Modifier
                             .background(
                                 color = if (selectedTabIndex == 1) primaryColor() else onSurfaceVariantColor(),
                                 shape = CircleShape
                             )
-                            .padding(horizontal = 6.dp, vertical = 2.dp),
+                            .padding(
+                                horizontal = FavoritesDimensions.badgePaddingHorizontal,
+                                vertical = FavoritesDimensions.badgePaddingVertical
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = favoriteRestaurantsCount.toString(),
-                            color = if (selectedTabIndex == 1) onPrimaryColor() else onSurfaceColor(),
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold
+                            style = badgeText(),
+                            color = if (selectedTabIndex == 1) onPrimaryColor() else onSurfaceColor()
                         )
                     }
                 }
@@ -232,8 +264,11 @@ fun FavoriteItemsTab(
 
         else -> {
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                verticalArrangement = Arrangement.spacedBy(FavoritesDimensions.cardSpacing),
+                contentPadding = PaddingValues(
+                    horizontal = Spacing.medium,
+                    vertical = Spacing.small
+                )
             ) {
                 items(favoriteItems) { favorite ->
                     FavoriteMenuItemCard(
@@ -275,8 +310,11 @@ fun FavoriteRestaurantsTab(
 
         else -> {
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                verticalArrangement = Arrangement.spacedBy(FavoritesDimensions.cardSpacing),
+                contentPadding = PaddingValues(
+                    horizontal = Spacing.medium,
+                    vertical = Spacing.small
+                )
             ) {
                 items(favoriteRestaurants) { favorite ->
                     FavoriteRestaurantCard(
@@ -303,50 +341,51 @@ fun FavoriteRestaurantCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(FavoritesDimensions.cardCornerRadius),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = FavoritesDimensions.cardElevation
+        ),
         colors = CardDefaults.cardColors(containerColor = cardBackgroundColor())
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(FavoritesDimensions.cardContentPadding),
             verticalAlignment = Alignment.CenterVertically
         ) {
             GlideImage(
                 model = if (favorite.hasValidImage) favorite.imageUrl else null,
-                contentDescription = favorite.name,
+                contentDescription = stringResource(R.string.cd_restaurant_image),
                 modifier = Modifier
-                    .size(60.dp)
-                    .clip(RoundedCornerShape(8.dp)),
+                    .size(FavoritesDimensions.cardImageSize)
+                    .clip(RoundedCornerShape(FavoritesDimensions.cardImageCornerRadius)),
                 contentScale = ContentScale.Crop,
                 failure = placeholder(R.drawable.default_food),
                 loading = placeholder(R.drawable.default_food)
             )
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(FavoritesDimensions.cardSpacing))
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = favorite.name,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
+                    style = restaurantName(),
                     color = onSurfaceColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(Spacing.xs))
 
                 Text(
                     text = favorite.cuisine,
-                    fontSize = 14.sp,
+                    style = restaurantCuisine(),
                     color = textSecondaryColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(Spacing.xs))
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically
@@ -354,16 +393,16 @@ fun FavoriteRestaurantCard(
                     if (favorite.rating > 0) {
                         Icon(
                             imageVector = Icons.Default.Star,
-                            contentDescription = stringResource(id = R.string.rating),
-                            modifier = Modifier.size(12.dp),
+                            contentDescription = stringResource(id = R.string.cd_rating_star),
+                            modifier = Modifier.size(FavoritesDimensions.ratingIconSize),
                             tint = ratingColor()
                         )
 
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Spacer(modifier = Modifier.width(Spacing.xs))
 
                         Text(
                             text = favorite.ratingText,
-                            fontSize = 12.sp,
+                            style = restaurantRating(),
                             color = textSecondaryColor()
                         )
 
@@ -372,30 +411,29 @@ fun FavoriteRestaurantCard(
 
                     Text(
                         text = favorite.deliveryInfo,
-                        fontSize = 12.sp,
+                        style = restaurantDeliveryTime(),
                         color = textSecondaryColor()
                     )
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(Spacing.xs))
 
                 Text(
                     text = favorite.priceRange,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
+                    style = foodItemPrice(),
                     color = primaryColor()
                 )
             }
 
             IconButton(
                 onClick = onRemoveClick,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(FavoritesDimensions.favoriteButtonSize)
             ) {
                 Icon(
                     imageVector = Icons.Default.Favorite,
-                    contentDescription = "Remove from favorites",
+                    contentDescription = stringResource(R.string.remove_from_favorites),
                     tint = favoriteColor(),
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(FavoritesDimensions.favoriteIconSize)
                 )
             }
         }
@@ -413,50 +451,51 @@ fun FavoriteMenuItemCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(FavoritesDimensions.cardCornerRadius),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = FavoritesDimensions.cardElevation
+        ),
         colors = CardDefaults.cardColors(containerColor = cardBackgroundColor())
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(FavoritesDimensions.cardContentPadding),
             verticalAlignment = Alignment.CenterVertically
         ) {
             GlideImage(
                 model = if (favorite.hasValidImage) favorite.imageUrl else null,
-                contentDescription = favorite.name,
+                contentDescription = stringResource(R.string.cd_food_image),
                 modifier = Modifier
-                    .size(60.dp)
-                    .clip(RoundedCornerShape(8.dp)),
+                    .size(FavoritesDimensions.cardImageSize)
+                    .clip(RoundedCornerShape(FavoritesDimensions.cardImageCornerRadius)),
                 contentScale = ContentScale.Crop,
                 failure = placeholder(R.drawable.default_food),
                 loading = placeholder(R.drawable.default_food)
             )
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(FavoritesDimensions.cardSpacing))
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = favorite.name,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
+                    style = foodItemName(),
                     color = onSurfaceColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(Spacing.xs))
 
                 Text(
                     text = favorite.restaurantName,
-                    fontSize = 14.sp,
+                    style = restaurantCuisine(),
                     color = textSecondaryColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(Spacing.xs))
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically
@@ -464,16 +503,16 @@ fun FavoriteMenuItemCard(
                     if (favorite.rating > 0) {
                         Icon(
                             imageVector = Icons.Default.Star,
-                            contentDescription = "Rating",
-                            modifier = Modifier.size(12.dp),
+                            contentDescription = stringResource(R.string.cd_rating_star),
+                            modifier = Modifier.size(FavoritesDimensions.ratingIconSize),
                             tint = ratingColor()
                         )
 
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Spacer(modifier = Modifier.width(Spacing.xs))
 
                         Text(
                             text = favorite.ratingText,
-                            fontSize = 12.sp,
+                            style = restaurantRating(),
                             color = textSecondaryColor()
                         )
                     }
@@ -482,8 +521,7 @@ fun FavoriteMenuItemCard(
 
                     Text(
                         text = favorite.priceText,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
+                        style = foodItemPrice(),
                         color = primaryColor()
                     )
                 }
@@ -491,13 +529,13 @@ fun FavoriteMenuItemCard(
 
             IconButton(
                 onClick = onRemoveClick,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(FavoritesDimensions.favoriteButtonSize)
             ) {
                 Icon(
                     imageVector = Icons.Default.Favorite,
-                    contentDescription = "Remove from favorites",
+                    contentDescription = stringResource(R.string.remove_from_favorites),
                     tint = favoriteColor(),
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(FavoritesDimensions.favoriteIconSize)
                 )
             }
         }
@@ -515,25 +553,28 @@ fun EmptyFavoritesState(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(32.dp)
+            modifier = Modifier.padding(Spacing.xl)
         ) {
             Icon(
                 imageVector = Icons.Default.FavoriteBorder,
                 contentDescription = stringResource(id = R.string.no_favorites),
-                modifier = Modifier.size(64.dp),
+                modifier = Modifier.size(FavoritesDimensions.emptyStateIconSize),
                 tint = onSurfaceVariantColor()
             )
-            Spacer(modifier = Modifier.height(16.dp))
+
+            Spacer(modifier = Modifier.height(Spacing.medium))
+
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleLarge,
-                color = onSurfaceColor(),
-                fontWeight = FontWeight.Medium
+                style = emptyStateTitle(),
+                color = onSurfaceColor()
             )
-            Spacer(modifier = Modifier.height(8.dp))
+
+            Spacer(modifier = Modifier.height(Spacing.small))
+
             Text(
                 text = description,
-                style = MaterialTheme.typography.bodyMedium,
+                style = emptyStateDescription(),
                 color = textSecondaryColor(),
                 textAlign = TextAlign.Center
             )

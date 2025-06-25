@@ -33,20 +33,29 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
 import com.app.tastybuds.domain.model.Collection
+import com.app.tastybuds.ui.checkout.OfferScreenDimensions
+import com.app.tastybuds.ui.favorites.FavoritesDimensions
+import com.app.tastybuds.ui.theme.Spacing
 import com.app.tastybuds.ui.theme.backgroundColor
+import com.app.tastybuds.ui.theme.badgeText
+import com.app.tastybuds.ui.theme.bodyMedium
+import com.app.tastybuds.ui.theme.buttonText
 import com.app.tastybuds.ui.theme.captionTextColor
 import com.app.tastybuds.ui.theme.cardBackgroundColor
 import com.app.tastybuds.ui.theme.cardContentColor
+import com.app.tastybuds.ui.theme.cardTitle
+import com.app.tastybuds.ui.theme.dialogBody
+import com.app.tastybuds.ui.theme.dialogTitle
+import com.app.tastybuds.ui.theme.emptyStateDescription
+import com.app.tastybuds.ui.theme.emptyStateTitle
 import com.app.tastybuds.ui.theme.loadingIndicatorColor
 import com.app.tastybuds.ui.theme.onBackgroundColor
 import com.app.tastybuds.ui.theme.onPrimaryColor
@@ -58,6 +67,19 @@ import com.app.tastybuds.util.ui.AppTopBar
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
+
+object AllCollectionsDimensions {
+    val cardHeight = 120.dp
+    val cardCornerRadius = 16.dp
+    val cardElevation = 4.dp
+    val cardPressedElevation = 8.dp
+    val cardContentPadding = 16.dp
+    val collectionImageSize = 88.dp
+    val imageCornerRadius = 12.dp
+    val loadingIndicatorSize = 48.dp
+    val badgeCornerRadius = 6.dp
+    val retryButtonCornerRadius = 28.dp
+}
 
 @Composable
 fun AllCollectionsScreen(
@@ -104,15 +126,16 @@ fun AllCollectionsScreen(
 
 @Composable
 private fun LoadingContent() {
+    val loadingDescription = stringResource(R.string.loading)
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .semantics { contentDescription = "Loading collections" },
+            .semantics { contentDescription = loadingDescription },
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
             color = loadingIndicatorColor(),
-            modifier = Modifier.size(48.dp)
+            modifier = Modifier.size(AllCollectionsDimensions.loadingIndicatorSize)
         )
     }
 }
@@ -127,8 +150,8 @@ private fun CollectionsContent(
     } else {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            contentPadding = PaddingValues(Spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(FavoritesDimensions.cardSpacing)
         ) {
             items(
                 items = collections,
@@ -148,7 +171,7 @@ private fun EmptyStateContent() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(Spacing.large),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -157,16 +180,16 @@ private fun EmptyStateContent() {
         ) {
             Text(
                 text = stringResource(R.string.no_collections_available),
-                style = MaterialTheme.typography.headlineSmall,
+                style = emptyStateTitle(),
                 color = captionTextColor(),
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Spacing.small))
 
             Text(
                 text = stringResource(R.string.check_back_later_for_new_collections),
-                style = MaterialTheme.typography.bodyMedium,
+                style = emptyStateDescription(),
                 color = textSecondaryColor(),
                 textAlign = TextAlign.Center
             )
@@ -182,32 +205,32 @@ private fun CollectionItemCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp)
+            .height(AllCollectionsDimensions.cardHeight)
             .clickable { onClick() }
             .semantics {
                 contentDescription = "Collection: ${collection.title}"
             },
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(AllCollectionsDimensions.cardCornerRadius),
         colors = CardDefaults.cardColors(
             containerColor = cardBackgroundColor()
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp,
-            pressedElevation = 8.dp
+            defaultElevation = AllCollectionsDimensions.cardElevation,
+            pressedElevation = AllCollectionsDimensions.cardPressedElevation
         )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(AllCollectionsDimensions.cardContentPadding),
             verticalAlignment = Alignment.CenterVertically
         ) {
             CollectionImage(
                 collection = collection,
-                modifier = Modifier.size(88.dp)
+                modifier = Modifier.size(AllCollectionsDimensions.collectionImageSize)
             )
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(Spacing.medium))
 
             CollectionInfo(
                 collection = collection,
@@ -226,10 +249,10 @@ private fun CollectionImage(
     Box(modifier = modifier) {
         GlideImage(
             model = collection.imageUrl,
-            contentDescription = null,
+            contentDescription = stringResource(R.string.cd_food_image),
             modifier = Modifier
                 .fillMaxSize()
-                .clip(RoundedCornerShape(12.dp)),
+                .clip(RoundedCornerShape(AllCollectionsDimensions.imageCornerRadius)),
             contentScale = ContentScale.Crop,
             failure = placeholder(R.drawable.default_food),
             loading = placeholder(R.drawable.default_food)
@@ -239,7 +262,7 @@ private fun CollectionImage(
             BadgeLabel(
                 text = badge,
                 modifier = Modifier
-                    .padding(6.dp)
+                    .padding(OfferScreenDimensions.offerItemSpacing)
                     .align(Alignment.TopStart)
             )
         }
@@ -253,16 +276,16 @@ private fun BadgeLabel(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(6.dp),
+        shape = RoundedCornerShape(AllCollectionsDimensions.badgeCornerRadius),
         color = successColor()
     ) {
         Text(
             text = text,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.labelSmall.copy(
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Medium
+            modifier = Modifier.padding(
+                horizontal = Spacing.small,
+                vertical = Spacing.xs
             ),
+            style = badgeText(),
             color = onSuccessColor()
         )
     }
@@ -279,19 +302,17 @@ private fun CollectionInfo(
     ) {
         Text(
             text = collection.title,
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Bold
-            ),
+            style = cardTitle(),
             color = cardContentColor(),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(Spacing.xs))
 
         Text(
             text = collection.subtitle,
-            style = MaterialTheme.typography.bodyMedium,
+            style = bodyMedium(),
             color = textSecondaryColor(),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
@@ -307,47 +328,49 @@ fun ErrorContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(Spacing.large),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text(
             text = stringResource(R.string.something_went_wrong),
-            style = MaterialTheme.typography.headlineSmall.copy(
-                fontWeight = FontWeight.Bold
-            ),
+            style = dialogTitle(),
             color = onBackgroundColor(),
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Spacing.small))
 
         Text(
             text = error,
-            style = MaterialTheme.typography.bodyMedium,
+            style = dialogBody(),
             color = textSecondaryColor(),
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(Spacing.large))
 
         Button(
             onClick = onRetry,
             colors = ButtonDefaults.buttonColors(
                 containerColor = primaryColor()
             ),
-            shape = RoundedCornerShape(28.dp)
+            shape = RoundedCornerShape(AllCollectionsDimensions.retryButtonCornerRadius)
         ) {
             Text(
                 text = stringResource(R.string.try_again),
                 color = onPrimaryColor(),
-                style = MaterialTheme.typography.labelLarge,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                style = buttonText(),
+                modifier = Modifier.padding(
+                    horizontal = Spacing.medium,
+                    vertical = Spacing.xs
+                )
             )
         }
     }
 }
 
+// Preview functions remain unchanged as requested
 @Preview(showBackground = true)
 @Composable
 private fun AllCollectionsScreenPreview() {
