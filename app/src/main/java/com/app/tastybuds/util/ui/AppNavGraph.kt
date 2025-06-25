@@ -1,23 +1,15 @@
 package com.app.tastybuds.util.ui
 
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
-import com.app.tastybuds.BottomNavItem
 import com.app.tastybuds.R
 import com.app.tastybuds.domain.model.SearchResultType.FOOD_ITEM
 import com.app.tastybuds.domain.model.SearchResultType.RESTAURANT
@@ -25,13 +17,13 @@ import com.app.tastybuds.ui.favorites.FavoriteScreen
 import com.app.tastybuds.ui.home.AllCollectionsScreen
 import com.app.tastybuds.ui.home.AllDealsScreen
 import com.app.tastybuds.ui.home.AllRestaurantsScreen
-import com.app.tastybuds.ui.vouchers.AllVouchersScreen
 import com.app.tastybuds.ui.home.HomeScreen
 import com.app.tastybuds.ui.inbox.ChatBoxScreen
 import com.app.tastybuds.ui.location.LocationTrackerScreen
 import com.app.tastybuds.ui.location.OrderTrackingScreen
 import com.app.tastybuds.ui.login.AuthCheckScreen
 import com.app.tastybuds.ui.login.LoginScreen
+import com.app.tastybuds.ui.onboarding.OnboardingScreen
 import com.app.tastybuds.ui.onboarding.OnboardingViewModel
 import com.app.tastybuds.ui.orders.CartViewModel
 import com.app.tastybuds.ui.orders.FoodDetailsScreen
@@ -41,12 +33,12 @@ import com.app.tastybuds.ui.orders.OrdersScreen
 import com.app.tastybuds.ui.profile.ProfileScreen
 import com.app.tastybuds.ui.profile.ProfileSettingsScreen
 import com.app.tastybuds.ui.resturants.CategoryDetailsScreen
+import com.app.tastybuds.ui.resturants.MenuListScreen
 import com.app.tastybuds.ui.resturants.RestaurantDetailsScreen
 import com.app.tastybuds.ui.resturants.SeeAllScreen
 import com.app.tastybuds.ui.resturants.search.SearchResultsScreen
 import com.app.tastybuds.ui.splash.TastyBudsSplashScreen
-import com.app.tastybuds.ui.onboarding.OnboardingScreen
-import com.app.tastybuds.ui.resturants.MenuListScreen
+import com.app.tastybuds.ui.vouchers.AllVouchersScreen
 import kotlinx.coroutines.launch
 
 val items = listOf(

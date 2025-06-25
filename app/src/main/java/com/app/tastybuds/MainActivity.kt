@@ -21,14 +21,22 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.app.tastybuds.ui.theme.SetSystemBarColor
 import com.app.tastybuds.ui.theme.TastyBudsTheme
-import com.app.tastybuds.ui.theme.surfaceContainerColor
 import com.app.tastybuds.util.ui.AppNavGraph
 import com.app.tastybuds.util.ui.BottomBar
 import com.app.tastybuds.util.ui.HomeSearchBar
 import com.app.tastybuds.util.ui.HomeTopBar
 import com.app.tastybuds.util.ui.ThemeManager
+import com.app.tastybuds.util.ui.getNavigationBarColor
+import com.app.tastybuds.util.ui.getStatusBarColor
+import com.app.tastybuds.util.ui.shouldHideTopBar
+import com.app.tastybuds.util.ui.shouldShowBottomBar
+import com.app.tastybuds.util.ui.shouldShowHomeTopBar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+
+val LocalThemeManager = compositionLocalOf<ThemeManager> {
+    error("ThemeManager not provided")
+}
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -39,108 +47,64 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            SetSystemBarColor(navigationBarColor = surfaceContainerColor())
             val isDarkMode by themeManager.isDarkMode.collectAsStateWithLifecycle(initialValue = false)
             TastyBudsTheme(darkTheme = isDarkMode, dynamicColor = false) {
-                val navController = rememberNavController()
-                TastyBuddyMainScreen(navController, themeManager)
+                CompositionLocalProvider(LocalThemeManager provides themeManager) {
+                    val navController = rememberNavController()
+                    TastyBuddyMainScreen(navController)
+                }
             }
         }
     }
 }
 
 @Composable
-fun TastyBuddyMainScreen(navController: NavHostController, themeManager: ThemeManager) {
+fun TastyBuddyMainScreen(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
     var searchText by rememberSaveable { mutableStateOf("") }
 
+    val statusBarColor = currentRoute.getStatusBarColor()
+    val navigationBarColor = currentRoute.getNavigationBarColor()
+
+    SetSystemBarColor(
+        statusBarColor = statusBarColor,
+        navigationBarColor = navigationBarColor
+    )
+
     Scaffold(
         topBar = {
-            val hideTopBar = currentRoute == "splash" ||
-                    currentRoute == "onboarding" ||
-                    currentRoute == "profile" ||
-                    currentRoute == "orders" ||
-                    currentRoute == "inbox" ||
-                    currentRoute == "profile_edit" ||
-                    currentRoute == "login" ||
-                    currentRoute?.startsWith("food_listing/") == true ||
-                    currentRoute?.startsWith("search_results/") == true ||
-                    currentRoute?.startsWith("restaurant_details/") == true ||
-                    currentRoute?.startsWith("food_details/") == true ||
-                    currentRoute?.startsWith("see_all/") == true ||
-                    currentRoute?.startsWith("order_tracking/") == true ||
-                    currentRoute?.startsWith("menu_list/") == true ||
-                    currentRoute?.startsWith("order_details/") == true ||
-                    currentRoute == "location" ||
-                    currentRoute == "favorites" ||
-                    currentRoute == "order_review" ||
-                    currentRoute == "all_collections" ||
-                    currentRoute == "all_restaurants" ||
-                    currentRoute == "all_deals" ||
-                    currentRoute == "all_vouchers"
+            when {
+                currentRoute.shouldHideTopBar() -> {}
 
-            if (!hideTopBar) {
-                Column {
-                    HomeTopBar(
-                        onProfileClick = {
-                            navController.navigate("profile")
-                        },
-                        onLocationClick = {
-                            navController.navigate("location")
-                        }
-                    )
-
-                    HomeSearchBar(
-                        value = searchText,
-                        onValueChange = { newText -> searchText = newText },
-                        onSearchBarClick = {
-                            navController.navigate("search_results/${searchText.ifBlank { "all" }}")
-                        }
-                    )
+                currentRoute.shouldShowHomeTopBar() -> {
+                    Column {
+                        HomeTopBar(
+                            onProfileClick = { navController.navigate("profile") },
+                            onLocationClick = {
+                                navController.navigate("location")
+                            }
+                        )
+                        HomeSearchBar(
+                            value = searchText,
+                            onValueChange = { newText -> searchText = newText },
+                            onSearchBarClick = {
+                                navController.navigate("search_results/${searchText.ifBlank { "all" }}")
+                            }
+                        )
+                    }
                 }
             }
         },
         bottomBar = {
-            val hideBottomBar = currentRoute == "splash" ||
-                    currentRoute == "onboarding" ||
-                    currentRoute == "profile" ||
-                    currentRoute == "profile_edit" ||
-                    currentRoute == "login" ||
-                    currentRoute?.startsWith("food_listing/") == true ||
-                    currentRoute?.startsWith("search_results/") == true ||
-                    currentRoute?.startsWith("restaurant_details/") == true ||
-                    currentRoute?.startsWith("food_details/") == true ||
-                    currentRoute?.startsWith("order_tracking/") == true ||
-                    currentRoute?.startsWith("menu_list/") == true ||
-                    currentRoute?.startsWith("order_details/") == true ||
-                    currentRoute == "location" ||
-                    currentRoute == "order_review" ||
-                    currentRoute == "all_collections" ||
-                    currentRoute == "all_restaurants" ||
-                    currentRoute == "all_deals" ||
-                    currentRoute == "all_vouchers"
-
-            if (!hideBottomBar) {
-                BottomBar(navController = navController)
+            if (currentRoute.shouldShowBottomBar()) {
+                BottomBar(navController)
             }
         }
-    ) { padding ->
-        Box(
-            modifier = Modifier.then(
-                if (currentRoute != "splash") Modifier.padding(padding) else Modifier
-            )
-        ) {
-            CompositionLocalProvider(LocalThemeManager provides themeManager) {
-                AppNavGraph(navController = navController)
-            }
+    ) { paddingValues ->
+        Box(modifier = Modifier.padding(paddingValues)) {
+            AppNavGraph(navController)
         }
     }
-}
-
-data class BottomNavItem(val route: String, val label: String, val iconRes: Int)
-
-val LocalThemeManager = compositionLocalOf<ThemeManager> {
-    error("ThemeManager not provided")
 }
