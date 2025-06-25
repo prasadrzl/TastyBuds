@@ -19,9 +19,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.app.tastybuds.ui.theme.PrimaryColor
 import com.app.tastybuds.ui.theme.SetSystemBarColor
 import com.app.tastybuds.ui.theme.TastyBudsTheme
+import com.app.tastybuds.ui.theme.surfaceContainerColor
 import com.app.tastybuds.util.ui.AppNavGraph
 import com.app.tastybuds.util.ui.BottomBar
 import com.app.tastybuds.util.ui.HomeSearchBar
@@ -39,9 +39,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+            SetSystemBarColor(navigationBarColor = surfaceContainerColor())
             val isDarkMode by themeManager.isDarkMode.collectAsStateWithLifecycle(initialValue = false)
             TastyBudsTheme(darkTheme = isDarkMode, dynamicColor = false) {
-                SetSystemBarColor(PrimaryColor)
                 val navController = rememberNavController()
                 TastyBuddyMainScreen(navController, themeManager)
             }

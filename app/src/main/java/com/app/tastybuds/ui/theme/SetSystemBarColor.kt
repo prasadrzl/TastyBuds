@@ -7,13 +7,20 @@ import androidx.compose.ui.graphics.luminance
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
-fun SetSystemBarColor(color: Color) {
+fun SetSystemBarColor(
+    statusBarColor: Color = primaryColor(),
+    navigationBarColor: Color = primaryColor()
+) {
     val systemUiController = rememberSystemUiController()
-    val useDarkIcons = color.luminance() > 0.5f
+    val useDarkIcons = statusBarColor.luminance() > 0.5f
 
     SideEffect {
         systemUiController.setStatusBarColor(
-            color = color,
+            color = statusBarColor,
+            darkIcons = useDarkIcons
+        )
+        systemUiController.setNavigationBarColor(
+            color = navigationBarColor,
             darkIcons = useDarkIcons
         )
     }

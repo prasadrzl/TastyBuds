@@ -10,7 +10,6 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val LightColorScheme = lightColorScheme(
@@ -18,14 +17,14 @@ private val LightColorScheme = lightColorScheme(
     secondary = SecondaryColor,
     background = BackgroundLight,
     surface = SurfaceLight,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
+    onPrimary = OnPrimaryLight,
+    onSecondary = OnSecondaryLight,
     onBackground = OnBackgroundLight,
     onSurface = OnSurfaceLight,
     error = ErrorColor,
-    onError = Color.White,
+    onError = OnErrorLight,
     outline = BorderLight,
-    surfaceVariant = Color(0xFFF5F5F5),
+    surfaceVariant = SurfaceVariantLight,
     onSurfaceVariant = TextSecondary
 )
 
@@ -34,77 +33,77 @@ private val DarkColorScheme = darkColorScheme(
     secondary = SecondaryColor,
     background = BackgroundDark,
     surface = SurfaceDark,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
+    onPrimary = OnPrimaryDark,
+    onSecondary = OnSecondaryDark,
     onBackground = OnBackgroundDark,
     onSurface = OnSurfaceDark,
     error = ErrorColor,
-    onError = Color.White,
+    onError = OnErrorDark,
     outline = BorderDark,
-    surfaceVariant = Color(0xFF2D2D2D),
+    surfaceVariant = SurfaceVariantDark,
     onSurfaceVariant = TextSecondaryDark
 )
 
 private val LightExtendedColors = ExtendedColors(
     success = SuccessColor,
-    onSuccess = Color.White,
-    successContainer = SuccessColor.copy(alpha = 0.1f),
+    onSuccess = OnSuccessLight,
+    successContainer = SuccessColor.copy(alpha = CONTAINER_ALPHA_LIGHT),
     onSuccessContainer = SuccessColor,
     info = InfoColor,
-    onInfo = Color.White,
-    infoContainer = InfoColor.copy(alpha = 0.1f),
+    onInfo = OnInfoLight,
+    infoContainer = InfoColor.copy(alpha = CONTAINER_ALPHA_LIGHT),
     onInfoContainer = InfoColor,
     warning = WarningColor,
-    onWarning = Color.Black,
-    warningContainer = WarningColor.copy(alpha = 0.1f),
+    onWarning = OnWarningLight,
+    warningContainer = WarningColor.copy(alpha = CONTAINER_ALPHA_LIGHT),
     onWarningContainer = WarningColor,
     error = ErrorColor,
-    onError = Color.White,
-    errorContainer = ErrorColor.copy(alpha = 0.1f),
+    onError = OnErrorExtendedLight,
+    errorContainer = ErrorColor.copy(alpha = CONTAINER_ALPHA_LIGHT),
     onErrorContainer = ErrorColor,
     rating = RatingColor,
-    onRating = Color.Black,
+    onRating = OnRatingLight,
     buttonBackground = ButtonBackgroundLight,
     onButtonBackground = PrimaryColor,
     textSecondary = TextSecondary,
     textDisabled = TextDisabled,
     border = BorderLight,
     borderFocus = BorderFocus,
-    surfaceVariant = Color(0xFFF5F5F5),
+    surfaceVariant = SurfaceVariantLight,
     onSurfaceVariant = TextSecondary,
     favorite = ErrorColor,
-    onFavorite = Color.White,
+    onFavorite = OnFavoriteLight,
 )
 
 private val DarkExtendedColors = ExtendedColors(
     success = SuccessColor,
-    onSuccess = Color.Black,
-    successContainer = SuccessColor.copy(alpha = 0.2f),
+    onSuccess = OnSuccessDark,
+    successContainer = SuccessColor.copy(alpha = CONTAINER_ALPHA_DARK),
     onSuccessContainer = SuccessColor,
     info = InfoColor,
-    onInfo = Color.Black,
-    infoContainer = InfoColor.copy(alpha = 0.2f),
+    onInfo = OnInfoDark,
+    infoContainer = InfoColor.copy(alpha = CONTAINER_ALPHA_DARK),
     onInfoContainer = InfoColor,
     warning = WarningColor,
-    onWarning = Color.Black,
-    warningContainer = WarningColor.copy(alpha = 0.2f),
+    onWarning = OnWarningDark,
+    warningContainer = WarningColor.copy(alpha = CONTAINER_ALPHA_DARK),
     onWarningContainer = WarningColor,
     error = ErrorColor,
-    onError = Color.Black,
-    errorContainer = ErrorColor.copy(alpha = 0.2f),
+    onError = OnErrorExtendedDark,
+    errorContainer = ErrorColor.copy(alpha = CONTAINER_ALPHA_DARK),
     onErrorContainer = ErrorColor,
     rating = RatingColor,
-    onRating = Color.Black,
+    onRating = OnRatingDark,
     buttonBackground = ButtonBackgroundDark,
     onButtonBackground = PrimaryColor,
     textSecondary = TextSecondaryDark,
     textDisabled = TextDisabledDark,
     border = BorderDark,
     borderFocus = BorderFocus,
-    surfaceVariant = Color(0xFF2D2D2D),
+    surfaceVariant = SurfaceVariantDark,
     onSurfaceVariant = TextSecondaryDark,
     favorite = ErrorColor,
-    onFavorite = Color.Black,
+    onFavorite = OnFavoriteDark,
 )
 
 @Composable
@@ -118,6 +117,7 @@ fun TastyBudsTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
+
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
@@ -131,7 +131,6 @@ fun TastyBudsTheme(
             content = content
         )
     }
-    SetSystemBarColor(colorScheme.primary)
 }
 
 val extendedColors: ExtendedColors

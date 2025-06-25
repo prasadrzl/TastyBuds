@@ -20,6 +20,36 @@ val SurfaceDark = Color(0xFF1E1E1E)
 val OnBackgroundDark = Color(0xFFFFFFFF)
 val OnSurfaceDark = Color(0xFFFFFFFF)
 
+// Surface Variant Colors
+val SurfaceVariantLight = Color(0xFFF5F5F5)
+val SurfaceVariantDark = Color(0xFF2D2D2D)
+
+// On-Color Constants
+val OnPrimaryLight = Color.White
+val OnPrimaryDark = Color.White
+val OnSecondaryLight = Color.Black
+val OnSecondaryDark = Color.Black
+val OnErrorLight = Color.White
+val OnErrorDark = Color.Black
+
+// Extended Color On-Colors
+val OnSuccessLight = Color.White
+val OnSuccessDark = Color.Black
+val OnInfoLight = Color.White
+val OnInfoDark = Color.Black
+val OnWarningLight = Color.Black
+val OnWarningDark = Color.Black
+val OnErrorExtendedLight = Color.White
+val OnErrorExtendedDark = Color.Black
+val OnRatingLight = Color.Black
+val OnRatingDark = Color.Black
+val OnFavoriteLight = Color.White
+val OnFavoriteDark = Color.Black
+
+// Alpha Constants (replaces hardcoded 0.1f and 0.2f)
+const val CONTAINER_ALPHA_LIGHT = 0.1f
+const val CONTAINER_ALPHA_DARK = 0.2f
+
 // Semantic Colors
 val InfoColor = Color(0xFF379AE6)
 val SuccessColor = Color(0xFF1DD75B)
@@ -27,7 +57,7 @@ val ErrorColor = Color(0xFFDE3B40)
 val WarningColor = Color(0xFFFFCC32)
 
 // Special UI Colors
-val RatingColor = Color(0xFFFFC107) // Golden yellow for ratings
+val RatingColor = Color(0xFFFFC107)
 val ButtonBackgroundLight = Color(0xFFFFE7D2)
 val ButtonBackgroundDark = Color(0xFF2D1B0A)
 

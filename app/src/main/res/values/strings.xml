@@ -448,5 +448,6 @@
     <string name="location_permission_required">Location permission required</string>
     <string name="enter_your_address">Enter your address</string>
     <string name="also_ordered">Also Ordered</string>
+    <string name="add_or_search_for_voucher">Add or search for voucher</string>
 
 </resources>

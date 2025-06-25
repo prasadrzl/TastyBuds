@@ -48,7 +48,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.tastybuds.R
-import com.app.tastybuds.ui.theme.PrimaryColor
 import com.app.tastybuds.ui.theme.SetSystemBarColor
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
@@ -67,7 +66,7 @@ fun TastyBudsSplashScreen(
     onSplashComplete: () -> Unit = {}
 ) {
     val systemUiController = rememberSystemUiController()
-    SetSystemBarColor(PrimaryColor)
+    SetSystemBarColor()
 
     DisposableEffect(Unit) {
         onDispose {

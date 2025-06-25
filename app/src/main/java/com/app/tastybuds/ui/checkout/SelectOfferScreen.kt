@@ -36,11 +36,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.app.tastybuds.R
+import com.app.tastybuds.ui.theme.focusedBorderColor
 import com.app.tastybuds.ui.theme.primaryColor
+import com.app.tastybuds.ui.theme.surfaceVariantColor
 import com.app.tastybuds.util.ui.AppTopBar
 
 @Composable
@@ -57,17 +60,17 @@ fun SelectOfferScreen(offers: List<OfferItem>, onUseNowClick: () -> Unit) {
         OutlinedTextField(
             value = "",
             onValueChange = {},
-            placeholder = { Text("Add or search for voucher") },
+            placeholder = { Text(stringResource(R.string.add_or_search_for_voucher)) },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 8.dp)
                 .fillMaxWidth(),
             shape = RoundedCornerShape(24.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedContainerColor = Color(0xFFF6F6F6),
-                focusedContainerColor = Color(0xFFF6F6F6),
+                unfocusedContainerColor = surfaceVariantColor(),
+                focusedContainerColor = surfaceVariantColor(),
                 unfocusedBorderColor = Color.Transparent,
-                focusedBorderColor = Color.Transparent
+                focusedBorderColor = focusedBorderColor()
             )
         )
 
