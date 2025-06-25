@@ -77,6 +77,7 @@ import java.util.Locale
 fun OrderTrackingScreen(
     orderId: String,
     onBackClick: () -> Unit = {},
+    onRatingClick: (String) -> Unit,
     viewModel: OrderTrackingViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -171,6 +172,7 @@ fun OrderTrackingScreen(
 
                 DeliveryTrackingBottomSheet(
                     uiState = uiState,
+                    onRatingClick = onRatingClick,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth()
@@ -270,6 +272,7 @@ private fun ErrorContent(
 @Composable
 private fun DeliveryTrackingBottomSheet(
     uiState: OrderTrackingUiState,
+    onRatingClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -416,7 +419,8 @@ private fun DeliveryTrackingBottomSheet(
 
             DriverInfoSection(
                 customerName = uiState.customerName,
-                orderId = uiState.order?.id ?: ""
+                orderId = uiState.order?.id ?: "",
+                onRatingClick = onRatingClick
             )
         }
     }
@@ -425,7 +429,8 @@ private fun DeliveryTrackingBottomSheet(
 @Composable
 private fun DriverInfoSection(
     customerName: String = stringResource(R.string.customer),
-    orderId: String = ""
+    orderId: String = "",
+    onRatingClick: (String) -> Unit = {}
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -490,7 +495,9 @@ private fun DriverInfoSection(
             }
 
             IconButton(
-                onClick = {},
+                onClick = {
+
+                },
                 modifier = Modifier.size(48.dp)
             ) {
                 Icon(
@@ -515,6 +522,7 @@ private fun calculateDriverPosition(start: LatLng, end: LatLng, progress: Float)
 fun OrderTrackingScreenPreview() {
     OrderTrackingScreen(
         orderId = "order_87653ef8-4779-43c3-9e85-5b2b1e855cfd",
-        onBackClick = {}
+        onBackClick = {},
+        onRatingClick = {}
     )
 }

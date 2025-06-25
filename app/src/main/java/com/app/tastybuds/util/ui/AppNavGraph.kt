@@ -30,6 +30,7 @@ import com.app.tastybuds.ui.orders.FoodDetailsScreen
 import com.app.tastybuds.ui.orders.OrderDetailsScreen
 import com.app.tastybuds.ui.orders.OrderReviewScreen
 import com.app.tastybuds.ui.orders.OrdersScreen
+import com.app.tastybuds.ui.orders.RatingScreen
 import com.app.tastybuds.ui.profile.ProfileScreen
 import com.app.tastybuds.ui.profile.ProfileSettingsScreen
 import com.app.tastybuds.ui.resturants.CategoryDetailsScreen
@@ -404,6 +405,10 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
 
+        composable("rating_review") {
+            RatingScreen()
+        }
+
         composable("see_all/{categoryId}/{type}/{title}") { backStackEntry ->
             val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
             val type = backStackEntry.arguments?.getString("type") ?: ""
@@ -434,6 +439,9 @@ fun AppNavGraph(navController: NavHostController) {
                     navController.navigate("home") {
                         popUpTo("home") { inclusive = false }
                     }
+                },
+                onRatingClick = {
+                    navController.navigate("rating_review")
                 }
             )
         }

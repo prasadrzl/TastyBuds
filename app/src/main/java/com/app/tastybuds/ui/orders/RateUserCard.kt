@@ -37,7 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
@@ -48,7 +47,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.tastybuds.R
-import com.app.tastybuds.ui.theme.*
+import com.app.tastybuds.ui.theme.addToCartButtonColor
+import com.app.tastybuds.ui.theme.addToCartButtonTextColor
+import com.app.tastybuds.ui.theme.backgroundColor
+import com.app.tastybuds.ui.theme.enabledTextColor
+import com.app.tastybuds.ui.theme.focusedBorderColor
+import com.app.tastybuds.ui.theme.onBackgroundColor
+import com.app.tastybuds.ui.theme.onPrimaryColor
+import com.app.tastybuds.ui.theme.onSurfaceVariantColor
+import com.app.tastybuds.ui.theme.placeholderTextColor
+import com.app.tastybuds.ui.theme.primaryColor
+import com.app.tastybuds.ui.theme.primaryContainerColor
+import com.app.tastybuds.ui.theme.reviewStarEmptyColor
+import com.app.tastybuds.ui.theme.reviewStarFilledColor
+import com.app.tastybuds.ui.theme.surfaceVariantColor
+import com.app.tastybuds.ui.theme.textSecondaryColor
+import com.app.tastybuds.ui.theme.unfocusedBorderColor
 import com.app.tastybuds.util.ui.AppTopBar
 
 @Preview
