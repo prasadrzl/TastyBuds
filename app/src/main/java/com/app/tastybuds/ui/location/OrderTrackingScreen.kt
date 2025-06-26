@@ -1,6 +1,7 @@
 package com.app.tastybuds.ui.location
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -504,7 +505,11 @@ private fun DriverInfoSection(
                     imageVector = Icons.Default.Star,
                     contentDescription = stringResource(R.string.rate),
                     tint = starRatingColor(),
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable {
+                            onRatingClick(orderId)
+                        }
                 )
             }
         }

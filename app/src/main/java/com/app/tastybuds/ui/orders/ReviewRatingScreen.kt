@@ -10,13 +10,15 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Star
@@ -27,6 +29,7 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
@@ -57,7 +61,6 @@ import com.app.tastybuds.ui.theme.onPrimaryColor
 import com.app.tastybuds.ui.theme.onSurfaceVariantColor
 import com.app.tastybuds.ui.theme.placeholderTextColor
 import com.app.tastybuds.ui.theme.primaryColor
-import com.app.tastybuds.ui.theme.primaryContainerColor
 import com.app.tastybuds.ui.theme.reviewStarEmptyColor
 import com.app.tastybuds.ui.theme.reviewStarFilledColor
 import com.app.tastybuds.ui.theme.surfaceVariantColor
@@ -65,24 +68,32 @@ import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.app.tastybuds.ui.theme.unfocusedBorderColor
 import com.app.tastybuds.util.ui.AppTopBar
 
-@Preview
 @Composable
-fun RatingScreen() {
+fun ReviewRatingScreen(
+    onBackClick: () -> Unit = {},
+    onSubmitReview: (Int, String, Set<String>) -> Unit = { _, _, _ -> }
+) {
     var rating by remember { mutableIntStateOf(4) }
     var feedback by remember { mutableStateOf("") }
+    var selectedTags by remember { mutableStateOf(setOf<String>()) }
 
-    Column {
-        AppTopBar()
+    Scaffold(
+        topBar = {
+            AppTopBar(title = stringResource(R.string.rating), onBackClick = onBackClick)
+        },
+        containerColor = backgroundColor()
+    ) { paddingValues ->
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .background(backgroundColor())
+                .fillMaxSize()
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Spacer(modifier = Modifier.height(64.dp))
+            Spacer(modifier = Modifier.height(32.dp))
+
             Box(
                 modifier = Modifier
                     .size(100.dp)
@@ -107,46 +118,54 @@ fun RatingScreen() {
                 color = onBackgroundColor()
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             val starIcon: ImageVector =
                 ImageVector.vectorResource(id = R.drawable.material_starpurple500_sharp)
 
             Row {
-                repeat(5) {
-                    val icon = if (it < rating) Icons.Default.Star else starIcon
-                    val tint = if (it < rating) reviewStarFilledColor() else reviewStarEmptyColor()
+                repeat(5) { index ->
+                    val isSelected = index < rating
+                    val icon = if (isSelected) Icons.Default.Star else starIcon
+                    val tint = if (isSelected) reviewStarFilledColor() else reviewStarEmptyColor()
+
                     Icon(
                         imageVector = icon,
-                        contentDescription = null,
+                        contentDescription = "Star ${index + 1}",
                         tint = tint,
                         modifier = Modifier
-                            .size(28.dp)
-                            .clickable { rating = it + 1 }
+                            .size(32.dp)
+                            .clickable { rating = index + 1 }
+                            .padding(2.dp)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Text(
                 text = stringResource(R.string.leave_your_feedback_here),
-                color = textSecondaryColor()
+                color = textSecondaryColor(),
+                fontSize = 16.sp
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            FeedbackChipGroup()
+            FeedbackChipGroup(
+                selectedTags = selectedTags,
+                onTagsChanged = { selectedTags = it }
+            )
 
-            Spacer(modifier = Modifier.height(56.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Text(
                 text = stringResource(R.string.care_to_share_more),
                 fontWeight = FontWeight.SemiBold,
-                color = onBackgroundColor()
+                color = onBackgroundColor(),
+                fontSize = 16.sp
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
                 value = feedback,
@@ -160,7 +179,7 @@ fun RatingScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp),
-                shape = RoundedCornerShape(4.dp),
+                shape = RoundedCornerShape(8.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = focusedBorderColor(),
                     unfocusedBorderColor = unfocusedBorderColor(),
@@ -168,38 +187,49 @@ fun RatingScreen() {
                     unfocusedContainerColor = surfaceVariantColor(),
                     focusedTextColor = enabledTextColor(),
                     unfocusedTextColor = enabledTextColor()
-                )
+                ),
+                maxLines = 4
             )
 
-            Spacer(modifier = Modifier.height(80.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
             Button(
-                onClick = { },
+                onClick = {
+                    onSubmitReview(rating, feedback, selectedTags)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = addToCartButtonColor(),
                     contentColor = addToCartButtonTextColor()
-                )
+                ),
+                shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Submit")
+                Text(
+                    text = stringResource(R.string.submit),
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp
+                )
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun FeedbackChipGroup() {
-    var selectedTags by remember { mutableStateOf(setOf<String>()) }
-
+fun FeedbackChipGroup(
+    selectedTags: Set<String>,
+    onTagsChanged: (Set<String>) -> Unit
+) {
     val tags = listOf("Service", "Supportive", "Friendly", "Delivery", "Contactless")
 
     FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.padding(top = 16.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.fillMaxWidth()
     ) {
         tags.forEach { tag ->
             val isSelected = tag in selectedTags
@@ -207,51 +237,51 @@ fun FeedbackChipGroup() {
             FilterChip(
                 selected = isSelected,
                 onClick = {
-                    selectedTags = if (isSelected) selectedTags - tag else selectedTags + tag
+                    val newTags = if (isSelected) {
+                        selectedTags - tag
+                    } else {
+                        selectedTags + tag
+                    }
+                    onTagsChanged(newTags)
                 },
                 label = {
                     Text(
                         text = tag,
-                        color = if (isSelected) {
-                            when (tag) {
-                                "Supportive", "Contactless" -> textSecondaryColor()
-                                else -> primaryColor()
-                            }
-                        } else {
-                            onSurfaceVariantColor()
-                        },
-                        fontSize = 14.sp
+                        fontSize = 14.sp,
+                        fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
                     )
                 },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = null,
-                        tint = if (isSelected) {
-                            when (tag) {
-                                "Supportive", "Contactless" -> textSecondaryColor()
-                                else -> primaryColor()
-                            }
-                        } else {
-                            onSurfaceVariantColor()
-                        },
-                        modifier = Modifier.size(16.dp)
-                    )
-                },
-                shape = RoundedCornerShape(50),
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = when (tag) {
-                        "Supportive", "Contactless" -> surfaceVariantColor()
-                        else -> primaryContainerColor()
-                    },
-                    containerColor = surfaceVariantColor(),
-                    labelColor = onSurfaceVariantColor(),
-                    selectedLabelColor = when (tag) {
-                        "Supportive", "Contactless" -> textSecondaryColor()
-                        else -> primaryColor()
+                leadingIcon = if (isSelected) {
+                    {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
                     }
+                } else null,
+                shape = RoundedCornerShape(20.dp),
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = primaryColor(),
+                    selectedLabelColor = onPrimaryColor(),
+                    selectedLeadingIconColor = onPrimaryColor(),
+                    containerColor = surfaceVariantColor(),
+                    labelColor = onSurfaceVariantColor()
+                ),
+                border = FilterChipDefaults.filterChipBorder(
+                    selectedBorderColor = primaryColor(),
+                    borderColor = Color.Transparent,
+                    selectedBorderWidth = 1.dp,
+                    enabled = false,
+                    selected = false
                 )
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RatingScreenPreview() {
+    ReviewRatingScreen()
 }

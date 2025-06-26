@@ -42,9 +42,21 @@ data class Deal(
     val id: String = "",
     val menuItemId: String = "",
     val title: String = "",
-    val price: String = "",
-    val originalPrice: String? = null,
+    val description: String = "",
+    val originalPrice: String = "",
+    val salePrice: String = "",
+    val discountPercentage: Int = 0,
     val imageUrl: String = "",
-    val badge: String? = null,
-    val discountPercentage: Int? = null
+    val restaurantId: String = "",
+    val restaurantName: String = "",
+    val deliveryTime: String = "",
+    val rating: Float = 0.0f,
+    val badges: List<Badge> = emptyList(),
+    val createdAt: String = ""
+)
+
+data class Badge(
+    val text: String = "",
+    val type: String = "",
+    val backgroundColor: String = ""
 )

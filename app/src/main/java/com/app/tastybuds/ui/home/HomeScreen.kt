@@ -23,6 +23,9 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -64,7 +67,9 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 import kotlinx.coroutines.delay
+import java.util.Locale
 import com.app.tastybuds.domain.model.Collection as FoodCollection
+import androidx.core.graphics.toColorInt
 
 @Composable
 fun HomeScreen(
@@ -887,29 +892,33 @@ private fun SaleCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Top
                 ) {
-                    deal.badge?.let { badge ->
+                    deal.badges.firstOrNull()?.let { badge ->
                         Surface(
                             shape = RoundedCornerShape(6.dp),
-                            color = newBadgeColor()
+                            color = try {
+                                Color(badge.backgroundColor.toColorInt())
+                            } catch (e: Exception) {
+                                newBadgeColor()
+                            }
                         ) {
                             Text(
-                                text = badge,
+                                text = badge.text,
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Medium
                                 ),
-                                color = onErrorColor()
+                                color = Color.White
                             )
                         }
                     }
 
-                    deal.discountPercentage?.let { percentage ->
+                    if (deal.discountPercentage > 0) {
                         Surface(
                             shape = RoundedCornerShape(6.dp),
                             color = discountTextColor()
                         ) {
                             Text(
-                                text = "-$percentage%",
+                                text = "-${deal.discountPercentage}%",
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Medium
@@ -925,36 +934,106 @@ private fun SaleCard(
                 modifier = Modifier.padding(12.dp)
             ) {
                 Text(
-                    text = deal.title,
+                    text = deal.restaurantName,
                     style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Bold
                     ),
                     color = cardContentColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = deal.title,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = textSecondaryColor(),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Spacer(modifier = Modifier.height(6.dp))
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = "Rating",
+                        modifier = Modifier.size(12.dp),
+                        tint = starRatingColor()
+                    )
+                    Spacer(modifier = Modifier.width(2.dp))
                     Text(
-                        text = deal.price,
-                        style = MaterialTheme.typography.titleSmall.copy(
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = priceTextColor()
+                        text = deal.rating.toString(),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = cardContentColor(),
+                        fontWeight = FontWeight.Medium
                     )
 
-                    deal.originalPrice?.let { originalPrice ->
-                        Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "•",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = textSecondaryColor()
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+
+                    Text(
+                        text = deal.deliveryTime,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = textSecondaryColor()
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Column {
+                    Text(
+                        text = deal.originalPrice,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = originalPriceTextColor(),
+                        textDecoration = TextDecoration.LineThrough
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         Text(
-                            text = originalPrice,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = originalPriceTextColor(),
-                            textDecoration = TextDecoration.LineThrough
+                            text = deal.salePrice,
+                            style = MaterialTheme.typography.titleSmall.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = priceTextColor()
                         )
+
+                        val originalPriceValue =
+                            deal.originalPrice.replace("$", "").toFloatOrNull() ?: 0f
+                        val salePriceValue = deal.salePrice.replace("$", "").toFloatOrNull() ?: 0f
+                        val savings = originalPriceValue - salePriceValue
+
+                        if (savings > 0) {
+                            Surface(
+                                shape = RoundedCornerShape(4.dp),
+                                color = primaryColor().copy(alpha = 0.1f)
+                            ) {
+                                Text(
+                                    text = "Save $${
+                                        String.format(
+                                            Locale.getDefault(),
+                                            "%.2f",
+                                            savings
+                                        )
+                                    }",
+                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = primaryColor(),
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
                     }
                 }
             }

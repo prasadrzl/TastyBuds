@@ -3,7 +3,10 @@ package com.app.tastybuds.util.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -11,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.app.tastybuds.R
+import com.app.tastybuds.data.model.RestaurantReview
 import com.app.tastybuds.domain.model.SearchResultType.FOOD_ITEM
 import com.app.tastybuds.domain.model.SearchResultType.RESTAURANT
 import com.app.tastybuds.ui.favorites.FavoriteScreen
@@ -30,9 +34,10 @@ import com.app.tastybuds.ui.orders.FoodDetailsScreen
 import com.app.tastybuds.ui.orders.OrderDetailsScreen
 import com.app.tastybuds.ui.orders.OrderReviewScreen
 import com.app.tastybuds.ui.orders.OrdersScreen
-import com.app.tastybuds.ui.orders.RatingScreen
+import com.app.tastybuds.ui.orders.ReviewRatingScreen
 import com.app.tastybuds.ui.profile.ProfileScreen
 import com.app.tastybuds.ui.profile.ProfileSettingsScreen
+import com.app.tastybuds.ui.resturants.AllReviewsScreen
 import com.app.tastybuds.ui.resturants.CategoryDetailsScreen
 import com.app.tastybuds.ui.resturants.MenuListScreen
 import com.app.tastybuds.ui.resturants.RestaurantDetailsScreen
@@ -41,6 +46,8 @@ import com.app.tastybuds.ui.resturants.search.SearchResultsScreen
 import com.app.tastybuds.ui.splash.TastyBudsSplashScreen
 import com.app.tastybuds.ui.vouchers.AllVouchersScreen
 import kotlinx.coroutines.launch
+import java.net.URLDecoder
+import java.net.URLEncoder
 
 val items = listOf(
     BottomNavItem("home", "Home", R.drawable.ic_bn_home),
@@ -53,6 +60,8 @@ val items = listOf(
 fun AppNavGraph(navController: NavHostController) {
     val sharedCartViewModel: CartViewModel = hiltViewModel()
     val onboardingViewModel: OnboardingViewModel = hiltViewModel()
+    var sharedReviews by remember { mutableStateOf<List<RestaurantReview>>(emptyList()) }
+    var sharedRestaurantName by remember { mutableStateOf("") }
 
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") {
@@ -332,7 +341,11 @@ fun AppNavGraph(navController: NavHostController) {
                     navController.navigate("food_details/$comboId")
                 },
                 onViewAllClick = { _ -> navController.navigate("menu_list/$restaurantId") },
-                onSellAllClick = { _ -> navController.navigate("menu_list/$restaurantId") }
+                onSellAllClick = { _ -> navController.navigate("menu_list/$restaurantId") },
+                onViewAllReviews = { reviews ->
+                    sharedReviews = reviews
+                    navController.navigate("restaurant_reviews/$restaurantId")
+                }
             )
         }
 
@@ -406,7 +419,11 @@ fun AppNavGraph(navController: NavHostController) {
         }
 
         composable("rating_review") {
-            RatingScreen()
+            ReviewRatingScreen(
+                onBackClick = { navController.popBackStack() },
+                onSubmitReview = { rating, feedback, tags ->
+
+                })
         }
 
         composable("see_all/{categoryId}/{type}/{title}") { backStackEntry ->
@@ -442,6 +459,23 @@ fun AppNavGraph(navController: NavHostController) {
                 },
                 onRatingClick = {
                     navController.navigate("rating_review")
+                }
+            )
+        }
+
+        composable(
+            "restaurant_reviews/{restaurantId}",
+            arguments = listOf(
+                navArgument("restaurantId") { type = NavType.StringType },
+            )
+        ) { backStackEntry ->
+            val restaurantId = backStackEntry.arguments?.getString("restaurantId") ?: ""
+
+            AllReviewsScreen(
+                reviews = sharedReviews,
+                restaurantName = "",
+                onBackClick = {
+                    navController.popBackStack()
                 }
             )
         }

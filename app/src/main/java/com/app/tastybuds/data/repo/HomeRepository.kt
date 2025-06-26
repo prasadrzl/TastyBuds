@@ -1,6 +1,7 @@
 package com.app.tastybuds.data.repo
 
 import com.app.tastybuds.common.TastyBudsApiService
+import com.app.tastybuds.data.model.mapper.toDeal
 import com.app.tastybuds.data.model.mapper.toDomainModel
 import com.app.tastybuds.domain.model.Banner
 import com.app.tastybuds.domain.model.Category
@@ -67,7 +68,7 @@ class HomeRepositoryImpl @Inject constructor(
 
     override fun getDeals(): Flow<List<Deal>> = flow {
         val response = tastyBudsApiService.getDeals()
-        val deals = response.map { it.toDomainModel() }
+        val deals = response.map { it.toDeal() }
         emit(deals)
     }.catch {
         emit(emptyList())

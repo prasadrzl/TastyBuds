@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
@@ -78,6 +79,7 @@ fun RestaurantDetailsScreen(
     onComboClick: (String) -> Unit = {},
     onViewAllClick: (String) -> Unit = {},
     onSellAllClick: (String) -> Unit = {},
+    onViewAllReviews: (List<RestaurantReview>) -> Unit = {},
     viewModel: RestaurantDetailsViewModel = hiltViewModel(),
     loginViewModel: LoginViewModel = hiltViewModel()
 
@@ -117,7 +119,8 @@ fun RestaurantDetailsScreen(
                     onFoodItemClick = onFoodItemClick,
                     onComboClick = onComboClick,
                     onViewAllClick = onViewAllClick,
-                    onSellAllClick = onSellAllClick
+                    onSellAllClick = onSellAllClick,
+                    onViewAllReviews = onViewAllReviews
                 )
             }
         }
@@ -198,7 +201,8 @@ private fun RestaurantDetailsContent(
     isFavorite: Boolean = false,
     onFavoriteClick: () -> Unit = {},
     onViewAllClick: (String) -> Unit = {},
-    onSellAllClick: (String) -> Unit = {}
+    onSellAllClick: (String) -> Unit = {},
+    onViewAllReviews: (List<RestaurantReview>) -> Unit = {}
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize()
@@ -243,7 +247,10 @@ private fun RestaurantDetailsContent(
 
         if (restaurantData.reviews.isNotEmpty()) {
             item {
-                ReviewsSection(reviews = restaurantData.reviews)
+                ReviewsSection(
+                    reviews = restaurantData.reviews,
+                    onViewAllClick = onViewAllReviews
+                )
             }
         }
 
@@ -410,10 +417,11 @@ fun RestaurantInfoRows(
     Column(
         modifier = Modifier.padding(horizontal = 20.dp)
     ) {
+
         InfoRow(
-            icon = R.drawable.material_starpurple500_sharp,
-            title = "${restaurant.rating} (${restaurant.reviewCount} reviews)",
-            iconColor = starRatingColor(),
+            icon = R.drawable.ic_offer_percentage,
+            title = stringResource(R.string.discount_voucher_for_restaurant, voucherCount),
+            iconColor = primaryColor(),
             showArrow = true,
             onClick = { }
         )
@@ -425,10 +433,10 @@ fun RestaurantInfoRows(
         )
 
         InfoRow(
-            icon = R.drawable.ic_offer_percentage,
-            title = stringResource(R.string.discount_voucher_for_restaurant, voucherCount),
-            iconColor = primaryColor(),
-            showArrow = true,
+            icon = R.drawable.material_starpurple500_sharp,
+            title = "${restaurant.rating} (${restaurant.reviewCount} reviews)",
+            iconColor = starRatingColor(),
+            showArrow = false,
             onClick = { }
         )
 
@@ -530,7 +538,8 @@ fun ForYouSection(
             columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.height(320.dp)
+            modifier = Modifier.height(320.dp),
+            userScrollEnabled = false
         ) {
             items(items) { item ->
                 ForYouItemCard(
@@ -733,7 +742,10 @@ fun MenuItemCard(
 }
 
 @Composable
-fun ReviewsSection(reviews: List<RestaurantReview>) {
+fun ReviewsSection(
+    reviews: List<RestaurantReview>,
+    onViewAllClick: (List<RestaurantReview>) -> Unit
+) {
     Column(
         modifier = Modifier.padding(horizontal = 20.dp)
     ) {
@@ -749,20 +761,45 @@ fun ReviewsSection(reviews: List<RestaurantReview>) {
                 color = onBackgroundColor()
             )
 
-            Text(
-                text = stringResource(id = R.string.see_all),
-                fontSize = 14.sp,
-                color = primaryColor()
-            )
+            // Only show "View All" if there are more than 3 reviews
+            if (reviews.size > 3) {
+                Text(
+                    text = stringResource(id = R.string.view_all),
+                    fontSize = 14.sp,
+                    color = primaryColor(),
+                    modifier = Modifier.clickable {
+                        onViewAllClick(reviews)
+                    }
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(reviews) { review ->
-                ReviewCard(review = review)
+        if (reviews.isEmpty()) {
+            // Empty state
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.no_reviews_yet),
+                    color = textSecondaryColor(),
+                    fontSize = 14.sp
+                )
+            }
+        } else {
+            // Show only first 3 reviews
+            val reviewsToShow = reviews.take(3)
+
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(reviewsToShow) { review ->
+                    ReviewCard(review = review)
+                }
             }
         }
 
