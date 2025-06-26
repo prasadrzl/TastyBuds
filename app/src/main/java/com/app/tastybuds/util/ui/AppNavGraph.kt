@@ -138,7 +138,7 @@ fun AppNavGraph(navController: NavHostController) {
                     val restaurantIdStrings = collection.restaurantIds.joinToString(",")
                     navController.navigate("collection_listing/${collection.title}/$restaurantIdStrings")
                 },
-                onDealClick = { dealId, menuItemId ->
+                onDealClick = { _, menuItemId ->
                     navController.navigate("food_details/$menuItemId")
                 }
             )
@@ -189,8 +189,7 @@ fun AppNavGraph(navController: NavHostController) {
                 onBackClick = {
                     navController.popBackStack()
                 },
-                onVoucherClick = { voucherId ->
-                    navController.popBackStack()
+                onVoucherClick = { _ -> navController.popBackStack()
                 }
             )
         }
@@ -403,9 +402,7 @@ fun AppNavGraph(navController: NavHostController) {
         composable("rating_review") {
             ReviewRatingScreen(
                 onBackClick = { navController.popBackStack() },
-                onSubmitReview = { rating, feedback, tags ->
-
-                })
+                onSubmitReview = { rating, feedback, tags -> })
         }
 
         composable("see_all/{categoryId}/{type}/{title}") { backStackEntry ->
@@ -451,8 +448,6 @@ fun AppNavGraph(navController: NavHostController) {
                 navArgument("restaurantId") { type = NavType.StringType },
             )
         ) { backStackEntry ->
-            val restaurantId = backStackEntry.arguments?.getString("restaurantId") ?: ""
-
             AllReviewsScreen(
                 reviews = sharedReviews,
                 restaurantName = "",

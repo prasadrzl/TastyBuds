@@ -274,7 +274,7 @@ private fun VoucherSection(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp, vertical = 16.dp)
             .clickable { onViewAllClick() }
             .semantics { contentDescription = "Voucher section" },
         shape = RoundedCornerShape(12.dp),
@@ -444,7 +444,7 @@ private fun CategoriesSection(
     LazyRow(
         modifier = Modifier.padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(horizontal = 4.dp)
+        contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
         items(
             items = categories,
@@ -507,7 +507,7 @@ private fun CollectionsSection(
     collections: List<Collection>,
     onCollectionClick: (Collection) -> Unit = {}
 ) {
-    Column {
+    Column(modifier = Modifier.padding(bottom = 8.dp)) {
         SectionHeader(
             title = stringResource(R.string.collections),
             showViewAll = false
@@ -661,15 +661,13 @@ private fun SectionHeader(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleLarge.copy(
-                fontWeight = FontWeight.Bold
-            ),
+            style = sectionTitle(),
             color = onBackgroundColor()
         )
 
@@ -692,7 +690,7 @@ private fun RecommendedSection(
     onRestaurantClick: (String) -> Unit,
     onViewAllClick: () -> Unit
 ) {
-    Column {
+    Column(modifier = Modifier.padding(bottom = 8.dp)) {
         SectionHeader(
             title = stringResource(R.string.recommended_for_you),
             showViewAll = true,
