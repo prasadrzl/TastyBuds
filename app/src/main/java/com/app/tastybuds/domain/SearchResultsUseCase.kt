@@ -1,7 +1,7 @@
 package com.app.tastybuds.domain
 
 import com.app.tastybuds.domain.model.SearchResult
-import com.app.tastybuds.data.SearchResultsMapper
+import com.app.tastybuds.data.model.mapper.SearchResultsMapper
 import com.app.tastybuds.data.repo.SearchRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.debounce

@@ -23,7 +23,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -35,6 +34,7 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -75,17 +75,12 @@ import com.app.tastybuds.ui.theme.primaryColor
 import com.app.tastybuds.ui.theme.starRatingColor
 import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.app.tastybuds.ui.theme.*
+import com.app.tastybuds.util.ui.AppTopBar
 import com.app.tastybuds.util.ui.SeeAllButton
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 import kotlinx.coroutines.delay
-
-data class FilterOption(
-    val id: String,
-    val name: String,
-    val isSelected: Boolean = false
-)
 
 @Composable
 fun CategoryDetailsScreen(
@@ -93,6 +88,7 @@ fun CategoryDetailsScreen(
     categoryId: String = "",
     onBackClick: () -> Unit = {},
     onRestaurantClick: (String) -> Unit = {},
+    onMenuItemClick: (String) -> Unit = {},
     onSeeAllClick: (String, String) -> Unit = { _, _ -> },
     viewModel: RestaurantViewModel = hiltViewModel()
 ) {
@@ -104,40 +100,70 @@ fun CategoryDetailsScreen(
         }
     }
 
-    var selectedSortBy by remember { mutableStateOf("Sort by") }
-    val filterOptions = remember {
-        listOf(
-            FilterOption("freeship", "Freeship"),
-            FilterOption("favorite", "Favorite"),
-            FilterOption("near_you", "Near you"),
-            FilterOption("partner", "Partner")
-        )
+    val availableFilters = remember(uiState.categoryDetails) {
+        uiState.categoryDetails?.let { categoryDetails ->
+            val allBadges = mutableSetOf<String>()
+
+            categoryDetails.topRestaurants.forEach { restaurant ->
+                restaurant.badges.forEach { badge ->
+                    allBadges.add(badge.lowercase().replace(" ", "_"))
+                }
+            }
+
+            categoryDetails.recommendedRestaurants.forEach { restaurant ->
+                restaurant.badges.forEach { badge ->
+                    allBadges.add(badge.lowercase().replace(" ", "_"))
+                }
+            }
+            allBadges.toList().sorted()
+        } ?: emptyList()
     }
+
     var selectedFilters by remember { mutableStateOf(setOf<String>()) }
+
+    val filteredCategoryDetails = remember(uiState.categoryDetails, selectedFilters) {
+        uiState.categoryDetails?.let { categoryDetails ->
+            if (selectedFilters.isEmpty()) {
+                categoryDetails
+            } else {
+                categoryDetails.copy(
+                    topRestaurants = filterRestaurants(
+                        categoryDetails.topRestaurants,
+                        selectedFilters
+                    ),
+                    recommendedRestaurants = filterRestaurants(
+                        categoryDetails.recommendedRestaurants,
+                        selectedFilters
+                    )
+                )
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor())
     ) {
-        CategoryHeader(
-            categoryName = uiState.categoryName.ifBlank { categoryName },
+        AppTopBar(
+            title = uiState.categoryName.ifBlank { categoryName },
             onBackClick = onBackClick
         )
 
-        FilterSection(
-            selectedSortBy = selectedSortBy,
-            onSortByClick = { selectedSortBy = it },
-            filterOptions = filterOptions,
-            selectedFilters = selectedFilters,
-            onFilterClick = { filterId ->
-                selectedFilters = if (selectedFilters.contains(filterId)) {
-                    selectedFilters - filterId
-                } else {
-                    selectedFilters + filterId
-                }
-            }
-        )
+        if (availableFilters.isNotEmpty()) {
+            FilterSection(
+                availableFilters = availableFilters,
+                selectedFilters = selectedFilters,
+                onFilterClick = { filterId ->
+                    selectedFilters = if (selectedFilters.contains(filterId)) {
+                        selectedFilters - filterId
+                    } else {
+                        selectedFilters + filterId
+                    }
+                },
+                onClearAllFilters = { selectedFilters = emptySet() }
+            )
+        }
 
         when {
             uiState.isLoading -> {
@@ -157,11 +183,58 @@ fun CategoryDetailsScreen(
 
             else -> {
                 CategoryContent(
-                    uiState = uiState,
+                    uiState = uiState.copy(categoryDetails = filteredCategoryDetails),
                     onRestaurantClick = onRestaurantClick,
                     onSeeAllClick = onSeeAllClick,
-                    categoryName = categoryName
+                    categoryName = categoryName,
+                    onMenuItemClick = onMenuItemClick
                 )
+            }
+        }
+    }
+}
+
+private fun filterRestaurants(
+    restaurants: List<CategoryRestaurant>,
+    selectedFilters: Set<String>
+): List<CategoryRestaurant> {
+    if (selectedFilters.isEmpty()) {
+        return restaurants
+    }
+
+    return restaurants.filter { restaurant ->
+        selectedFilters.all { badgeId ->
+            when (badgeId) {
+                BadgeType.FREESHIP.value -> {
+                    restaurant.badges.any { it.lowercase().contains(BadgeType.FREESHIP.value) } ||
+                            restaurant.deliveryFee <= 0.0 ||
+                            restaurant.isFreeship
+                }
+
+                BadgeType.FAVORITE.value -> {
+                    restaurant.isFavorite
+                }
+
+                BadgeType.NEAR_YOU.value -> {
+                    restaurant.distance.contains("km") &&
+                            restaurant.distance.replace("[^0-9.]".toRegex(), "").toFloatOrNull()
+                                ?.let { it <= 5.0 } ?: false
+                }
+
+                BadgeType.PARTNER.value -> {
+                    restaurant.badges.any { badge ->
+                        val lowerBadge = badge.lowercase()
+                        lowerBadge.contains(BadgeType.PARTNER.value) || lowerBadge.contains(
+                            BadgeType.VERIFIED.value
+                        )
+                    }
+                }
+
+                else -> {
+                    restaurant.badges.any {
+                        it.lowercase().replace(" ", "_") == badgeId.lowercase()
+                    }
+                }
             }
         }
     }
@@ -277,7 +350,8 @@ fun CategoryContent(
     uiState: RestaurantUiState,
     onRestaurantClick: (String) -> Unit,
     onSeeAllClick: (String, String) -> Unit,
-    categoryName: String
+    categoryName: String,
+    onMenuItemClick: (String) -> Unit = {}
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -323,13 +397,22 @@ fun CategoryContent(
         }
 
         uiState.categoryDetails?.let { categoryDetails ->
-            item {
-                FeaturedBannerSection(categoryDetails.menuItems)
+            if (categoryDetails.menuItems.isNotEmpty()) {
+                item {
+                    FeaturedBannerSection(
+                        menuItems = categoryDetails.menuItems,
+                        onMenuItemClick = { menuItem ->
+                            if (menuItem.restaurantId.isNotEmpty()) {
+                                onMenuItemClick(menuItem.id)
+                            }
+                        }
+                    )
+                }
             }
             if (categoryDetails.recommendedRestaurants.isNotEmpty()) {
                 item {
                     Text(
-                        text = "Recommended for you",
+                        text = stringResource(R.string.recommended_for_you),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = onBackgroundColor(),
@@ -343,6 +426,68 @@ fun CategoryContent(
                         onClick = { onRestaurantClick(restaurant.id) }
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun FilterSection(
+    availableFilters: List<String>,
+    selectedFilters: Set<String>,
+    onFilterClick: (String) -> Unit,
+    onClearAllFilters: () -> Unit
+) {
+    Column {
+        if (selectedFilters.isNotEmpty()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(
+                    onClick = onClearAllFilters,
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = primaryColor()
+                    )
+                ) {
+                    Text(
+                        text = stringResource(R.string.clear_all),
+                        fontSize = 12.sp
+                    )
+                }
+            }
+        }
+
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(availableFilters) { filter ->
+                val isSelected = selectedFilters.contains(filter)
+                FilterChip(
+                    selected = isSelected,
+                    onClick = { onFilterClick(filter) },
+                    label = {
+                        Text(
+                            text = filter.replace("_", " ").replaceFirstChar {
+                                if (it.isLowerCase()) it.titlecase() else it.toString()
+                            },
+                            fontSize = 12.sp,
+                            color = if (isSelected) chipSelectedContentColor() else chipUnselectedContentColor()
+                        )
+                    },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = primaryColor(),
+                        selectedLabelColor = onPrimaryColor(),
+                        containerColor = chipUnselectedBackgroundColor(),
+                        labelColor = chipUnselectedContentColor()
+                    ),
+                    shape = RoundedCornerShape(20.dp)
+                )
             }
         }
     }
@@ -432,13 +577,15 @@ fun CategoryRestaurantCard(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                if (restaurant.badges.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    items(restaurant.badges) { badge ->
-                        BadgeChip(text = badge)
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        items(restaurant.badges) { badge ->
+                            BadgeChip(text = badge)
+                        }
                     }
                 }
             }
@@ -640,124 +787,17 @@ fun RegularRestaurantCard(
 }
 
 @Composable
-fun CategoryHeader(
-    categoryName: String,
-    onBackClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        IconButton(
-            onClick = onBackClick,
-            modifier = Modifier.size(24.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_back_arrow),
-                contentDescription = stringResource(id = R.string.back),
-                tint = onBackgroundColor()
-            )
-        }
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        Text(
-            text = categoryName,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = onBackgroundColor()
-        )
-    }
-}
-
-@Composable
-fun FilterSection(
-    selectedSortBy: String,
-    onSortByClick: (String) -> Unit,
-    filterOptions: List<FilterOption>,
-    selectedFilters: Set<String>,
-    onFilterClick: (String) -> Unit
-) {
-    LazyRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        item {
-            FilterChip(
-                selected = false,
-                onClick = { },
-                label = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = selectedSortBy,
-                            fontSize = 14.sp,
-                            color = primaryColor()
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = stringResource(R.string.sort_dropdown),
-                            modifier = Modifier.size(16.dp),
-                            tint = primaryColor()
-                        )
-                    }
-                },
-                colors = FilterChipDefaults.filterChipColors(
-                    containerColor = cardBackgroundColor(),
-                    labelColor = primaryColor()
-                ),
-                border = FilterChipDefaults.filterChipBorder(
-                    enabled = true,
-                    selected = true,
-                    borderColor = primaryColor(),
-                    selectedBorderColor = primaryColor()
-                ),
-                shape = RoundedCornerShape(20.dp)
-            )
-        }
-
-        items(filterOptions) { filter ->
-            val isSelected = selectedFilters.contains(filter.id)
-            FilterChip(
-                selected = isSelected,
-                onClick = { onFilterClick(filter.id) },
-                label = {
-                    Text(
-                        text = filter.name,
-                        fontSize = 14.sp,
-                        color = if (isSelected) onPrimaryColor() else textSecondaryColor()
-                    )
-                },
-                colors = FilterChipDefaults.filterChipColors(
-                    containerColor = chipUnselectedBackgroundColor(),
-                    selectedContainerColor = chipSelectedBackgroundColor(),
-                    labelColor = chipUnselectedContentColor(),
-                    selectedLabelColor = chipSelectedContentColor()
-                ),
-                shape = RoundedCornerShape(20.dp)
-            )
-        }
-    }
-}
-
-@Composable
 fun BadgeChip(text: String) {
-    val backgroundColor = when (text.lowercase()) {
-        "freeship" -> freeshippingBadgeColor()
-        "near you" -> primaryColor()
-        "popular" -> popularBadgeColor()
+    when (text.lowercase()) {
+        BadgeType.FREESHIP.value -> freeshippingBadgeColor()
+        BadgeType.NEAR_YOU.value.replace("_", " ") -> primaryColor()
+        BadgeType.POPULAR.value -> popularBadgeColor()
         else -> successColor()
     }
 
     Card(
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = backgroundColor)
+        colors = CardDefaults.cardColors(containerColor = backgroundColor())
     ) {
         Text(
             text = text,
@@ -771,13 +811,18 @@ fun BadgeChip(text: String) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FeaturedBannerSection(menuItems: List<CategoryMenuItem>) {
+fun FeaturedBannerSection(
+    menuItems: List<CategoryMenuItem>,
+    onMenuItemClick: (CategoryMenuItem) -> Unit
+) {
+    if (menuItems.isEmpty()) return
+
     val banners = remember { menuItems }
     val pagerState = rememberPagerState(pageCount = { banners.size })
 
     LaunchedEffect(pagerState) {
         while (true) {
-            delay(4000) // 4 seconds delay
+            delay(4000)
             val nextPage = (pagerState.currentPage + 1) % banners.size
             pagerState.animateScrollToPage(nextPage)
         }
@@ -790,7 +835,10 @@ fun FeaturedBannerSection(menuItems: List<CategoryMenuItem>) {
             state = pagerState,
             modifier = Modifier.fillMaxWidth()
         ) { page ->
-            FeaturedBannerCard(banner = banners[page])
+            FeaturedBannerCard(
+                banner = banners[page],
+                onClick = { onMenuItemClick(banners[page]) }
+            )
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -820,11 +868,15 @@ fun FeaturedBannerSection(menuItems: List<CategoryMenuItem>) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun FeaturedBannerCard(banner: CategoryMenuItem) {
+fun FeaturedBannerCard(
+    banner: CategoryMenuItem,
+    onClick: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(160.dp),
+            .height(160.dp)
+            .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
     ) {
         Box(
@@ -871,6 +923,15 @@ fun FeaturedBannerCard(banner: CategoryMenuItem) {
             }
         }
     }
+}
+
+enum class BadgeType(val value: String) {
+    FREESHIP("freeship"),
+    FAVORITE("favorite"),
+    NEAR_YOU("near_you"),
+    PARTNER("partner"),
+    POPULAR("popular"),
+    VERIFIED("verified")
 }
 
 @Preview(showBackground = true)

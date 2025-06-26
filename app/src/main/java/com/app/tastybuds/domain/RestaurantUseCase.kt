@@ -29,17 +29,6 @@ class RestaurantUseCase @Inject constructor(
         return repository.getAllRestaurants()
     }
 
-    fun getFilteredRestaurants(
-        categoryId: String? = null,
-        searchQuery: String? = null
-    ): Flow<List<Restaurant>> {
-        return when {
-            !categoryId.isNullOrBlank() -> getRestaurantsByCategory(categoryId)
-            !searchQuery.isNullOrBlank() -> searchRestaurants(searchQuery)
-            else -> getAllRestaurants()
-        }
-    }
-
     fun getCategoryDetails(categoryId: String): Flow<CategoryDetailsData> {
         return repository.getCategoryDetails(categoryId)
     }

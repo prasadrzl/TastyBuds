@@ -1,7 +1,7 @@
 package com.app.tastybuds.di
 
 import com.app.tastybuds.common.TastyBudsApiService
-import com.app.tastybuds.data.SearchResultsMapper
+import com.app.tastybuds.data.model.mapper.SearchResultsMapper
 import com.app.tastybuds.data.repo.FoodDetailsRepository
 import com.app.tastybuds.data.repo.FoodDetailsRepositoryImpl
 import com.app.tastybuds.data.repo.RestaurantDetailsRepository

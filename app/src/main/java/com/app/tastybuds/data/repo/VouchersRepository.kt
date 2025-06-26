@@ -22,7 +22,6 @@ interface VouchersRepository {
     suspend fun refreshVouchers(userId: String): Result<List<Voucher>>
 }
 
-
 @Singleton
 class VouchersRepositoryImpl @Inject constructor(
     private val apiService: TastyBudsApiService

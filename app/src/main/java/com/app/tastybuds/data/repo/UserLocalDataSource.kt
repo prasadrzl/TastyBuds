@@ -84,7 +84,7 @@ class UserLocalDataSource @Inject constructor(
         }
     }
 
-    fun savePassword(email: String, password: String) {
+    private fun savePassword(email: String, password: String) {
         try {
             val hashedPassword = password.hashCode().toString()
             securePrefs.edit()

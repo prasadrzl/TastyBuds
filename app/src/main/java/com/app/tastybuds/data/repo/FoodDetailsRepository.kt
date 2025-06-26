@@ -64,8 +64,7 @@ class FoodDetailsRepositoryImpl @Inject constructor(
     }
 
     override fun getFoodDetailsData(
-        foodItemId: String,
-        userId: String
+        foodItemId: String, userId: String
     ): Flow<Result<FoodDetailsData>> = flow {
         emit(Result.Loading)
 

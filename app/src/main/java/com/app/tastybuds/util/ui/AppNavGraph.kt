@@ -264,6 +264,9 @@ fun AppNavGraph(navController: NavHostController) {
                 onSeeAllClick = { title, type ->
                     val encodedTitle = java.net.URLEncoder.encode(title, "UTF-8")
                     navController.navigate("see_all/$categoryId/$type/$encodedTitle")
+                },
+                onMenuItemClick = {
+                    navController.navigate("food_details/$it")
                 }
             )
         }

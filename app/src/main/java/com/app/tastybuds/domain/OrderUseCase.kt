@@ -91,23 +91,6 @@ class OrderUseCase @Inject constructor(
         return repository.getAvailableVouchers(userId)
     }
 
-    fun validateVoucherForOrder(voucher: Voucher, subtotal: Double): Result<Double> {
-        return try {
-            if (voucher.isUsed) {
-                return Result.Error("This voucher has already been used")
-            }
-
-            if (voucher.minimumOrder != null && subtotal < voucher.minimumOrder) {
-                return Result.Error("Minimum order of $${voucher.minimumOrder} required for this voucher")
-            }
-
-            val discount = voucher.calculateDiscount(subtotal)
-            Result.Success(discount)
-        } catch (e: Exception) {
-            Result.Error("Error validating voucher: ${e.message}")
-        }
-    }
-
     fun calculateDeliveryTimeFromDistance(distanceKm: Double): Int {
         return when {
             distanceKm <= 2.0 -> 15

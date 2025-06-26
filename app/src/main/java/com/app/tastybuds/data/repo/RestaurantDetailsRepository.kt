@@ -17,22 +17,19 @@ import com.app.tastybuds.util.Result
 
 interface RestaurantDetailsRepository {
     suspend fun getRestaurantDetails(
-        restaurantId: String,
-        userId: String
+        restaurantId: String, userId: String
     ): Result<RestaurantDetails>
 
     suspend fun getRestaurantMenuItems(restaurantId: String): Result<List<RestaurantMenuItem>>
     suspend fun getForYouMenuItems(restaurantId: String): Result<List<RestaurantMenuItem>>
     suspend fun getRestaurantReviews(restaurantId: String): Result<List<RestaurantReview>>
     suspend fun getRestaurantVouchers(
-        restaurantId: String,
-        userId: String
+        restaurantId: String, userId: String
     ): Result<List<RestaurantVoucher>>
 
     suspend fun getRestaurantCombos(restaurantId: String): Result<List<RestaurantCombo>>
     fun getRestaurantDetailsData(
-        restaurantId: String,
-        userId: String
+        restaurantId: String, userId: String
     ): Flow<Result<RestaurantDetailsData>>
 }
 
@@ -42,8 +39,7 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
 ) : RestaurantDetailsRepository {
 
     override suspend fun getRestaurantDetails(
-        restaurantId: String,
-        userId: String
+        restaurantId: String, userId: String
     ): Result<RestaurantDetails> {
         return try {
             val restaurantResponse = apiService.getRestaurantDetails("eq.$restaurantId")
@@ -112,8 +108,7 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getRestaurantVouchers(
-        restaurantId: String,
-        userId: String
+        restaurantId: String, userId: String
     ): Result<List<RestaurantVoucher>> {
         return try {
             val response = apiService.getUserRestaurantVouchers("eq.$userId", "eq.$restaurantId")
@@ -143,8 +138,7 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
     }
 
     override fun getRestaurantDetailsData(
-        restaurantId: String,
-        userId: String
+        restaurantId: String, userId: String
     ): Flow<Result<RestaurantDetailsData>> = flow {
         emit(Result.Loading)
 

@@ -1,4 +1,4 @@
-package com.app.tastybuds.data
+package com.app.tastybuds.data.model.mapper
 
 import com.app.tastybuds.data.model.MenuItemWithRestaurantResponse
 import com.app.tastybuds.data.model.RestaurantResponse
