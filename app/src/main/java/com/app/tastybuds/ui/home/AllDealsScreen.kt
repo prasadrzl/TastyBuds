@@ -28,10 +28,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
@@ -41,20 +41,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.toColorInt
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
-import com.app.tastybuds.domain.model.Badge
 import com.app.tastybuds.domain.model.Deal
 import com.app.tastybuds.ui.theme.Spacing
 import com.app.tastybuds.ui.theme.backgroundColor
-import com.app.tastybuds.ui.theme.badgeText
 import com.app.tastybuds.ui.theme.captionTextColor
 import com.app.tastybuds.ui.theme.cardBackgroundColor
 import com.app.tastybuds.ui.theme.cardContentColor
-import com.app.tastybuds.ui.theme.discountBadge
 import com.app.tastybuds.ui.theme.discountTextColor
 import com.app.tastybuds.ui.theme.emptyStateDescription
 import com.app.tastybuds.ui.theme.emptyStateTitle
@@ -65,7 +62,6 @@ import com.app.tastybuds.ui.theme.loadingIndicatorColor
 import com.app.tastybuds.ui.theme.newBadgeColor
 import com.app.tastybuds.ui.theme.onErrorColor
 import com.app.tastybuds.ui.theme.originalPriceTextColor
-import com.app.tastybuds.ui.theme.primaryColor
 import com.app.tastybuds.ui.theme.priceTextColor
 import com.app.tastybuds.ui.theme.starRatingColor
 import com.app.tastybuds.ui.theme.textSecondaryColor
@@ -73,6 +69,7 @@ import com.app.tastybuds.util.ui.AppTopBar
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
+import java.util.Locale
 
 object AllDealsDimensions {
     val gridColumns = 2
@@ -207,6 +204,7 @@ private fun EmptyStateContent() {
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun DealGridItemCard(
     deal: Deal,
@@ -216,10 +214,7 @@ private fun DealGridItemCard(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = AllDealsDimensions.cardMinHeight)
-            .clickable { onClick() }
-            .semantics {
-                contentDescription = "Deal: ${deal.title} from ${deal.restaurantName}"
-            },
+            .clickable { onClick() },
         shape = RoundedCornerShape(AllDealsDimensions.cardCornerRadius),
         colors = CardDefaults.cardColors(
             containerColor = cardBackgroundColor()
@@ -229,192 +224,141 @@ private fun DealGridItemCard(
             pressedElevation = AllDealsDimensions.cardPressedElevation
         )
     ) {
-        Column {
-            DealImageSection(
-                deal = deal,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(AllDealsDimensions.imageHeight)
-            )
-
-            DealInfoSection(
-                deal = deal,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(AllDealsDimensions.cardContentPadding)
-                    .weight(1f)
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-private fun DealImageSection(
-    deal: Deal,
-    modifier: Modifier = Modifier
-) {
-    Box(modifier = modifier) {
-        GlideImage(
-            model = deal.imageUrl,
-            contentDescription = stringResource(R.string.cd_food_image),
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop,
-            failure = placeholder(R.drawable.default_food),
-            loading = placeholder(R.drawable.default_food)
-        )
-
-        deal.badges.firstOrNull()?.let { badge ->
-            BadgeLabel(
-                text = badge.text,
-                backgroundColor = newBadgeColor(),
-                textColor = Color.White,
-                modifier = Modifier
-                    .padding(Spacing.small)
-                    .align(Alignment.TopStart)
-            )
-        }
-
-        if (deal.discountPercentage > 0) {
-            DiscountBadge(
-                percentage = deal.discountPercentage,
-                modifier = Modifier
-                    .padding(Spacing.small)
-                    .align(Alignment.TopEnd)
-            )
-        }
-    }
-}
-
-@Composable
-private fun BadgeLabel(
-    text: String,
-    backgroundColor: Color,
-    textColor: Color,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(AllDealsDimensions.badgeCornerRadius),
-        color = backgroundColor
-    ) {
-        Text(
-            text = text,
-            modifier = Modifier.padding(
-                horizontal = Spacing.small,
-                vertical = Spacing.xs
-            ),
-            style = badgeText(),
-            color = textColor
-        )
-    }
-}
-
-@Composable
-private fun DiscountBadge(
-    percentage: Int,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(AllDealsDimensions.badgeCornerRadius),
-        color = discountTextColor()
-    ) {
-        Text(
-            text = "-$percentage%",
-            modifier = Modifier.padding(
-                horizontal = Spacing.small,
-                vertical = Spacing.xs
-            ),
-            style = discountBadge(),
-            color = onErrorColor()
-        )
-    }
-}
-
-@Composable
-private fun DealInfoSection(
-    deal: Deal,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-        Column {
-            Text(
-                text = deal.restaurantName,
-                style = foodItemName(),
-                color = cardContentColor(),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Text(
-                text = deal.title,
-                style = MaterialTheme.typography.bodySmall,
-                color = textSecondaryColor(),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            if (deal.description.isNotBlank()) {
-                Text(
-                    text = deal.description,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = textSecondaryColor(),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(Spacing.small))
-
-        Column {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = stringResource(R.string.cd_rating_star),
-                    modifier = Modifier.size(AllDealsDimensions.starIconSize),
-                    tint = starRatingColor()
+        Column(
+            modifier = Modifier.padding(AllDealsDimensions.cardContentPadding)
+        ) {
+            Box {
+                GlideImage(
+                    model = deal.imageUrl,
+                    contentDescription = deal.title,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(AllDealsDimensions.imageHeight)
+                        .clip(RoundedCornerShape(AllDealsDimensions.cardCornerRadius)),
+                    contentScale = ContentScale.Crop,
+                    failure = placeholder(R.drawable.default_food)
                 )
 
-                Spacer(modifier = Modifier.width(Spacing.xs))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(Spacing.small),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Top
+                ) {
+                    deal.badges.firstOrNull()?.let { badge ->
+                        Surface(
+                            shape = RoundedCornerShape(AllDealsDimensions.badgeCornerRadius),
+                            color = try {
+                                Color(badge.backgroundColor.toColorInt())
+                            } catch (e: Exception) {
+                                newBadgeColor()
+                            }
+                        ) {
+                            Text(
+                                text = badge.text,
+                                modifier = Modifier.padding(
+                                    horizontal = Spacing.small,
+                                    vertical = Spacing.xs
+                                ),
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = FontWeight.Medium
+                                ),
+                                color = Color.White
+                            )
+                        }
+                    }
 
-                Text(
-                    text = String.format("%.1f", deal.rating),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = cardContentColor(),
-                    fontWeight = FontWeight.Medium
-                )
-
-                Spacer(modifier = Modifier.width(Spacing.small))
-
-                Text(
-                    text = "•",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = textSecondaryColor()
-                )
-
-                Spacer(modifier = Modifier.width(Spacing.xs))
-
-                Text(
-                    text = deal.deliveryTime,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = textSecondaryColor()
-                )
+                    if (deal.discountPercentage > 0) {
+                        Surface(
+                            shape = RoundedCornerShape(AllDealsDimensions.discountBadgeRadius),
+                            color = discountTextColor()
+                        ) {
+                            Text(
+                                text = "-${deal.discountPercentage}%",
+                                modifier = Modifier.padding(
+                                    horizontal = Spacing.small,
+                                    vertical = Spacing.xs
+                                ),
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = FontWeight.Medium
+                                ),
+                                color = onErrorColor()
+                            )
+                        }
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(Spacing.small))
 
-            PriceSection(
-                salePrice = deal.salePrice,
-                originalPrice = deal.originalPrice,
-                discountPercentage = deal.discountPercentage
-            )
+            Column {
+                Text(
+                    text = deal.title,
+                    style = foodItemName(),
+                    color = cardContentColor(),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                if (deal.description.isNotBlank()) {
+                    Text(
+                        text = deal.description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = textSecondaryColor(),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(Spacing.small))
+
+            Column {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = stringResource(R.string.cd_rating_star),
+                        modifier = Modifier.size(AllDealsDimensions.starIconSize),
+                        tint = starRatingColor()
+                    )
+
+                    Spacer(modifier = Modifier.width(Spacing.xs))
+
+                    Text(
+                        text = String.format(Locale.getDefault(), "%.1f", deal.rating),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = cardContentColor(),
+                        fontWeight = FontWeight.Medium
+                    )
+
+                    Spacer(modifier = Modifier.width(Spacing.small))
+
+                    Text(
+                        text = "•",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = textSecondaryColor()
+                    )
+
+                    Spacer(modifier = Modifier.width(Spacing.xs))
+
+                    Text(
+                        text = deal.deliveryTime,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = textSecondaryColor()
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(Spacing.small))
+
+                PriceSection(
+                    salePrice = deal.salePrice,
+                    originalPrice = deal.originalPrice,
+                    discountPercentage = deal.discountPercentage
+                )
+            }
         }
     }
 }
@@ -427,80 +371,33 @@ private fun PriceSection(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth()
+        horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
     ) {
-        Column {
+        Text(
+            text = salePrice,
+            style = foodItemPrice(),
+            color = priceTextColor(),
+            fontWeight = FontWeight.Bold
+        )
+
+        if (originalPrice.isNotBlank() && originalPrice != salePrice) {
             Text(
                 text = originalPrice,
                 style = foodItemOriginalPrice(),
                 color = originalPriceTextColor(),
                 textDecoration = TextDecoration.LineThrough
             )
-
-            Text(
-                text = salePrice,
-                style = foodItemPrice(),
-                color = priceTextColor()
-            )
         }
 
         if (discountPercentage > 0) {
-            Surface(
-                shape = RoundedCornerShape(AllDealsDimensions.discountBadgeRadius),
-                color = primaryColor().copy(alpha = 0.1f)
-            ) {
-                Text(
-                    text = "${discountPercentage}%",
-                    modifier = Modifier.padding(
-                        horizontal = Spacing.xs,
-                        vertical = Spacing.xs
-                    ),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = primaryColor(),
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            Text(
+                text = "-$discountPercentage%",
+                style = MaterialTheme.typography.labelSmall,
+                color = discountTextColor(),
+                modifier = Modifier
+                    .clip(RoundedCornerShape(AllDealsDimensions.discountBadgeRadius))
+                    .padding(horizontal = Spacing.xs, vertical = 2.dp)
+            )
         }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-private fun AllDealsScreenPreview() {
-    MaterialTheme {
-        AllDealsScreen()
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun DealGridItemCardPreview() {
-    MaterialTheme {
-        DealGridItemCard(
-            deal = Deal(
-                id = "sale_001",
-                menuItemId = "menu_008",
-                title = "Fresh Green Salad",
-                description = "Mixed greens with vinaigrette",
-                originalPrice = "$8.00",
-                salePrice = "$5.00",
-                discountPercentage = 37,
-                imageUrl = "",
-                restaurantId = "rest_003",
-                restaurantName = "Green Salad Restaurant",
-                deliveryTime = "20 mins",
-                rating = 4.2f,
-                badges = listOf(
-                    Badge(
-                        text = "Deal $5",
-                        type = "deal",
-                        backgroundColor = "#4CAF50"
-                    )
-                )
-            ),
-            onClick = {}
-        )
     }
 }

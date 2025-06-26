@@ -19,6 +19,10 @@ class HomeViewModel @Inject constructor(private val homeUseCase: HomeUseCase) : 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
+    companion object {
+        const val HOME_ITEM_LIMIT = 4
+    }
+
     init {
         loadHomeData()
     }

@@ -42,7 +42,8 @@ fun CollectionResponse.toDomainModel(): FoodCollection {
         title = title,
         subtitle = subtitle,
         imageUrl = imageUrl,
-        badge = badge
+        badge = badge,
+        restaurantIds = restaurantIds
     )
 }
 

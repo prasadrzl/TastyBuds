@@ -70,6 +70,7 @@ import kotlinx.coroutines.delay
 import java.util.Locale
 import com.app.tastybuds.domain.model.Collection as FoodCollection
 import androidx.core.graphics.toColorInt
+import com.app.tastybuds.ui.home.HomeViewModel.Companion.HOME_ITEM_LIMIT
 
 @Composable
 fun HomeScreen(
@@ -81,7 +82,7 @@ fun HomeScreen(
     onViewAllDeals: () -> Unit = {},
     onViewAllVouchers: () -> Unit = {},
     onBannerClick: (String) -> Unit = {},
-    onCollectionClick: (String) -> Unit = {},
+    onCollectionClick: (Collection) -> Unit = {},
     onDealClick: (String, String) -> Unit = { _, _ -> },
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -199,7 +200,7 @@ private fun HomeContent(
     onViewAllDeals: () -> Unit,
     onViewAllVouchers: () -> Unit,
     onBannerClick: (String) -> Unit,
-    onCollectionClick: (String) -> Unit,
+    onCollectionClick: (Collection) -> Unit,
     onDealClick: (String, String) -> Unit = { _, _ -> }
 ) {
     LazyColumn(
@@ -506,7 +507,7 @@ private fun CategoryCard(
 @Composable
 private fun CollectionsSection(
     collections: List<Collection>,
-    onCollectionClick: (String) -> Unit = {}
+    onCollectionClick: (Collection) -> Unit = {}
 ) {
     Column {
         SectionHeader(
@@ -527,14 +528,14 @@ private fun CollectionsSection(
                 if (collections.isNotEmpty()) {
                     StaticCollectionCard(
                         collection = collections[0],
-                        onClick = { onCollectionClick(collections[0].id) },
+                        onClick = { onCollectionClick(collections[0]) },
                         modifier = Modifier.weight(1f)
                     )
                 }
                 if (collections.size > 1) {
                     StaticCollectionCard(
                         collection = collections[1],
-                        onClick = { onCollectionClick(collections[1].id) },
+                        onClick = { onCollectionClick(collections[1]) },
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -547,13 +548,13 @@ private fun CollectionsSection(
                 ) {
                     StaticCollectionCard(
                         collection = collections[2],
-                        onClick = { onCollectionClick(collections[2].id) },
+                        onClick = { onCollectionClick(collections[2]) },
                         modifier = Modifier.weight(1f)
                     )
                     if (collections.size > 3) {
                         StaticCollectionCard(
                             collection = collections[3],
-                            onClick = { onCollectionClick(collections[3].id) },
+                            onClick = { onCollectionClick(collections[3]) },
                             modifier = Modifier.weight(1f)
                         )
                     } else {
@@ -707,7 +708,7 @@ private fun RecommendedSection(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(
-                items = restaurants,
+                items = restaurants.take(HOME_ITEM_LIMIT),
                 key = { restaurant -> restaurant.id }
             ) { restaurant ->
                 RestaurantCard(
@@ -843,7 +844,7 @@ private fun SaleSection(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(
-                items = deals,
+                items = deals.take(HOME_ITEM_LIMIT),
                 key = { deal -> deal.id }
             ) { deal ->
                 SaleCard(

@@ -22,6 +22,7 @@ interface RestaurantRepository {
     fun getTopRestaurantsByCategory(categoryId: String): Flow<List<CategoryRestaurant>>
     fun getMenuItemsByCategory(categoryId: String): Flow<List<CategoryMenuItem>>
     fun getRecommendedRestaurantsByCategory(categoryId: String): Flow<List<CategoryRestaurant>>
+    suspend fun getRestaurantsByIds(restaurantIds: String): Result<List<Restaurant>>
 }
 
 class RestaurantRepositoryImpl @Inject constructor(
@@ -97,4 +98,25 @@ class RestaurantRepositoryImpl @Inject constructor(
         }.catch {
             emit(emptyList())
         }
+
+    override suspend fun getRestaurantsByIds(restaurantIds: String): Result<List<Restaurant>> {
+        return try {
+            if (restaurantIds.isEmpty()) {
+                return Result.Success(emptyList())
+            }
+
+            val response =
+                tastyBudsApiService.getRestaurantsByIdsForCollection("in.($restaurantIds)")
+
+            if (response.isSuccessful) {
+                val restaurantResponses = response.body() ?: emptyList()
+                val restaurants = restaurantResponses.map { it.toDomainModel() }
+                Result.Success(restaurants)
+            } else {
+                Result.Error("Failed to load restaurants: ${response.message()}")
+            }
+        } catch (e: Exception) {
+            Result.Error(ErrorHandler.handleApiError(e))
+        }
+    }
 }

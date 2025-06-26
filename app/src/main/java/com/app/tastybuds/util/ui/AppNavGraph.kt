@@ -18,7 +18,6 @@ import com.app.tastybuds.data.model.RestaurantReview
 import com.app.tastybuds.domain.model.SearchResultType.FOOD_ITEM
 import com.app.tastybuds.domain.model.SearchResultType.RESTAURANT
 import com.app.tastybuds.ui.favorites.FavoriteScreen
-import com.app.tastybuds.ui.home.AllCollectionsScreen
 import com.app.tastybuds.ui.home.AllDealsScreen
 import com.app.tastybuds.ui.home.AllRestaurantsScreen
 import com.app.tastybuds.ui.home.HomeScreen
@@ -39,6 +38,7 @@ import com.app.tastybuds.ui.profile.ProfileScreen
 import com.app.tastybuds.ui.profile.ProfileSettingsScreen
 import com.app.tastybuds.ui.resturants.AllReviewsScreen
 import com.app.tastybuds.ui.resturants.CategoryDetailsScreen
+import com.app.tastybuds.ui.resturants.CollectionListingScreen
 import com.app.tastybuds.ui.resturants.MenuListScreen
 import com.app.tastybuds.ui.resturants.RestaurantDetailsScreen
 import com.app.tastybuds.ui.resturants.SeeAllScreen
@@ -46,8 +46,6 @@ import com.app.tastybuds.ui.resturants.search.SearchResultsScreen
 import com.app.tastybuds.ui.splash.TastyBudsSplashScreen
 import com.app.tastybuds.ui.vouchers.AllVouchersScreen
 import kotlinx.coroutines.launch
-import java.net.URLDecoder
-import java.net.URLEncoder
 
 val items = listOf(
     BottomNavItem("home", "Home", R.drawable.ic_bn_home),
@@ -61,7 +59,6 @@ fun AppNavGraph(navController: NavHostController) {
     val sharedCartViewModel: CartViewModel = hiltViewModel()
     val onboardingViewModel: OnboardingViewModel = hiltViewModel()
     var sharedReviews by remember { mutableStateOf<List<RestaurantReview>>(emptyList()) }
-    var sharedRestaurantName by remember { mutableStateOf("") }
 
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") {
@@ -145,22 +142,12 @@ fun AppNavGraph(navController: NavHostController) {
                 onBannerClick = { _ ->
                     navController.navigate("all_deals")
                 },
-                onCollectionClick = { collectionId ->
-                    navController.navigate("food_listing/collection/$collectionId")
+                onCollectionClick = { collection ->
+                    val restaurantIdStrings = collection.restaurantIds.joinToString(",")
+                    navController.navigate("collection_listing/${collection.title}/$restaurantIdStrings")
                 },
                 onDealClick = { dealId, menuItemId ->
                     navController.navigate("food_details/$menuItemId")
-                }
-            )
-        }
-
-        composable("all_collections") {
-            AllCollectionsScreen(
-                onBackClick = {
-                    navController.popBackStack()
-                },
-                onCollectionClick = { collectionId ->
-                    navController.navigate("food_listing/collection/$collectionId")
                 }
             )
         }
@@ -476,6 +463,26 @@ fun AppNavGraph(navController: NavHostController) {
                 restaurantName = "",
                 onBackClick = {
                     navController.popBackStack()
+                }
+            )
+        }
+
+        composable(
+            route = "collection_listing/{collectionTitle}/{restaurantIds}",
+            arguments = listOf(
+                navArgument("collectionTitle") { type = NavType.StringType },
+                navArgument("restaurantIds") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val collectionTitle = backStackEntry.arguments?.getString("collectionTitle") ?: ""
+            val restaurantIdsString = backStackEntry.arguments?.getString("restaurantIds") ?: ""
+
+            CollectionListingScreen(
+                collectionTitle = collectionTitle,
+                restaurantIds = restaurantIdsString,
+                onBackClick = { navController.popBackStack() },
+                onRestaurantClick = { restaurantId ->
+                    navController.navigate("restaurant_details/$restaurantId")
                 }
             )
         }

@@ -250,11 +250,11 @@ interface TastyBudsApiService {
         @Body orderRequest: CreateOrderRequest
     ): Response<List<Order>>
 
-    @PATCH("orders")
-    suspend fun updateOrderStatus(
-        @Query("id") orderId: String,
-        @Body statusUpdate: Map<String, String>
-    ): Response<List<Order>>
+    @GET("restaurants")
+    suspend fun getRestaurantsByIdsForCollection(
+        @Query("id") restaurantIds: String,
+        @Query("select") select: String = "*"
+    ): Response<List<RestaurantResponse>>
 
     @GET("vouchers")
     suspend fun getGlobalVouchers(

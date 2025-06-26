@@ -23,7 +23,8 @@ data class Collection(
     val title: String = "",
     val subtitle: String = "",
     val imageUrl: String = "",
-    val badge: String? = null
+    val badge: String? = null,
+    val restaurantIds: List<String> = emptyList(),
 )
 
 data class Restaurant(

@@ -7,6 +7,7 @@ import com.app.tastybuds.domain.model.CategoryRestaurant
 import com.app.tastybuds.domain.model.Restaurant
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+import com.app.tastybuds.util.Result
 
 class RestaurantUseCase @Inject constructor(
     private val repository: RestaurantRepository
@@ -53,5 +54,9 @@ class RestaurantUseCase @Inject constructor(
 
     fun getRecommendedRestaurantsByCategory(categoryId: String): Flow<List<CategoryRestaurant>> {
         return repository.getRecommendedRestaurantsByCategory(categoryId)
+    }
+
+    suspend fun getRestaurantsByIds(restaurantIds: String): Result<List<Restaurant>> {
+        return repository.getRestaurantsByIds(restaurantIds)
     }
 }
