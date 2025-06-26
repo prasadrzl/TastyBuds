@@ -119,14 +119,6 @@ fun AppNavGraph(navController: NavHostController) {
                 onCategoryClick = { categoryId, categoryName ->
                     navController.navigate("food_listing/$categoryName/$categoryId")
                 },
-                onProfileClick = {
-                    navController.navigate("profile")
-                },
-                onSearchClick = { searchTerm ->
-                    if (searchTerm.isNotBlank()) {
-                        navController.navigate("search_results/$searchTerm")
-                    }
-                },
                 onRestaurantClick = { restaurantId ->
                     navController.navigate("restaurant_details/$restaurantId")
                 },

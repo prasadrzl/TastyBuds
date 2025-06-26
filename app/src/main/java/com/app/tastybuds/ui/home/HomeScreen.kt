@@ -75,8 +75,6 @@ import com.app.tastybuds.ui.home.HomeViewModel.Companion.HOME_ITEM_LIMIT
 @Composable
 fun HomeScreen(
     onCategoryClick: (String, String) -> Unit = { _, _ -> },
-    onProfileClick: () -> Unit = {},
-    onSearchClick: (String) -> Unit = {},
     onRestaurantClick: (String) -> Unit = {},
     onViewAllRestaurants: () -> Unit = {},
     onViewAllDeals: () -> Unit = {},
