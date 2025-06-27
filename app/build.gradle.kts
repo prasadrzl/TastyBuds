@@ -55,6 +55,13 @@ android {
             excludes += "META-INF/NOTICE.txt"
         }
     }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
+        }
+    }
 }
 
 configurations.all {
@@ -64,6 +71,13 @@ configurations.all {
         force("com.google.dagger:dagger-compiler:2.48")
         force("com.google.dagger:hilt-core:2.48")
         force("com.google.dagger:hilt-compiler:2.48")
+
+        // ADDED: Force consistent test versions
+        force("androidx.test:core:1.6.1")
+        force("androidx.test:runner:1.6.2")
+        force("androidx.test:rules:1.6.1")
+        force("androidx.test.ext:junit:1.1.5")
+        force("androidx.test.espresso:espresso-core:3.6.1")
     }
 }
 
@@ -77,18 +91,13 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.lifecycle.runtime.compose.android)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.accompanist.swiperefresh)
 
     // Koin
     implementation(libs.koin.core)
@@ -126,21 +135,35 @@ dependencies {
     implementation(libs.androidx.datastore.preferences.core)
     implementation(libs.androidx.security.crypto)
 
-    // Testing
     testImplementation(libs.junit)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.turbine)
     testImplementation(libs.junit5.api)
+    testImplementation(libs.junit5.params)
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit5.engine)
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.agent)
-    testImplementation(libs.mockk.android)
+    testImplementation(libs.androidx.arch.core.testing)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.hilt.android.testing)
+    kaptTest(libs.hilt.compiler)
 
-    // Android Testing
-    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.coroutines.test)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.androidx.compose.ui.test)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.hilt.android.testing)
+    androidTestImplementation(libs.mockk.android)
+    kaptAndroidTest(libs.hilt.compiler)
 
-    implementation(libs.accompanist.swiperefresh)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 }
 
 kapt {
