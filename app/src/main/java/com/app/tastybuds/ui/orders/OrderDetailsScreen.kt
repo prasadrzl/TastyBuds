@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
@@ -24,7 +23,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -38,23 +36,43 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
 import com.app.tastybuds.data.model.Order
 import com.app.tastybuds.data.model.OrderItemRequest
 import com.app.tastybuds.data.model.OrderStatus
-import com.app.tastybuds.ui.theme.*
+import com.app.tastybuds.ui.theme.backgroundColor
+import com.app.tastybuds.ui.theme.errorColor
+import com.app.tastybuds.ui.theme.errorContainerColor
+import com.app.tastybuds.ui.theme.infoContainerColor
+import com.app.tastybuds.ui.theme.offerBackgroundColor
+import com.app.tastybuds.ui.theme.offerTextColor
+import com.app.tastybuds.ui.theme.onErrorContainerColor
+import com.app.tastybuds.ui.theme.onInfoContainerColor
+import com.app.tastybuds.ui.theme.onPrimaryColor
+import com.app.tastybuds.ui.theme.onSuccessContainerColor
+import com.app.tastybuds.ui.theme.onSurfaceColor
+import com.app.tastybuds.ui.theme.onSurfaceVariantColor
+import com.app.tastybuds.ui.theme.onWarningContainerColor
+import com.app.tastybuds.ui.theme.outlineVariantColor
+import com.app.tastybuds.ui.theme.primaryColor
+import com.app.tastybuds.ui.theme.starRatingColor
+import com.app.tastybuds.ui.theme.successContainerColor
+import com.app.tastybuds.ui.theme.surfaceColor
+import com.app.tastybuds.ui.theme.surfaceVariantColor
+import com.app.tastybuds.ui.theme.textSecondaryColor
+import com.app.tastybuds.ui.theme.warningContainerColor
 import com.app.tastybuds.util.formatOrderDate
 import com.app.tastybuds.util.ui.AppTopBar
+import com.app.tastybuds.util.ui.ErrorScreen
+import com.app.tastybuds.util.ui.LoadingScreen
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -89,13 +107,13 @@ fun OrderDetailsScreen(
         ) {
             when {
                 uiState.isLoading -> {
-                    LoadingContent()
+                    LoadingScreen(message = stringResource(R.string.loading_order_details))
                 }
 
                 uiState.error != null -> {
-                    ErrorContent(
-                        error = uiState.error!!,
-                        onRetry = { viewModel.loadOrderDetails(orderId) }
+                    ErrorScreen(
+                        title = uiState.error ?: stringResource(R.string.unknown_error),
+                        onRetryClick = { viewModel.loadOrderDetails(orderId) }
                     )
                 }
 
@@ -106,75 +124,6 @@ fun OrderDetailsScreen(
                         onContactRestaurant = onContactRestaurant
                     )
                 }
-            }
-        }
-    }
-}
-
-@Composable
-private fun LoadingContent() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            CircularProgressIndicator(
-                color = loadingIndicatorColor(),
-                modifier = Modifier.size(48.dp)
-            )
-            Text(
-                text = stringResource(R.string.loading_order_details),
-                style = MaterialTheme.typography.bodyLarge,
-                color = onBackgroundColor()
-            )
-        }
-    }
-}
-
-@Composable
-private fun ErrorContent(
-    error: String,
-    onRetry: () -> Unit
-) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.padding(32.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = stringResource(R.string.error),
-                tint = errorColor(),
-                modifier = Modifier.size(64.dp)
-            )
-            Text(
-                text = stringResource(R.string.failed_to_load_order),
-                style = MaterialTheme.typography.headlineSmall.copy(
-                    fontWeight = FontWeight.Bold
-                ),
-                color = onBackgroundColor()
-            )
-            Text(
-                text = error,
-                style = MaterialTheme.typography.bodyMedium,
-                color = onSurfaceVariantColor(),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
-            )
-            Button(
-                onClick = onRetry,
-                colors = ButtonDefaults.buttonColors(containerColor = primaryColor())
-            ) {
-                Text(
-                    text = stringResource(R.string.try_again),
-                    color = onPrimaryColor()
-                )
             }
         }
     }

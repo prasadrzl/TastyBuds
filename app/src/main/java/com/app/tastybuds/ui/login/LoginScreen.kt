@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -19,7 +18,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -36,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -51,7 +48,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.R
-import com.app.tastybuds.ui.theme.*
+import com.app.tastybuds.ui.theme.backgroundColor
+import com.app.tastybuds.ui.theme.cardBackgroundColor
+import com.app.tastybuds.ui.theme.cardContentColor
+import com.app.tastybuds.ui.theme.enabledTextColor
+import com.app.tastybuds.ui.theme.focusedBorderColor
+import com.app.tastybuds.ui.theme.onPrimaryColor
+import com.app.tastybuds.ui.theme.onSurfaceVariantColor
+import com.app.tastybuds.ui.theme.placeholderTextColor
+import com.app.tastybuds.ui.theme.primaryColor
+import com.app.tastybuds.ui.theme.textSecondaryColor
+import com.app.tastybuds.ui.theme.unfocusedBorderColor
+import com.app.tastybuds.util.ui.LoadingScreen
 import com.app.tastybuds.util.ui.showErrorToast
 
 @Composable
@@ -247,11 +255,7 @@ fun LoginScreen(
                     enabled = !uiState.isLoading && email.isNotBlank() && password.isNotBlank()
                 ) {
                     if (uiState.isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(20.dp),
-                            color = onPrimaryColor(),
-                            strokeWidth = 2.dp
-                        )
+                        LoadingScreen()
                     } else {
                         Text(
                             text = stringResource(R.string.sign_in),

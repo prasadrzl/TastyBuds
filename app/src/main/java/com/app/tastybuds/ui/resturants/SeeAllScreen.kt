@@ -21,8 +21,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.R
 import com.app.tastybuds.domain.model.CategoryMenuItem
 import com.app.tastybuds.domain.model.CategoryRestaurant
-import com.app.tastybuds.ui.theme.*
+import com.app.tastybuds.ui.theme.backgroundColor
+import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.app.tastybuds.util.ui.AppTopBar
+import com.app.tastybuds.util.ui.ErrorScreen
+import com.app.tastybuds.util.ui.LoadingScreen
 
 @Composable
 fun SeeAllScreen(
@@ -50,14 +53,13 @@ fun SeeAllScreen(
 
         when {
             uiState.isLoading -> {
-                LoadingContent()
+                LoadingScreen()
             }
 
             uiState.error != null -> {
-                ErrorContent(
-                    error = uiState.error ?: "",
-                    onRetry = { viewModel.loadItems(categoryId, type) }
-                )
+                ErrorScreen(
+                    title = uiState.error ?: "",
+                    onRetryClick = { viewModel.loadItems(categoryId, type) })
             }
 
             else -> {
@@ -103,9 +105,7 @@ private fun ItemsList(
                     }
                     items(restaurants) { restaurant ->
                         CategoryRestaurantCard(
-                            restaurant = restaurant,
-                            onClick = { onRestaurantClick(restaurant.id) }
-                        )
+                            restaurant = restaurant, onClick = { onRestaurantClick(restaurant.id) })
                     }
                 }
             }
@@ -126,11 +126,9 @@ private fun ItemsList(
                     }
                     items(menuItems) { menuItem ->
                         MenuItemCard(
-                            menuItem = menuItem,
-                            onClick = {
+                            menuItem = menuItem, onClick = {
                                 onMenuItemClick?.invoke(menuItem.id)
-                            }
-                        )
+                            })
                     }
                 }
             }

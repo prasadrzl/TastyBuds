@@ -4,7 +4,6 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -42,29 +41,28 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
-import com.app.tastybuds.domain.model.CartItem
 import com.app.tastybuds.data.model.OrderItemSize
 import com.app.tastybuds.data.model.OrderItemSpiceLevel
 import com.app.tastybuds.data.model.OrderItemTopping
 import com.app.tastybuds.data.model.RestaurantMenuItem
 import com.app.tastybuds.data.model.UserAddress
 import com.app.tastybuds.data.model.Voucher
+import com.app.tastybuds.domain.model.CartItem
 import com.app.tastybuds.ui.theme.*
 import com.app.tastybuds.util.ui.AppTopBar
+import com.app.tastybuds.util.ui.EmptyCartContent
+import com.app.tastybuds.util.ui.LoadingScreen
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -117,7 +115,7 @@ fun OrderReviewScreen(
 
         when {
             uiState.isLoading -> {
-                LoadingContent()
+                LoadingScreen()
             }
 
             uiState.cartItems.isEmpty() -> {
@@ -145,59 +143,6 @@ fun OrderReviewScreen(
                     onEditItem = onEditItem
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun LoadingContent() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(color = loadingIndicatorColor())
-    }
-}
-
-@Composable
-private fun EmptyCartContent(onBackClick: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Icon(
-            imageVector = Icons.Default.ShoppingCart,
-            contentDescription = stringResource(R.string.empty_cart),
-            modifier = Modifier.size(80.dp),
-            tint = onSurfaceVariantColor()
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = stringResource(R.string.your_cart_is_empty),
-            style = MaterialTheme.typography.headlineSmall.copy(
-                fontWeight = FontWeight.Bold
-            ),
-            color = onBackgroundColor()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = stringResource(R.string.add_some_delicious_items_to_your_cart),
-            style = MaterialTheme.typography.bodyMedium,
-            color = onSurfaceVariantColor(),
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-        Button(
-            onClick = onBackClick,
-            colors = ButtonDefaults.buttonColors(containerColor = primaryColor())
-        ) {
-            Text(
-                text = stringResource(R.string.browse_menu),
-                color = onPrimaryColor()
-            )
         }
     }
 }

@@ -25,7 +25,6 @@ import androidx.compose.material.icons.sharp.Menu
 import androidx.compose.material.icons.sharp.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -40,10 +39,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,8 +50,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
 import com.app.tastybuds.domain.model.DiscountType
 import com.app.tastybuds.domain.model.Voucher
-import com.app.tastybuds.ui.theme.*
+import com.app.tastybuds.ui.theme.backgroundColor
+import com.app.tastybuds.ui.theme.cardContentColor
+import com.app.tastybuds.ui.theme.disabledBorderColor
+import com.app.tastybuds.ui.theme.disabledTextColor
+import com.app.tastybuds.ui.theme.infoColor
+import com.app.tastybuds.ui.theme.onPrimaryColor
+import com.app.tastybuds.ui.theme.primaryColor
+import com.app.tastybuds.ui.theme.successColor
+import com.app.tastybuds.ui.theme.surfaceColor
+import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.app.tastybuds.util.ui.AppTopBar
+import com.app.tastybuds.util.ui.EmptyVouchersContent
+import com.app.tastybuds.util.ui.LoadingScreen
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
@@ -161,7 +169,7 @@ fun VouchersContent(
 ) {
     when {
         uiState.isLoading && vouchers.isEmpty() -> {
-            LoadingContent()
+            LoadingScreen()
         }
 
         vouchers.isEmpty() -> {
@@ -184,68 +192,6 @@ fun VouchersContent(
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun LoadingContent() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            CircularProgressIndicator(color = loadingIndicatorColor())
-            Text(
-                text = stringResource(R.string.loading_vouchers),
-                color = textSecondaryColor(),
-                fontSize = 14.sp
-            )
-        }
-    }
-}
-
-@Composable
-private fun EmptyVouchersContent(
-    message: String,
-    subMessage: String
-) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(24.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_offer_percentage),
-                contentDescription = stringResource(R.string.no_vouchers),
-                modifier = Modifier.size(64.dp),
-                tint = textSecondaryColor()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = message,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
-                color = captionTextColor(),
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = subMessage,
-                fontSize = 14.sp,
-                color = textSecondaryColor(),
-                textAlign = TextAlign.Center
-            )
         }
     }
 }
@@ -401,11 +347,11 @@ fun getVoucherIcon(type: DiscountType): ImageVector = when (type) {
 }
 
 @Composable
-fun getVoucherIconBackground(type: DiscountType): androidx.compose.ui.graphics.Color = when (type) {
+fun getVoucherIconBackground(type: DiscountType): Color = when (type) {
     DiscountType.PERCENTAGE -> successColor()
     DiscountType.FIXED_AMOUNT -> infoColor()
     DiscountType.FREE_DELIVERY -> primaryColor()
-    DiscountType.BUY_ONE_GET_ONE -> Color(0xFF9C27B0) // Purple - could add to ColorExtensions as tertiaryColor()
+    DiscountType.BUY_ONE_GET_ONE -> Color(0xFF9C27B0)
 }
 
 @Preview(showBackground = true)

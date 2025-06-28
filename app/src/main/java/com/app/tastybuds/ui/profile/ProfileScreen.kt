@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,10 +16,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -33,7 +30,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -49,8 +45,18 @@ import com.app.tastybuds.LocalThemeManager
 import com.app.tastybuds.R
 import com.app.tastybuds.domain.model.User
 import com.app.tastybuds.ui.login.LoginViewModel
-import com.app.tastybuds.ui.theme.*
+import com.app.tastybuds.ui.theme.backgroundColor
+import com.app.tastybuds.ui.theme.dividerColor
+import com.app.tastybuds.ui.theme.errorColor
+import com.app.tastybuds.ui.theme.onSurfaceColor
+import com.app.tastybuds.ui.theme.onSurfaceVariantColor
+import com.app.tastybuds.ui.theme.primaryColor
+import com.app.tastybuds.ui.theme.rippleColor
+import com.app.tastybuds.ui.theme.surfaceVariantColor
+import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.app.tastybuds.util.ui.AppTopBar
+import com.app.tastybuds.util.ui.ErrorScreen
+import com.app.tastybuds.util.ui.LoadingScreen
 import com.app.tastybuds.util.ui.showDevelopmentToast
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -99,32 +105,13 @@ fun ProfileScreen(
 
         when {
             uiState.isLoading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = primaryColor())
-                }
+                LoadingScreen()
             }
 
             uiState.error != null -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = stringResource(R.string.error_loading_profile),
-                            color = errorColor(),
-                            fontSize = 16.sp
-                        )
-                        Text(
-                            text = uiState.error ?: "",
-                            color = textSecondaryColor(),
-                            fontSize = 14.sp
-                        )
-                    }
-                }
+                ErrorScreen(
+                    title = stringResource(R.string.error_loading_profile)
+                )
             }
 
             else -> {

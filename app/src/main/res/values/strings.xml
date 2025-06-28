@@ -472,5 +472,14 @@
     <string name="no_reviews_yet">No reviews yet</string>
     <string name="helpful_count">%1$d people found this helpful</string>
     <string name="great_deal">Great Deal!</string>
+    <string name="please_check_your_connection_and_try_again">Please check your connection and try again</string>
+    <string name="no_internet_connection">No Internet Connection</string>
+    <string name="please_check_your_internet_connection_and_try_again">Please check your internet connection and try again</string>
+    <string name="server_error">Server Error</string>
+    <string name="we_re_experiencing_some_technical_difficulties_please_try_again_later">We\'re experiencing some technical difficulties. Please try again later</string>
+    <string name="content_not_found">Content Not Found</string>
+    <string name="the_content_you_re_looking_for_does_not_exist_or_has_been_moved">The content you\'re looking for doesn\'t exist or has been moved</string>
+    <string name="loading_deals">Loading deals</string>
+    <string name="loading_restaurants">Loading restaurants</string>
 
 </resources>

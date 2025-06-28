@@ -22,13 +22,9 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.ThumbUp
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,8 +49,6 @@ import com.app.tastybuds.ui.theme.deliveredStatusColor
 import com.app.tastybuds.ui.theme.deliveryStatusColor
 import com.app.tastybuds.ui.theme.deliveryTrackingActiveColor
 import com.app.tastybuds.ui.theme.dividerColor
-import com.app.tastybuds.ui.theme.loadingIndicatorColor
-import com.app.tastybuds.ui.theme.onBackgroundColor
 import com.app.tastybuds.ui.theme.onPrimaryColor
 import com.app.tastybuds.ui.theme.onSurfaceColor
 import com.app.tastybuds.ui.theme.orderTotalTextColor
@@ -63,6 +57,8 @@ import com.app.tastybuds.ui.theme.primaryColor
 import com.app.tastybuds.ui.theme.starRatingColor
 import com.app.tastybuds.ui.theme.surfaceColor
 import com.app.tastybuds.ui.theme.textSecondaryColor
+import com.app.tastybuds.util.ui.ErrorScreen
+import com.app.tastybuds.util.ui.LoadingScreen
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -94,14 +90,14 @@ fun OrderTrackingScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         when {
             uiState.isLoading -> {
-                LoadingContent()
+                LoadingScreen()
             }
 
             uiState.error != null -> {
-                ErrorContent(
-                    error = uiState.error!!,
-                    onRetry = { viewModel.retry(orderId) },
-                    onBackClick = onBackClick
+                ErrorScreen(
+                    title = uiState.error ?: stringResource(R.string.unknown_error),
+                    onRetryClick = { viewModel.retry(orderId) },
+
                 )
             }
 
@@ -203,69 +199,6 @@ private fun TopHeader(onBackClick: () -> Unit) {
                 contentDescription = stringResource(R.string.back),
                 tint = onSurfaceColor()
             )
-        }
-    }
-}
-
-@Composable
-private fun LoadingContent() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            CircularProgressIndicator(color = loadingIndicatorColor())
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = stringResource(R.string.loading_order_details),
-                fontSize = 16.sp,
-                color = textSecondaryColor()
-            )
-        }
-    }
-}
-
-@Composable
-private fun ErrorContent(
-    error: String,
-    onRetry: () -> Unit,
-    onBackClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(32.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.failed_to_load_order),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = onBackgroundColor()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = error,
-                fontSize = 14.sp,
-                color = textSecondaryColor()
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            Row {
-                OutlinedButton(onClick = onBackClick) {
-                    Text(stringResource(R.string.go_back))
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                Button(
-                    onClick = onRetry,
-                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor())
-                ) {
-                    Text(text = stringResource(R.string.retry), color = onPrimaryColor())
-                }
-            }
         }
     }
 }

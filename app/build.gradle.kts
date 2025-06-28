@@ -13,10 +13,11 @@ android {
         applicationId = "com.app.tastybuds"
         minSdk = 24
         targetSdk = 35
+
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "dagger.hilt.android.testing.HiltTestRunner"
         manifestPlaceholders["MAPS_API_KEY"] = project.findProperty("MAPS_API_KEY") ?: ""
         vectorDrawables {
             useSupportLibrary = true
@@ -57,6 +58,7 @@ android {
     }
 
     testOptions {
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
         unitTests {
             isIncludeAndroidResources = true
             isReturnDefaultValues = true
@@ -161,6 +163,7 @@ dependencies {
     androidTestImplementation(libs.hilt.android.testing)
     androidTestImplementation(libs.mockk.android)
     kaptAndroidTest(libs.hilt.compiler)
+    androidTestUtil("androidx.test:orchestrator:1.4.2")
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)

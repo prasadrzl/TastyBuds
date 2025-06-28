@@ -19,8 +19,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -45,7 +43,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -55,7 +52,6 @@ import com.app.tastybuds.R
 import com.app.tastybuds.data.model.Order
 import com.app.tastybuds.data.model.OrderStatus
 import com.app.tastybuds.ui.theme.backgroundColor
-import com.app.tastybuds.ui.theme.errorColor
 import com.app.tastybuds.ui.theme.errorContainerColor
 import com.app.tastybuds.ui.theme.infoContainerColor
 import com.app.tastybuds.ui.theme.loadingIndicatorColor
@@ -76,6 +72,9 @@ import com.app.tastybuds.ui.theme.successContainerColor
 import com.app.tastybuds.ui.theme.surfaceColor
 import com.app.tastybuds.ui.theme.warningContainerColor
 import com.app.tastybuds.util.formatOrderDate
+import com.app.tastybuds.util.ui.EmptyOrdersContent
+import com.app.tastybuds.util.ui.ErrorScreen
+import com.app.tastybuds.util.ui.LoadingScreen
 import kotlinx.coroutines.delay
 
 @Composable
@@ -102,13 +101,13 @@ fun OrdersScreen(
             Column {
                 when {
                     uiState.isLoading -> {
-                        LoadingContent()
+                        LoadingScreen()
                     }
 
                     uiState.error != null -> {
-                        ErrorContent(
-                            error = uiState.error!!,
-                            onRetry = { viewModel.loadUserOrders() }
+                        ErrorScreen(
+                            title = uiState.error!!,
+                            onRetryClick = { viewModel.loadUserOrders() }
                         )
                     }
 
@@ -150,86 +149,6 @@ private fun LoadingContent() {
                 text = stringResource(R.string.loading_your_orders),
                 style = MaterialTheme.typography.bodyLarge,
                 color = onBackgroundColor()
-            )
-        }
-    }
-}
-
-@Composable
-private fun ErrorContent(
-    error: String,
-    onRetry: () -> Unit
-) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.padding(32.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Star,
-                contentDescription = stringResource(R.string.error),
-                tint = errorColor(),
-                modifier = Modifier.size(64.dp)
-            )
-            Text(
-                text = stringResource(R.string.oops_something_went_wrong),
-                style = MaterialTheme.typography.headlineSmall.copy(
-                    fontWeight = FontWeight.Bold
-                ),
-                color = onBackgroundColor()
-            )
-            Text(
-                text = error,
-                style = MaterialTheme.typography.bodyMedium,
-                color = onSurfaceVariantColor(),
-                textAlign = TextAlign.Center
-            )
-            Button(
-                onClick = onRetry,
-                colors = ButtonDefaults.buttonColors(containerColor = primaryColor())
-            ) {
-                Text(
-                    text = stringResource(R.string.try_again),
-                    color = onPrimaryColor()
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun EmptyOrdersContent() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.padding(32.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.ShoppingCart,
-                contentDescription = stringResource(R.string.no_orders),
-                tint = onSurfaceVariantColor(),
-                modifier = Modifier.size(80.dp)
-            )
-            Text(
-                text = stringResource(R.string.no_orders_yet),
-                style = MaterialTheme.typography.headlineSmall.copy(
-                    fontWeight = FontWeight.Bold
-                ),
-                color = onBackgroundColor()
-            )
-            Text(
-                text = stringResource(R.string.when_you_place_your_first_order_it_will_appear_here),
-                style = MaterialTheme.typography.bodyMedium,
-                color = onSurfaceVariantColor(),
-                textAlign = TextAlign.Center
             )
         }
     }

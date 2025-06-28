@@ -20,7 +20,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -52,7 +51,6 @@ import com.app.tastybuds.ui.theme.cardContentColor
 import com.app.tastybuds.ui.theme.dividerColor
 import com.app.tastybuds.ui.theme.emptyStateDescription
 import com.app.tastybuds.ui.theme.emptyStateTitle
-import com.app.tastybuds.ui.theme.loadingIndicatorColor
 import com.app.tastybuds.ui.theme.onPrimaryColor
 import com.app.tastybuds.ui.theme.popularBadge
 import com.app.tastybuds.ui.theme.popularBadgeColor
@@ -63,6 +61,8 @@ import com.app.tastybuds.ui.theme.restaurantRating
 import com.app.tastybuds.ui.theme.starRatingColor
 import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.app.tastybuds.util.ui.AppTopBar
+import com.app.tastybuds.util.ui.ErrorScreen
+import com.app.tastybuds.util.ui.LoadingScreen
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -76,7 +76,6 @@ object AllRestaurantsDimensions {
     val restaurantImageSize = 108.dp
     val imageCornerRadius = 12.dp
     val badgeCornerRadius = 6.dp
-    val loadingIndicatorSize = 48.dp
     val ratingIconSize = 16.dp
     val separatorSpacing = 8.dp
     val metadataSpacing = 16.dp
@@ -104,13 +103,13 @@ fun AllRestaurantsScreen(
 
             when {
                 uiState.isLoading -> {
-                    LoadingContent()
+                    LoadingScreen(message = stringResource(R.string.loading_restaurants))
                 }
 
                 uiState.error != null -> {
-                    ErrorContent(
-                        error = uiState.error ?: stringResource(R.string.unknown_error),
-                        onRetry = { viewModel.retry() }
+                    ErrorScreen(
+                        title = uiState.error ?: stringResource(R.string.unknown_error),
+                        onRetryClick = { viewModel.retry() }
                     )
                 }
 
@@ -122,21 +121,6 @@ fun AllRestaurantsScreen(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun LoadingContent() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .semantics { contentDescription = "Loading restaurants" },
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(
-            color = loadingIndicatorColor(),
-            modifier = Modifier.size(AllRestaurantsDimensions.loadingIndicatorSize)
-        )
     }
 }
 

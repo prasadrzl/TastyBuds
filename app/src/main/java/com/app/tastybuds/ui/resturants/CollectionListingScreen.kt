@@ -18,7 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -49,6 +49,8 @@ import com.app.tastybuds.ui.theme.cardContentColor
 import com.app.tastybuds.ui.theme.primaryColor
 import com.app.tastybuds.ui.theme.starRatingColor
 import com.app.tastybuds.ui.theme.textSecondaryColor
+import com.app.tastybuds.util.ui.ErrorScreen
+import com.app.tastybuds.util.ui.LoadingScreen
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -79,13 +81,13 @@ fun CollectionListingScreen(
 
         when {
             uiState.isLoading -> {
-                LoadingContent()
+                LoadingScreen()
             }
 
             uiState.error != null -> {
-                ErrorContent(
-                    error = uiState.error ?: stringResource(R.string.unknown_error),
-                    onRetry = {
+                ErrorScreen(
+                    title = uiState.error ?: stringResource(R.string.unknown_error),
+                    onRetryClick = {
                         viewModel.retry(restaurantIds)
                     }
                 )
@@ -122,7 +124,7 @@ private fun TopBar(
         ) {
             IconButton(onClick = onBackClick) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back"
                 )
             }

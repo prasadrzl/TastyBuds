@@ -73,6 +73,7 @@ import com.app.tastybuds.ui.theme.restaurantName
 import com.app.tastybuds.ui.theme.restaurantRating
 import com.app.tastybuds.ui.theme.subTitle
 import com.app.tastybuds.ui.theme.textSecondaryColor
+import com.app.tastybuds.util.ui.LoadingScreen
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -247,12 +248,7 @@ fun FavoriteItemsTab(
 ) {
     when {
         isLoading -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = primaryColor())
-            }
+            LoadingScreen()
         }
 
         favoriteItems.isEmpty() -> {
@@ -292,14 +288,7 @@ fun FavoriteRestaurantsTab(
     onRemoveClick: (Int) -> Unit
 ) {
     when {
-        isLoading -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = primaryColor())
-            }
-        }
+        isLoading -> LoadingScreen()
 
         favoriteRestaurants.isEmpty() -> {
             EmptyFavoritesState(

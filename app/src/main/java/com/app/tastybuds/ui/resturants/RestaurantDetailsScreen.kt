@@ -21,22 +21,17 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -65,7 +60,18 @@ import com.app.tastybuds.data.model.RestaurantDetailsData
 import com.app.tastybuds.data.model.RestaurantMenuItem
 import com.app.tastybuds.data.model.RestaurantReview
 import com.app.tastybuds.ui.login.LoginViewModel
-import com.app.tastybuds.ui.theme.*
+import com.app.tastybuds.ui.theme.cardBackgroundColor
+import com.app.tastybuds.ui.theme.cardContentColor
+import com.app.tastybuds.ui.theme.dividerColor
+import com.app.tastybuds.ui.theme.emptyStarColor
+import com.app.tastybuds.ui.theme.heartFavoriteColor
+import com.app.tastybuds.ui.theme.onBackgroundColor
+import com.app.tastybuds.ui.theme.priceTextColor
+import com.app.tastybuds.ui.theme.primaryColor
+import com.app.tastybuds.ui.theme.starRatingColor
+import com.app.tastybuds.ui.theme.textSecondaryColor
+import com.app.tastybuds.util.ui.ErrorScreen
+import com.app.tastybuds.util.ui.LoadingScreen
 import com.app.tastybuds.util.ui.SeeAllButton
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -98,14 +104,13 @@ fun RestaurantDetailsScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         when {
             uiState.isLoading -> {
-                LoadingContent()
+                LoadingScreen()
             }
 
             uiState.error != null -> {
-                ErrorContent(
-                    error = uiState.error!!,
-                    onRetry = { viewModel.retry() },
-                    onBackClick = onBackClick
+                ErrorScreen(
+                    title = uiState.error ?: stringResource(R.string.unknown_error),
+                    onRetryClick = { viewModel.retry() }
                 )
             }
 
@@ -122,70 +127,6 @@ fun RestaurantDetailsScreen(
                     onSellAllClick = onSellAllClick,
                     onViewAllReviews = onViewAllReviews
                 )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ErrorContent(
-    error: String,
-    onRetry: () -> Unit,
-    onBackClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(32.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_help),
-                contentDescription = null,
-                modifier = Modifier.size(64.dp),
-                tint = textSecondaryColor()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = stringResource(R.string.oops_something_went_wrong),
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                color = onBackgroundColor()
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = error,
-                style = MaterialTheme.typography.bodyMedium,
-                color = textSecondaryColor(),
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                OutlinedButton(onClick = onBackClick) {
-                    Text(stringResource(id = R.string.go_back))
-                }
-
-                Button(
-                    onClick = onRetry,
-                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor())
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.retry),
-                        color = onPrimaryColor()
-                    )
-                }
             }
         }
     }

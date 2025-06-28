@@ -32,7 +32,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -64,18 +63,22 @@ import com.app.tastybuds.ui.theme.backgroundColor
 import com.app.tastybuds.ui.theme.badgeTextColor
 import com.app.tastybuds.ui.theme.cardBackgroundColor
 import com.app.tastybuds.ui.theme.cardContentColor
-import com.app.tastybuds.ui.theme.chipSelectedBackgroundColor
 import com.app.tastybuds.ui.theme.chipSelectedContentColor
 import com.app.tastybuds.ui.theme.chipUnselectedBackgroundColor
 import com.app.tastybuds.ui.theme.chipUnselectedContentColor
+import com.app.tastybuds.ui.theme.freeshippingBadgeColor
 import com.app.tastybuds.ui.theme.loadingIndicatorColor
 import com.app.tastybuds.ui.theme.onBackgroundColor
 import com.app.tastybuds.ui.theme.onPrimaryColor
+import com.app.tastybuds.ui.theme.popularBadgeColor
+import com.app.tastybuds.ui.theme.priceTextColor
 import com.app.tastybuds.ui.theme.primaryColor
 import com.app.tastybuds.ui.theme.starRatingColor
+import com.app.tastybuds.ui.theme.successColor
 import com.app.tastybuds.ui.theme.textSecondaryColor
-import com.app.tastybuds.ui.theme.*
 import com.app.tastybuds.util.ui.AppTopBar
+import com.app.tastybuds.util.ui.ErrorScreen
+import com.app.tastybuds.util.ui.LoadingScreen
 import com.app.tastybuds.util.ui.SeeAllButton
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -167,13 +170,13 @@ fun CategoryDetailsScreen(
 
         when {
             uiState.isLoading -> {
-                LoadingContent()
+                LoadingScreen()
             }
 
             uiState.error != null -> {
-                ErrorContent(
-                    error = uiState.error ?: stringResource(R.string.unknown_error),
-                    onRetry = { viewModel.retry() }
+                ErrorScreen(
+                    title = uiState.error ?: stringResource(R.string.unknown_error),
+                    onRetryClick = { viewModel.retry() }
                 )
             }
 

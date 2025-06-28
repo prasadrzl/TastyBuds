@@ -25,12 +25,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.ThumbUp
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -53,6 +49,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.toColorInt
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
@@ -61,16 +58,36 @@ import com.app.tastybuds.domain.model.Category
 import com.app.tastybuds.domain.model.Collection
 import com.app.tastybuds.domain.model.Deal
 import com.app.tastybuds.domain.model.Restaurant
+import com.app.tastybuds.ui.home.HomeViewModel.Companion.HOME_ITEM_LIMIT
 import com.app.tastybuds.ui.home.state.HomeUiState
-import com.app.tastybuds.ui.theme.*
+import com.app.tastybuds.ui.theme.backgroundColor
+import com.app.tastybuds.ui.theme.borderColor
+import com.app.tastybuds.ui.theme.cardBackgroundColor
+import com.app.tastybuds.ui.theme.cardContentColor
+import com.app.tastybuds.ui.theme.discountTextColor
+import com.app.tastybuds.ui.theme.linkTextColor
+import com.app.tastybuds.ui.theme.newBadgeColor
+import com.app.tastybuds.ui.theme.offerBackgroundColor
+import com.app.tastybuds.ui.theme.offerTextColor
+import com.app.tastybuds.ui.theme.onBackgroundColor
+import com.app.tastybuds.ui.theme.onErrorColor
+import com.app.tastybuds.ui.theme.onPrimaryColor
+import com.app.tastybuds.ui.theme.originalPriceTextColor
+import com.app.tastybuds.ui.theme.outlineVariantColor
+import com.app.tastybuds.ui.theme.popularBadgeColor
+import com.app.tastybuds.ui.theme.priceTextColor
+import com.app.tastybuds.ui.theme.primaryColor
+import com.app.tastybuds.ui.theme.sectionTitle
+import com.app.tastybuds.ui.theme.starRatingColor
+import com.app.tastybuds.ui.theme.textSecondaryColor
+import com.app.tastybuds.util.ui.ErrorScreen
+import com.app.tastybuds.util.ui.LoadingScreen
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 import kotlinx.coroutines.delay
 import java.util.Locale
 import com.app.tastybuds.domain.model.Collection as FoodCollection
-import androidx.core.graphics.toColorInt
-import com.app.tastybuds.ui.home.HomeViewModel.Companion.HOME_ITEM_LIMIT
 
 @Composable
 fun HomeScreen(
@@ -97,8 +114,8 @@ fun HomeScreen(
 
             uiState.error != null -> {
                 ErrorScreen(
-                    error = uiState.error ?: stringResource(R.string.unknown_error),
-                    onRetry = { viewModel.retry() }
+                    title = uiState.error ?: stringResource(R.string.unknown_error),
+                    onRetryClick = { viewModel.retry() }
                 )
             }
 
@@ -115,76 +132,6 @@ fun HomeScreen(
                     onDealClick = onDealClick
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun LoadingScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .semantics { contentDescription = "Loading home screen" },
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(
-            color = loadingIndicatorColor(),
-            modifier = Modifier.size(48.dp)
-        )
-    }
-}
-
-@Composable
-private fun ErrorScreen(error: String, onRetry: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_help),
-            contentDescription = stringResource(R.string.error),
-            tint = primaryColor(),
-            modifier = Modifier.size(64.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = stringResource(R.string.oops_something_went_wrong),
-            style = MaterialTheme.typography.headlineSmall.copy(
-                fontWeight = FontWeight.Bold
-            ),
-            color = onBackgroundColor(),
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = error,
-            style = MaterialTheme.typography.bodyMedium,
-            color = textSecondaryColor(),
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = onRetry,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = primaryColor()
-            ),
-            shape = RoundedCornerShape(28.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.try_again),
-                color = onPrimaryColor(),
-                style = MaterialTheme.typography.labelLarge,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-            )
         }
     }
 }

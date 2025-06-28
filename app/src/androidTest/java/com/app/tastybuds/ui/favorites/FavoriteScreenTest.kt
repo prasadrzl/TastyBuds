@@ -38,8 +38,8 @@ class FavoriteScreenTest {
 
     @Before
     fun setup() {
-        hiltRule.inject()
 
+        hiltRule.inject()
         mockFavoritesUseCase = mockk(relaxed = true)
         mockLoginViewModel = mockk(relaxed = true)
 

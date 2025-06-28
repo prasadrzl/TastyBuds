@@ -50,6 +50,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.R
 import com.app.tastybuds.ui.login.LoginViewModel
 import com.app.tastybuds.ui.theme.*
+import com.app.tastybuds.util.ui.LoadingScreen
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -123,14 +124,7 @@ fun ProfileSettingsScreen(
 
             when {
                 uiState.isLoading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(
-                            color = loadingIndicatorColor()
-                        )
-                    }
+                    LoadingScreen()
                 }
 
                 uiState.error != null -> {

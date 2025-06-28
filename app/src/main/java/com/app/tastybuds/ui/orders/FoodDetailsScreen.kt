@@ -32,11 +32,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
@@ -75,8 +73,6 @@ import com.app.tastybuds.ui.theme.dividerColor
 import com.app.tastybuds.ui.theme.enabledTextColor
 import com.app.tastybuds.ui.theme.focusedBorderColor
 import com.app.tastybuds.ui.theme.heartFavoriteColor
-import com.app.tastybuds.ui.theme.loadingIndicatorColor
-import com.app.tastybuds.ui.theme.onBackgroundColor
 import com.app.tastybuds.ui.theme.onPrimaryColor
 import com.app.tastybuds.ui.theme.placeholderTextColor
 import com.app.tastybuds.ui.theme.priceTextColor
@@ -89,6 +85,8 @@ import com.app.tastybuds.ui.theme.scrimColor
 import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.app.tastybuds.ui.theme.unfocusedBorderColor
 import com.app.tastybuds.util.createCartItemFromUiState
+import com.app.tastybuds.util.ui.ErrorScreen
+import com.app.tastybuds.util.ui.LoadingScreen
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -111,7 +109,7 @@ fun FoodDetailsScreen(
                     viewModel.updateSelectedSize(size.id)
                 }
 
-                val toppingIds = it.selectedToppings.map { it.id }
+                val toppingIds = it.selectedToppings.map { topping -> topping.id }
                 viewModel.updateSelectedToppings(toppingIds)
 
                 it.selectedSpiceLevel?.let { spice ->
@@ -131,14 +129,13 @@ fun FoodDetailsScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         when {
             uiState.isLoading -> {
-                LoadingContent()
+                LoadingScreen()
             }
 
             uiState.error != null -> {
-                ErrorContent(
-                    error = uiState.error!!,
-                    onRetry = { viewModel.retry() },
-                    onBackClick = onBackClick
+                ErrorScreen(
+                    title = uiState.error ?: stringResource(R.string.unknown_error),
+                    onRetryClick = { viewModel.retry() },
                 )
             }
 
@@ -171,54 +168,6 @@ fun FoodDetailsScreen(
                     },
                     onFavoriteClick = { viewModel.toggleFavorite() }
                 )
-            }
-        }
-    }
-}
-
-@Composable
-private fun LoadingContent() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(color = loadingIndicatorColor())
-    }
-}
-
-@Composable
-private fun ErrorContent(
-    error: String,
-    onRetry: () -> Unit,
-    onBackClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(32.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.error, error),
-                color = onBackgroundColor()
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Row {
-                OutlinedButton(onClick = onBackClick) {
-                    Text(stringResource(R.string.go_back))
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                Button(
-                    onClick = onRetry,
-                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor())
-                ) {
-                    Text(
-                        text = stringResource(R.string.retry),
-                        color = onPrimaryColor()
-                    )
-                }
             }
         }
     }

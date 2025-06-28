@@ -22,7 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -35,8 +34,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -58,7 +55,6 @@ import com.app.tastybuds.ui.theme.emptyStateTitle
 import com.app.tastybuds.ui.theme.foodItemName
 import com.app.tastybuds.ui.theme.foodItemOriginalPrice
 import com.app.tastybuds.ui.theme.foodItemPrice
-import com.app.tastybuds.ui.theme.loadingIndicatorColor
 import com.app.tastybuds.ui.theme.newBadgeColor
 import com.app.tastybuds.ui.theme.onErrorColor
 import com.app.tastybuds.ui.theme.originalPriceTextColor
@@ -66,6 +62,8 @@ import com.app.tastybuds.ui.theme.priceTextColor
 import com.app.tastybuds.ui.theme.starRatingColor
 import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.app.tastybuds.util.ui.AppTopBar
+import com.app.tastybuds.util.ui.ErrorScreen
+import com.app.tastybuds.util.ui.LoadingScreen
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -80,7 +78,6 @@ object AllDealsDimensions {
     val cardContentPadding = 12.dp
     val imageHeight = 130.dp
     val badgeCornerRadius = 6.dp
-    val loadingIndicatorSize = 48.dp
     val gridSpacingHorizontal = 12.dp
     val gridSpacingVertical = 16.dp
     val starIconSize = 12.dp
@@ -109,13 +106,13 @@ fun AllDealsScreen(
 
             when {
                 uiState.isLoading -> {
-                    LoadingContent()
+                    LoadingScreen(message = stringResource(R.string.loading_deals))
                 }
 
                 uiState.error != null -> {
-                    ErrorContent(
-                        error = uiState.error ?: stringResource(R.string.unknown_error),
-                        onRetry = { viewModel.retry() }
+                    ErrorScreen(
+                        title = uiState.error ?: stringResource(R.string.unknown_error),
+                        onRetryClick = { viewModel.retry() }
                     )
                 }
 
@@ -127,21 +124,6 @@ fun AllDealsScreen(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun LoadingContent() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .semantics { contentDescription = "Loading deals" },
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(
-            color = loadingIndicatorColor(),
-            modifier = Modifier.size(AllDealsDimensions.loadingIndicatorSize)
-        )
     }
 }
 

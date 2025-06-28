@@ -16,11 +16,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -47,23 +44,18 @@ import com.app.tastybuds.ui.theme.Spacing
 import com.app.tastybuds.ui.theme.backgroundColor
 import com.app.tastybuds.ui.theme.badgeText
 import com.app.tastybuds.ui.theme.bodyMedium
-import com.app.tastybuds.ui.theme.buttonText
 import com.app.tastybuds.ui.theme.captionTextColor
 import com.app.tastybuds.ui.theme.cardBackgroundColor
 import com.app.tastybuds.ui.theme.cardContentColor
 import com.app.tastybuds.ui.theme.cardTitle
-import com.app.tastybuds.ui.theme.dialogBody
-import com.app.tastybuds.ui.theme.dialogTitle
 import com.app.tastybuds.ui.theme.emptyStateDescription
 import com.app.tastybuds.ui.theme.emptyStateTitle
-import com.app.tastybuds.ui.theme.loadingIndicatorColor
-import com.app.tastybuds.ui.theme.onBackgroundColor
-import com.app.tastybuds.ui.theme.onPrimaryColor
 import com.app.tastybuds.ui.theme.onSuccessColor
-import com.app.tastybuds.ui.theme.primaryColor
 import com.app.tastybuds.ui.theme.successColor
 import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.app.tastybuds.util.ui.AppTopBar
+import com.app.tastybuds.util.ui.ErrorScreen
+import com.app.tastybuds.util.ui.LoadingScreen
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -76,9 +68,7 @@ object AllCollectionsDimensions {
     val cardContentPadding = 16.dp
     val collectionImageSize = 88.dp
     val imageCornerRadius = 12.dp
-    val loadingIndicatorSize = 48.dp
     val badgeCornerRadius = 6.dp
-    val retryButtonCornerRadius = 28.dp
 }
 
 @Composable
@@ -102,14 +92,12 @@ fun AllCollectionsScreen(
             )
 
             when {
-                uiState.isLoading -> {
-                    LoadingContent()
-                }
+                uiState.isLoading -> LoadingScreen(message = stringResource(R.string.loading))
 
                 uiState.error != null -> {
-                    ErrorContent(
-                        error = uiState.error ?: stringResource(R.string.unknown_error),
-                        onRetry = { viewModel.retry() }
+                    ErrorScreen(
+                        title = uiState.error ?: stringResource(R.string.unknown_error),
+                        onRetryClick = { viewModel.retry() }
                     )
                 }
 
@@ -124,21 +112,6 @@ fun AllCollectionsScreen(
     }
 }
 
-@Composable
-private fun LoadingContent() {
-    val loadingDescription = stringResource(R.string.loading)
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .semantics { contentDescription = loadingDescription },
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(
-            color = loadingIndicatorColor(),
-            modifier = Modifier.size(AllCollectionsDimensions.loadingIndicatorSize)
-        )
-    }
-}
 
 @Composable
 private fun CollectionsContent(
@@ -320,57 +293,6 @@ private fun CollectionInfo(
     }
 }
 
-@Composable
-fun ErrorContent(
-    error: String,
-    onRetry: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(Spacing.large),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = stringResource(R.string.something_went_wrong),
-            style = dialogTitle(),
-            color = onBackgroundColor(),
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(Spacing.small))
-
-        Text(
-            text = error,
-            style = dialogBody(),
-            color = textSecondaryColor(),
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(Spacing.large))
-
-        Button(
-            onClick = onRetry,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = primaryColor()
-            ),
-            shape = RoundedCornerShape(AllCollectionsDimensions.retryButtonCornerRadius)
-        ) {
-            Text(
-                text = stringResource(R.string.try_again),
-                color = onPrimaryColor(),
-                style = buttonText(),
-                modifier = Modifier.padding(
-                    horizontal = Spacing.medium,
-                    vertical = Spacing.xs
-                )
-            )
-        }
-    }
-}
-
-// Preview functions remain unchanged as requested
 @Preview(showBackground = true)
 @Composable
 private fun AllCollectionsScreenPreview() {
