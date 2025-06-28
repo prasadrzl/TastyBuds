@@ -216,13 +216,11 @@ echo "SUPABASE_ANON_KEY=your_supabase_key" >> local.properties
 - **Onboarding**: First-time user experience
 - **Login/Register**: Email-based authentication
 - **Session Management**: Persistent login with secure token storage
-- **Auto-login**: Remember user sessions
 
 ### Cart Management
 - **Add to Cart**: Customizable food items with size, toppings, spice level
 - **Edit Items**: Modify existing cart items
 - **Quantity Control**: Increase/decrease item quantities
-- **Persist Cart**: Cart data survives app restarts
 
 ### Search & Discovery
 - **Real-time Search**: Search restaurants and menu items
@@ -233,7 +231,6 @@ echo "SUPABASE_ANON_KEY=your_supabase_key" >> local.properties
 ### Order Tracking
 - **Live Updates**: Real-time order status updates
 - **Map Integration**: Visual tracking on Google Maps
-- **Push Notifications**: Order status notifications
 - **Delivery Estimation**: Accurate delivery time predictions
 
 ## 🙏 Acknowledgments
