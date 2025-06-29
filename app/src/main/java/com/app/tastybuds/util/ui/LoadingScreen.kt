@@ -42,7 +42,7 @@ fun LoadingScreen(
             verticalArrangement = Arrangement.Center
         ) {
             CircularProgressIndicator(
-                modifier = Modifier.size(ComponentSizes.iconLarge),
+                modifier = Modifier.size(ComponentSizes.iconMedium),
                 color = loadingIndicatorColor(),
                 strokeWidth = ComponentSizes.strokeWidth * 4
             )

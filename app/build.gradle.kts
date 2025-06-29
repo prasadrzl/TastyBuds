@@ -18,7 +18,20 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "dagger.hilt.android.testing.HiltTestRunner"
-        manifestPlaceholders["MAPS_API_KEY"] = project.findProperty("MAPS_API_KEY") ?: ""
+
+
+        // Alternative way to set API key
+        val mapsApiKey = project.findProperty("MAPS_API_KEY") as String? ?: ""
+        val mapsMapId = project.findProperty("MAPS_MAP_ID") as String? ?: ""
+
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
+        manifestPlaceholders["MAPS_MAP_ID"] = mapsMapId
+
+        // Debug: Print the keys (remove in production)
+        println("MAPS_API_KEY loaded: ${if (mapsApiKey.isEmpty()) "EMPTY" else "Present"}")
+        println("MAPS_MAP_ID loaded: ${if (mapsMapId.isEmpty()) "EMPTY" else "Present"}")
+
+
         vectorDrawables {
             useSupportLibrary = true
         }

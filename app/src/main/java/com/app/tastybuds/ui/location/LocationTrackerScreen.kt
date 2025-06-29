@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Canvas
 import android.location.Geocoder
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
@@ -61,11 +62,16 @@ import com.app.tastybuds.ui.theme.*
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
@@ -90,6 +96,18 @@ fun UserLocationMapView(onConfirm: () -> Unit) {
     var address by remember { mutableStateOf("") }
     var selectedType by remember { mutableStateOf("Home") }
 
+    val mapId = remember {
+        try {
+            context.packageManager
+                .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
+                .metaData
+                ?.getString("com.google.android.geo.MAP_ID")
+        } catch (e: Exception) {
+            Log.e("LocationTracker", "Error getting Map ID from manifest", e)
+            null
+        }
+    }
+
     val locationPermission = Manifest.permission.ACCESS_FINE_LOCATION
     val permissionGranted = remember {
         mutableStateOf(
@@ -110,17 +128,21 @@ fun UserLocationMapView(onConfirm: () -> Unit) {
         if (!permissionGranted.value) {
             launcher.launch(locationPermission)
         } else {
-            val location = fusedLocationClient
-                .getCurrentLocation(
-                    Priority.PRIORITY_HIGH_ACCURACY,
-                    CancellationTokenSource().token
-                )
-                .await()
+            try {
+                val location = fusedLocationClient
+                    .getCurrentLocation(
+                        Priority.PRIORITY_HIGH_ACCURACY,
+                        CancellationTokenSource().token
+                    )
+                    .await()
 
-            val latLng = LatLng(location.latitude, location.longitude)
-            currentLocation = latLng
-            address = getAddressFromLatLng(context, latLng)
-            cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
+                val latLng = LatLng(location.latitude, location.longitude)
+                currentLocation = latLng
+                address = getAddressFromLatLng(context, latLng)
+                cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
+            } catch (e: Exception) {
+                Log.e("LocationTracker", "Error getting current location", e)
+            }
         }
     }
 
@@ -141,7 +163,32 @@ fun UserLocationMapView(onConfirm: () -> Unit) {
                         .semantics {
                             contentDescription = "Map for selecting delivery location"
                         },
-                    cameraPositionState = cameraPositionState
+                    cameraPositionState = cameraPositionState,
+                    properties = MapProperties(
+                        mapType = MapType.NORMAL,
+                        isMyLocationEnabled = true,
+                        mapStyleOptions = null // You can add custom styling here if needed
+                    ),
+                    uiSettings = MapUiSettings(
+                        myLocationButtonEnabled = true,
+                        zoomControlsEnabled = false,
+                        compassEnabled = true,
+                        mapToolbarEnabled = false
+                    ),
+                    // Set the Map ID here for the new renderer
+                    googleMapOptionsFactory = {
+                        GoogleMapOptions().apply {
+                            // Use Map ID if available, otherwise fallback to basic options
+                            mapId?.let {
+                                mapId(it)
+                                Log.d("LocationTracker", "Using Map ID: $it")
+                            } ?: run {
+                                Log.w("LocationTracker", "Map ID not found, using legacy options")
+                                // Fallback options for legacy renderer
+                                liteMode(false)
+                            }
+                        }
+                    }
                 ) {
                     currentLocation?.let {
                         Marker(
@@ -149,7 +196,8 @@ fun UserLocationMapView(onConfirm: () -> Unit) {
                             icon = bitmapDescriptorFromVector(
                                 context,
                                 R.drawable.ic_user_location
-                            )
+                            ),
+                            title = "Current Location"
                         )
                     }
                 }
@@ -163,7 +211,7 @@ fun UserLocationMapView(onConfirm: () -> Unit) {
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(Spacing.medium), // Use your theme spacing
                 selectedType = selectedType,
                 onTypeSelected = { selectedType = it },
                 address = address,
@@ -179,7 +227,7 @@ private fun PermissionRequiredContent() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(Spacing.large), // Use your theme spacing
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -189,26 +237,24 @@ private fun PermissionRequiredContent() {
             Icon(
                 painter = painterResource(id = R.drawable.ic_user_location),
                 contentDescription = null,
-                modifier = Modifier.size(64.dp),
+                modifier = Modifier.size(ComponentSizes.iconLarge), // Use your theme sizes
                 tint = primaryColor()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Spacing.medium))
 
             Text(
                 text = stringResource(R.string.location_permission_required),
-                style = MaterialTheme.typography.headlineSmall.copy(
-                    fontWeight = FontWeight.Bold
-                ),
+                style = emptyStateTitle(), // Use your theme typography
                 color = onBackgroundColor(),
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Spacing.small))
 
             Text(
                 text = stringResource(R.string.location_permission_required_to_display_map),
-                style = MaterialTheme.typography.bodyMedium,
+                style = emptyStateDescription(), // Use your theme typography
                 color = textSecondaryColor(),
                 textAlign = TextAlign.Center
             )
@@ -227,26 +273,26 @@ private fun BottomSheetCard(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+        shape = RoundedCornerShape(topStart = ComponentSizes.cornerRadius, topEnd = ComponentSizes.cornerRadius),
         color = bottomSheetBackgroundColor(),
         shadowElevation = 8.dp
     ) {
         Column(
-            modifier = Modifier.padding(20.dp)
+            modifier = Modifier.padding(Spacing.large)
         ) {
             LocationHeader()
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Spacing.medium))
 
             AddressTextField(
                 address = address,
                 onAddressChange = onAddressChange
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Spacing.medium))
 
             HorizontalDivider(
-                modifier = Modifier.padding(vertical = 8.dp),
+                modifier = Modifier.padding(vertical = Spacing.small),
                 color = dividerColor()
             )
 
@@ -255,7 +301,7 @@ private fun BottomSheetCard(
                 onTypeSelected = onTypeSelected
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(Spacing.large))
 
             ConfirmButton(onConfirm = onConfirm)
         }
@@ -266,9 +312,7 @@ private fun BottomSheetCard(
 private fun LocationHeader() {
     Text(
         text = stringResource(R.string.select_location),
-        style = MaterialTheme.typography.titleLarge.copy(
-            fontWeight = FontWeight.Bold
-        ),
+        style = sectionTitle(), // Use your theme typography
         color = bottomSheetContentColor()
     )
 }
@@ -354,11 +398,11 @@ private fun LocationTypeOption(
             )
         )
 
-        Spacer(modifier = Modifier.width(6.dp))
+        Spacer(modifier = Modifier.width(Spacing.small))
 
         Text(
             text = type,
-            style = MaterialTheme.typography.bodyMedium.copy(
+            style = bodyMedium().copy( // Use your theme typography
                 fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
             ),
             color = if (isSelected) bottomSheetContentColor() else textSecondaryColor()
@@ -372,9 +416,9 @@ private fun ConfirmButton(onConfirm: () -> Unit) {
         onClick = onConfirm,
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .height(ComponentSizes.buttonHeight) // Use your theme sizes
             .semantics { contentDescription = "Confirm location selection" },
-        shape = RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(ComponentSizes.cornerRadius),
         colors = ButtonDefaults.buttonColors(
             containerColor = primaryColor()
         )
@@ -382,9 +426,7 @@ private fun ConfirmButton(onConfirm: () -> Unit) {
         Text(
             text = stringResource(R.string.confirm),
             color = onPrimaryColor(),
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Medium
-            )
+            style = buttonText() // Use your theme typography
         )
     }
 }
@@ -405,7 +447,7 @@ private fun CenterPinOverlay(modifier: Modifier = Modifier) {
             painter = painterResource(id = R.drawable.ic_user_location),
             contentDescription = null,
             tint = onPrimaryColor(),
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(ComponentSizes.iconMedium) // Use your theme sizes
         )
     }
 }
@@ -431,6 +473,7 @@ fun getAddressFromLatLng(context: Context, latLng: LatLng): String {
         val address = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
         address?.firstOrNull()?.getAddressLine(0) ?: context.getString(R.string.location_not_found)
     } catch (e: Exception) {
+        Log.e("LocationTracker", "Error getting address", e)
         context.getString(R.string.unable_to_fetch_address)
     }
 }
