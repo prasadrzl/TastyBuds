@@ -10,7 +10,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,7 +22,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -31,7 +29,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
@@ -58,7 +55,27 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import com.app.tastybuds.R
-import com.app.tastybuds.ui.theme.*
+import com.app.tastybuds.ui.theme.ComponentSizes
+import com.app.tastybuds.ui.theme.Spacing
+import com.app.tastybuds.ui.theme.backgroundColor
+import com.app.tastybuds.ui.theme.bodyMedium
+import com.app.tastybuds.ui.theme.bottomSheetBackgroundColor
+import com.app.tastybuds.ui.theme.bottomSheetContentColor
+import com.app.tastybuds.ui.theme.buttonText
+import com.app.tastybuds.ui.theme.dividerColor
+import com.app.tastybuds.ui.theme.emptyStateDescription
+import com.app.tastybuds.ui.theme.emptyStateTitle
+import com.app.tastybuds.ui.theme.enabledTextColor
+import com.app.tastybuds.ui.theme.focusedBorderColor
+import com.app.tastybuds.ui.theme.onBackgroundColor
+import com.app.tastybuds.ui.theme.onPrimaryColor
+import com.app.tastybuds.ui.theme.placeholderTextColor
+import com.app.tastybuds.ui.theme.primaryColor
+import com.app.tastybuds.ui.theme.radioButtonSelectedColor
+import com.app.tastybuds.ui.theme.radioButtonUnselectedColor
+import com.app.tastybuds.ui.theme.sectionTitle
+import com.app.tastybuds.ui.theme.textSecondaryColor
+import com.app.tastybuds.ui.theme.unfocusedBorderColor
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -66,7 +83,6 @@ import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -80,12 +96,16 @@ import java.util.Locale
 
 @Preview
 @Composable
-fun LocationTrackerScreen(onConfirm: () -> Unit = {}) {
+fun LocationTrackerScreen(
+    onConfirm: (String, String, String) -> Unit = { address, type, latLng -> }
+) {
     UserLocationMapView(onConfirm)
 }
 
 @Composable
-fun UserLocationMapView(onConfirm: () -> Unit) {
+fun UserLocationMapView(
+    onConfirm: (String, String, String) -> Unit
+) {
     val context = LocalContext.current
     val fusedLocationClient = remember {
         LocationServices.getFusedLocationProviderClient(context)
@@ -93,6 +113,7 @@ fun UserLocationMapView(onConfirm: () -> Unit) {
 
     val cameraPositionState = rememberCameraPositionState()
     var currentLocation by remember { mutableStateOf<LatLng?>(null) }
+    var centerLocation by remember { mutableStateOf<LatLng?>(null) }
     var address by remember { mutableStateOf("") }
     var selectedType by remember { mutableStateOf("Home") }
 
@@ -138,6 +159,7 @@ fun UserLocationMapView(onConfirm: () -> Unit) {
 
                 val latLng = LatLng(location.latitude, location.longitude)
                 currentLocation = latLng
+                centerLocation = latLng
                 address = getAddressFromLatLng(context, latLng)
                 cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
             } catch (e: Exception) {
@@ -148,6 +170,7 @@ fun UserLocationMapView(onConfirm: () -> Unit) {
 
     LaunchedEffect(cameraPositionState.position.target) {
         val target = cameraPositionState.position.target
+        centerLocation = target
         address = getAddressFromLatLng(context, target)
     }
 
@@ -166,38 +189,35 @@ fun UserLocationMapView(onConfirm: () -> Unit) {
                     cameraPositionState = cameraPositionState,
                     properties = MapProperties(
                         mapType = MapType.NORMAL,
-                        isMyLocationEnabled = true,
-                        mapStyleOptions = null // You can add custom styling here if needed
+                        isMyLocationEnabled = false,
+                        mapStyleOptions = null
                     ),
                     uiSettings = MapUiSettings(
-                        myLocationButtonEnabled = true,
+                        myLocationButtonEnabled = false,
                         zoomControlsEnabled = false,
                         compassEnabled = true,
                         mapToolbarEnabled = false
                     ),
-                    // Set the Map ID here for the new renderer
                     googleMapOptionsFactory = {
                         GoogleMapOptions().apply {
-                            // Use Map ID if available, otherwise fallback to basic options
                             mapId?.let {
                                 mapId(it)
                                 Log.d("LocationTracker", "Using Map ID: $it")
                             } ?: run {
                                 Log.w("LocationTracker", "Map ID not found, using legacy options")
-                                // Fallback options for legacy renderer
                                 liteMode(false)
                             }
                         }
                     }
                 ) {
-                    currentLocation?.let {
+                    centerLocation?.let {
                         Marker(
                             state = MarkerState(position = it),
                             icon = bitmapDescriptorFromVector(
                                 context,
                                 R.drawable.ic_user_location
                             ),
-                            title = "Current Location"
+                            title = "Selected Location"
                         )
                     }
                 }
@@ -205,18 +225,20 @@ fun UserLocationMapView(onConfirm: () -> Unit) {
                 PermissionRequiredContent()
             }
 
-            CenterPinOverlay(modifier = Modifier.align(Alignment.Center))
-
             BottomSheetCard(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .padding(Spacing.medium), // Use your theme spacing
+                    .padding(Spacing.medium),
                 selectedType = selectedType,
                 onTypeSelected = { selectedType = it },
                 address = address,
                 onAddressChange = { address = it },
-                onConfirm = onConfirm
+                onConfirm = {
+                    val latLngString =
+                        centerLocation?.let { "${it.latitude},${it.longitude}" } ?: ""
+                    onConfirm(address, selectedType, latLngString)
+                }
             )
         }
     }
@@ -227,7 +249,7 @@ private fun PermissionRequiredContent() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(Spacing.large), // Use your theme spacing
+            .padding(Spacing.large),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -237,7 +259,7 @@ private fun PermissionRequiredContent() {
             Icon(
                 painter = painterResource(id = R.drawable.ic_user_location),
                 contentDescription = null,
-                modifier = Modifier.size(ComponentSizes.iconLarge), // Use your theme sizes
+                modifier = Modifier.size(ComponentSizes.iconLarge),
                 tint = primaryColor()
             )
 
@@ -245,7 +267,7 @@ private fun PermissionRequiredContent() {
 
             Text(
                 text = stringResource(R.string.location_permission_required),
-                style = emptyStateTitle(), // Use your theme typography
+                style = emptyStateTitle(),
                 color = onBackgroundColor(),
                 textAlign = TextAlign.Center
             )
@@ -254,7 +276,7 @@ private fun PermissionRequiredContent() {
 
             Text(
                 text = stringResource(R.string.location_permission_required_to_display_map),
-                style = emptyStateDescription(), // Use your theme typography
+                style = emptyStateDescription(),
                 color = textSecondaryColor(),
                 textAlign = TextAlign.Center
             )
@@ -273,7 +295,10 @@ private fun BottomSheetCard(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(topStart = ComponentSizes.cornerRadius, topEnd = ComponentSizes.cornerRadius),
+        shape = RoundedCornerShape(
+            topStart = ComponentSizes.cornerRadius,
+            topEnd = ComponentSizes.cornerRadius
+        ),
         color = bottomSheetBackgroundColor(),
         shadowElevation = 8.dp
     ) {
@@ -312,7 +337,7 @@ private fun BottomSheetCard(
 private fun LocationHeader() {
     Text(
         text = stringResource(R.string.select_location),
-        style = sectionTitle(), // Use your theme typography
+        style = sectionTitle(),
         color = bottomSheetContentColor()
     )
 }
@@ -402,7 +427,7 @@ private fun LocationTypeOption(
 
         Text(
             text = type,
-            style = bodyMedium().copy( // Use your theme typography
+            style = bodyMedium().copy(
                 fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
             ),
             color = if (isSelected) bottomSheetContentColor() else textSecondaryColor()
@@ -416,8 +441,7 @@ private fun ConfirmButton(onConfirm: () -> Unit) {
         onClick = onConfirm,
         modifier = Modifier
             .fillMaxWidth()
-            .height(ComponentSizes.buttonHeight) // Use your theme sizes
-            .semantics { contentDescription = "Confirm location selection" },
+            .height(ComponentSizes.buttonHeight + 8.dp),
         shape = RoundedCornerShape(ComponentSizes.cornerRadius),
         colors = ButtonDefaults.buttonColors(
             containerColor = primaryColor()
@@ -426,28 +450,8 @@ private fun ConfirmButton(onConfirm: () -> Unit) {
         Text(
             text = stringResource(R.string.confirm),
             color = onPrimaryColor(),
-            style = buttonText() // Use your theme typography
-        )
-    }
-}
-
-@Composable
-private fun CenterPinOverlay(modifier: Modifier = Modifier) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .size(56.dp)
-            .background(
-                color = primaryColor(),
-                shape = CircleShape
-            )
-            .semantics { contentDescription = "Location pin marker" }
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_user_location),
-            contentDescription = null,
-            tint = onPrimaryColor(),
-            modifier = Modifier.size(ComponentSizes.iconMedium) // Use your theme sizes
+            style = buttonText(),
+            maxLines = 1
         )
     }
 }

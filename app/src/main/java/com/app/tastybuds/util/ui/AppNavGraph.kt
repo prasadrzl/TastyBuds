@@ -36,6 +36,7 @@ import com.app.tastybuds.ui.orders.OrdersScreen
 import com.app.tastybuds.ui.orders.ReviewRatingScreen
 import com.app.tastybuds.ui.profile.ProfileScreen
 import com.app.tastybuds.ui.profile.ProfileSettingsScreen
+import com.app.tastybuds.ui.profile.ProfileViewModel
 import com.app.tastybuds.ui.resturants.AllReviewsScreen
 import com.app.tastybuds.ui.resturants.CategoryDetailsScreen
 import com.app.tastybuds.ui.resturants.CollectionListingScreen
@@ -302,8 +303,8 @@ fun AppNavGraph(navController: NavHostController) {
 
         composable("location") {
             LocationTrackerScreen(
-                onConfirm = {
-                    navController.popBackStack()
+                onConfirm = { address, type, latLngString ->
+                    navController.navigateUp()
                 }
             )
         }
