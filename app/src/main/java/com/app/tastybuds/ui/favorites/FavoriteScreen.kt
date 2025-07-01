@@ -74,6 +74,7 @@ import com.app.tastybuds.ui.theme.restaurantRating
 import com.app.tastybuds.ui.theme.subTitle
 import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.app.tastybuds.util.ui.LoadingScreen
+import com.app.tastybuds.util.ui.toLocalizedString
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -107,6 +108,14 @@ fun FavoriteScreen(
     LaunchedEffect(userIdFlow) {
         if (userId.isNotBlank()) {
             viewModel.loadUserFavoritesWithDetails(userId)
+        }
+    }
+
+    uiState.error?.let { error ->
+        val errorMessage = error.toLocalizedString(uiState.errorDetails)
+
+        LaunchedEffect(errorMessage) {
+            //show error message
         }
     }
 

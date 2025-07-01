@@ -482,4 +482,11 @@
     <string name="loading_deals">Loading deals</string>
     <string name="loading_restaurants">Loading restaurants</string>
 
+    <string name="error_remove_restaurant_failed">Failed to remove restaurant from favorites</string>
+    <string name="error_remove_menu_item_failed">Failed to remove item from favorites</string>
+    <string name="error_load_favorites_failed">Unable to load your favorites</string>
+    <string name="error_favorite_not_found">Favorite item not found</string>
+    <string name="error_unknown">An unexpected error occurred</string>
+    <string name="error_with_details">%1$s: %2$s</string>
+
 </resources>
