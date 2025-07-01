@@ -18,7 +18,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "dagger.hilt.android.testing.HiltTestRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -63,6 +63,7 @@ android {
             isIncludeAndroidResources = true
             isReturnDefaultValues = true
         }
+        animationsDisabled = true
     }
 }
 
@@ -148,7 +149,7 @@ dependencies {
     testImplementation(libs.mockk.agent)
     testImplementation(libs.androidx.arch.core.testing)
     testImplementation(libs.androidx.test.core)
-    testImplementation(libs.hilt.android.testing)
+    //testImplementation(libs.hilt.android.testing)
     kaptTest(libs.hilt.compiler)
 
     androidTestImplementation(libs.androidx.test.ext.junit)
@@ -160,9 +161,9 @@ dependencies {
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.core)
-    androidTestImplementation(libs.hilt.android.testing)
+    //androidTestImplementation(libs.hilt.android.testing)
     androidTestImplementation(libs.mockk.android)
-    kaptAndroidTest(libs.hilt.compiler)
+    //kaptAndroidTest(libs.hilt.compiler)
     androidTestUtil("androidx.test:orchestrator:1.4.2")
 
     debugImplementation(libs.androidx.ui.tooling)
