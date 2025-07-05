@@ -114,9 +114,7 @@ fun FavoriteScreen(
     uiState.error?.let { error ->
         val errorMessage = error.toLocalizedString(uiState.errorDetails)
 
-        LaunchedEffect(errorMessage) {
-            //show error message
-        }
+        LaunchedEffect(errorMessage) {}
     }
 
     FavoriteContent(
