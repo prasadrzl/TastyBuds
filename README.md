@@ -14,11 +14,7 @@ A modern, feature-rich food delivery Android application built with Jetpack Comp
 - **Menu Browsing**: Detailed food items with customization options (size, toppings, spice level)
 - **Cart Management**: Edit cart items, save customizations, and manage quantities
 - **Order Management**: Complete checkout process, order review, and order history
-- **Real-time Tracking**: Live order tracking with map integration
-- **User Authentication**: Secure login/signup with session management
 - **User Profile**: Profile management and preferences with secure data storage
-- **Location Services**: GPS-based location selection and address management
-- **Rating & Review System**: Rate drivers, restaurants, and food items
 - **Favorites**: Save favorite restaurants and menu items
 - **Vouchers & Deals**: Access to promotional offers and discounts
 
@@ -215,7 +211,6 @@ echo "SUPABASE_ANON_KEY=your_supabase_key" >> local.properties
 ### Authentication Flow
 - **Onboarding**: First-time user experience
 - **Login/Register**: Email-based authentication
-- **Session Management**: Persistent login with secure token storage
 
 ### Cart Management
 - **Add to Cart**: Customizable food items with size, toppings, spice level
@@ -229,7 +224,6 @@ echo "SUPABASE_ANON_KEY=your_supabase_key" >> local.properties
 - **Location-based**: Nearby restaurants
 
 ### Order Tracking
-- **Live Updates**: Real-time order status updates
 - **Map Integration**: Visual tracking on Google Maps
 - **Delivery Estimation**: Accurate delivery time predictions
 
