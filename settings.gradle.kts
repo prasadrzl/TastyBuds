@@ -12,6 +12,11 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+plugins {
+    // Lets Gradle auto-download a JDK 17 toolchain (via jvmToolchain(17) in the convention
+    // plugins) since the system JDK here is too new for Kotlin 1.9.22/AGP 8.5.2 to parse.
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+}
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
