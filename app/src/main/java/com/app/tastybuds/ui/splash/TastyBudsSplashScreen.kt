@@ -1,5 +1,6 @@
 package com.app.tastybuds.ui.splash
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.LinearEasing
@@ -61,6 +62,7 @@ object SplashColors {
     val White = Color(0xFFFFFFFF)
 }
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun TastyBudsSplashScreen(
     onSplashComplete: () -> Unit = {}
