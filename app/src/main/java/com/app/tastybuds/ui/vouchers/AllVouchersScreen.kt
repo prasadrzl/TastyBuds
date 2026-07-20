@@ -207,7 +207,7 @@ fun VoucherCard(
             .clickable(enabled = voucher.buttonEnabled) { onClick() },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (voucher.isUsed) disabledBorderColor() else voucher.backgroundColor
+            containerColor = if (voucher.isUsed) disabledBorderColor() else Color(voucher.backgroundColor)
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = if (voucher.isUsed) 1.dp else 3.dp

@@ -31,7 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.tastybuds.R
-import com.app.tastybuds.data.model.RestaurantReview
+import com.app.tastybuds.domain.model.RestaurantReview
 import com.app.tastybuds.ui.theme.backgroundColor
 import com.app.tastybuds.ui.theme.cardBackgroundColor
 import com.app.tastybuds.ui.theme.cardContentColor

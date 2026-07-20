@@ -14,7 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.app.tastybuds.R
-import com.app.tastybuds.data.model.RestaurantReview
+import com.app.tastybuds.domain.model.RestaurantReview
 import com.app.tastybuds.domain.model.SearchResultType.FOOD_ITEM
 import com.app.tastybuds.domain.model.SearchResultType.RESTAURANT
 import com.app.tastybuds.ui.favorites.FavoriteScreen

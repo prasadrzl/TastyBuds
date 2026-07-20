@@ -1,6 +1,8 @@
 package com.app.tastybuds.domain.model
 
-import androidx.compose.ui.graphics.Color
+// `backgroundColor` is a raw ARGB int (matches Compose's Color(Int) constructor), not a
+// Color object — this is a pure Kotlin domain model, so it can't depend on Compose. Wrap
+// with androidx.compose.ui.graphics.Color(...) at the UI layer.
 
 data class Banner(
     val id: String = "",
@@ -8,14 +10,14 @@ data class Banner(
     val price: String = "",
     val description: String = "",
     val imageUrl: String = "",
-    val backgroundColor: Color = Color(0xFFFF7700)
+    val backgroundColor: Int = 0xFFFF7700.toInt()
 )
 
 data class Category(
     val id: String = "",
     val name: String = "",
     val imageUrl: String = "",
-    val backgroundColor: Color = Color(0xFFFF7700)
+    val backgroundColor: Int = 0xFFFF7700.toInt()
 )
 
 data class Collection(
