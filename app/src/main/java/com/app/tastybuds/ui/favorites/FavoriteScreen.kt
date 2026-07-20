@@ -50,8 +50,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.R
-import com.app.tastybuds.data.model.FavoriteMenuItemUi
-import com.app.tastybuds.data.model.FavoriteRestaurantUi
 import com.app.tastybuds.ui.login.LoginViewModel
 import com.app.tastybuds.ui.theme.Spacing
 import com.app.tastybuds.ui.theme.badgeText

@@ -1,33 +1,19 @@
 package com.app.tastybuds.data.repo
 
+import com.app.tastybuds.domain.repository.FavoritesRepository
+
 import com.app.tastybuds.common.TastyBudsApiService
 import com.app.tastybuds.data.model.AddFavoriteRequest
 import com.app.tastybuds.data.model.FavoriteResponse
-import com.app.tastybuds.data.model.FavoriteWithMenuItemResponse
-import com.app.tastybuds.data.model.FavoriteWithRestaurantResponse
+import com.app.tastybuds.data.model.mapper.toDomain
+import com.app.tastybuds.domain.model.FavoriteMenuItem
+import com.app.tastybuds.domain.model.FavoriteRestaurant
 import javax.inject.Inject
 import javax.inject.Singleton
 import com.app.tastybuds.util.Result
 
-interface FavoritesRepository {
-    suspend fun getUserFavorites(userId: String): Result<List<FavoriteResponse>>
-    suspend fun addFavorite(
-        userId: String,
-        menuItemId: String?,
-        restaurantId: String?
-    ): Result<Boolean>
-
-    suspend fun removeFavorite(
-        userId: String,
-        menuItemId: String?,
-        restaurantId: String?
-    ): Result<Boolean>
-
-    suspend fun isMenuItemFavorite(userId: String, menuItemId: String): Result<Boolean>
-    suspend fun isRestaurantFavorite(userId: String, restaurantId: String): Result<Boolean>
-    suspend fun getFavoriteRestaurantsWithDetails(userId: String): Result<List<FavoriteWithRestaurantResponse>>
-    suspend fun getFavoriteMenuItemsWithDetails(userId: String): Result<List<FavoriteWithMenuItemResponse>>
-}
+// `FavoritesRepository` interface now lives in :core:common (same package, no import
+// needed here since :app depends on :core:common).
 
 @Singleton
 class FavoritesRepositoryImpl @Inject constructor(
@@ -136,11 +122,11 @@ class FavoritesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getFavoriteRestaurantsWithDetails(userId: String): Result<List<FavoriteWithRestaurantResponse>> {
+    override suspend fun getFavoriteRestaurantsWithDetails(userId: String): Result<List<FavoriteRestaurant>> {
         return try {
             val response = apiService.getFavoriteRestaurantsWithDetails("eq.$userId")
             if (response.isSuccessful) {
-                Result.Success(response.body() ?: emptyList())
+                Result.Success(response.body()?.map { it.toDomain() } ?: emptyList())
             } else {
                 Result.Error("Failed to get favorite restaurants: ${response.message()}")
             }
@@ -149,11 +135,11 @@ class FavoritesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getFavoriteMenuItemsWithDetails(userId: String): Result<List<FavoriteWithMenuItemResponse>> {
+    override suspend fun getFavoriteMenuItemsWithDetails(userId: String): Result<List<FavoriteMenuItem>> {
         return try {
             val response = apiService.getFavoriteMenuItemsWithDetails("eq.$userId")
             if (response.isSuccessful) {
-                Result.Success(response.body() ?: emptyList())
+                Result.Success(response.body()?.map { it.toDomain() } ?: emptyList())
             } else {
                 Result.Error("Failed to get favorite menu items: ${response.message()}")
             }

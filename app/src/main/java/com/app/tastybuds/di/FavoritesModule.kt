@@ -1,7 +1,7 @@
 package com.app.tastybuds.di
 
 import com.app.tastybuds.common.TastyBudsApiService
-import com.app.tastybuds.data.repo.FavoritesRepository
+import com.app.tastybuds.domain.repository.FavoritesRepository
 import com.app.tastybuds.data.repo.FavoritesRepositoryImpl
 import com.app.tastybuds.domain.FavoritesUseCase
 import dagger.Module

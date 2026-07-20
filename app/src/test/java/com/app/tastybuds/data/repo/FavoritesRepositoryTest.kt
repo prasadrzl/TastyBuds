@@ -5,12 +5,14 @@ import com.app.tastybuds.data.model.AddFavoriteRequest
 import com.app.tastybuds.data.model.FavoriteResponse
 import com.app.tastybuds.data.model.FavoriteWithMenuItemResponse
 import com.app.tastybuds.data.model.FavoriteWithRestaurantResponse
+import com.app.tastybuds.data.model.MenuItemWithRestaurantResponse
+import com.app.tastybuds.data.model.RestaurantDetailsResponse
+import com.app.tastybuds.data.model.mapper.toDomain
 import com.app.tastybuds.util.Result
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -45,14 +47,14 @@ class FavoritesRepositoryTest {
         id = 1,
         restaurantId = testRestaurantId,
         createdAt = "2024-01-01",
-        restaurant = mockk()
+        restaurant = RestaurantDetailsResponse(name = "Test Restaurant")
     )
 
     private val sampleFavoriteWithMenuItemResponse = FavoriteWithMenuItemResponse(
         id = 2,
         menuItemId = testMenuItemId,
         createdAt = "2024-01-01",
-        menuItem = mockk()
+        menuItem = MenuItemWithRestaurantResponse(name = "Test Pizza")
     )
 
     @Before
@@ -457,7 +459,7 @@ class FavoritesRepositoryTest {
             assertTrue("Expected Result.Success", result is Result.Success)
             val data = (result as Result.Success).data
             assertEquals(1, data.size)
-            assertEquals(sampleFavoriteWithRestaurantResponse, data.first())
+            assertEquals(sampleFavoriteWithRestaurantResponse.toDomain(), data.first())
             coVerify { apiService.getFavoriteRestaurantsWithDetails("eq.$testUserId") }
         }
 
@@ -531,7 +533,7 @@ class FavoritesRepositoryTest {
         assertTrue("Expected Result.Success", result is Result.Success)
         val data = (result as Result.Success).data
         assertEquals(1, data.size)
-        assertEquals(sampleFavoriteWithMenuItemResponse, data.first())
+        assertEquals(sampleFavoriteWithMenuItemResponse.toDomain(), data.first())
         coVerify { apiService.getFavoriteMenuItemsWithDetails("eq.$testUserId") }
     }
 
