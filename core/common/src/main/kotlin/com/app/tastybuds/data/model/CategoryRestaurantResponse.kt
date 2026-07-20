@@ -24,26 +24,3 @@ data class CategoryRestaurantResponse(
     @Json(name = "minimum_order") val minimumOrder: Float? = null,
     @Json(name = "created_at") val createdAt: String = ""
 )
-
-@JsonClass(generateAdapter = true)
-data class CategoryMenuItemResponse(
-    @Json(name = "id") val id: String = "",
-    @Json(name = "name") val name: String = "",
-    @Json(name = "description") val description: String = "",
-    @Json(name = "price") val price: Float = 0.0f,
-    @Json(name = "image") val imageUrl: String = "",
-    @Json(name = "category_id") val categoryId: String = "",
-    @Json(name = "rating") val rating: Float = 0.0f,
-    @Json(name = "review_count") val reviewCount: Int = 0,
-    @Json(name = "is_popular") val isPopular: Boolean = false,
-    @Json(name = "is_spicy") val isSpicy: Boolean = false,
-    @Json(name = "restaurant_id") val restaurantId: String = "",
-    @Json(name = "restaurants") val restaurant: MenuItemRestaurant? = null
-)
-
-@JsonClass(generateAdapter = true)
-data class MenuItemRestaurant(
-    @Json(name = "name") val name: String = "",
-    @Json(name = "delivery_time") val deliveryTime: String = "",
-    @Json(name = "id") val id: String = ""
-)

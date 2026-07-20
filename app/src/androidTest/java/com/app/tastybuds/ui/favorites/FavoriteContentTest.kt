@@ -3,8 +3,6 @@ package com.app.tastybuds.ui.favorites
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.app.tastybuds.data.model.FavoriteMenuItemUi
-import com.app.tastybuds.data.model.FavoriteRestaurantUi
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

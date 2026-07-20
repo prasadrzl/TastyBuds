@@ -1,15 +1,15 @@
 package com.app.tastybuds.data.model.mapper
 
-import com.app.tastybuds.data.model.FavoriteMenuItemUi
-import com.app.tastybuds.data.model.FavoriteRestaurantUi
 import com.app.tastybuds.data.model.FavoriteWithMenuItemResponse
 import com.app.tastybuds.data.model.FavoriteWithRestaurantResponse
+import com.app.tastybuds.domain.model.FavoriteMenuItem
+import com.app.tastybuds.domain.model.FavoriteRestaurant
 
 
-fun FavoriteWithRestaurantResponse.toRestaurantUiModel(): FavoriteRestaurantUi {
+fun FavoriteWithRestaurantResponse.toDomain(): FavoriteRestaurant {
     val restaurantData = this.restaurant
 
-    return FavoriteRestaurantUi(
+    return FavoriteRestaurant(
         id = this.id,
         restaurantId = this.restaurantId ?: "",
         name = restaurantData?.name ?: "",
@@ -26,10 +26,10 @@ fun FavoriteWithRestaurantResponse.toRestaurantUiModel(): FavoriteRestaurantUi {
     )
 }
 
-fun FavoriteWithMenuItemResponse.toMenuItemUiModel(): FavoriteMenuItemUi {
+fun FavoriteWithMenuItemResponse.toDomain(): FavoriteMenuItem {
     val menuItemData = this.menuItem
 
-    return FavoriteMenuItemUi(
+    return FavoriteMenuItem(
         id = this.id,
         menuItemId = this.menuItemId ?: "",
         name = menuItemData?.name ?: "",

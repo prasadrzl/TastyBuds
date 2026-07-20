@@ -32,23 +32,3 @@ data class CreateOrderRequest(
     @Json(name = "special_notes")
     val specialNotes: String?
 )
-
-@JsonClass(generateAdapter = true)
-data class OrderItemRequest(
-    @Json(name = "menu_item_id")
-    val menuItemId: String,
-    @Json(name = "name")
-    val name: String,
-    @Json(name = "image")
-    val image: String?,
-    @Json(name = "base_price")
-    val basePrice: Double,
-    @Json(name = "quantity")
-    val quantity: Int,
-    @Json(name = "customizations")
-    val customizations: OrderItemCustomization,
-    @Json(name = "item_total")
-    val itemTotal: Double,
-    @Json(name = "notes")
-    val notes: String?
-)
