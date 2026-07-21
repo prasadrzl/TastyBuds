@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.R
-import com.app.tastybuds.data.model.RestaurantMenuItem
+import com.app.tastybuds.domain.model.RestaurantMenuItem
 import com.app.tastybuds.ui.theme.backgroundColor
 import com.app.tastybuds.ui.theme.borderColor
 import com.app.tastybuds.ui.theme.cardBackgroundColor

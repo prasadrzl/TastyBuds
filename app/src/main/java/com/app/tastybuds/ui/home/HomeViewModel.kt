@@ -32,17 +32,16 @@ class HomeViewModel @Inject constructor(private val homeUseCase: HomeUseCase) : 
             _uiState.update { it.copy(isLoading = true, error = null) }
 
             try {
-                homeUseCase.getHomeData().collect { homeData ->
-                    _uiState.value = HomeUiState(
-                        isLoading = false,
-                        banners = homeData.banners,
-                        categories = homeData.categories,
-                        voucherCount = homeData.voucherCount,
-                        collections = homeData.collections,
-                        recommendedRestaurants = homeData.recommendedRestaurants,
-                        deals = homeData.deals
-                    )
-                }
+                val homeData = homeUseCase.getHomeData()
+                _uiState.value = HomeUiState(
+                    isLoading = false,
+                    banners = homeData.banners,
+                    categories = homeData.categories,
+                    voucherCount = homeData.voucherCount,
+                    collections = homeData.collections,
+                    recommendedRestaurants = homeData.recommendedRestaurants,
+                    deals = homeData.deals
+                )
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(

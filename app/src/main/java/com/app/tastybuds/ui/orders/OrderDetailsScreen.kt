@@ -37,6 +37,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -45,9 +47,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
-import com.app.tastybuds.data.model.Order
-import com.app.tastybuds.data.model.OrderItemRequest
-import com.app.tastybuds.data.model.OrderStatus
+import com.app.tastybuds.domain.model.Order
+import com.app.tastybuds.domain.model.OrderLineItem
+import com.app.tastybuds.domain.model.OrderStatus
 import com.app.tastybuds.ui.theme.backgroundColor
 import com.app.tastybuds.ui.theme.errorColor
 import com.app.tastybuds.ui.theme.errorContainerColor
@@ -86,6 +88,8 @@ fun OrderDetailsScreen(
     viewModel: OrderDetailsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LocalConfiguration.current
 
     LaunchedEffect(orderId) {
         viewModel.loadOrderDetails(orderId)
@@ -417,9 +421,10 @@ private fun OrderItemRow(item: OrderItemRequest) {
                 overflow = TextOverflow.Ellipsis
             )
 
-            if (item.customizations.size != null) {
+            val selectedSize = item.customizations.size
+            if (selectedSize != null) {
                 Text(
-                    text = "Size: ${item.customizations.size.name}",
+                    text = "Size: ${selectedSize.name}",
                     style = MaterialTheme.typography.bodySmall,
                     color = onSurfaceVariantColor(),
                     modifier = Modifier.padding(top = 2.dp)
@@ -438,17 +443,19 @@ private fun OrderItemRow(item: OrderItemRequest) {
                 )
             }
 
-            if (item.customizations.spiceLevel != null) {
+            val spiceLevel = item.customizations.spiceLevel
+            if (spiceLevel != null) {
                 Text(
-                    text = stringResource(R.string.spice, item.customizations.spiceLevel.name),
+                    text = stringResource(R.string.spice, spiceLevel.name),
                     style = MaterialTheme.typography.bodySmall,
                     color = onSurfaceVariantColor()
                 )
             }
 
-            if (!item.notes.isNullOrEmpty()) {
+            val notes = item.notes
+            if (!notes.isNullOrEmpty()) {
                 Text(
-                    text = stringResource(R.string.note_number_holder, item.notes),
+                    text = stringResource(R.string.note_number_holder, notes),
                     style = MaterialTheme.typography.bodySmall.copy(
                         fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                     ),
