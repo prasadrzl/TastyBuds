@@ -1,6 +1,6 @@
 package com.app.tastybuds.ui.orders
 
-import com.app.tastybuds.data.model.Order
+import com.app.tastybuds.domain.model.Order
 
 data class OrderTrackingUiState(
     val isLoading: Boolean = true,

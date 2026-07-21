@@ -2,7 +2,7 @@ package com.app.tastybuds.ui.orders
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.tastybuds.data.model.Order
+import com.app.tastybuds.domain.model.Order
 import com.app.tastybuds.data.repo.AuthRepository
 import com.app.tastybuds.domain.OrderUseCase
 import com.app.tastybuds.util.onError
@@ -68,35 +68,31 @@ class OrdersViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, error = null) }
             try {
-                orderUseCase.getUserOrders(userId).collect { result ->
-                    result.onSuccess {
-                        val sortedOrders = it.sortedByDescending { order ->
-                            try {
-                                order.createdAt
-                            } catch (e: Exception) {
-                                order.createdAt
-                            }
-                        }
-
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                orders = sortedOrders,
-                                error = null
-                            )
-                        }
-                    }.onError {
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                error = it.error
-                            )
+                orderUseCase.getUserOrders(userId).onSuccess {
+                    val sortedOrders = it.sortedByDescending { order ->
+                        try {
+                            order.createdAt
+                        } catch (e: Exception) {
+                            order.createdAt
                         }
                     }
-                        .onLoading {
-                            _uiState.update { it.copy(isLoading = true, error = null) }
-                        }
+
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            orders = sortedOrders,
+                            error = null
+                        )
+                    }
+                }.onError {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = it.error
+                        )
+                    }
                 }
             } catch (e: Exception) {
                 _uiState.update {

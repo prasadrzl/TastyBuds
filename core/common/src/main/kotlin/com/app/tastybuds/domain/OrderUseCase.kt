@@ -3,14 +3,11 @@ package com.app.tastybuds.domain
 import com.app.tastybuds.domain.model.CartItem
 import com.app.tastybuds.data.model.CreateOrderRequest
 import com.app.tastybuds.data.model.DeliveryAddress
-import com.app.tastybuds.data.model.Order
-import com.app.tastybuds.data.model.UserAddress
-import com.app.tastybuds.data.model.Voucher
-import com.app.tastybuds.data.repo.OrderRepository
+import com.app.tastybuds.domain.model.AvailableVoucher
+import com.app.tastybuds.domain.model.Order
+import com.app.tastybuds.domain.model.UserAddress
+import com.app.tastybuds.domain.repository.OrderRepository
 import com.app.tastybuds.util.Result
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,23 +16,20 @@ class OrderUseCase @Inject constructor(
     private val repository: OrderRepository
 ) {
 
-    suspend fun getUserAddresses(userId: String): Flow<Result<List<UserAddress>>> {
+    suspend fun getUserAddresses(userId: String): Result<List<UserAddress>> {
         return repository.getUserAddresses(userId)
     }
 
-    fun createOrder(
+    suspend fun createOrder(
         userId: String,
         cartItems: List<CartItem>,
         deliveryAddress: UserAddress,
-        selectedVoucher: Voucher? = null,
+        selectedVoucher: AvailableVoucher? = null,
         specialNotes: String? = null
-    ): Flow<Result<Order>> = flow {
-        try {
-            emit(Result.Loading)
-
+    ): Result<Order> {
+        return try {
             if (cartItems.isEmpty()) {
-                emit(Result.Error("Cart is empty"))
-                return@flow
+                return Result.Error("Cart is empty")
             }
 
             val subtotal = cartItems.sumOf { it.calculateItemTotal() }
@@ -45,8 +39,7 @@ class OrderUseCase @Inject constructor(
 
             selectedVoucher?.let { voucher ->
                 if (voucher.minimumOrder != null && subtotal < voucher.minimumOrder) {
-                    emit(Result.Error("Minimum order of $${voucher.minimumOrder} required for this voucher"))
-                    return@flow
+                    return Result.Error("Minimum order of $${voucher.minimumOrder} required for this voucher")
                 }
             }
 
@@ -78,16 +71,13 @@ class OrderUseCase @Inject constructor(
                 specialNotes = specialNotes
             )
 
-            repository.createOrder(orderRequest).collect { result ->
-                emit(result)
-            }
-
+            repository.createOrder(orderRequest)
         } catch (e: Exception) {
-            emit(Result.Error("Failed to create order: ${e.message}"))
+            Result.Error("Failed to create order: ${e.message}")
         }
     }
 
-    suspend fun getAvailableVouchers(userId: String): Flow<Result<List<Voucher>>> {
+    suspend fun getAvailableVouchers(userId: String): Result<List<AvailableVoucher>> {
         return repository.getAvailableVouchers(userId)
     }
 
@@ -123,39 +113,31 @@ class OrderUseCase @Inject constructor(
     }
 
 
-    suspend fun getUserOrders(userId: String): Flow<Result<List<Order>>> {
-        return repository.getUserOrders(userId)
-            .map { result ->
-                when (result) {
-                    is Result.Success -> {
-                        val processedOrders = result.data.map { order ->
-                            order.copy(
-                                restaurantName = order.restaurantName ?: "Unknown Restaurant"
-                            )
-                        }
-                        Result.Success(processedOrders)
-                    }
-
-                    is Result.Error -> result
-                    is Result.Loading -> result
+    suspend fun getUserOrders(userId: String): Result<List<Order>> {
+        return when (val result = repository.getUserOrders(userId)) {
+            is Result.Success -> {
+                val processedOrders = result.data.map { order ->
+                    order.copy(restaurantName = order.restaurantName ?: "Unknown Restaurant")
                 }
+                Result.Success(processedOrders)
             }
+
+            is Result.Error -> result
+            is Result.Loading -> result
+        }
     }
 
-    suspend fun getOrderById(orderId: String): Flow<Result<Order>> {
-        return repository.getOrderById(orderId)
-            .map { result ->
-                when (result) {
-                    is Result.Success -> {
-                        val processedOrder = result.data.copy(
-                            restaurantName = result.data.restaurantName ?: "Unknown Restaurant"
-                        )
-                        Result.Success(processedOrder)
-                    }
-
-                    is Result.Error -> result
-                    is Result.Loading -> result
-                }
+    suspend fun getOrderById(orderId: String): Result<Order> {
+        return when (val result = repository.getOrderById(orderId)) {
+            is Result.Success -> {
+                val processedOrder = result.data.copy(
+                    restaurantName = result.data.restaurantName ?: "Unknown Restaurant"
+                )
+                Result.Success(processedOrder)
             }
+
+            is Result.Error -> result
+            is Result.Loading -> result
+        }
     }
 }

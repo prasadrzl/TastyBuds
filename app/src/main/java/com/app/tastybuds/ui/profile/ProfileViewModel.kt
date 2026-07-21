@@ -3,7 +3,7 @@ package com.app.tastybuds.ui.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.tastybuds.domain.UserUseCase
-import com.app.tastybuds.domain.model.UpdateUserRequest
+import com.app.tastybuds.data.model.UpdateUserRequest
 import com.app.tastybuds.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,34 +42,30 @@ class ProfileViewModel @Inject constructor(
 
     private fun loadProfile() {
         viewModelScope.launch {
-            userUseCase.getUserFlow(currentUserId)
-                .collect { result ->
-                    when (result) {
-                        is Result.Loading -> {
-                            _uiState.update { it.copy(isLoading = true, error = null) }
-                        }
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            when (val result = userUseCase.getUser(currentUserId)) {
+                is Result.Loading -> Unit
 
-                        is Result.Success -> {
-                            _uiState.update {
-                                it.copy(
-                                    isLoading = false,
-                                    user = result.data,
-                                    error = null
-                                )
-                            }
-                            initializeFormState(result.data)
-                        }
+                is Result.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            user = result.data,
+                            error = null
+                        )
+                    }
+                    initializeFormState(result.data)
+                }
 
-                        is Result.Error -> {
-                            _uiState.update {
-                                it.copy(
-                                    isLoading = false,
-                                    error = result.message
-                                )
-                            }
-                        }
+                is Result.Error -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = result.message
+                        )
                     }
                 }
+            }
         }
     }
 

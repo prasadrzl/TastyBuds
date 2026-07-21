@@ -3,8 +3,8 @@ package com.app.tastybuds.ui.orders
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.tastybuds.data.model.Order
-import com.app.tastybuds.data.model.OrderStatus
+import com.app.tastybuds.domain.model.Order
+import com.app.tastybuds.domain.model.OrderStatus
 import com.app.tastybuds.domain.OrderUseCase
 import com.app.tastybuds.util.LocationUtils.calculateDistance
 import com.app.tastybuds.util.Result
@@ -33,28 +33,25 @@ class OrderTrackingViewModel @Inject constructor(
         Log.d(TAG, "Loading order details for ID: $orderId")
 
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, error = null) }
             try {
-                orderUseCase.getOrderById(orderId).collect { result ->
-                    when (result) {
-                        is Result.Loading -> {
-                            _uiState.update { it.copy(isLoading = true, error = null) }
-                        }
+                when (val result = orderUseCase.getOrderById(orderId)) {
+                    is Result.Loading -> Unit
 
-                        is Result.Success -> {
-                            val order = result.data
-                            processOrderData(order)
-                            Log.d(TAG, "Order details loaded successfully")
-                        }
+                    is Result.Success -> {
+                        val order = result.data
+                        processOrderData(order)
+                        Log.d(TAG, "Order details loaded successfully")
+                    }
 
-                        is Result.Error -> {
-                            _uiState.update {
-                                it.copy(
-                                    isLoading = false,
-                                    error = result.message
-                                )
-                            }
-                            Log.e(TAG, "Error loading order: ${result.message}")
+                    is Result.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = result.message
+                            )
                         }
+                        Log.e(TAG, "Error loading order: ${result.message}")
                     }
                 }
             } catch (e: Exception) {
