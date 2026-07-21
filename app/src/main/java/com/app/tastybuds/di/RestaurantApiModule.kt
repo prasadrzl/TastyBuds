@@ -2,13 +2,13 @@ package com.app.tastybuds.di
 
 import com.app.tastybuds.common.TastyBudsApiService
 import com.app.tastybuds.data.model.mapper.SearchResultsMapper
-import com.app.tastybuds.data.repo.FoodDetailsRepository
+import com.app.tastybuds.domain.repository.FoodDetailsRepository
 import com.app.tastybuds.data.repo.FoodDetailsRepositoryImpl
-import com.app.tastybuds.data.repo.RestaurantDetailsRepository
+import com.app.tastybuds.domain.repository.RestaurantDetailsRepository
 import com.app.tastybuds.data.repo.RestaurantDetailsRepositoryImpl
-import com.app.tastybuds.data.repo.RestaurantRepository
+import com.app.tastybuds.domain.repository.RestaurantRepository
 import com.app.tastybuds.data.repo.RestaurantRepositoryImpl
-import com.app.tastybuds.data.repo.SearchRepository
+import com.app.tastybuds.domain.repository.SearchRepository
 import com.app.tastybuds.data.repo.SearchRepositoryImpl
 import com.app.tastybuds.domain.FoodDetailsUseCase
 import com.app.tastybuds.domain.RestaurantDetailsUseCase
@@ -41,17 +41,17 @@ object RestaurantModule {
 
     @Provides
     fun provideSearchResultsRepository(
-        apiService: TastyBudsApiService
+        apiService: TastyBudsApiService,
+        searchResultsMapper: SearchResultsMapper
     ): SearchRepository {
-        return SearchRepositoryImpl(apiService)
+        return SearchRepositoryImpl(apiService, searchResultsMapper)
     }
 
     @Provides
     fun provideSearchUseCase(
-        searchRepository: SearchRepository,
-        searchResultsMapper: SearchResultsMapper
+        searchRepository: SearchRepository
     ): SearchResultsUseCase {
-        return SearchResultsUseCase(searchRepository, searchResultsMapper)
+        return SearchResultsUseCase(searchRepository)
     }
 
     @Singleton

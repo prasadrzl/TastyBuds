@@ -2,15 +2,15 @@ package com.app.tastybuds.data.model.mapper
 
 import com.app.tastybuds.data.model.ComboResponse
 import com.app.tastybuds.data.model.MenuItemResponse
-import com.app.tastybuds.data.model.RestaurantCombo
-import com.app.tastybuds.data.model.RestaurantDetails
+import com.app.tastybuds.domain.model.RestaurantCombo
+import com.app.tastybuds.domain.model.RestaurantDetails
 import com.app.tastybuds.data.model.RestaurantDetailsResponse
-import com.app.tastybuds.data.model.RestaurantMenuItem
-import com.app.tastybuds.data.model.RestaurantReview
+import com.app.tastybuds.domain.model.RestaurantMenuItem
+import com.app.tastybuds.domain.model.RestaurantReview
 import com.app.tastybuds.data.model.RestaurantReviewResponse
-import com.app.tastybuds.data.model.RestaurantVoucher
+import com.app.tastybuds.domain.model.RestaurantVoucher
 import com.app.tastybuds.data.model.RestaurantVoucherResponse
-import com.app.tastybuds.data.model.VoucherDiscountType
+import com.app.tastybuds.domain.model.VoucherDiscountType
 
 fun RestaurantDetailsResponse.toDomain() = RestaurantDetails(
     id = id,

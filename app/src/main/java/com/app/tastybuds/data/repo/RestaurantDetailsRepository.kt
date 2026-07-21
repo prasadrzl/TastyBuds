@@ -1,37 +1,22 @@
 package com.app.tastybuds.data.repo
 
+import com.app.tastybuds.domain.repository.RestaurantDetailsRepository
+
 import com.app.tastybuds.common.TastyBudsApiService
-import com.app.tastybuds.data.model.RestaurantCombo
-import com.app.tastybuds.data.model.RestaurantDetails
-import com.app.tastybuds.data.model.RestaurantDetailsData
-import com.app.tastybuds.data.model.RestaurantMenuItem
-import com.app.tastybuds.data.model.RestaurantReview
-import com.app.tastybuds.data.model.RestaurantVoucher
+import com.app.tastybuds.domain.model.RestaurantCombo
+import com.app.tastybuds.domain.model.RestaurantDetails
+import com.app.tastybuds.domain.model.RestaurantDetailsData
+import com.app.tastybuds.domain.model.RestaurantMenuItem
+import com.app.tastybuds.domain.model.RestaurantReview
+import com.app.tastybuds.domain.model.RestaurantVoucher
 import com.app.tastybuds.data.model.mapper.toDomain
 import com.app.tastybuds.util.ErrorHandler
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 import com.app.tastybuds.util.Result
 
-interface RestaurantDetailsRepository {
-    suspend fun getRestaurantDetails(
-        restaurantId: String, userId: String
-    ): Result<RestaurantDetails>
-
-    suspend fun getRestaurantMenuItems(restaurantId: String): Result<List<RestaurantMenuItem>>
-    suspend fun getForYouMenuItems(restaurantId: String): Result<List<RestaurantMenuItem>>
-    suspend fun getRestaurantReviews(restaurantId: String): Result<List<RestaurantReview>>
-    suspend fun getRestaurantVouchers(
-        restaurantId: String, userId: String
-    ): Result<List<RestaurantVoucher>>
-
-    suspend fun getRestaurantCombos(restaurantId: String): Result<List<RestaurantCombo>>
-    fun getRestaurantDetailsData(
-        restaurantId: String, userId: String
-    ): Flow<Result<RestaurantDetailsData>>
-}
+// `RestaurantDetailsRepository` interface now lives in :core:common (same package). Every
+// method is one-shot, not Flow<Result<T>>.
 
 @Singleton
 class RestaurantDetailsRepositoryImpl @Inject constructor(
@@ -137,16 +122,13 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getRestaurantDetailsData(
+    override suspend fun getRestaurantDetailsData(
         restaurantId: String, userId: String
-    ): Flow<Result<RestaurantDetailsData>> = flow {
-        emit(Result.Loading)
-
-        try {
+    ): Result<RestaurantDetailsData> {
+        return try {
             val restaurantResult = getRestaurantDetails(restaurantId, userId)
             if (restaurantResult is Result.Error) {
-                emit(Result.Error(restaurantResult.message))
-                return@flow
+                return Result.Error(restaurantResult.message)
             }
 
             val restaurant = (restaurantResult as Result.Success).data
@@ -166,8 +148,7 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
                 combos = if (combosResult is Result.Success) combosResult.data else emptyList()
             )
 
-            emit(Result.Success(restaurantDetailsData))
-
+            Result.Success(restaurantDetailsData)
         } catch (e: Exception) {
             Result.Error(ErrorHandler.handleApiError(e))
         }
