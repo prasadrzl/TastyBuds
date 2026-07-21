@@ -1,11 +1,11 @@
 package com.app.tastybuds.data.model.mapper
 
+import com.app.tastybuds.data.model.LocationResponse
+import com.app.tastybuds.data.model.UpdateUserRequest
+import com.app.tastybuds.data.model.UserResponse
 import com.app.tastybuds.domain.model.User
 import com.app.tastybuds.domain.model.Location
-import com.app.tastybuds.domain.model.LocationResponse
 import com.app.tastybuds.domain.model.UpdateProfileRequest
-import com.app.tastybuds.domain.model.UpdateUserRequest
-import com.app.tastybuds.domain.model.UserResponse
 
 fun UserResponse.toUserDomainModel(): User {
     return User(
