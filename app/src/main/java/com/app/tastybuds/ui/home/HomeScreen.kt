@@ -336,7 +336,7 @@ private fun DealBannerCard(
             .semantics { contentDescription = "Banner: ${banner.title}" },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = banner.backgroundColor
+            containerColor = Color(banner.backgroundColor)
         )
     ) {
         Row(
@@ -422,7 +422,7 @@ private fun CategoryCard(
             modifier = Modifier
                 .size(64.dp)
                 .clip(CircleShape)
-                .background(category.backgroundColor),
+                .background(Color(category.backgroundColor)),
             contentAlignment = Alignment.Center
         ) {
             GlideImage(

@@ -1,5 +1,7 @@
 package com.app.tastybuds.data.repo
 
+import com.app.tastybuds.domain.repository.HomeRepository
+
 import com.app.tastybuds.common.TastyBudsApiService
 import com.app.tastybuds.data.model.mapper.toDeal
 import com.app.tastybuds.data.model.mapper.toDomainModel
@@ -7,70 +9,64 @@ import com.app.tastybuds.domain.model.Banner
 import com.app.tastybuds.domain.model.Category
 import com.app.tastybuds.domain.model.Deal
 import com.app.tastybuds.domain.model.Restaurant
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
+import com.app.tastybuds.util.ErrorHandler
+import com.app.tastybuds.util.Result
 import javax.inject.Inject
 import com.app.tastybuds.domain.model.Collection as FoodCollection
 
-interface HomeRepository {
-    fun getBanners(): Flow<List<Banner>>
-    fun getCategories(): Flow<List<Category>>
-    fun getVoucherCount(userId: String): Flow<Int>
-    fun getCollections(): Flow<List<FoodCollection>>
-    fun getRecommendedRestaurants(): Flow<List<Restaurant>>
-    fun getDeals(): Flow<List<Deal>>
-}
+// `HomeRepository` interface now lives in :core:common (same package). Every method is a
+// single network call, not an ongoing observation — plain suspend functions returning
+// Result<T>, not Flow<T>.
 
 class HomeRepositoryImpl @Inject constructor(
     private val tastyBudsApiService: TastyBudsApiService
 ) : HomeRepository {
 
-    override fun getBanners(): Flow<List<Banner>> = flow {
-        val result = tastyBudsApiService.getBanners()
-        val banners = result.map { it.toDomainModel() }
-        emit(banners)
-    }.catch {
-        emit(emptyList())
+    override suspend fun getBanners(): Result<List<Banner>> {
+        return try {
+            Result.Success(tastyBudsApiService.getBanners().map { it.toDomainModel() })
+        } catch (e: Exception) {
+            Result.Error(ErrorHandler.handleApiError(e))
+        }
     }
 
-    override fun getCategories(): Flow<List<Category>> = flow {
-        val response = tastyBudsApiService.getCategories()
-        val categories = response.map { it.toDomainModel() }
-        emit(categories)
-    }.catch {
-        emit(emptyList())
+    override suspend fun getCategories(): Result<List<Category>> {
+        return try {
+            Result.Success(tastyBudsApiService.getCategories().map { it.toDomainModel() })
+        } catch (e: Exception) {
+            Result.Error(ErrorHandler.handleApiError(e))
+        }
     }
 
-    override fun getVoucherCount(userId: String): Flow<Int> = flow {
-        val response = tastyBudsApiService.getVoucherCount(userId)
-        val count = response.count { !it.isUsed }
-        emit(count)
-    }.catch {
-        emit(0)
+    override suspend fun getVoucherCount(userId: String): Result<Int> {
+        return try {
+            Result.Success(tastyBudsApiService.getVoucherCount(userId).count { !it.isUsed })
+        } catch (e: Exception) {
+            Result.Error(ErrorHandler.handleApiError(e))
+        }
     }
 
-    override fun getCollections(): Flow<List<FoodCollection>> = flow {
-        val response = tastyBudsApiService.getCollections()
-        val collections = response.map { it.toDomainModel() }
-        emit(collections)
-    }.catch {
-        emit(emptyList())
+    override suspend fun getCollections(): Result<List<FoodCollection>> {
+        return try {
+            Result.Success(tastyBudsApiService.getCollections().map { it.toDomainModel() })
+        } catch (e: Exception) {
+            Result.Error(ErrorHandler.handleApiError(e))
+        }
     }
 
-    override fun getRecommendedRestaurants(): Flow<List<Restaurant>> = flow {
-        val response = tastyBudsApiService.getRecommendedRestaurants()
-        val restaurants = response.map { it.toDomainModel() }
-        emit(restaurants)
-    }.catch {
-        emit(emptyList())
+    override suspend fun getRecommendedRestaurants(): Result<List<Restaurant>> {
+        return try {
+            Result.Success(tastyBudsApiService.getRecommendedRestaurants().map { it.toDomainModel() })
+        } catch (e: Exception) {
+            Result.Error(ErrorHandler.handleApiError(e))
+        }
     }
 
-    override fun getDeals(): Flow<List<Deal>> = flow {
-        val response = tastyBudsApiService.getDeals()
-        val deals = response.map { it.toDeal() }
-        emit(deals)
-    }.catch {
-        emit(emptyList())
+    override suspend fun getDeals(): Result<List<Deal>> {
+        return try {
+            Result.Success(tastyBudsApiService.getDeals().map { it.toDeal() })
+        } catch (e: Exception) {
+            Result.Error(ErrorHandler.handleApiError(e))
+        }
     }
 }

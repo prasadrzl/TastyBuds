@@ -1,7 +1,7 @@
 package com.app.tastybuds.di
 
 import com.app.tastybuds.common.TastyBudsApiService
-import com.app.tastybuds.data.repo.HomeRepository
+import com.app.tastybuds.domain.repository.HomeRepository
 import com.app.tastybuds.data.repo.HomeRepositoryImpl
 import dagger.Module
 import dagger.Provides
