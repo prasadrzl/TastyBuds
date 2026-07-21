@@ -2,9 +2,9 @@ package com.app.tastybuds.ui.favorites
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.tastybuds.data.model.FavoriteMenuItemUi
-import com.app.tastybuds.data.model.FavoriteRestaurantUi
 import com.app.tastybuds.domain.FavoritesUseCase
+import com.app.tastybuds.domain.model.FavoriteMenuItem
+import com.app.tastybuds.domain.model.FavoriteRestaurant
 import com.app.tastybuds.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,8 +40,8 @@ class FavoritesViewModel @Inject constructor(
             _uiState.value = _uiState.value.setLoading()
 
             try {
-                val restaurantResult = favoritesUseCase.getFavoriteRestaurantsForUI(userId)
-                val menuItemResult = favoritesUseCase.getFavoriteMenuItemsForUI(userId)
+                val restaurantResult = favoritesUseCase.getFavoriteRestaurants(userId)
+                val menuItemResult = favoritesUseCase.getFavoriteMenuItems(userId)
 
                 handleLoadResults(restaurantResult, menuItemResult)
 
@@ -76,8 +76,8 @@ class FavoritesViewModel @Inject constructor(
     }
 
     private fun handleLoadResults(
-        restaurantResult: Result<List<FavoriteRestaurantUi>>,
-        menuItemResult: Result<List<FavoriteMenuItemUi>>
+        restaurantResult: Result<List<FavoriteRestaurant>>,
+        menuItemResult: Result<List<FavoriteMenuItem>>
     ) {
         val (restaurants, restaurantError) = restaurantResult.mapToFavoriteError(FavoriteError.LOAD_FAVORITES_FAILED)
         val (menuItems, menuItemError) = menuItemResult.mapToFavoriteError(FavoriteError.LOAD_FAVORITES_FAILED)
@@ -87,7 +87,10 @@ class FavoritesViewModel @Inject constructor(
         _uiState.value = if (error != null) {
             _uiState.value.setError(error)
         } else {
-            _uiState.value.setSuccess(restaurants ?: emptyList(), menuItems ?: emptyList())
+            _uiState.value.setSuccess(
+                restaurants?.map { it.toUi() } ?: emptyList(),
+                menuItems?.map { it.toUi() } ?: emptyList()
+            )
         }
     }
 }
@@ -106,9 +109,7 @@ private fun FavoritesUiState.setSuccess(
     error = null,
     errorDetails = null,
     favoriteRestaurants = restaurants,
-    favoriteMenuItems = menuItems,
-    favoriteRestaurantsWithDetails = emptyList(),
-    favoriteMenuItemsWithDetails = emptyList()
+    favoriteMenuItems = menuItems
 )
 
 private fun FavoritesUiState.findRestaurantFavorite(favoriteId: Int): FavoriteRestaurantUi? =

@@ -1,15 +1,13 @@
 package com.app.tastybuds.domain
 
-import com.app.tastybuds.data.model.FavoriteWithMenuItemResponse
-import com.app.tastybuds.data.model.FavoriteWithRestaurantResponse
-import com.app.tastybuds.data.repo.FavoritesRepository
+import com.app.tastybuds.domain.model.FavoriteMenuItem
+import com.app.tastybuds.domain.model.FavoriteRestaurant
+import com.app.tastybuds.domain.repository.FavoritesRepository
 import com.app.tastybuds.util.Result
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -29,42 +27,39 @@ class FavoritesUseCaseTest {
     private val testMenuItemId = "menu_item_456"
     private val testRestaurantId = "restaurant_789"
 
-    private val sampleFavoriteWithRestaurantResponse = FavoriteWithRestaurantResponse(
+    // DTO -> domain mapping is now verified against FavoriteResponseMapper directly
+    // (it moved into the data layer, alongside FavoritesRepositoryImpl). The use case
+    // is a pure pass-through of whatever domain models the repository returns.
+    private val sampleFavoriteRestaurant = FavoriteRestaurant(
         id = 1,
         restaurantId = testRestaurantId,
-        createdAt = "2024-01-01",
-        restaurant = mockk {
-            every { name } returns "Test Restaurant"
-            every { cuisine } returns listOf("Italian", "Pizza")
-            every { rating } returns 4.5f
-            every { reviewCount } returns 100
-            every { deliveryTime } returns "30-45 min"
-            every { distance } returns "2.5 km"
-            every { priceRange } returns "$$"
-            every { imageUrl } returns "https://test.com/restaurant.jpg"
-            every { deliveryFee } returns 3.99f
-            every { isOpen } returns true
-        }
+        name = "Test Restaurant",
+        cuisine = "Italian, Pizza",
+        rating = 4.5f,
+        reviewCount = 100,
+        deliveryTime = "30-45 min",
+        distance = "2.5 km",
+        priceRange = "$$",
+        imageUrl = "https://test.com/restaurant.jpg",
+        deliveryFee = 3.99f,
+        isOpen = true,
+        createdAt = "2024-01-01"
     )
 
-    private val sampleFavoriteWithMenuItemResponse = FavoriteWithMenuItemResponse(
+    private val sampleFavoriteMenuItem = FavoriteMenuItem(
         id = 2,
         menuItemId = testMenuItemId,
-        createdAt = "2024-01-01",
-        menuItem = mockk {
-            every { name } returns "Test Pizza"
-            every { description } returns "Delicious test pizza"
-            every { price } returns 15.99
-            every { image } returns "https://test.com/pizza.jpg"
-            every { rating } returns 4.2f
-            every { reviewCount } returns 50
-            every { isPopular } returns true
-            every { isSpicy } returns false
-            every { restaurant } returns mockk {
-                every { name } returns "Test Restaurant"
-                every { id } returns testRestaurantId
-            }
-        }
+        name = "Test Pizza",
+        description = "Delicious test pizza",
+        price = 15.99f,
+        imageUrl = "https://test.com/pizza.jpg",
+        rating = 4.2f,
+        reviewCount = 50,
+        restaurantName = "Test Restaurant",
+        restaurantId = testRestaurantId,
+        isPopular = true,
+        isSpicy = false,
+        createdAt = "2024-01-01"
     )
 
     @Before
@@ -450,44 +445,27 @@ class FavoritesUseCaseTest {
         }
 
     @Test
-    fun `getFavoriteRestaurantsForUI should return mapped restaurant UI models on success`() =
+    fun `getFavoriteRestaurants should pass through domain models from repository on success`() =
         runTest {
-            val favoriteResponses = listOf(sampleFavoriteWithRestaurantResponse)
             coEvery { favoritesRepository.getFavoriteRestaurantsWithDetails(testUserId) } returns Result.Success(
-                favoriteResponses
+                listOf(sampleFavoriteRestaurant)
             )
 
-            val result = favoritesUseCase.getFavoriteRestaurantsForUI(testUserId)
+            val result = favoritesUseCase.getFavoriteRestaurants(testUserId)
 
             assertTrue("Expected Result.Success", result is Result.Success)
             val data = (result as Result.Success).data
-            assertEquals(1, data.size)
-
-            val restaurantUi = data.first()
-            assertEquals(1, restaurantUi.id)
-            assertEquals(testRestaurantId, restaurantUi.restaurantId)
-            assertEquals("Test Restaurant", restaurantUi.name)
-            assertEquals("Italian, Pizza", restaurantUi.cuisine)
-            assertEquals(4.5f, restaurantUi.rating, 0.01f)
-            assertEquals(100, restaurantUi.reviewCount)
-            assertEquals("30-45 min", restaurantUi.deliveryTime)
-            assertEquals("2.5 km", restaurantUi.distance)
-            assertEquals("$$", restaurantUi.priceRange)
-            assertEquals("https://test.com/restaurant.jpg", restaurantUi.imageUrl)
-            assertEquals(3.99f, restaurantUi.deliveryFee, 0.01f)
-            assertEquals(true, restaurantUi.isOpen)
-            assertEquals("2024-01-01", restaurantUi.createdAt)
-
+            assertEquals(listOf(sampleFavoriteRestaurant), data)
             coVerify { favoritesRepository.getFavoriteRestaurantsWithDetails(testUserId) }
         }
 
     @Test
-    fun `getFavoriteRestaurantsForUI should return empty list when no favorites exist`() = runTest {
+    fun `getFavoriteRestaurants should return empty list when no favorites exist`() = runTest {
         coEvery { favoritesRepository.getFavoriteRestaurantsWithDetails(testUserId) } returns Result.Success(
             emptyList()
         )
 
-        val result = favoritesUseCase.getFavoriteRestaurantsForUI(testUserId)
+        val result = favoritesUseCase.getFavoriteRestaurants(testUserId)
 
         assertTrue("Expected Result.Success", result is Result.Success)
         assertEquals(0, (result as Result.Success).data.size)
@@ -495,13 +473,13 @@ class FavoritesUseCaseTest {
     }
 
     @Test
-    fun `getFavoriteRestaurantsForUI should return error when repository fails`() = runTest {
+    fun `getFavoriteRestaurants should return error when repository fails`() = runTest {
         val errorMessage = "Failed to load favorite restaurants"
         coEvery { favoritesRepository.getFavoriteRestaurantsWithDetails(testUserId) } returns Result.Error(
             errorMessage
         )
 
-        val result = favoritesUseCase.getFavoriteRestaurantsForUI(testUserId)
+        val result = favoritesUseCase.getFavoriteRestaurants(testUserId)
 
         assertTrue("Expected Result.Error", result is Result.Error)
         assertEquals(errorMessage, (result as Result.Error).message)
@@ -509,54 +487,37 @@ class FavoritesUseCaseTest {
     }
 
     @Test
-    fun `getFavoriteRestaurantsForUI should return loading when repository is loading`() = runTest {
+    fun `getFavoriteRestaurants should return loading when repository is loading`() = runTest {
         coEvery { favoritesRepository.getFavoriteRestaurantsWithDetails(testUserId) } returns Result.Loading
 
-        val result = favoritesUseCase.getFavoriteRestaurantsForUI(testUserId)
+        val result = favoritesUseCase.getFavoriteRestaurants(testUserId)
 
         assertTrue("Expected Result.Loading", result is Result.Loading)
         coVerify { favoritesRepository.getFavoriteRestaurantsWithDetails(testUserId) }
     }
 
     @Test
-    fun `getFavoriteMenuItemsForUI should return mapped menu item UI models on success`() =
+    fun `getFavoriteMenuItems should pass through domain models from repository on success`() =
         runTest {
-            val favoriteResponses = listOf(sampleFavoriteWithMenuItemResponse)
             coEvery { favoritesRepository.getFavoriteMenuItemsWithDetails(testUserId) } returns Result.Success(
-                favoriteResponses
+                listOf(sampleFavoriteMenuItem)
             )
 
-            val result = favoritesUseCase.getFavoriteMenuItemsForUI(testUserId)
+            val result = favoritesUseCase.getFavoriteMenuItems(testUserId)
 
             assertTrue("Expected Result.Success", result is Result.Success)
             val data = (result as Result.Success).data
-            assertEquals(1, data.size)
-
-            val menuItemUi = data.first()
-            assertEquals(2, menuItemUi.id)
-            assertEquals(testMenuItemId, menuItemUi.menuItemId)
-            assertEquals("Test Pizza", menuItemUi.name)
-            assertEquals("Delicious test pizza", menuItemUi.description)
-            assertEquals(15.99f, menuItemUi.price, 0.01f)
-            assertEquals("https://test.com/pizza.jpg", menuItemUi.imageUrl)
-            assertEquals(4.2f, menuItemUi.rating, 0.01f)
-            assertEquals(50, menuItemUi.reviewCount)
-            assertEquals("Test Restaurant", menuItemUi.restaurantName)
-            assertEquals(testRestaurantId, menuItemUi.restaurantId)
-            assertEquals(true, menuItemUi.isPopular)
-            assertEquals(false, menuItemUi.isSpicy)
-            assertEquals("2024-01-01", menuItemUi.createdAt)
-
+            assertEquals(listOf(sampleFavoriteMenuItem), data)
             coVerify { favoritesRepository.getFavoriteMenuItemsWithDetails(testUserId) }
         }
 
     @Test
-    fun `getFavoriteMenuItemsForUI should return empty list when no favorites exist`() = runTest {
+    fun `getFavoriteMenuItems should return empty list when no favorites exist`() = runTest {
         coEvery { favoritesRepository.getFavoriteMenuItemsWithDetails(testUserId) } returns Result.Success(
             emptyList()
         )
 
-        val result = favoritesUseCase.getFavoriteMenuItemsForUI(testUserId)
+        val result = favoritesUseCase.getFavoriteMenuItems(testUserId)
 
         assertTrue("Expected Result.Success", result is Result.Success)
         assertEquals(0, (result as Result.Success).data.size)
@@ -564,13 +525,13 @@ class FavoritesUseCaseTest {
     }
 
     @Test
-    fun `getFavoriteMenuItemsForUI should return error when repository fails`() = runTest {
+    fun `getFavoriteMenuItems should return error when repository fails`() = runTest {
         val errorMessage = "Failed to load favorite menu items"
         coEvery { favoritesRepository.getFavoriteMenuItemsWithDetails(testUserId) } returns Result.Error(
             errorMessage
         )
 
-        val result = favoritesUseCase.getFavoriteMenuItemsForUI(testUserId)
+        val result = favoritesUseCase.getFavoriteMenuItems(testUserId)
 
         assertTrue("Expected Result.Error", result is Result.Error)
         assertEquals(errorMessage, (result as Result.Error).message)
@@ -578,10 +539,10 @@ class FavoritesUseCaseTest {
     }
 
     @Test
-    fun `getFavoriteMenuItemsForUI should return loading when repository is loading`() = runTest {
+    fun `getFavoriteMenuItems should return loading when repository is loading`() = runTest {
         coEvery { favoritesRepository.getFavoriteMenuItemsWithDetails(testUserId) } returns Result.Loading
 
-        val result = favoritesUseCase.getFavoriteMenuItemsForUI(testUserId)
+        val result = favoritesUseCase.getFavoriteMenuItems(testUserId)
 
         assertTrue("Expected Result.Loading", result is Result.Loading)
         coVerify { favoritesRepository.getFavoriteMenuItemsWithDetails(testUserId) }
@@ -613,16 +574,16 @@ class FavoritesUseCaseTest {
     }
 
     @Test
-    fun `getFavoriteRestaurantsForUI should handle multiple restaurants correctly`() = runTest {
-        val multipleResponses = listOf(
-            sampleFavoriteWithRestaurantResponse,
-            sampleFavoriteWithRestaurantResponse.copy(id = 2, restaurantId = "restaurant_2")
+    fun `getFavoriteRestaurants should handle multiple restaurants correctly`() = runTest {
+        val multiple = listOf(
+            sampleFavoriteRestaurant,
+            sampleFavoriteRestaurant.copy(id = 2, restaurantId = "restaurant_2")
         )
         coEvery { favoritesRepository.getFavoriteRestaurantsWithDetails(testUserId) } returns Result.Success(
-            multipleResponses
+            multiple
         )
 
-        val result = favoritesUseCase.getFavoriteRestaurantsForUI(testUserId)
+        val result = favoritesUseCase.getFavoriteRestaurants(testUserId)
 
         assertTrue("Expected Result.Success", result is Result.Success)
         val data = (result as Result.Success).data
@@ -632,16 +593,16 @@ class FavoritesUseCaseTest {
     }
 
     @Test
-    fun `getFavoriteMenuItemsForUI should handle multiple menu items correctly`() = runTest {
-        val multipleResponses = listOf(
-            sampleFavoriteWithMenuItemResponse,
-            sampleFavoriteWithMenuItemResponse.copy(id = 3, menuItemId = "menu_item_2")
+    fun `getFavoriteMenuItems should handle multiple menu items correctly`() = runTest {
+        val multiple = listOf(
+            sampleFavoriteMenuItem,
+            sampleFavoriteMenuItem.copy(id = 3, menuItemId = "menu_item_2")
         )
         coEvery { favoritesRepository.getFavoriteMenuItemsWithDetails(testUserId) } returns Result.Success(
-            multipleResponses
+            multiple
         )
 
-        val result = favoritesUseCase.getFavoriteMenuItemsForUI(testUserId)
+        val result = favoritesUseCase.getFavoriteMenuItems(testUserId)
 
         assertTrue("Expected Result.Success", result is Result.Success)
         val data = (result as Result.Success).data

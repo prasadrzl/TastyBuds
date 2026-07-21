@@ -1,10 +1,8 @@
 package com.app.tastybuds.domain
 
-import com.app.tastybuds.data.model.FavoriteMenuItemUi
-import com.app.tastybuds.data.model.FavoriteRestaurantUi
-import com.app.tastybuds.data.model.mapper.toMenuItemUiModel
-import com.app.tastybuds.data.model.mapper.toRestaurantUiModel
-import com.app.tastybuds.data.repo.FavoritesRepository
+import com.app.tastybuds.domain.model.FavoriteMenuItem
+import com.app.tastybuds.domain.model.FavoriteRestaurant
+import com.app.tastybuds.domain.repository.FavoritesRepository
 import com.app.tastybuds.util.Result
 import javax.inject.Inject
 
@@ -69,28 +67,12 @@ class FavoritesUseCase @Inject constructor(
         }
     }
 
-    suspend fun getFavoriteRestaurantsForUI(userId: String): Result<List<FavoriteRestaurantUi>> {
-        return when (val result = favoritesRepository.getFavoriteRestaurantsWithDetails(userId)) {
-            is Result.Success -> {
-                val uiModels = result.data.map { it.toRestaurantUiModel() }
-                Result.Success(uiModels)
-            }
-
-            is Result.Error -> Result.Error(result.message)
-            is Result.Loading -> Result.Loading
-        }
+    suspend fun getFavoriteRestaurants(userId: String): Result<List<FavoriteRestaurant>> {
+        return favoritesRepository.getFavoriteRestaurantsWithDetails(userId)
     }
 
-    suspend fun getFavoriteMenuItemsForUI(userId: String): Result<List<FavoriteMenuItemUi>> {
-        return when (val result = favoritesRepository.getFavoriteMenuItemsWithDetails(userId)) {
-            is Result.Success -> {
-                val uiModels = result.data.map { it.toMenuItemUiModel() }
-                Result.Success(uiModels)
-            }
-
-            is Result.Error -> Result.Error(result.message)
-            is Result.Loading -> Result.Loading
-        }
+    suspend fun getFavoriteMenuItems(userId: String): Result<List<FavoriteMenuItem>> {
+        return favoritesRepository.getFavoriteMenuItemsWithDetails(userId)
     }
 }
 

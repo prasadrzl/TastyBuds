@@ -1,12 +1,15 @@
 package com.app.tastybuds.ui.favourites
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.app.tastybuds.data.model.FavoriteMenuItemUi
-import com.app.tastybuds.data.model.FavoriteRestaurantUi
 import com.app.tastybuds.domain.FavoritesUseCase
+import com.app.tastybuds.domain.model.FavoriteMenuItem
+import com.app.tastybuds.domain.model.FavoriteRestaurant
 import com.app.tastybuds.ui.favorites.FavoriteError
+import com.app.tastybuds.ui.favorites.FavoriteMenuItemUi
+import com.app.tastybuds.ui.favorites.FavoriteRestaurantUi
 import com.app.tastybuds.ui.favorites.FavoritesUiState
 import com.app.tastybuds.ui.favorites.FavoritesViewModel
+import com.app.tastybuds.ui.favorites.toUi
 import com.app.tastybuds.util.Result
 import com.app.tastybuds.utils.MainDispatcherRule
 import io.mockk.MockKAnnotations
@@ -40,7 +43,8 @@ class FavoritesViewModelTest {
 
     private lateinit var viewModel: FavoritesViewModel
 
-    private val sampleRestaurantFavorite = FavoriteRestaurantUi(
+    // Domain models: what FavoritesUseCase now returns (the ViewModel maps these to Ui below).
+    private val sampleRestaurantFavorite = FavoriteRestaurant(
         id = 1,
         restaurantId = "restaurant_1",
         name = "Test Restaurant",
@@ -56,7 +60,7 @@ class FavoritesViewModelTest {
         createdAt = "2024-01-01"
     )
 
-    private val sampleMenuItemFavorite = FavoriteMenuItemUi(
+    private val sampleMenuItemFavorite = FavoriteMenuItem(
         id = 2,
         menuItemId = "menu_item_1",
         name = "Test Pizza",
@@ -71,6 +75,10 @@ class FavoritesViewModelTest {
         isSpicy = false,
         createdAt = "2024-01-01"
     )
+
+    // Ui models: what the ViewModel puts into FavoritesUiState.
+    private val sampleRestaurantFavoriteUi = sampleRestaurantFavorite.toUi()
+    private val sampleMenuItemFavoriteUi = sampleMenuItemFavorite.toUi()
 
     private val testUserId = "test_user_123"
 
@@ -87,8 +95,8 @@ class FavoritesViewModelTest {
 
     @Test
     fun `loadUserFavoritesWithDetails should update state with loading true initially`() = runTest {
-        coEvery { favoritesUseCase.getFavoriteRestaurantsForUI(testUserId) } returns Result.Loading
-        coEvery { favoritesUseCase.getFavoriteMenuItemsForUI(testUserId) } returns Result.Loading
+        coEvery { favoritesUseCase.getFavoriteRestaurants(testUserId) } returns Result.Loading
+        coEvery { favoritesUseCase.getFavoriteMenuItems(testUserId) } returns Result.Loading
 
         viewModel.loadUserFavoritesWithDetails(testUserId)
         advanceUntilIdle()
@@ -104,10 +112,10 @@ class FavoritesViewModelTest {
             val restaurantFavorites = listOf(sampleRestaurantFavorite)
             val menuItemFavorites = listOf(sampleMenuItemFavorite)
 
-            coEvery { favoritesUseCase.getFavoriteRestaurantsForUI(testUserId) } returns Result.Success(
+            coEvery { favoritesUseCase.getFavoriteRestaurants(testUserId) } returns Result.Success(
                 restaurantFavorites
             )
-            coEvery { favoritesUseCase.getFavoriteMenuItemsForUI(testUserId) } returns Result.Success(
+            coEvery { favoritesUseCase.getFavoriteMenuItems(testUserId) } returns Result.Success(
                 menuItemFavorites
             )
 
@@ -116,10 +124,8 @@ class FavoritesViewModelTest {
 
             val finalState = viewModel.uiState.first()
             Assertions.assertFalse(finalState.isLoading)
-            Assertions.assertEquals(restaurantFavorites, finalState.favoriteRestaurants)
-            Assertions.assertEquals(menuItemFavorites, finalState.favoriteMenuItems)
-            Assertions.assertTrue(finalState.favoriteRestaurantsWithDetails.isEmpty())
-            Assertions.assertTrue(finalState.favoriteMenuItemsWithDetails.isEmpty())
+            Assertions.assertEquals(restaurantFavorites.map { it.toUi() }, finalState.favoriteRestaurants)
+            Assertions.assertEquals(menuItemFavorites.map { it.toUi() }, finalState.favoriteMenuItems)
             Assertions.assertNull(finalState.error)
         }
 
@@ -128,10 +134,10 @@ class FavoritesViewModelTest {
         val errorMessage = "Failed to load restaurant favorites"
         val menuItemFavorites = listOf(sampleMenuItemFavorite)
 
-        coEvery { favoritesUseCase.getFavoriteRestaurantsForUI(testUserId) } returns Result.Error(
+        coEvery { favoritesUseCase.getFavoriteRestaurants(testUserId) } returns Result.Error(
             errorMessage
         )
-        coEvery { favoritesUseCase.getFavoriteMenuItemsForUI(testUserId) } returns Result.Success(
+        coEvery { favoritesUseCase.getFavoriteMenuItems(testUserId) } returns Result.Success(
             menuItemFavorites
         )
 
@@ -150,10 +156,10 @@ class FavoritesViewModelTest {
         val errorMessage = "Failed to load menu item favorites"
         val restaurantFavorites = listOf(sampleRestaurantFavorite)
 
-        coEvery { favoritesUseCase.getFavoriteRestaurantsForUI(testUserId) } returns Result.Success(
+        coEvery { favoritesUseCase.getFavoriteRestaurants(testUserId) } returns Result.Success(
             restaurantFavorites
         )
-        coEvery { favoritesUseCase.getFavoriteMenuItemsForUI(testUserId) } returns Result.Error(
+        coEvery { favoritesUseCase.getFavoriteMenuItems(testUserId) } returns Result.Error(
             errorMessage
         )
 
@@ -173,10 +179,10 @@ class FavoritesViewModelTest {
             val restaurantErrorMessage = "Restaurant error"
             val menuItemErrorMessage = "Menu item error"
 
-            coEvery { favoritesUseCase.getFavoriteRestaurantsForUI(testUserId) } returns Result.Error(
+            coEvery { favoritesUseCase.getFavoriteRestaurants(testUserId) } returns Result.Error(
                 restaurantErrorMessage
             )
-            coEvery { favoritesUseCase.getFavoriteMenuItemsForUI(testUserId) } returns Result.Error(
+            coEvery { favoritesUseCase.getFavoriteMenuItems(testUserId) } returns Result.Error(
                 menuItemErrorMessage
             )
 
@@ -193,7 +199,7 @@ class FavoritesViewModelTest {
     @Test
     fun `loadUserFavoritesWithDetails should handle unexpected exception`() = runTest {
         val exceptionMessage = "Network error"
-        coEvery { favoritesUseCase.getFavoriteRestaurantsForUI(testUserId) } throws RuntimeException(
+        coEvery { favoritesUseCase.getFavoriteRestaurants(testUserId) } throws RuntimeException(
             exceptionMessage
         )
 
@@ -209,8 +215,7 @@ class FavoritesViewModelTest {
 
     @Test
     fun `removeFavorite should remove restaurant favorite successfully`() = runTest {
-        val restaurantFavorites = listOf(sampleRestaurantFavorite)
-        val initialState = FavoritesUiState(favoriteRestaurants = restaurantFavorites)
+        val initialState = FavoritesUiState(favoriteRestaurants = listOf(sampleRestaurantFavoriteUi))
         viewModel._uiState.value = initialState
 
         coEvery {
@@ -219,10 +224,10 @@ class FavoritesViewModelTest {
                 sampleRestaurantFavorite.restaurantId
             )
         } returns Result.Success(false)
-        coEvery { favoritesUseCase.getFavoriteRestaurantsForUI(testUserId) } returns Result.Success(
+        coEvery { favoritesUseCase.getFavoriteRestaurants(testUserId) } returns Result.Success(
             emptyList()
         )
-        coEvery { favoritesUseCase.getFavoriteMenuItemsForUI(testUserId) } returns Result.Success(
+        coEvery { favoritesUseCase.getFavoriteMenuItems(testUserId) } returns Result.Success(
             emptyList()
         )
 
@@ -235,14 +240,13 @@ class FavoritesViewModelTest {
                 sampleRestaurantFavorite.restaurantId
             )
         }
-        coVerify { favoritesUseCase.getFavoriteRestaurantsForUI(testUserId) }
-        coVerify { favoritesUseCase.getFavoriteMenuItemsForUI(testUserId) }
+        coVerify { favoritesUseCase.getFavoriteRestaurants(testUserId) }
+        coVerify { favoritesUseCase.getFavoriteMenuItems(testUserId) }
     }
 
     @Test
     fun `removeFavorite should remove menu item favorite successfully`() = runTest {
-        val menuItemFavorites = listOf(sampleMenuItemFavorite)
-        val initialState = FavoritesUiState(favoriteMenuItems = menuItemFavorites)
+        val initialState = FavoritesUiState(favoriteMenuItems = listOf(sampleMenuItemFavoriteUi))
         viewModel._uiState.value = initialState
 
         coEvery {
@@ -251,10 +255,10 @@ class FavoritesViewModelTest {
                 sampleMenuItemFavorite.menuItemId
             )
         } returns Result.Success(false)
-        coEvery { favoritesUseCase.getFavoriteRestaurantsForUI(testUserId) } returns Result.Success(
+        coEvery { favoritesUseCase.getFavoriteRestaurants(testUserId) } returns Result.Success(
             emptyList()
         )
-        coEvery { favoritesUseCase.getFavoriteMenuItemsForUI(testUserId) } returns Result.Success(
+        coEvery { favoritesUseCase.getFavoriteMenuItems(testUserId) } returns Result.Success(
             emptyList()
         )
 
@@ -267,14 +271,13 @@ class FavoritesViewModelTest {
                 sampleMenuItemFavorite.menuItemId
             )
         }
-        coVerify { favoritesUseCase.getFavoriteRestaurantsForUI(testUserId) }
-        coVerify { favoritesUseCase.getFavoriteMenuItemsForUI(testUserId) }
+        coVerify { favoritesUseCase.getFavoriteRestaurants(testUserId) }
+        coVerify { favoritesUseCase.getFavoriteMenuItems(testUserId) }
     }
 
     @Test
     fun `removeFavorite should handle restaurant favorite removal error`() = runTest {
-        val restaurantFavorites = listOf(sampleRestaurantFavorite)
-        val initialState = FavoritesUiState(favoriteRestaurants = restaurantFavorites)
+        val initialState = FavoritesUiState(favoriteRestaurants = listOf(sampleRestaurantFavoriteUi))
         viewModel._uiState.value = initialState
 
         val errorMessage = "Failed to remove restaurant favorite"
@@ -284,10 +287,10 @@ class FavoritesViewModelTest {
                 sampleRestaurantFavorite.restaurantId
             )
         } returns Result.Error(errorMessage)
-        coEvery { favoritesUseCase.getFavoriteRestaurantsForUI(testUserId) } returns Result.Success(
+        coEvery { favoritesUseCase.getFavoriteRestaurants(testUserId) } returns Result.Success(
             emptyList()
         )
-        coEvery { favoritesUseCase.getFavoriteMenuItemsForUI(testUserId) } returns Result.Success(
+        coEvery { favoritesUseCase.getFavoriteMenuItems(testUserId) } returns Result.Success(
             emptyList()
         )
 
@@ -300,8 +303,7 @@ class FavoritesViewModelTest {
 
     @Test
     fun `removeFavorite should handle menu item favorite removal error`() = runTest {
-        val menuItemFavorites = listOf(sampleMenuItemFavorite)
-        val initialState = FavoritesUiState(favoriteMenuItems = menuItemFavorites)
+        val initialState = FavoritesUiState(favoriteMenuItems = listOf(sampleMenuItemFavoriteUi))
         viewModel._uiState.value = initialState
 
         val errorMessage = "Failed to remove menu item favorite"
@@ -321,8 +323,7 @@ class FavoritesViewModelTest {
 
     @Test
     fun `removeFavorite should handle loading state for restaurant favorite`() = runTest {
-        val restaurantFavorites = listOf(sampleRestaurantFavorite)
-        val initialState = FavoritesUiState(favoriteRestaurants = restaurantFavorites)
+        val initialState = FavoritesUiState(favoriteRestaurants = listOf(sampleRestaurantFavoriteUi))
         viewModel._uiState.value = initialState
 
         coEvery {
@@ -331,10 +332,10 @@ class FavoritesViewModelTest {
                 sampleRestaurantFavorite.restaurantId
             )
         } returns Result.Loading
-        coEvery { favoritesUseCase.getFavoriteRestaurantsForUI(testUserId) } returns Result.Success(
+        coEvery { favoritesUseCase.getFavoriteRestaurants(testUserId) } returns Result.Success(
             emptyList()
         )
-        coEvery { favoritesUseCase.getFavoriteMenuItemsForUI(testUserId) } returns Result.Success(
+        coEvery { favoritesUseCase.getFavoriteMenuItems(testUserId) } returns Result.Success(
             emptyList()
         )
 
@@ -348,8 +349,7 @@ class FavoritesViewModelTest {
 
     @Test
     fun `removeFavorite should handle loading state for menu item favorite`() = runTest {
-        val menuItemFavorites = listOf(sampleMenuItemFavorite)
-        val initialState = FavoritesUiState(favoriteMenuItems = menuItemFavorites)
+        val initialState = FavoritesUiState(favoriteMenuItems = listOf(sampleMenuItemFavoriteUi))
         viewModel._uiState.value = initialState
 
         coEvery {
@@ -358,10 +358,10 @@ class FavoritesViewModelTest {
                 sampleMenuItemFavorite.menuItemId
             )
         } returns Result.Loading
-        coEvery { favoritesUseCase.getFavoriteRestaurantsForUI(testUserId) } returns Result.Success(
+        coEvery { favoritesUseCase.getFavoriteRestaurants(testUserId) } returns Result.Success(
             emptyList()
         )
-        coEvery { favoritesUseCase.getFavoriteMenuItemsForUI(testUserId) } returns Result.Success(
+        coEvery { favoritesUseCase.getFavoriteMenuItems(testUserId) } returns Result.Success(
             emptyList()
         )
 
@@ -405,17 +405,15 @@ class FavoritesViewModelTest {
         Assertions.assertFalse(initialState.isLoading)
         Assertions.assertTrue(initialState.favoriteRestaurants.isEmpty())
         Assertions.assertTrue(initialState.favoriteMenuItems.isEmpty())
-        Assertions.assertTrue(initialState.favoriteRestaurantsWithDetails.isEmpty())
-        Assertions.assertTrue(initialState.favoriteMenuItemsWithDetails.isEmpty())
         Assertions.assertNull(initialState.error)
     }
 
     @Test
     fun `loadUserFavoritesWithDetails should handle empty results successfully`() = runTest {
-        coEvery { favoritesUseCase.getFavoriteRestaurantsForUI(testUserId) } returns Result.Success(
+        coEvery { favoritesUseCase.getFavoriteRestaurants(testUserId) } returns Result.Success(
             emptyList()
         )
-        coEvery { favoritesUseCase.getFavoriteMenuItemsForUI(testUserId) } returns Result.Success(
+        coEvery { favoritesUseCase.getFavoriteMenuItems(testUserId) } returns Result.Success(
             emptyList()
         )
 
@@ -431,11 +429,10 @@ class FavoritesViewModelTest {
 
     @Test
     fun `removeFavorite should handle mixed restaurant and menu item favorites`() = runTest {
-        val restaurantFavorites = listOf(sampleRestaurantFavorite)
         val menuItemFavorites = listOf(sampleMenuItemFavorite)
         val initialState = FavoritesUiState(
-            favoriteRestaurants = restaurantFavorites,
-            favoriteMenuItems = menuItemFavorites
+            favoriteRestaurants = listOf(sampleRestaurantFavoriteUi),
+            favoriteMenuItems = listOf(sampleMenuItemFavoriteUi)
         )
         viewModel._uiState.value = initialState
 
@@ -445,10 +442,10 @@ class FavoritesViewModelTest {
                 sampleRestaurantFavorite.restaurantId
             )
         } returns Result.Success(false)
-        coEvery { favoritesUseCase.getFavoriteRestaurantsForUI(testUserId) } returns Result.Success(
+        coEvery { favoritesUseCase.getFavoriteRestaurants(testUserId) } returns Result.Success(
             emptyList()
         )
-        coEvery { favoritesUseCase.getFavoriteMenuItemsForUI(testUserId) } returns Result.Success(
+        coEvery { favoritesUseCase.getFavoriteMenuItems(testUserId) } returns Result.Success(
             menuItemFavorites
         )
 
@@ -469,10 +466,10 @@ class FavoritesViewModelTest {
         val initialStateWithError = FavoritesUiState(error = FavoriteError.FAVORITE_NOT_FOUND)
         viewModel._uiState.value = initialStateWithError
 
-        coEvery { favoritesUseCase.getFavoriteRestaurantsForUI(testUserId) } returns Result.Success(
+        coEvery { favoritesUseCase.getFavoriteRestaurants(testUserId) } returns Result.Success(
             emptyList()
         )
-        coEvery { favoritesUseCase.getFavoriteMenuItemsForUI(testUserId) } returns Result.Success(
+        coEvery { favoritesUseCase.getFavoriteMenuItems(testUserId) } returns Result.Success(
             emptyList()
         )
 
