@@ -1,5 +1,7 @@
 package com.app.tastybuds.data.repo
 
+import com.app.tastybuds.domain.repository.FoodDetailsRepository
+
 import com.app.tastybuds.common.TastyBudsApiService
 import com.app.tastybuds.data.model.mapper.toFoodCustomization
 import com.app.tastybuds.data.model.mapper.toFoodDetails
@@ -7,19 +9,12 @@ import com.app.tastybuds.domain.model.FoodCustomization
 import com.app.tastybuds.domain.model.FoodDetails
 import com.app.tastybuds.domain.model.FoodDetailsData
 import com.app.tastybuds.util.Result
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
-interface FoodDetailsRepository {
-    suspend fun getFoodDetails(foodItemId: String, userId: String): Result<FoodDetails>
-    suspend fun getCustomizationOptions(menuItemId: String): Result<FoodCustomization>
-    fun getFoodDetailsData(foodItemId: String, userId: String): Flow<Result<FoodDetailsData>>
-}
+// `FoodDetailsRepository` interface now lives in :core:common (same package). Every method
+// is one-shot (getFoodDetailsData just sequences two suspend calls), not Flow<Result<T>> —
+// suspend Retrofit calls already don't block the calling thread, so no flowOn(IO) is needed.
 
 @Singleton
 class FoodDetailsRepositoryImpl @Inject constructor(
@@ -63,16 +58,13 @@ class FoodDetailsRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getFoodDetailsData(
+    override suspend fun getFoodDetailsData(
         foodItemId: String, userId: String
-    ): Flow<Result<FoodDetailsData>> = flow {
-        emit(Result.Loading)
-
-        try {
+    ): Result<FoodDetailsData> {
+        return try {
             val foodDetailsResult = getFoodDetails(foodItemId, userId)
             if (foodDetailsResult is Result.Error) {
-                emit(Result.Error(foodDetailsResult.message))
-                return@flow
+                return Result.Error(foodDetailsResult.message)
             }
 
             val foodDetails = (foodDetailsResult as Result.Success).data
@@ -88,10 +80,9 @@ class FoodDetailsRepositoryImpl @Inject constructor(
                 foodDetails = foodDetails, customization = customization
             )
 
-            emit(Result.Success(foodDetailsData))
-
+            Result.Success(foodDetailsData)
         } catch (e: Exception) {
-            emit(Result.Error("Failed to load food details: ${e.message}"))
+            Result.Error("Failed to load food details: ${e.message}")
         }
-    }.flowOn(Dispatchers.IO)
+    }
 }
