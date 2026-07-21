@@ -3,7 +3,7 @@ package com.app.tastybuds.ui.orders
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.tastybuds.data.model.UserAddress
+import com.app.tastybuds.domain.model.UserAddress
 import com.app.tastybuds.data.repo.AuthRepository
 import com.app.tastybuds.domain.OrderUseCase
 import com.app.tastybuds.domain.model.CartItem
@@ -12,7 +12,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -98,38 +97,33 @@ class OrderReviewViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                orderUseCase.getUserAddresses(_userId.value).catch { e ->
-                    Log.e(TAG, "Error loading addresses: ${e.message}")
-                    setDefaultDemoAddress()
-                }.collect { result ->
-                    when (result) {
-                        is Result.Success -> {
-                            _uiState.update {
-                                it.copy(availableAddresses = result.data)
-                            }
-
-                            if (result.data.isNotEmpty()) {
-                                val defaultAddress = result.data.find { it.isDefault }
-                                    ?: result.data.first()
-
-                                _uiState.update {
-                                    it.copy(userAddress = defaultAddress)
-                                }
-                                Log.d(TAG, "Set default address: ${defaultAddress.addressLine}")
-                            } else {
-                                setDefaultDemoAddress()
-                            }
-
-                            Log.d(TAG, "Loaded ${result.data.size} user addresses")
+                when (val result = orderUseCase.getUserAddresses(_userId.value)) {
+                    is Result.Success -> {
+                        _uiState.update {
+                            it.copy(availableAddresses = result.data)
                         }
 
-                        is Result.Error -> {
-                            Log.e(TAG, "Error loading addresses: ${result.message}")
+                        if (result.data.isNotEmpty()) {
+                            val defaultAddress = result.data.find { it.isDefault }
+                                ?: result.data.first()
+
+                            _uiState.update {
+                                it.copy(userAddress = defaultAddress)
+                            }
+                            Log.d(TAG, "Set default address: ${defaultAddress.addressLine}")
+                        } else {
                             setDefaultDemoAddress()
                         }
 
-                        is Result.Loading -> {}
+                        Log.d(TAG, "Loaded ${result.data.size} user addresses")
                     }
+
+                    is Result.Error -> {
+                        Log.e(TAG, "Error loading addresses: ${result.message}")
+                        setDefaultDemoAddress()
+                    }
+
+                    is Result.Loading -> {}
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Exception loading addresses: ${e.message}")
@@ -169,23 +163,19 @@ class OrderReviewViewModel @Inject constructor(
 
     private suspend fun loadAvailableVouchers() {
         try {
-            orderUseCase.getAvailableVouchers(_userId.value).catch { e ->
-                Log.e(TAG, "Error loading vouchers: ${e.message}")
-            }.collect { result ->
-                when (result) {
-                    is Result.Success -> {
-                        _uiState.update {
-                            it.copy(availableVouchers = result.data)
-                        }
-                        Log.d(TAG, "Vouchers loaded: ${result.data.size}")
+            when (val result = orderUseCase.getAvailableVouchers(_userId.value)) {
+                is Result.Success -> {
+                    _uiState.update {
+                        it.copy(availableVouchers = result.data)
                     }
-
-                    is Result.Error -> {
-                        Log.e(TAG, "Error loading vouchers: ${result.message}")
-                    }
-
-                    is Result.Loading -> {}
+                    Log.d(TAG, "Vouchers loaded: ${result.data.size}")
                 }
+
+                is Result.Error -> {
+                    Log.e(TAG, "Error loading vouchers: ${result.message}")
+                }
+
+                is Result.Loading -> {}
             }
         } catch (e: Exception) {
             Log.e(TAG, "Exception loading vouchers: ${e.message}")
@@ -249,37 +239,35 @@ class OrderReviewViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                orderUseCase.createOrder(
+                when (val result = orderUseCase.createOrder(
                     userId = _userId.value,
                     cartItems = currentState.cartItems,
                     deliveryAddress = currentState.userAddress,
                     selectedVoucher = currentState.selectedVoucher,
                     specialNotes = specialNotes
-                ).collect { result ->
-                    when (result) {
-                        is Result.Loading -> {}
+                )) {
+                    is Result.Loading -> {}
 
-                        is Result.Success -> {
-                            _uiState.update {
-                                it.copy(
-                                    isCreatingOrder = false,
-                                    orderCreated = true,
-                                    createdOrderId = result.data.id,
-                                    error = null
-                                )
-                            }
-                            Log.d(TAG, "Order created successfully: ${result.data.id}")
+                    is Result.Success -> {
+                        _uiState.update {
+                            it.copy(
+                                isCreatingOrder = false,
+                                orderCreated = true,
+                                createdOrderId = result.data.id,
+                                error = null
+                            )
                         }
+                        Log.d(TAG, "Order created successfully: ${result.data.id}")
+                    }
 
-                        is Result.Error -> {
-                            _uiState.update {
-                                it.copy(
-                                    isCreatingOrder = false,
-                                    error = result.message
-                                )
-                            }
-                            Log.e(TAG, "Error creating order: ${result.message}")
+                    is Result.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                isCreatingOrder = false,
+                                error = result.message
+                            )
                         }
+                        Log.e(TAG, "Error creating order: ${result.message}")
                     }
                 }
             } catch (e: Exception) {

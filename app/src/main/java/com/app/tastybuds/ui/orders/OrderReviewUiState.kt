@@ -1,9 +1,9 @@
 package com.app.tastybuds.ui.orders
 
 import com.app.tastybuds.domain.model.CartItem
-import com.app.tastybuds.data.model.RestaurantMenuItem
-import com.app.tastybuds.data.model.UserAddress
-import com.app.tastybuds.data.model.Voucher
+import com.app.tastybuds.domain.model.RestaurantMenuItem
+import com.app.tastybuds.domain.model.UserAddress
+import com.app.tastybuds.domain.model.AvailableVoucher
 
 data class OrderReviewUiState(
     val isLoading: Boolean = false,

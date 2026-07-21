@@ -49,8 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
-import com.app.tastybuds.data.model.Order
-import com.app.tastybuds.data.model.OrderStatus
+import com.app.tastybuds.domain.model.Order
+import com.app.tastybuds.domain.model.OrderStatus
 import com.app.tastybuds.ui.theme.backgroundColor
 import com.app.tastybuds.ui.theme.errorContainerColor
 import com.app.tastybuds.ui.theme.infoContainerColor
