@@ -15,6 +15,7 @@ class TastyBudsJvmLibraryConventionPlugin : Plugin<Project> {
         with(target) {
             with(pluginManager) {
                 apply("org.jetbrains.kotlin.jvm")
+                apply("kotlin-kapt")
             }
 
             // Forces Kotlin compilation onto a JDK 17 toolchain (auto-downloaded via the
@@ -26,7 +27,7 @@ class TastyBudsJvmLibraryConventionPlugin : Plugin<Project> {
 
             tasks.withType<KotlinCompile>().configureEach {
                 kotlinOptions {
-                    jvmTarget = "1.8"
+                    jvmTarget = "17"
                 }
             }
 

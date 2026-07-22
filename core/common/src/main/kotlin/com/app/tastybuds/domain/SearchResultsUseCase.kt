@@ -1,8 +1,7 @@
 package com.app.tastybuds.domain
 
 import com.app.tastybuds.domain.model.SearchResult
-import com.app.tastybuds.data.model.mapper.SearchResultsMapper
-import com.app.tastybuds.data.repo.SearchRepository
+import com.app.tastybuds.domain.repository.SearchRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -12,15 +11,12 @@ import javax.inject.Singleton
 
 @Singleton
 class SearchResultsUseCase @Inject constructor(
-    private val searchRepository: SearchRepository,
-    private val searchResultsMapper: SearchResultsMapper
+    private val searchRepository: SearchRepository
 ) {
 
     fun searchMenuItemsGroupedByRestaurant(query: String): Flow<List<SearchResult>> = flow {
         try {
-            val menuItemsResponse = searchRepository.searchMenuItemsWithRestaurants(query.trim())
-
-            val searchResults = searchResultsMapper.mapToSearchResults(menuItemsResponse)
+            val searchResults = searchRepository.searchMenuItemsWithRestaurants(query.trim())
 
             val processedResults = searchResults.filter { searchResult ->
                 searchResult.menuItemList.isNotEmpty()
@@ -29,7 +25,7 @@ class SearchResultsUseCase @Inject constructor(
             emit(processedResults)
 
         } catch (exception: Exception) {
-            android.util.Log.e("SearchResultsUseCase", "Search failed", exception)
+            exception.printStackTrace()
             emit(emptyList())
         }
     }.debounce(300)

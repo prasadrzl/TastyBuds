@@ -3,11 +3,11 @@ package com.app.tastybuds.ui.resturants
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.tastybuds.domain.RestaurantUseCase
+import com.app.tastybuds.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -54,54 +54,66 @@ class SeeAllViewModel @Inject constructor(
     }
 
     private suspend fun loadTopRestaurants(categoryId: String) {
-        restaurantUseCase.getTopRestaurantsByCategory(categoryId)
-            .catch { e ->
+        when (val result = restaurantUseCase.getTopRestaurantsByCategory(categoryId)) {
+            is Result.Success -> {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = e.message ?: "Failed to load restaurants"
-                )
-            }
-            .collect { restaurants ->
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    restaurants = restaurants,
+                    restaurants = result.data,
                     error = null
                 )
             }
+
+            is Result.Error -> {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = result.message
+                )
+            }
+
+            is Result.Loading -> Unit
+        }
     }
 
     private suspend fun loadRecommendedRestaurants(categoryId: String) {
-        restaurantUseCase.getRecommendedRestaurantsByCategory(categoryId)
-            .catch { e ->
+        when (val result = restaurantUseCase.getRecommendedRestaurantsByCategory(categoryId)) {
+            is Result.Success -> {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = e.message ?: "Failed to load recommended restaurants"
-                )
-            }
-            .collect { restaurants ->
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    restaurants = restaurants,
+                    restaurants = result.data,
                     error = null
                 )
             }
+
+            is Result.Error -> {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = result.message
+                )
+            }
+
+            is Result.Loading -> Unit
+        }
     }
 
     private suspend fun loadMenuItems(categoryId: String) {
-        restaurantUseCase.getMenuItemsByCategory(categoryId)
-            .catch { e ->
+        when (val result = restaurantUseCase.getMenuItemsByCategory(categoryId)) {
+            is Result.Success -> {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = e.message ?: "Failed to load menu items"
-                )
-            }
-            .collect { menuItems ->
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    menuItems = menuItems,
+                    menuItems = result.data,
                     error = null
                 )
             }
+
+            is Result.Error -> {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = result.message
+                )
+            }
+
+            is Result.Loading -> Unit
+        }
     }
 
     fun retry(categoryId: String, type: String) {

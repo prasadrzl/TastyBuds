@@ -1,22 +1,18 @@
 package com.app.tastybuds.data.repo
 
+import com.app.tastybuds.domain.repository.UserRepository
+
 import com.app.tastybuds.common.TastyBudsApiService
 import com.app.tastybuds.data.model.mapper.toUpdateUserDataModel
 import com.app.tastybuds.data.model.mapper.toUserDomainModel
-import com.app.tastybuds.domain.model.UpdateUserRequest
+import com.app.tastybuds.data.model.UpdateUserRequest
 import com.app.tastybuds.domain.model.User
 import com.app.tastybuds.util.ErrorHandler
 import com.app.tastybuds.util.Result
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
-interface UserRepository {
-    suspend fun getUser(userId: String): Result<User>
-    suspend fun updateUser(userId: String, updateRequest: UpdateUserRequest): Result<User>
-    fun getUserFlow(userId: String): Flow<Result<User>>
-}
+// `UserRepository` interface now lives in :core:common (same package).
 
 @Singleton
 class UserRepositoryImpl @Inject constructor(
@@ -60,16 +56,6 @@ class UserRepositoryImpl @Inject constructor(
             }
         } catch (e: Exception) {
             Result.Error(ErrorHandler.handleApiError(e))
-        }
-    }
-
-    override fun getUserFlow(userId: String): Flow<Result<User>> = flow {
-        emit(Result.Loading)
-        try {
-            val result = getUser(userId)
-            emit(result)
-        } catch (e: Exception) {
-            emit(Result.Error(ErrorHandler.handleApiError(e)))
         }
     }
 }
