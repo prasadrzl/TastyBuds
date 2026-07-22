@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.tastybuds.domain.RestaurantUseCase
 import com.app.tastybuds.ui.resturants.state.RestaurantUiState
+import com.app.tastybuds.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -34,14 +35,19 @@ class RestaurantViewModel @Inject constructor(
             }
 
             try {
-                restaurantUseCase.getRestaurantsByCategory(categoryId).collect { restaurants ->
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            restaurants = restaurants,
-                            isEmpty = restaurants.isEmpty()
-                        )
+                when (val result = restaurantUseCase.getRestaurantsByCategory(categoryId)) {
+                    is Result.Success -> {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                restaurants = result.data,
+                                isEmpty = result.data.isEmpty()
+                            )
+                        }
                     }
+
+                    is Result.Error -> setError(result.message)
+                    is Result.Loading -> Unit
                 }
             } catch (e: Exception) {
                 handleError(e)
@@ -61,16 +67,22 @@ class RestaurantViewModel @Inject constructor(
             }
 
             try {
-                restaurantUseCase.getCategoryDetails(categoryId).collect { categoryData ->
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            categoryDetails = categoryData,
-                            isEmpty = categoryData.topRestaurants.isEmpty() &&
-                                    categoryData.menuItems.isEmpty() &&
-                                    categoryData.recommendedRestaurants.isEmpty()
-                        )
+                when (val result = restaurantUseCase.getCategoryDetails(categoryId)) {
+                    is Result.Success -> {
+                        val categoryData = result.data
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                categoryDetails = categoryData,
+                                isEmpty = categoryData.topRestaurants.isEmpty() &&
+                                        categoryData.menuItems.isEmpty() &&
+                                        categoryData.recommendedRestaurants.isEmpty()
+                            )
+                        }
                     }
+
+                    is Result.Error -> setError(result.message)
+                    is Result.Loading -> Unit
                 }
             } catch (e: Exception) {
                 handleError(e)
@@ -91,14 +103,19 @@ class RestaurantViewModel @Inject constructor(
             }
 
             try {
-                restaurantUseCase.searchRestaurants(query).collect { restaurants ->
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            restaurants = restaurants,
-                            isEmpty = restaurants.isEmpty()
-                        )
+                when (val result = restaurantUseCase.searchRestaurants(query)) {
+                    is Result.Success -> {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                restaurants = result.data,
+                                isEmpty = result.data.isEmpty()
+                            )
+                        }
                     }
+
+                    is Result.Error -> setError(result.message)
+                    is Result.Loading -> Unit
                 }
             } catch (e: Exception) {
                 handleError(e)
@@ -119,19 +136,28 @@ class RestaurantViewModel @Inject constructor(
             }
 
             try {
-                restaurantUseCase.getAllRestaurants().collect { restaurants ->
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            restaurants = restaurants,
-                            isEmpty = restaurants.isEmpty()
-                        )
+                when (val result = restaurantUseCase.getAllRestaurants()) {
+                    is Result.Success -> {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                restaurants = result.data,
+                                isEmpty = result.data.isEmpty()
+                            )
+                        }
                     }
+
+                    is Result.Error -> setError(result.message)
+                    is Result.Loading -> Unit
                 }
             } catch (e: Exception) {
                 handleError(e)
             }
         }
+    }
+
+    private fun setError(message: String) {
+        _uiState.update { it.copy(isLoading = false, error = message) }
     }
 
     private fun handleError(e: Exception) {

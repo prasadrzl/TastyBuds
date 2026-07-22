@@ -1,18 +1,21 @@
 package com.app.tastybuds.data.repo
 
+import com.app.tastybuds.domain.repository.SearchRepository
+
 import com.app.tastybuds.common.TastyBudsApiService
-import com.app.tastybuds.data.model.MenuItemWithRestaurantResponse
+import com.app.tastybuds.data.model.mapper.SearchResultsMapper
+import com.app.tastybuds.domain.model.SearchResult
 import javax.inject.Inject
 
-interface SearchRepository {
-    suspend fun searchMenuItemsWithRestaurants(query: String): List<MenuItemWithRestaurantResponse>
-}
+// `SearchRepository` interface now lives in :core:common (same package). DTO->domain
+// mapping happens here (data layer) instead of in the UseCase, per Clean Architecture.
 
 class SearchRepositoryImpl @Inject constructor(
-    private val apiService: TastyBudsApiService
+    private val apiService: TastyBudsApiService,
+    private val searchResultsMapper: SearchResultsMapper
 ) : SearchRepository {
 
-    override suspend fun searchMenuItemsWithRestaurants(query: String): List<MenuItemWithRestaurantResponse> {
+    override suspend fun searchMenuItemsWithRestaurants(query: String): List<SearchResult> {
         return try {
 
             val formattedQuery = if (query.isNotBlank()) "ilike.*$query*" else null
@@ -20,7 +23,7 @@ class SearchRepositoryImpl @Inject constructor(
 
             val result =
                 apiService.searchMenuItemsWithRestaurants(nameQuery = formattedQuery, limit = limit)
-            result
+            searchResultsMapper.mapToSearchResults(result)
         } catch (e: Exception) {
             emptyList()
         }

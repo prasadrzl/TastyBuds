@@ -1,11 +1,10 @@
 package com.app.tastybuds.domain
 
-import com.app.tastybuds.data.repo.RestaurantRepository
+import com.app.tastybuds.domain.repository.RestaurantRepository
 import com.app.tastybuds.domain.model.CategoryDetailsData
 import com.app.tastybuds.domain.model.CategoryMenuItem
 import com.app.tastybuds.domain.model.CategoryRestaurant
 import com.app.tastybuds.domain.model.Restaurant
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import com.app.tastybuds.util.Result
 
@@ -13,11 +12,11 @@ class RestaurantUseCase @Inject constructor(
     private val repository: RestaurantRepository
 ) {
 
-    fun getRestaurantsByCategory(categoryId: String): Flow<List<Restaurant>> {
+    suspend fun getRestaurantsByCategory(categoryId: String): Result<List<Restaurant>> {
         return repository.getRestaurantsByCategory(categoryId)
     }
 
-    fun searchRestaurants(query: String): Flow<List<Restaurant>> {
+    suspend fun searchRestaurants(query: String): Result<List<Restaurant>> {
         return if (query.isBlank()) {
             repository.getAllRestaurants()
         } else {
@@ -25,23 +24,23 @@ class RestaurantUseCase @Inject constructor(
         }
     }
 
-    fun getAllRestaurants(): Flow<List<Restaurant>> {
+    suspend fun getAllRestaurants(): Result<List<Restaurant>> {
         return repository.getAllRestaurants()
     }
 
-    fun getCategoryDetails(categoryId: String): Flow<CategoryDetailsData> {
+    suspend fun getCategoryDetails(categoryId: String): Result<CategoryDetailsData> {
         return repository.getCategoryDetails(categoryId)
     }
 
-    fun getTopRestaurantsByCategory(categoryId: String): Flow<List<CategoryRestaurant>> {
+    suspend fun getTopRestaurantsByCategory(categoryId: String): Result<List<CategoryRestaurant>> {
         return repository.getTopRestaurantsByCategory(categoryId)
     }
 
-    fun getMenuItemsByCategory(categoryId: String): Flow<List<CategoryMenuItem>> {
+    suspend fun getMenuItemsByCategory(categoryId: String): Result<List<CategoryMenuItem>> {
         return repository.getMenuItemsByCategory(categoryId)
     }
 
-    fun getRecommendedRestaurantsByCategory(categoryId: String): Flow<List<CategoryRestaurant>> {
+    suspend fun getRecommendedRestaurantsByCategory(categoryId: String): Result<List<CategoryRestaurant>> {
         return repository.getRecommendedRestaurantsByCategory(categoryId)
     }
 
