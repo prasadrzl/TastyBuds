@@ -24,9 +24,3 @@ data class VoucherApiResponse(
     @Json(name = "description") val description: String = "",
     @Json(name = "discount_type") val discountType: String = "percentage"
 )
-
-@JsonClass(generateAdapter = true)
-data class VoucherUsageRequest(
-    @Json(name = "is_used") val isUsed: Boolean = true,
-    @Json(name = "used_count") val usedCount: Int = 1
-)

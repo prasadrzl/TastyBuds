@@ -1,6 +1,8 @@
 package com.app.tastybuds.domain.model
 
-import androidx.compose.ui.graphics.Color
+// `backgroundColor`/`iconColor` are raw ARGB ints (matches Compose's Color(Int) constructor),
+// not Color objects — this is a pure Kotlin domain model, so it can't depend on Compose.
+// Wrap with androidx.compose.ui.graphics.Color(...) at the UI layer.
 
 data class Voucher(
     val id: String = "",
@@ -22,7 +24,7 @@ data class Voucher(
     val endDate: String = "",
     val description: String = "",
     val discountType: DiscountType = DiscountType.PERCENTAGE,
-    val backgroundColor: Color = Color(0xFFFFF3E0),
+    val backgroundColor: Int = 0xFFFFF3E0.toInt(),
     val isExpired: Boolean = false,
     val canBeUsed: Boolean = true,
     val remainingUses: Int = 1,
@@ -32,7 +34,7 @@ data class Voucher(
     val buttonText: String = "USE NOW",
     val buttonEnabled: Boolean = true,
     val iconText: String = "",
-    val iconColor: Color = Color.White,
+    val iconColor: Int = 0xFFFFFFFF.toInt(),
     val minimumOrderText: String? = null
 )
 
