@@ -2,6 +2,7 @@ package com.app.tastybuds.util.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import com.app.tastybuds.R
 import com.app.tastybuds.ui.favorites.FavoriteError
 
@@ -10,7 +11,7 @@ fun FavoriteError.toLocalizedString(details: String? = null): String {
     val context = LocalContext.current
     
     val baseMessage = when (this) {
-        FavoriteError.REMOVE_RESTAURANT_FAILED -> context.getString(R.string.error_remove_restaurant_failed)
+        FavoriteError.REMOVE_RESTAURANT_FAILED -> stringResource(R.string.error_remove_restaurant_failed)
         FavoriteError.REMOVE_MENU_ITEM_FAILED -> context.getString(R.string.error_remove_menu_item_failed)
         FavoriteError.LOAD_FAVORITES_FAILED -> context.getString(R.string.error_load_favorites_failed)
         FavoriteError.FAVORITE_NOT_FOUND -> context.getString(R.string.error_favorite_not_found)

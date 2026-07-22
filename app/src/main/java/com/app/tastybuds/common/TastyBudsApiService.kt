@@ -24,7 +24,7 @@ import com.app.tastybuds.data.model.UserAddress
 import com.app.tastybuds.data.model.Voucher
 import com.app.tastybuds.data.model.VoucherCountResponse
 import com.app.tastybuds.domain.model.UpdateProfileRequest
-import com.app.tastybuds.domain.model.UserResponse
+import com.app.tastybuds.data.model.UserResponse
 import com.app.tastybuds.data.model.FoodCustomizationResponse
 import com.app.tastybuds.data.model.FoodDetailsResponse
 import com.app.tastybuds.data.model.VoucherApiResponse

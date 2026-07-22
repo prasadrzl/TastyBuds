@@ -1,6 +1,6 @@
 package com.app.tastybuds.common
 
-import com.app.tastybuds.data.model.OrderStatus
+import com.app.tastybuds.domain.model.OrderStatus
 
 fun OrderStatus.toApiString(): String {
     return when (this) {
