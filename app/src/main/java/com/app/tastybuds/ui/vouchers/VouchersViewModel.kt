@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.app.tastybuds.data.repo.AuthRepository
 import com.app.tastybuds.domain.VouchersUseCase
 import com.app.tastybuds.util.onError
-import com.app.tastybuds.util.onLoading
 import com.app.tastybuds.util.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -67,24 +66,21 @@ class VouchersViewModel @Inject constructor(
 
     private fun loadActiveVouchers() {
         viewModelScope.launch {
-            vouchersUseCase.getActiveVouchers(_userId.value).collect { result ->
-                result.onLoading {
-                    _uiState.update { it.copy(isLoading = true, error = null) }
-                }.onSuccess { vouchers ->
-                    _uiState.update {
-                        it.copy(
-                            activeVouchers = vouchers,
-                            isLoading = false,
-                            error = null
-                        )
-                    }
-                }.onError { errorMessage ->
-                    _uiState.update {
-                        it.copy(
-                            error = errorMessage,
-                            isLoading = false
-                        )
-                    }
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            vouchersUseCase.getActiveVouchers(_userId.value).onSuccess { vouchers ->
+                _uiState.update {
+                    it.copy(
+                        activeVouchers = vouchers,
+                        isLoading = false,
+                        error = null
+                    )
+                }
+            }.onError { errorMessage ->
+                _uiState.update {
+                    it.copy(
+                        error = errorMessage,
+                        isLoading = false
+                    )
                 }
             }
         }
@@ -92,17 +88,15 @@ class VouchersViewModel @Inject constructor(
 
     private fun loadUsedVouchers() {
         viewModelScope.launch {
-            vouchersUseCase.getUsedVouchers(_userId.value).collect { result ->
-                result.onLoading {}
-                    .onSuccess { vouchers ->
-                        Log.d(TAG, "Used vouchers loaded: ${vouchers.size}")
-                        _uiState.update {
-                            it.copy(usedVouchers = vouchers)
-                        }
-                    }.onError { errorMessage ->
-                        Log.e(TAG, "Error loading used vouchers: $errorMessage")
+            vouchersUseCase.getUsedVouchers(_userId.value)
+                .onSuccess { vouchers ->
+                    Log.d(TAG, "Used vouchers loaded: ${vouchers.size}")
+                    _uiState.update {
+                        it.copy(usedVouchers = vouchers)
                     }
-            }
+                }.onError { errorMessage ->
+                    Log.e(TAG, "Error loading used vouchers: $errorMessage")
+                }
         }
     }
 

@@ -1,5 +1,7 @@
 package com.app.tastybuds.data.repo
 
+import com.app.tastybuds.domain.repository.VouchersRepository
+
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -8,19 +10,11 @@ import com.app.tastybuds.domain.model.Voucher
 import com.app.tastybuds.data.model.VoucherUsageRequest
 import com.app.tastybuds.data.model.mapper.toVoucherDomainModelList
 import com.app.tastybuds.util.Result
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
-interface VouchersRepository {
-    fun getUserVouchers(userId: String): Flow<Result<List<Voucher>>>
-    fun getActiveVouchers(userId: String): Flow<Result<List<Voucher>>>
-    fun getUsedVouchers(userId: String): Flow<Result<List<Voucher>>>
-    fun getRestaurantVouchers(userId: String, restaurantId: String): Flow<Result<List<Voucher>>>
-    suspend fun markVoucherAsUsed(voucherId: String, orderId: String): Result<Voucher>
-    suspend fun refreshVouchers(userId: String): Result<List<Voucher>>
-}
+// `VouchersRepository` interface now lives in :core:common (same package). Every method is
+// a single network call, not an ongoing observation — plain suspend functions, not Flow.
 
 @Singleton
 class VouchersRepositoryImpl @Inject constructor(
@@ -32,9 +26,8 @@ class VouchersRepositoryImpl @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun getUserVouchers(userId: String): Flow<Result<List<Voucher>>> = flow {
-        emit(Result.Loading)
-        try {
+    override suspend fun getUserVouchers(userId: String): Result<List<Voucher>> {
+        return try {
             Log.d(TAG, "Fetching all vouchers for user: $userId")
             val response = apiService.getUserVouchers(userId = "eq.$userId")
 
@@ -52,19 +45,18 @@ class VouchersRepositoryImpl @Inject constructor(
                 }
 
                 val vouchers = vouchersApiResponse.toVoucherDomainModelList(restaurantNames)
-                emit(Result.Success(vouchers))
+                Result.Success(vouchers)
             } else {
                 val errorMessage = "Failed to fetch vouchers: ${response.message()}"
-                emit(Result.Error(errorMessage))
+                Result.Error(errorMessage)
             }
         } catch (e: Exception) {
-            emit(Result.Error(e.message ?: "unknown error"))
+            Result.Error(e.message ?: "unknown error")
         }
     }
 
-    override fun getActiveVouchers(userId: String): Flow<Result<List<Voucher>>> = flow {
-        emit(Result.Loading)
-        try {
+    override suspend fun getActiveVouchers(userId: String): Result<List<Voucher>> {
+        return try {
             val response = apiService.getActiveVouchers(userId = "eq.$userId")
 
             if (response.isSuccessful) {
@@ -83,23 +75,22 @@ class VouchersRepositoryImpl @Inject constructor(
                 val vouchers = vouchersApiResponse.toVoucherDomainModelList(restaurantNames)
                     .filter { it.canBeUsed }
 
-                emit(Result.Success(vouchers))
+                Result.Success(vouchers)
             } else {
                 val errorMessage = "Failed to fetch active vouchers: ${response.message()}"
                 Log.e(TAG, errorMessage)
-                emit(Result.Error(errorMessage))
+                Result.Error(errorMessage)
             }
         } catch (e: Exception) {
             val errorMessage = "Network error: ${e.localizedMessage ?: "Unknown error"}"
             Log.e(TAG, errorMessage, e)
-            emit(Result.Error(errorMessage))
+            Result.Error(errorMessage)
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun getUsedVouchers(userId: String): Flow<Result<List<Voucher>>> = flow {
-        emit(Result.Loading)
-        try {
+    override suspend fun getUsedVouchers(userId: String): Result<List<Voucher>> {
+        return try {
             val response = apiService.getUsedVouchers(userId = "eq.$userId")
 
             if (response.isSuccessful) {
@@ -116,26 +107,25 @@ class VouchersRepositoryImpl @Inject constructor(
                 }
 
                 val vouchers = vouchersApiResponse.toVoucherDomainModelList(restaurantNames)
-                emit(Result.Success(vouchers))
+                Result.Success(vouchers)
             } else {
                 val errorMessage = "Failed to fetch used vouchers: ${response.message()}"
                 Log.e(TAG, errorMessage)
-                emit(Result.Error(errorMessage))
+                Result.Error(errorMessage)
             }
         } catch (e: Exception) {
             val errorMessage = "Network error: ${e.localizedMessage ?: "Unknown error"}"
             Log.e(TAG, errorMessage, e)
-            emit(Result.Error(errorMessage))
+            Result.Error(errorMessage)
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun getRestaurantVouchers(
+    override suspend fun getRestaurantVouchers(
         userId: String,
         restaurantId: String
-    ): Flow<Result<List<Voucher>>> = flow {
-        emit(Result.Loading)
-        try {
+    ): Result<List<Voucher>> {
+        return try {
             val response = apiService.getRestaurantVouchers(
                 userId = "eq.$userId",
                 restaurantId = "eq.$restaurantId"
@@ -151,16 +141,16 @@ class VouchersRepositoryImpl @Inject constructor(
                 }
 
                 val vouchers = vouchersApiResponse.toVoucherDomainModelList(restaurantNames)
-                emit(Result.Success(vouchers))
+                Result.Success(vouchers)
             } else {
                 val errorMessage = "Failed to fetch restaurant vouchers: ${response.message()}"
                 Log.e(TAG, errorMessage)
-                emit(Result.Error(errorMessage))
+                Result.Error(errorMessage)
             }
         } catch (e: Exception) {
             val errorMessage = "Network error: ${e.localizedMessage ?: "Unknown error"}"
             Log.e(TAG, errorMessage, e)
-            emit(Result.Error(errorMessage))
+            Result.Error(errorMessage)
         }
     }
 
