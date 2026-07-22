@@ -2,7 +2,7 @@ package com.app.tastybuds.ui.resturants
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.tastybuds.data.model.RestaurantMenuItem
+import com.app.tastybuds.domain.model.RestaurantMenuItem
 import com.app.tastybuds.domain.FavoritesUseCase
 import com.app.tastybuds.domain.RestaurantDetailsUseCase
 import com.app.tastybuds.ui.resturants.state.RestaurantDetailsUiState
@@ -51,32 +51,28 @@ class RestaurantDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
-            restaurantDetailsUseCase(restaurantId, userId).collect { result ->
-                when (result) {
-                    is Result.Success -> {
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                restaurantData = result.data,
-                                error = null
-                            )
-                        }
-                        loadMenuItems(restaurantId)
+            when (val result = restaurantDetailsUseCase(restaurantId, userId)) {
+                is Result.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            restaurantData = result.data,
+                            error = null
+                        )
                     }
+                    loadMenuItems(restaurantId)
+                }
 
-                    is Result.Error -> {
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                error = result.message
-                            )
-                        }
-                    }
-
-                    is Result.Loading -> {
-                        _uiState.update { it.copy(isLoading = true) }
+                is Result.Error -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = result.message
+                        )
                     }
                 }
+
+                is Result.Loading -> Unit
             }
         }
     }

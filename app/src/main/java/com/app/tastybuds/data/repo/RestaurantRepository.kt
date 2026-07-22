@@ -1,103 +1,97 @@
 package com.app.tastybuds.data.repo
 
+import com.app.tastybuds.domain.repository.RestaurantRepository
+
 import com.app.tastybuds.common.TastyBudsApiService
 import com.app.tastybuds.data.model.mapper.toDomainModel
 import com.app.tastybuds.domain.model.CategoryDetailsData
 import com.app.tastybuds.domain.model.CategoryMenuItem
 import com.app.tastybuds.domain.model.CategoryRestaurant
 import com.app.tastybuds.domain.model.Restaurant
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import com.app.tastybuds.util.*
 
-interface RestaurantRepository {
-    fun getRestaurantsByCategory(categoryId: String): Flow<List<Restaurant>>
-    fun searchRestaurants(query: String): Flow<List<Restaurant>>
-    fun getAllRestaurants(): Flow<List<Restaurant>>
-
-    fun getCategoryDetails(categoryId: String): Flow<CategoryDetailsData>
-    fun getTopRestaurantsByCategory(categoryId: String): Flow<List<CategoryRestaurant>>
-    fun getMenuItemsByCategory(categoryId: String): Flow<List<CategoryMenuItem>>
-    fun getRecommendedRestaurantsByCategory(categoryId: String): Flow<List<CategoryRestaurant>>
-    suspend fun getRestaurantsByIds(restaurantIds: String): Result<List<Restaurant>>
-}
+// `RestaurantRepository` interface now lives in :core:common (same package). Every method
+// is a single network call, not an ongoing observation — plain suspend functions returning
+// Result<T>, not Flow<T>. The old Flow<T> + .catch { emit(emptyList()) } shape silently
+// turned network failures into "no results," indistinguishable from an empty response.
 
 class RestaurantRepositoryImpl @Inject constructor(
     private val tastyBudsApiService: TastyBudsApiService
 ) : RestaurantRepository {
 
-    override fun getRestaurantsByCategory(categoryId: String): Flow<List<Restaurant>> = flow {
-        val response = tastyBudsApiService.getRestaurantsByCategoryId(
-            categoryId,
-            limit = 5
-        )
-        val restaurants = response.map { it.toDomainModel() }
-        emit(restaurants)
-    }.catch {
-        emit(emptyList())
+    override suspend fun getRestaurantsByCategory(categoryId: String): Result<List<Restaurant>> {
+        return try {
+            val response = tastyBudsApiService.getRestaurantsByCategoryId(categoryId, limit = 5)
+            Result.Success(response.map { it.toDomainModel() })
+        } catch (e: Exception) {
+            Result.Error(ErrorHandler.handleApiError(e))
+        }
     }
 
-    override fun searchRestaurants(query: String): Flow<List<Restaurant>> = flow {
-        val response = tastyBudsApiService.searchRestaurantsByName("ilike.*$query*")
-        val restaurants = response.map { it.toDomainModel() }
-        emit(restaurants)
-    }.catch {
-        emit(emptyList())
+    override suspend fun searchRestaurants(query: String): Result<List<Restaurant>> {
+        return try {
+            val response = tastyBudsApiService.searchRestaurantsByName("ilike.*$query*")
+            Result.Success(response.map { it.toDomainModel() })
+        } catch (e: Exception) {
+            Result.Error(ErrorHandler.handleApiError(e))
+        }
     }
 
-    override fun getAllRestaurants(): Flow<List<Restaurant>> = flow {
-        val response = tastyBudsApiService.getRecommendedRestaurants()
-        val restaurants = response.map { it.toDomainModel() }
-        emit(restaurants)
-    }.catch {
-        emit(emptyList())
+    override suspend fun getAllRestaurants(): Result<List<Restaurant>> {
+        return try {
+            val response = tastyBudsApiService.getRecommendedRestaurants()
+            Result.Success(response.map { it.toDomainModel() })
+        } catch (e: Exception) {
+            Result.Error(ErrorHandler.handleApiError(e))
+        }
     }
 
-    override fun getCategoryDetails(categoryId: String): Flow<CategoryDetailsData> =
-        combine(
-            getTopRestaurantsByCategory(categoryId),
-            getMenuItemsByCategory(categoryId),
-            getRecommendedRestaurantsByCategory(categoryId)
-        ) { topRestaurants, menuItems, recommendedRestaurants ->
-            CategoryDetailsData(
-                topRestaurants = topRestaurants,
-                menuItems = menuItems,
-                recommendedRestaurants = recommendedRestaurants
+    override suspend fun getCategoryDetails(categoryId: String): Result<CategoryDetailsData> {
+        return try {
+            val topRestaurantsResult = getTopRestaurantsByCategory(categoryId)
+            val menuItemsResult = getMenuItemsByCategory(categoryId)
+            val recommendedResult = getRecommendedRestaurantsByCategory(categoryId)
+
+            Result.Success(
+                CategoryDetailsData(
+                    topRestaurants = (topRestaurantsResult as? Result.Success)?.data ?: emptyList(),
+                    menuItems = (menuItemsResult as? Result.Success)?.data ?: emptyList(),
+                    recommendedRestaurants = (recommendedResult as? Result.Success)?.data
+                        ?: emptyList()
+                )
             )
-        }.catch {
-            emit(CategoryDetailsData(emptyList(), emptyList(), emptyList()))
+        } catch (e: Exception) {
+            Result.Error(ErrorHandler.handleApiError(e))
         }
-
-    override fun getTopRestaurantsByCategory(categoryId: String): Flow<List<CategoryRestaurant>> =
-        flow {
-            val response =
-                tastyBudsApiService.getTopCategoryRestaurants(categoryId)
-            val restaurants = response.map { it.toDomainModel() }
-            emit(restaurants)
-        }.catch {
-            emit(emptyList())
-        }
-
-    override fun getMenuItemsByCategory(categoryId: String): Flow<List<CategoryMenuItem>> = flow {
-        val response = tastyBudsApiService.getPopularMenuItems(categoryId)
-        val menuItems = response.map { it.toDomainModel() }
-        emit(menuItems)
-    }.catch {
-        emit(emptyList())
     }
 
-    override fun getRecommendedRestaurantsByCategory(categoryId: String): Flow<List<CategoryRestaurant>> =
-        flow {
-            val response =
-                tastyBudsApiService.getRecommendedByCategoryExt(categoryId)
-            val restaurants = response.map { it.toDomainModel() }
-            emit(restaurants)
-        }.catch {
-            emit(emptyList())
+    override suspend fun getTopRestaurantsByCategory(categoryId: String): Result<List<CategoryRestaurant>> {
+        return try {
+            val response = tastyBudsApiService.getTopCategoryRestaurants(categoryId)
+            Result.Success(response.map { it.toDomainModel() })
+        } catch (e: Exception) {
+            Result.Error(ErrorHandler.handleApiError(e))
         }
+    }
+
+    override suspend fun getMenuItemsByCategory(categoryId: String): Result<List<CategoryMenuItem>> {
+        return try {
+            val response = tastyBudsApiService.getPopularMenuItems(categoryId)
+            Result.Success(response.map { it.toDomainModel() })
+        } catch (e: Exception) {
+            Result.Error(ErrorHandler.handleApiError(e))
+        }
+    }
+
+    override suspend fun getRecommendedRestaurantsByCategory(categoryId: String): Result<List<CategoryRestaurant>> {
+        return try {
+            val response = tastyBudsApiService.getRecommendedByCategoryExt(categoryId)
+            Result.Success(response.map { it.toDomainModel() })
+        } catch (e: Exception) {
+            Result.Error(ErrorHandler.handleApiError(e))
+        }
+    }
 
     override suspend fun getRestaurantsByIds(restaurantIds: String): Result<List<Restaurant>> {
         return try {

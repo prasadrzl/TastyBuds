@@ -1,6 +1,6 @@
 package com.app.tastybuds.ui.resturants.state
 
-import com.app.tastybuds.data.model.RestaurantDetailsData
+import com.app.tastybuds.domain.model.RestaurantDetailsData
 
 data class RestaurantDetailsUiState(
     val isLoading: Boolean = false,

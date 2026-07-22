@@ -54,11 +54,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.R
-import com.app.tastybuds.data.model.RestaurantCombo
-import com.app.tastybuds.data.model.RestaurantDetails
-import com.app.tastybuds.data.model.RestaurantDetailsData
-import com.app.tastybuds.data.model.RestaurantMenuItem
-import com.app.tastybuds.data.model.RestaurantReview
+import com.app.tastybuds.domain.model.RestaurantCombo
+import com.app.tastybuds.domain.model.RestaurantDetails
+import com.app.tastybuds.domain.model.RestaurantDetailsData
+import com.app.tastybuds.domain.model.RestaurantMenuItem
+import com.app.tastybuds.domain.model.RestaurantReview
 import com.app.tastybuds.ui.login.LoginViewModel
 import com.app.tastybuds.ui.theme.cardBackgroundColor
 import com.app.tastybuds.ui.theme.cardContentColor
