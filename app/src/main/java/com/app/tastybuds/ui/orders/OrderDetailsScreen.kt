@@ -343,7 +343,7 @@ private fun RestaurantInfoCard(
 }
 
 @Composable
-private fun OrderItemsCard(orderItems: List<OrderItemRequest>) {
+private fun OrderItemsCard(orderItems: List<OrderLineItem>) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -378,7 +378,7 @@ private fun OrderItemsCard(orderItems: List<OrderItemRequest>) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-private fun OrderItemRow(item: OrderItemRequest) {
+private fun OrderItemRow(item: OrderLineItem) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.Top
