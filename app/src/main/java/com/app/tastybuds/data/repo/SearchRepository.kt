@@ -18,11 +18,10 @@ class SearchRepositoryImpl @Inject constructor(
     override suspend fun searchMenuItemsWithRestaurants(query: String): List<SearchResult> {
         return try {
 
-            val formattedQuery = if (query.isNotBlank()) "ilike.*$query*" else null
             val limit = if (query.isBlank()) 50 else 30
 
             val result =
-                apiService.searchMenuItemsWithRestaurants(nameQuery = formattedQuery, limit = limit)
+                apiService.searchMenuItemsWithRestaurants(nameQuery = query, limit = limit)
             searchResultsMapper.mapToSearchResults(result)
         } catch (e: Exception) {
             emptyList()

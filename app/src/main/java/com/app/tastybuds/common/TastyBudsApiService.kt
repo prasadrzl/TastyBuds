@@ -35,183 +35,212 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
+// Talks to the local Spring Boot backend (clean REST, /api/v1). The base path is set in
+// NetworkModule; paths here are relative to it. Response bodies match the existing Moshi
+// models 1:1 (snake_case JSON), so only paths/params changed when migrating off Supabase.
 interface TastyBudsApiService {
 
+    // ---------- Home / catalog ----------
+
     @GET("banners")
-    suspend fun getBanners(
-        @Query("select") select: String = "*",
-        @Query("order") order: String = "created_at.desc"
-    ): List<BannerResponse>
+    suspend fun getBanners(): List<BannerResponse>
 
     @GET("categories")
-    suspend fun getCategories(
-        @Query("select") select: String = "*",
-        @Query("order") order: String = "name.asc"
-    ): List<CategoryResponse>
-
-    @GET("vouchers")
-    suspend fun getVoucherCount(
-        @Query("user_id") userId: String = "",
-        @Query("select") select: String = "*"
-    ): List<VoucherCountResponse>
+    suspend fun getCategories(): List<CategoryResponse>
 
     @GET("collections")
-    suspend fun getCollections(
-        @Query("select") select: String = "*",
-        @Query("order") order: String = "title.asc"
-    ): List<CollectionResponse>
+    suspend fun getCollections(): List<CollectionResponse>
 
-    @GET("sale_items")
-    suspend fun getDeals(
-        @Query("select") select: String = "*"
-    ): List<DealResponse>
+    @GET("deals")
+    suspend fun getDeals(): List<DealResponse>
 
-    @GET("restaurants")
+    @GET("vouchers/count")
+    suspend fun getVoucherCount(
+        @Query("userId") userId: String
+    ): List<VoucherCountResponse>
+
+    // ---------- Restaurants ----------
+
+    @GET("restaurants/search")
     suspend fun searchRestaurants(
-        @Query("name") nameQuery: String,
-        @Query("select") select: String = "*"
+        @Query("name") nameQuery: String
     ): List<RestaurantResponse>
 
-    @GET("menu_items")
-    suspend fun searchMenuItemsWithRestaurants(
-        @Query("name") nameQuery: String? = null,
-        @Query("select") select: String = "*,restaurants(*)",
-        @Query("order") order: String = "price.asc",
-        @Query("limit") limit: Int = 20
-    ): List<MenuItemWithRestaurantResponse>
-
-    @GET("restaurants")
+    @GET("restaurants/by-category")
     suspend fun getRestaurantsByCategory(
-        @Query("category_ids") categoryFilter: String,
-        @Query("select") select: String = "*",
-        @Query("order") order: String = "rating.desc"
+        @Query("categoryId") categoryId: String
     ): List<RestaurantResponse>
 
-    @GET("restaurants")
+    @GET("restaurants/recommended")
     suspend fun getRecommendedRestaurants(
-        @Query("select") select: String = "*",
-        @Query("is_open") isOpen: String = "eq.true",
-        @Query("order") order: String = "rating.desc",
-        @Query("limit") limit: String = "20"
+        @Query("limit") limit: Int = 20
     ): List<RestaurantResponse>
 
-    @GET("restaurants")
+    @GET("restaurants/top-by-category")
     suspend fun getTopRestaurantsByCategory(
-        @Query("category_ids") categoryIds: String,
-        @Query("order") order: String = "rating.desc,review_count.desc",
-        @Query("limit") limit: Int = 6,
-        @Query("select") select: String = "*"
+        @Query("categoryId") categoryId: String,
+        @Query("limit") limit: Int = 6
     ): List<CategoryRestaurantResponse>
 
-    @GET("menu_items")
-    suspend fun getMenuItemsByCategory(
-        @Query("category_id") categoryId: String,
-        @Query("is_popular") isPopular: String = "eq.true",
-        @Query("order") order: String = "rating.desc,review_count.desc",
-        @Query("limit") limit: Int = 6,
-        @Query("select") select: String = "*,restaurants(name,delivery_time,id)"
-    ): List<CategoryMenuItemResponse>
-
-    @GET("restaurants")
+    @GET("restaurants/recommended-by-category")
     suspend fun getRecommendedRestaurantsByCategory(
-        @Query("category_ids") categoryIds: String,
-        @Query("rating") minRating: String = "gte.4.0",
-        @Query("order") order: String = "review_count.desc",
+        @Query("categoryId") categoryId: String,
+        @Query("minRating") minRating: Double? = null,
         @Query("limit") limit: Int = 5,
-        @Query("offset") offset: Int = 6,
-        @Query("select") select: String = "*"
+        @Query("offset") offset: Int = 6
+    ): List<CategoryRestaurantResponse>
+
+    @GET("restaurants/filtered")
+    suspend fun getFilteredRestaurants(
+        @Query("categoryId") categoryId: String,
+        @Query("freeship") freeship: Boolean? = null,
+        @Query("limit") limit: Int = 10
     ): List<CategoryRestaurantResponse>
 
     @GET("restaurants")
-    suspend fun getFilteredRestaurants(
-        @Query("category_ids") categoryIds: String,
-        @Query("is_freeship") isFreeship: String? = null,
-        @Query("order") order: String = "rating.desc",
-        @Query("limit") limit: Int = 10,
-        @Query("select") select: String = "*"
-    ): List<CategoryRestaurantResponse>
+    suspend fun getRestaurantsByIdsForCollection(
+        @Query("ids") ids: String
+    ): Response<List<RestaurantResponse>>
 
-    @GET("menu_items")
+    @GET("restaurants/summary")
+    suspend fun getRestaurantsByIds(
+        @Query("ids") restaurantIds: String
+    ): Response<List<RestaurantResponse>>
+
+    @GET("restaurants/{id}")
+    suspend fun getRestaurantDetails(
+        @Path("id") restaurantId: String
+    ): Response<RestaurantDetailsResponse>
+
+    @GET("restaurants/{id}/vouchers")
+    suspend fun getUserRestaurantVouchers(
+        @Path("id") restaurantId: String,
+        @Query("userId") userId: String? = null
+    ): Response<List<RestaurantVoucherResponse>>
+
+    @GET("restaurants/{restaurantId}/combos")
+    suspend fun getRestaurantCombos(
+        @Path("restaurantId") restaurantId: String,
+        @Query("limit") limit: Int = 3
+    ): Response<List<ComboResponse>>
+
+    @GET("restaurants/{restaurantId}/menu-items")
     suspend fun getRestaurantMenuItems(
-        @Query("restaurant_id") restaurantId: String,
-        @Query("select") select: String = "*",
-        @Query("order") order: String = "is_popular.desc,rating.desc"
+        @Path("restaurantId") restaurantId: String
     ): Response<List<MenuItemResponse>>
 
-    @GET("menu_items")
+    @GET("restaurants/{restaurantId}/menu-items/for-you")
     suspend fun getForYouMenuItems(
-        @Query("restaurant_id") restaurantId: String,
-        @Query("is_popular") isPopular: String = "eq.true",
-        @Query("select") select: String = "*",
+        @Path("restaurantId") restaurantId: String,
         @Query("limit") limit: Int = 4
     ): Response<List<MenuItemResponse>>
 
-    @GET("restaurant_reviews_with_time")
+    @GET("restaurants/{restaurantId}/reviews")
     suspend fun getRestaurantReviews(
-        @Query("restaurant_id") restaurantId: String,
-        @Query("select") select: String = "*",
-        @Query("order") order: String = "created_at.desc",
+        @Path("restaurantId") restaurantId: String,
         @Query("limit") limit: Int = 10
     ): Response<List<RestaurantReviewResponse>>
 
-    @GET("active_restaurant_vouchers")
-    suspend fun getRestaurantVouchers(
-        @Query("restaurant_id") restaurantId: String,
-        @Query("select") select: String = "*"
-    ): Response<List<RestaurantVoucherResponse>>
+    // ---------- Menu items ----------
 
-    @GET("active_restaurant_vouchers")
-    suspend fun getUserRestaurantVouchers(
-        @Query("user_id") userId: String,
-        @Query("restaurant_id") restaurantId: String,
-        @Query("select") select: String = "*"
-    ): Response<List<RestaurantVoucherResponse>>
+    @GET("menu-items/search")
+    suspend fun searchMenuItemsWithRestaurants(
+        @Query("name") nameQuery: String,
+        @Query("limit") limit: Int = 20
+    ): List<MenuItemWithRestaurantResponse>
 
-    @GET("combos")
-    suspend fun getRestaurantCombos(
-        @Query("restaurant_id") restaurantId: String,
-        @Query("limit") limit: Int = 3,
-        @Query("select") select: String = "*"
-    ): Response<List<ComboResponse>>
+    @GET("menu-items/by-category")
+    suspend fun getMenuItemsByCategory(
+        @Query("categoryId") categoryId: String,
+        @Query("limit") limit: Int = 6
+    ): List<CategoryMenuItemResponse>
 
-    @GET("restaurants")
-    suspend fun getRestaurantDetails(
-        @Query("id") restaurantId: String,
-        @Query("select") select: String = "*"
-    ): Response<List<RestaurantDetailsResponse>>
-
-    @GET("menu_items")
+    @GET("menu-items/{id}")
     suspend fun getFoodDetails(
-        @Query("id") foodItemId: String,
-        @Query("select") select: String = "*"
-    ): List<FoodDetailsResponse>
+        @Path("id") foodItemId: String
+    ): FoodDetailsResponse
 
-    @GET("customization_options")
+    @GET("menu-items/{id}/customization-options")
     suspend fun getCustomizationOptions(
-        @Query("menu_item_id") menuItemId: String,
-        @Query("select") select: String = "*"
-    ): List<FoodCustomizationResponse>
+        @Path("id") menuItemId: String
+    ): FoodCustomizationResponse
+
+    // ---------- Users ----------
 
     @GET("users")
     suspend fun getUser(
         @Query("id") userId: String? = null,
-        @Query("email") email: String? = null,
-        @Query("select") select: String = "*"
+        @Query("email") email: String? = null
     ): Response<List<UserResponse>>
 
-    @PATCH("users")
+    @PATCH("users/{id}")
     suspend fun updateUser(
-        @Query("id") userId: String,
+        @Path("id") userId: String,
         @Body updateRequest: UpdateProfileRequest
     ): Response<List<UserResponse>>
 
-    @GET("favorites")
+    @GET("users/{id}/addresses")
+    suspend fun getUserAddresses(
+        @Path("id") userId: String
+    ): Response<List<UserAddress>>
+
+    @GET("users/{id}/favorites")
     suspend fun getUserFavorites(
-        @Query("user_id") userId: String,
-        @Query("select") select: String = "*"
+        @Path("id") userId: String
     ): Response<List<FavoriteResponse>>
+
+    @GET("users/{id}/favorites/restaurants")
+    suspend fun getFavoriteRestaurantsWithDetails(
+        @Path("id") userId: String
+    ): Response<List<FavoriteWithRestaurantResponse>>
+
+    @GET("users/{id}/favorites/menu-items")
+    suspend fun getFavoriteMenuItemsWithDetails(
+        @Path("id") userId: String
+    ): Response<List<FavoriteWithMenuItemResponse>>
+
+    @GET("users/{id}/orders")
+    suspend fun getUserOrders(
+        @Path("id") userId: String,
+        @Query("status") status: String? = null
+    ): Response<List<Order>>
+
+    @GET("users/{id}/orders")
+    suspend fun getUserOrdersByStatus(
+        @Path("id") userId: String,
+        @Query("status") status: String
+    ): Response<List<Order>>
+
+    @GET("users/{id}/orders/active")
+    suspend fun getActiveUserOrders(
+        @Path("id") userId: String
+    ): Response<List<Order>>
+
+    @GET("users/{id}/vouchers")
+    suspend fun getUserVouchers(
+        @Path("id") userId: String
+    ): Response<List<VoucherApiResponse>>
+
+    @GET("users/{id}/vouchers/active")
+    suspend fun getActiveVouchers(
+        @Path("id") userId: String
+    ): Response<List<VoucherApiResponse>>
+
+    @GET("users/{id}/vouchers/used")
+    suspend fun getUsedVouchers(
+        @Path("id") userId: String
+    ): Response<List<VoucherApiResponse>>
+
+    @GET("users/{id}/restaurants/{restaurantId}/vouchers")
+    suspend fun getRestaurantVouchers(
+        @Path("id") userId: String,
+        @Path("restaurantId") restaurantId: String
+    ): Response<List<VoucherApiResponse>>
+
+    // ---------- Favorites ----------
 
     @POST("favorites")
     suspend fun addFavorite(
@@ -220,126 +249,40 @@ interface TastyBudsApiService {
 
     @DELETE("favorites")
     suspend fun removeFavorite(
-        @Query("user_id") userId: String,
-        @Query("menu_item_id") menuItemId: String? = null,
-        @Query("restaurant_id") restaurantId: String? = null
+        @Query("userId") userId: String,
+        @Query("menuItemId") menuItemId: String? = null,
+        @Query("restaurantId") restaurantId: String? = null
     ): Response<List<FavoriteResponse>>
 
-    @GET("favorites")
-    suspend fun getFavoriteRestaurantsWithDetails(
-        @Query("user_id") userId: String,
-        @Query("restaurant_id") restaurantFilter: String = "not.is.null",
-        @Query("select") select: String = "*,restaurants(*)"
-    ): Response<List<FavoriteWithRestaurantResponse>>
-
-    @GET("favorites")
-    suspend fun getFavoriteMenuItemsWithDetails(
-        @Query("user_id") userId: String,
-        @Query("menu_item_id") menuItemFilter: String = "not.is.null",
-        @Query("select") select: String = "*,menu_items(*,restaurants(name,id))"
-    ): Response<List<FavoriteWithMenuItemResponse>>
-
-    @GET("user_addresses")
-    suspend fun getUserAddresses(
-        @Query("user_id") userId: String? = null,
-        @Query("select") select: String = "*"
-    ): Response<List<UserAddress>>
+    // ---------- Orders ----------
 
     @POST("orders")
     suspend fun createOrder(
         @Body orderRequest: CreateOrderRequest
     ): Response<List<Order>>
 
-    @GET("restaurants")
-    suspend fun getRestaurantsByIdsForCollection(
-        @Query("id") restaurantIds: String,
-        @Query("select") select: String = "*"
-    ): Response<List<RestaurantResponse>>
-
-    @GET("vouchers")
-    suspend fun getGlobalVouchers(
-        @Query("user_id") userId: String? = null,
-        @Query("is_used") isUsed: String = "eq.false",
-        @Query("select") select: String = "*"
-    ): Response<List<Voucher>>
-
-    @GET("orders")
-    suspend fun getUserOrders(
-        @Query("user_id") userId: String,
-        @Query("order") order: String = "created_at.desc",
-        @Query("select") select: String = "*,restaurants(name,id,image)"
-    ): Response<List<Order>>
-
-    @GET("orders")
+    @GET("orders/{id}")
     suspend fun getOrderById(
-        @Query("id") orderId: String,
-        @Query("select") select: String = "*,restaurants(name,id,image),order_items(*)"
+        @Path("id") orderId: String
     ): Response<List<Order>>
 
-    @GET("orders")
-    suspend fun getUserOrdersByStatus(
-        @Query("user_id") userId: String,
-        @Query("status") status: String,
-        @Query("order") order: String = "created_at.desc",
-        @Query("select") select: String = "*,restaurants(name,id,image),order_items(*)"
-    ): Response<List<Order>>
-
-    @GET("orders")
-    suspend fun getActiveUserOrders(
-        @Query("user_id") userId: String,
-        @Query("status") status: String = "in.(pending,confirmed,preparing,ready,out_for_delivery)",
-        @Query("order") order: String = "created_at.desc",
-        @Query("select") select: String = "*,restaurants(name,id,image),order_items(*)"
-    ): Response<List<Order>>
-
-    @PATCH("orders")
+    @PATCH("orders/{id}/status")
     suspend fun updateOrderStatusExt(
-        @Query("id") orderId: String,
+        @Path("id") orderId: String,
         @Body statusUpdate: UpdateOrderStatusRequest
     ): Response<List<Order>>
 
-    @GET("vouchers")
-    suspend fun getUserVouchers(
-        @Query("user_id") userId: String,
-        @Query("select") select: String = "*"
-    ): Response<List<VoucherApiResponse>>
+    // ---------- Vouchers ----------
 
     @GET("vouchers")
-    suspend fun getActiveVouchers(
-        @Query("user_id") userId: String,
-        @Query("is_used") isUsed: String = "eq.false",
-        @Query("is_active") isActive: String = "eq.true",
-        @Query("select") select: String = "*"
-    ): Response<List<VoucherApiResponse>>
+    suspend fun getGlobalVouchers(
+        @Query("userId") userId: String? = null,
+        @Query("unusedOnly") unusedOnly: Boolean = true
+    ): Response<List<Voucher>>
 
-    @GET("vouchers")
-    suspend fun getUsedVouchers(
-        @Query("user_id") userId: String,
-        @Query("is_used") isUsed: String = "eq.true",
-        @Query("select") select: String = "*"
-    ): Response<List<VoucherApiResponse>>
-
-    @GET("vouchers")
-    suspend fun getRestaurantVouchers(
-        @Query("user_id") userId: String,
-        @Query("restaurant_id") restaurantId: String,
-        @Query("is_used") isUsed: String = "eq.false",
-        @Query("is_active") isActive: String = "eq.true",
-        @Query("select") select: String = "*"
-    ): Response<List<VoucherApiResponse>>
-
-    @PATCH("vouchers")
+    @PATCH("vouchers/{id}/use")
     suspend fun markVoucherAsUsed(
-        @Query("id") voucherId: String,
+        @Path("id") voucherId: String,
         @Body voucherUsage: VoucherUsageRequest
     ): Response<List<VoucherApiResponse>>
-
-    @GET("restaurants")
-    suspend fun getRestaurantsByIds(
-        @Query("id") restaurantIds: String,
-        @Query("select") select: String = "id,name"
-    ): Response<List<RestaurantResponse>>
 }
-
-
-

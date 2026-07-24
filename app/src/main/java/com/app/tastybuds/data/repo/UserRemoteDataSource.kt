@@ -35,7 +35,7 @@ class UserRemoteDataSource @Inject constructor(
 
     suspend fun getUserById(userId: String): Result<User> {
         return try {
-            val response = apiService.getUser(userId = "eq.$userId")
+            val response = apiService.getUser(userId = userId)
             if (response.isSuccessful) {
                 val userResponse = response.body()?.firstOrNull()
                 if (userResponse != null) {

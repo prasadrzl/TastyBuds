@@ -29,7 +29,7 @@ class VouchersRepositoryImpl @Inject constructor(
     override suspend fun getUserVouchers(userId: String): Result<List<Voucher>> {
         return try {
             Log.d(TAG, "Fetching all vouchers for user: $userId")
-            val response = apiService.getUserVouchers(userId = "eq.$userId")
+            val response = apiService.getUserVouchers(userId = userId)
 
             if (response.isSuccessful) {
                 val vouchersApiResponse = response.body() ?: emptyList()
@@ -57,7 +57,7 @@ class VouchersRepositoryImpl @Inject constructor(
 
     override suspend fun getActiveVouchers(userId: String): Result<List<Voucher>> {
         return try {
-            val response = apiService.getActiveVouchers(userId = "eq.$userId")
+            val response = apiService.getActiveVouchers(userId = userId)
 
             if (response.isSuccessful) {
                 val vouchersApiResponse = response.body() ?: emptyList()
@@ -91,7 +91,7 @@ class VouchersRepositoryImpl @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun getUsedVouchers(userId: String): Result<List<Voucher>> {
         return try {
-            val response = apiService.getUsedVouchers(userId = "eq.$userId")
+            val response = apiService.getUsedVouchers(userId = userId)
 
             if (response.isSuccessful) {
                 val vouchersApiResponse = response.body() ?: emptyList()
@@ -127,8 +127,8 @@ class VouchersRepositoryImpl @Inject constructor(
     ): Result<List<Voucher>> {
         return try {
             val response = apiService.getRestaurantVouchers(
-                userId = "eq.$userId",
-                restaurantId = "eq.$restaurantId"
+                userId = userId,
+                restaurantId = restaurantId
             )
 
             if (response.isSuccessful) {
@@ -162,7 +162,7 @@ class VouchersRepositoryImpl @Inject constructor(
             )
 
             val response = apiService.markVoucherAsUsed(
-                voucherId = "eq.$voucherId",
+                voucherId = voucherId,
                 voucherUsage = voucherUsage
             )
 
@@ -189,7 +189,7 @@ class VouchersRepositoryImpl @Inject constructor(
 
     override suspend fun refreshVouchers(userId: String): Result<List<Voucher>> {
         return try {
-            val response = apiService.getUserVouchers(userId = "eq.$userId")
+            val response = apiService.getUserVouchers(userId = userId)
 
             if (response.isSuccessful) {
                 val vouchersApiResponse = response.body() ?: emptyList()
@@ -221,7 +221,7 @@ class VouchersRepositoryImpl @Inject constructor(
     private suspend fun fetchRestaurantNames(restaurantIds: List<String>): Map<String, String> {
         return try {
             val idsQuery = restaurantIds.joinToString(",")
-            val response = apiService.getRestaurantsByIds(restaurantIds = "($idsQuery)")
+            val response = apiService.getRestaurantsByIds(restaurantIds = idsQuery)
 
             if (response.isSuccessful) {
                 response.body()?.associate { it.id to it.name } ?: emptyMap()

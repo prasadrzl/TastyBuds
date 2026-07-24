@@ -31,7 +31,7 @@ class RestaurantRepositoryImpl @Inject constructor(
 
     override suspend fun searchRestaurants(query: String): Result<List<Restaurant>> {
         return try {
-            val response = tastyBudsApiService.searchRestaurantsByName("ilike.*$query*")
+            val response = tastyBudsApiService.searchRestaurantsByName(query)
             Result.Success(response.map { it.toDomainModel() })
         } catch (e: Exception) {
             Result.Error(ErrorHandler.handleApiError(e))
@@ -100,7 +100,7 @@ class RestaurantRepositoryImpl @Inject constructor(
             }
 
             val response =
-                tastyBudsApiService.getRestaurantsByIdsForCollection("in.($restaurantIds)")
+                tastyBudsApiService.getRestaurantsByIdsForCollection(restaurantIds)
 
             if (response.isSuccessful) {
                 val restaurantResponses = response.body() ?: emptyList()

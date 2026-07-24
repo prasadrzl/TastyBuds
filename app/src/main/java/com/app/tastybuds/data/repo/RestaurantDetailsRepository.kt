@@ -27,12 +27,12 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
         restaurantId: String, userId: String
     ): Result<RestaurantDetails> {
         return try {
-            val restaurantResponse = apiService.getRestaurantDetails("eq.$restaurantId")
+            val restaurantResponse = apiService.getRestaurantDetails(restaurantId)
 
-            val favoritesResponse = apiService.getUserFavorites("eq.$userId")
+            val favoritesResponse = apiService.getUserFavorites(userId)
 
             if (restaurantResponse.isSuccessful) {
-                val restaurant = restaurantResponse.body()?.firstOrNull()
+                val restaurant = restaurantResponse.body()
                 if (restaurant != null) {
                     val favorites = favoritesResponse.body() ?: emptyList()
                     val isFavorite = favorites.any { it.restaurantId == restaurantId }
@@ -52,7 +52,7 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
 
     override suspend fun getRestaurantMenuItems(restaurantId: String): Result<List<RestaurantMenuItem>> {
         return try {
-            val response = apiService.getRestaurantMenuItems("eq.$restaurantId")
+            val response = apiService.getRestaurantMenuItems(restaurantId)
             if (response.isSuccessful) {
                 val menuItems = response.body()?.map { it.toDomain() } ?: emptyList()
                 Result.Success(menuItems)
@@ -66,7 +66,7 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
 
     override suspend fun getForYouMenuItems(restaurantId: String): Result<List<RestaurantMenuItem>> {
         return try {
-            val response = apiService.getForYouMenuItems("eq.$restaurantId")
+            val response = apiService.getForYouMenuItems(restaurantId)
             if (response.isSuccessful) {
                 val menuItems = response.body()?.map { it.toDomain() } ?: emptyList()
                 Result.Success(menuItems)
@@ -80,7 +80,7 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
 
     override suspend fun getRestaurantReviews(restaurantId: String): Result<List<RestaurantReview>> {
         return try {
-            val response = apiService.getRestaurantReviews("eq.$restaurantId")
+            val response = apiService.getRestaurantReviews(restaurantId)
             if (response.isSuccessful) {
                 val reviews = response.body()?.map { it.toDomain() } ?: emptyList()
                 Result.Success(reviews)
@@ -96,7 +96,7 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
         restaurantId: String, userId: String
     ): Result<List<RestaurantVoucher>> {
         return try {
-            val response = apiService.getUserRestaurantVouchers("eq.$userId", "eq.$restaurantId")
+            val response = apiService.getUserRestaurantVouchers(restaurantId = restaurantId, userId = userId)
             if (response.isSuccessful) {
                 val vouchers = response.body()?.map { it.toDomain() } ?: emptyList()
                 Result.Success(vouchers)
@@ -110,7 +110,7 @@ class RestaurantDetailsRepositoryImpl @Inject constructor(
 
     override suspend fun getRestaurantCombos(restaurantId: String): Result<List<RestaurantCombo>> {
         return try {
-            val response = apiService.getRestaurantCombos("eq.$restaurantId")
+            val response = apiService.getRestaurantCombos(restaurantId)
             if (response.isSuccessful) {
                 val combos = response.body()?.map { it.toDomain() } ?: emptyList()
                 Result.Success(combos)

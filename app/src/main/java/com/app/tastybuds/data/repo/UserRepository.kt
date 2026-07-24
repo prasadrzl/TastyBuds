@@ -21,7 +21,7 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun getUser(userId: String): Result<User> {
         return try {
-            val response = apiService.getUser("eq.$userId")
+            val response = apiService.getUser(userId)
             if (response.isSuccessful) {
                 val userResponse = response.body()?.firstOrNull()
                 if (userResponse != null) {
@@ -43,7 +43,7 @@ class UserRepositoryImpl @Inject constructor(
     ): Result<User> {
         return try {
             val response =
-                apiService.updateUser("eq.$userId", updateRequest.toUpdateUserDataModel())
+                apiService.updateUser(userId, updateRequest.toUpdateUserDataModel())
             if (response.isSuccessful) {
                 val updatedUser = response.body()?.firstOrNull()
                 if (updatedUser != null) {
