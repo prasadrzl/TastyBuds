@@ -23,24 +23,15 @@ class FoodDetailsRepositoryImpl @Inject constructor(
 
     override suspend fun getFoodDetails(foodItemId: String, userId: String): Result<FoodDetails> {
         return try {
-            val foodResponse = apiService.getFoodDetails("eq.$foodItemId")
-            val favoritesResponse = apiService.getUserFavorites("eq.$userId")
+            val foodItem = apiService.getFoodDetails(foodItemId)
+            val favoritesResponse = apiService.getUserFavorites(userId)
 
-            if (foodResponse.isNotEmpty()) {
-                val foodItem = foodResponse.firstOrNull()
-                if (foodItem != null) {
-                    val favorites = favoritesResponse.body() ?: emptyList()
-                    val isFavorite = favorites.any { it.menuItemId == foodItemId }
+            val favorites = favoritesResponse.body() ?: emptyList()
+            val isFavorite = favorites.any { it.menuItemId == foodItemId }
 
-                    val foodDetailsWithFavorite =
-                        foodItem.toFoodDetails().copy(isFavorite = isFavorite)
-                    Result.Success(foodDetailsWithFavorite)
-                } else {
-                    Result.Error("Food item not found")
-                }
-            } else {
-                Result.Error("Failed to get food details")
-            }
+            val foodDetailsWithFavorite =
+                foodItem.toFoodDetails().copy(isFavorite = isFavorite)
+            Result.Success(foodDetailsWithFavorite)
         } catch (e: Exception) {
             Result.Error("Network error: ${e.message}")
         }
@@ -48,11 +39,8 @@ class FoodDetailsRepositoryImpl @Inject constructor(
 
     override suspend fun getCustomizationOptions(menuItemId: String): Result<FoodCustomization> {
         return try {
-            val response = apiService.getCustomizationOptions("eq.$menuItemId")
-            val customization = response.firstOrNull()?.toFoodCustomization() ?: FoodCustomization(
-                sizes = emptyList(), toppings = emptyList(), spiceLevels = emptyList()
-            )
-            Result.Success(customization)
+            val response = apiService.getCustomizationOptions(menuItemId)
+            Result.Success(response.toFoodCustomization())
         } catch (e: Exception) {
             Result.Error("Network error: ${e.message}")
         }

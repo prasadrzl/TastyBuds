@@ -22,7 +22,7 @@ class FavoritesRepositoryImpl @Inject constructor(
 
     override suspend fun getUserFavorites(userId: String): Result<List<FavoriteResponse>> {
         return try {
-            val response = apiService.getUserFavorites("eq.$userId")
+            val response = apiService.getUserFavorites(userId)
             if (response.isSuccessful) {
                 Result.Success(response.body() ?: emptyList())
             } else {
@@ -68,9 +68,9 @@ class FavoritesRepositoryImpl @Inject constructor(
     ): Result<Boolean> {
         return try {
             val response = apiService.removeFavorite(
-                userId = "eq.$userId",
-                menuItemId = menuItemId?.let { "eq.$it" },
-                restaurantId = restaurantId?.let { "eq.$it" }
+                userId = userId,
+                menuItemId = menuItemId,
+                restaurantId = restaurantId
             )
             if (response.isSuccessful) {
                 Result.Success(true)
@@ -85,10 +85,7 @@ class FavoritesRepositoryImpl @Inject constructor(
 
     override suspend fun isMenuItemFavorite(userId: String, menuItemId: String): Result<Boolean> {
         return try {
-            val response = apiService.getUserFavorites(
-                userId = "eq.$userId",
-                select = "menu_item_id"
-            )
+            val response = apiService.getUserFavorites(userId = userId)
             if (response.isSuccessful) {
                 val favorites = response.body() ?: emptyList()
                 val isFavorite = favorites.any { it.menuItemId == menuItemId }
@@ -106,10 +103,7 @@ class FavoritesRepositoryImpl @Inject constructor(
         restaurantId: String
     ): Result<Boolean> {
         return try {
-            val response = apiService.getUserFavorites(
-                userId = "eq.$userId",
-                select = "restaurant_id"
-            )
+            val response = apiService.getUserFavorites(userId = userId)
             if (response.isSuccessful) {
                 val favorites = response.body() ?: emptyList()
                 val isFavorite = favorites.any { it.restaurantId == restaurantId }
@@ -124,7 +118,7 @@ class FavoritesRepositoryImpl @Inject constructor(
 
     override suspend fun getFavoriteRestaurantsWithDetails(userId: String): Result<List<FavoriteRestaurant>> {
         return try {
-            val response = apiService.getFavoriteRestaurantsWithDetails("eq.$userId")
+            val response = apiService.getFavoriteRestaurantsWithDetails(userId)
             if (response.isSuccessful) {
                 Result.Success(response.body()?.map { it.toDomain() } ?: emptyList())
             } else {
@@ -137,7 +131,7 @@ class FavoritesRepositoryImpl @Inject constructor(
 
     override suspend fun getFavoriteMenuItemsWithDetails(userId: String): Result<List<FavoriteMenuItem>> {
         return try {
-            val response = apiService.getFavoriteMenuItemsWithDetails("eq.$userId")
+            val response = apiService.getFavoriteMenuItemsWithDetails(userId)
             if (response.isSuccessful) {
                 Result.Success(response.body()?.map { it.toDomain() } ?: emptyList())
             } else {

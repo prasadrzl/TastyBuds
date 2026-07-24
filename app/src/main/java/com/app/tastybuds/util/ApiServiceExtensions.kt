@@ -2,53 +2,52 @@ package com.app.tastybuds.util
 
 import com.app.tastybuds.common.TastyBudsApiService
 
+// Thin convenience wrappers over the API service. With the clean Spring Boot REST backend
+// these just forward plain values (the old versions injected Supabase/PostgREST operators
+// like "eq." / "ilike." / category jsonb filters, which the server now handles itself).
+
 suspend fun TastyBudsApiService.getPopularMenuItems(
     categoryId: String,
     limit: Int = 6
 ) = getMenuItemsByCategory(
-    categoryId = "eq.$categoryId",
-    isPopular = "eq.true",
-    order = "rating.desc,review_count.desc",
-    limit = limit,
-    select = "*,restaurants(name,delivery_time,id)"
+    categoryId = categoryId,
+    limit = limit
 )
 
 suspend fun TastyBudsApiService.getUserBy(
     userId: String? = null,
     email: String? = null
 ) = getUser(
-    userId = if (userId != null) "eq.$userId" else null,
-    email = if (email != null) "eq.$email" else null,
-    select = "*"
+    userId = userId,
+    email = email
 )
 
 suspend fun TastyBudsApiService.getRestaurantsByCategoryId(
     categoryId: String,
     limit: Int = 20
 ) = getRestaurantsByCategory(
-    categoryFilter = categoryId.toCategoryFilter(),
-    order = "rating.desc"
+    categoryId = categoryId
 )
 
 suspend fun TastyBudsApiService.searchRestaurantsByName(
     query: String
 ) = searchRestaurants(
-    nameQuery = "ilike.*$query*"
+    nameQuery = query
 )
 
 suspend fun TastyBudsApiService.getFilteredRestaurants(
     categoryId: String,
     isFreeShip: Boolean? = null
 ) = getFilteredRestaurants(
-    categoryIds = categoryId.toCategoryFilter(),
-    isFreeship = if (isFreeShip == true) "eq.true" else null
+    categoryId = categoryId,
+    freeship = isFreeShip
 )
 
 suspend fun TastyBudsApiService.getTopCategoryRestaurants(
     categoryId: String,
     limit: Int = 6
 ) = getTopRestaurantsByCategory(
-    categoryIds = categoryId.toCategoryFilter(),
+    categoryId = categoryId,
     limit = limit
 )
 
@@ -56,35 +55,30 @@ suspend fun TastyBudsApiService.getRecommendedByCategoryExt(
     categoryId: String,
     limit: Int = 5
 ) = getRecommendedRestaurantsByCategory(
-    categoryIds = categoryId.toCategoryFilter(),
+    categoryId = categoryId,
     limit = limit
 )
 
 suspend fun TastyBudsApiService.getUserAddressesExt(
-    userId: String? = null
+    userId: String
 ) = getUserAddresses(
-    userId = if (userId != null) "eq.$userId" else null,
-    select = "*"
+    userId = userId
 )
 
 suspend fun TastyBudsApiService.getGlobalVouchersExt(
     userId: String? = null
 ) = getGlobalVouchers(
-    userId = if (userId != null) "eq.$userId" else null,
-    select = "*"
+    userId = userId
 )
 
 suspend fun TastyBudsApiService.getOrderByExt(
-    orderId: String? = null
+    orderId: String
 ) = getOrderById(
-    orderId = "eq.$orderId",
-    select = "*"
+    orderId = orderId
 )
 
 suspend fun TastyBudsApiService.getUserOrdersExt(
-    userId: String? = null
+    userId: String
 ) = getUserOrders(
-    userId = "eq.$userId"
+    userId = userId
 )
-
-

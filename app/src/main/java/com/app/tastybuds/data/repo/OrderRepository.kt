@@ -123,7 +123,7 @@ class OrderRepositoryImpl @Inject constructor(
         return try {
             val response = apiService.getUserOrdersByStatus(
                 userId = userId,
-                status = "eq.${status.toApiString()}"
+                status = status.toApiString()
             )
 
             if (response.isSuccessful) {

@@ -32,17 +32,9 @@ object NetworkModule {
         val customInterceptor = { chain: okhttp3.Interceptor.Chain ->
             val originalRequest = chain.request()
 
+            // Local Spring Boot backend needs no Supabase apikey/Authorization/Prefer headers.
             val modifiedRequest = originalRequest.newBuilder()
-                .addHeader(
-                    "apikey",
-                    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFudXhjcG5hYWtvanRteHRya3lnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5NDA5OTcsImV4cCI6MjA2NDUxNjk5N30.cpUGX5KxiE8K7qFMstRWQ6yZFyEli_snzcQkaZCj6sU"
-                )
-                .addHeader(
-                    "Authorization",
-                    "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFudXhjcG5hYWtvanRteHRya3lnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5NDA5OTcsImV4cCI6MjA2NDUxNjk5N30.cpUGX5KxiE8K7qFMstRWQ6yZFyEli_snzcQkaZCj6sU"
-                )
                 .addHeader("Content-Type", "application/json")
-                .addHeader("Prefer", "return=representation")
                 .build()
 
             try {
@@ -90,7 +82,10 @@ object NetworkModule {
     @Singleton
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit {
-        val baseUrl = "https://qnuxcpnaakojtmxtrkyg.supabase.co/rest/v1/"
+        // Local Spring Boot backend. 10.0.2.2 is the Android emulator's alias for the host
+        // machine's localhost. For a physical device, replace with your machine's LAN IP
+        // (e.g. http://192.168.1.20:8080/api/v1/) and ensure both are on the same network.
+        val baseUrl = "http://10.0.2.2:8080/api/v1/"
         val retrofit = Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(okHttpClient)
