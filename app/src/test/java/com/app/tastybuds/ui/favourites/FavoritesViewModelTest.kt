@@ -5,8 +5,6 @@ import com.app.tastybuds.domain.FavoritesUseCase
 import com.app.tastybuds.domain.model.FavoriteMenuItem
 import com.app.tastybuds.domain.model.FavoriteRestaurant
 import com.app.tastybuds.ui.favorites.FavoriteError
-import com.app.tastybuds.ui.favorites.FavoriteMenuItemUi
-import com.app.tastybuds.ui.favorites.FavoriteRestaurantUi
 import com.app.tastybuds.ui.favorites.FavoritesUiState
 import com.app.tastybuds.ui.favorites.FavoritesViewModel
 import com.app.tastybuds.ui.favorites.toUi
