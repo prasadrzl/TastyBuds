@@ -16,8 +16,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -36,22 +39,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.app.tastybuds.R
-import com.app.tastybuds.domain.model.Collection
-import com.app.tastybuds.ui.checkout.OfferScreenDimensions
-import com.app.tastybuds.ui.favorites.FavoritesDimensions
+import com.app.tastybuds.feature.home.R
+import com.app.tastybuds.domain.model.Restaurant
+import com.app.tastybuds.ui.theme.OfferScreenDimensions
+import com.app.tastybuds.ui.theme.FavoritesDimensions
 import com.app.tastybuds.ui.theme.Spacing
 import com.app.tastybuds.ui.theme.backgroundColor
-import com.app.tastybuds.ui.theme.badgeText
-import com.app.tastybuds.ui.theme.bodyMedium
 import com.app.tastybuds.ui.theme.captionTextColor
 import com.app.tastybuds.ui.theme.cardBackgroundColor
 import com.app.tastybuds.ui.theme.cardContentColor
-import com.app.tastybuds.ui.theme.cardTitle
+import com.app.tastybuds.ui.theme.dividerColor
 import com.app.tastybuds.ui.theme.emptyStateDescription
 import com.app.tastybuds.ui.theme.emptyStateTitle
-import com.app.tastybuds.ui.theme.onSuccessColor
-import com.app.tastybuds.ui.theme.successColor
+import com.app.tastybuds.ui.theme.onPrimaryColor
+import com.app.tastybuds.ui.theme.popularBadge
+import com.app.tastybuds.ui.theme.popularBadgeColor
+import com.app.tastybuds.ui.theme.restaurantCuisine
+import com.app.tastybuds.ui.theme.restaurantDeliveryTime
+import com.app.tastybuds.ui.theme.restaurantName
+import com.app.tastybuds.ui.theme.restaurantRating
+import com.app.tastybuds.ui.theme.starRatingColor
 import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.app.tastybuds.util.ui.AppTopBar
 import com.app.tastybuds.util.ui.ErrorScreen
@@ -60,21 +67,24 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 
-object AllCollectionsDimensions {
-    val cardHeight = 120.dp
+object AllRestaurantsDimensions {
+    val cardHeight = 140.dp
     val cardCornerRadius = 16.dp
     val cardElevation = 4.dp
     val cardPressedElevation = 8.dp
     val cardContentPadding = 16.dp
-    val collectionImageSize = 88.dp
+    val restaurantImageSize = 108.dp
     val imageCornerRadius = 12.dp
     val badgeCornerRadius = 6.dp
+    val ratingIconSize = 16.dp
+    val separatorSpacing = 8.dp
+    val metadataSpacing = 16.dp
 }
 
 @Composable
-fun AllCollectionsScreen(
+fun AllRestaurantsScreen(
     onBackClick: () -> Unit = {},
-    onCollectionClick: (String) -> Unit = {},
+    onRestaurantClick: (String) -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -87,24 +97,26 @@ fun AllCollectionsScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             AppTopBar(
-                title = stringResource(id = R.string.all_collections),
+                title = stringResource(R.string.all_restaurants),
                 onBackClick = onBackClick
             )
 
             when {
-                uiState.isLoading -> LoadingScreen(message = stringResource(R.string.loading))
+                uiState.isLoading -> {
+                    LoadingScreen(message = stringResource(R.string.loading_restaurants))
+                }
 
                 uiState.error != null -> {
                     ErrorScreen(
-                        title = uiState.error ?: stringResource(R.string.unknown_error),
+                        title = uiState.error ?: stringResource(com.app.tastybuds.core.ui.R.string.unknown_error),
                         onRetryClick = { viewModel.retry() }
                     )
                 }
 
                 else -> {
-                    CollectionsContent(
-                        collections = uiState.collections,
-                        onCollectionClick = onCollectionClick
+                    RestaurantsContent(
+                        restaurants = uiState.recommendedRestaurants,
+                        onRestaurantClick = onRestaurantClick
                     )
                 }
             }
@@ -112,13 +124,12 @@ fun AllCollectionsScreen(
     }
 }
 
-
 @Composable
-private fun CollectionsContent(
-    collections: List<Collection>,
-    onCollectionClick: (String) -> Unit
+private fun RestaurantsContent(
+    restaurants: List<Restaurant>,
+    onRestaurantClick: (String) -> Unit
 ) {
-    if (collections.isEmpty()) {
+    if (restaurants.isEmpty()) {
         EmptyStateContent()
     } else {
         LazyColumn(
@@ -127,12 +138,12 @@ private fun CollectionsContent(
             verticalArrangement = Arrangement.spacedBy(FavoritesDimensions.cardSpacing)
         ) {
             items(
-                items = collections,
-                key = { collection -> collection.id }
-            ) { collection ->
-                CollectionItemCard(
-                    collection = collection,
-                    onClick = { onCollectionClick(collection.id) }
+                items = restaurants,
+                key = { restaurant -> restaurant.id }
+            ) { restaurant ->
+                RestaurantListItemCard(
+                    restaurant = restaurant,
+                    onClick = { onRestaurantClick(restaurant.id) }
                 )
             }
         }
@@ -152,7 +163,7 @@ private fun EmptyStateContent() {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = stringResource(R.string.no_collections_available),
+                text = stringResource(com.app.tastybuds.core.ui.R.string.no_restaurants_available),
                 style = emptyStateTitle(),
                 color = captionTextColor(),
                 textAlign = TextAlign.Center
@@ -161,7 +172,7 @@ private fun EmptyStateContent() {
             Spacer(modifier = Modifier.height(Spacing.small))
 
             Text(
-                text = stringResource(R.string.check_back_later_for_new_collections),
+                text = stringResource(R.string.check_back_later_for_new_restaurants),
                 style = emptyStateDescription(),
                 color = textSecondaryColor(),
                 textAlign = TextAlign.Center
@@ -171,42 +182,42 @@ private fun EmptyStateContent() {
 }
 
 @Composable
-private fun CollectionItemCard(
-    collection: Collection,
+private fun RestaurantListItemCard(
+    restaurant: Restaurant,
     onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(AllCollectionsDimensions.cardHeight)
+            .height(AllRestaurantsDimensions.cardHeight)
             .clickable { onClick() }
             .semantics {
-                contentDescription = "Collection: ${collection.title}"
+                contentDescription = "Restaurant: ${restaurant.name}"
             },
-        shape = RoundedCornerShape(AllCollectionsDimensions.cardCornerRadius),
+        shape = RoundedCornerShape(AllRestaurantsDimensions.cardCornerRadius),
         colors = CardDefaults.cardColors(
             containerColor = cardBackgroundColor()
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = AllCollectionsDimensions.cardElevation,
-            pressedElevation = AllCollectionsDimensions.cardPressedElevation
+            defaultElevation = AllRestaurantsDimensions.cardElevation,
+            pressedElevation = AllRestaurantsDimensions.cardPressedElevation
         )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(AllCollectionsDimensions.cardContentPadding),
+                .padding(AllRestaurantsDimensions.cardContentPadding),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CollectionImage(
-                collection = collection,
-                modifier = Modifier.size(AllCollectionsDimensions.collectionImageSize)
+            RestaurantImage(
+                restaurant = restaurant,
+                modifier = Modifier.size(AllRestaurantsDimensions.restaurantImageSize)
             )
 
             Spacer(modifier = Modifier.width(Spacing.medium))
 
-            CollectionInfo(
-                collection = collection,
+            RestaurantInfo(
+                restaurant = restaurant,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -215,24 +226,24 @@ private fun CollectionItemCard(
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-private fun CollectionImage(
-    collection: Collection,
+private fun RestaurantImage(
+    restaurant: Restaurant,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
         GlideImage(
-            model = collection.imageUrl,
-            contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.cd_food_image),
+            model = restaurant.imageUrl,
+            contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.cd_restaurant_image),
             modifier = Modifier
                 .fillMaxSize()
-                .clip(RoundedCornerShape(AllCollectionsDimensions.imageCornerRadius)),
+                .clip(RoundedCornerShape(AllRestaurantsDimensions.imageCornerRadius)),
             contentScale = ContentScale.Crop,
             failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
             loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
         )
 
-        collection.badge?.let { badge ->
-            BadgeLabel(
+        restaurant.badge?.let { badge ->
+            RestaurantBadge(
                 text = badge,
                 modifier = Modifier
                     .padding(OfferScreenDimensions.offerItemSpacing)
@@ -243,14 +254,14 @@ private fun CollectionImage(
 }
 
 @Composable
-private fun BadgeLabel(
+private fun RestaurantBadge(
     text: String,
     modifier: Modifier = Modifier
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(AllCollectionsDimensions.badgeCornerRadius),
-        color = successColor()
+        shape = RoundedCornerShape(AllRestaurantsDimensions.badgeCornerRadius),
+        color = popularBadgeColor()
     ) {
         Text(
             text = text,
@@ -258,24 +269,37 @@ private fun BadgeLabel(
                 horizontal = Spacing.small,
                 vertical = Spacing.xs
             ),
-            style = badgeText(),
-            color = onSuccessColor()
+            style = popularBadge(),
+            color = onPrimaryColor()
         )
     }
 }
 
 @Composable
-private fun CollectionInfo(
-    collection: Collection,
+private fun RestaurantInfo(
+    restaurant: Restaurant,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
+        RestaurantBasicInfo(restaurant = restaurant)
+
+        Spacer(modifier = Modifier.height(FavoritesDimensions.cardSpacing))
+
+        RestaurantMetadata(restaurant = restaurant)
+    }
+}
+
+@Composable
+private fun RestaurantBasicInfo(
+    restaurant: Restaurant
+) {
+    Column {
         Text(
-            text = collection.title,
-            style = cardTitle(),
+            text = restaurant.name,
+            style = restaurantName(),
             color = cardContentColor(),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -284,8 +308,8 @@ private fun CollectionInfo(
         Spacer(modifier = Modifier.height(Spacing.xs))
 
         Text(
-            text = collection.subtitle,
-            style = bodyMedium(),
+            text = restaurant.cuisine,
+            style = restaurantCuisine(),
             color = textSecondaryColor(),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
@@ -293,25 +317,107 @@ private fun CollectionInfo(
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-private fun AllCollectionsScreenPreview() {
-    MaterialTheme {
-        AllCollectionsScreen()
+private fun RestaurantMetadata(
+    restaurant: Restaurant
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RatingSection(
+            rating = restaurant.rating,
+            reviewCount = restaurant.reviewCount
+        )
+
+        Spacer(modifier = Modifier.width(AllRestaurantsDimensions.metadataSpacing))
+
+        DeliveryInfoSection(
+            deliveryTime = restaurant.deliveryTime,
+            distance = restaurant.distance
+        )
+    }
+}
+
+@Composable
+private fun RatingSection(
+    rating: Float,
+    reviewCount: Int
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Default.Star,
+            contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.cd_rating_star),
+            modifier = Modifier.size(AllRestaurantsDimensions.ratingIconSize),
+            tint = starRatingColor()
+        )
+
+        Spacer(modifier = Modifier.width(Spacing.xs))
+
+        Text(
+            text = "$rating ($reviewCount)",
+            style = restaurantRating(),
+            color = cardContentColor()
+        )
+    }
+}
+
+@Composable
+private fun DeliveryInfoSection(
+    deliveryTime: String,
+    distance: String
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = deliveryTime,
+            style = restaurantDeliveryTime(),
+            color = textSecondaryColor()
+        )
+
+        Spacer(modifier = Modifier.width(AllRestaurantsDimensions.separatorSpacing))
+
+        Text(
+            text = "•",
+            style = restaurantDeliveryTime(),
+            color = dividerColor()
+        )
+
+        Spacer(modifier = Modifier.width(AllRestaurantsDimensions.separatorSpacing))
+
+        Text(
+            text = distance,
+            style = restaurantDeliveryTime(),
+            color = textSecondaryColor()
+        )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun CollectionItemCardPreview() {
+private fun AllRestaurantsScreenPreview() {
     MaterialTheme {
-        CollectionItemCard(
-            collection = Collection(
+        AllRestaurantsScreen()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RestaurantListItemCardPreview() {
+    MaterialTheme {
+        RestaurantListItemCard(
+            restaurant = Restaurant(
                 id = "1",
-                title = "Popular Dishes",
-                subtitle = "Most ordered items in your area",
+                name = "Pizza Palace",
+                cuisine = "Italian, Pizza, Fast Food",
+                rating = 4.5f,
+                reviewCount = 150,
+                deliveryTime = "25-35 min",
+                distance = "1.2 km",
                 imageUrl = "",
-                badge = "NEW"
+                badge = "POPULAR"
             ),
             onClick = {}
         )
