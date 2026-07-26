@@ -2,11 +2,13 @@ package com.app.tastybuds.ui.favorites
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.tastybuds.data.repo.AuthRepository
 import com.app.tastybuds.domain.FavoritesUseCase
 import com.app.tastybuds.domain.model.FavoriteMenuItem
 import com.app.tastybuds.domain.model.FavoriteRestaurant
 import com.app.tastybuds.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,11 +17,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
-    private val favoritesUseCase: FavoritesUseCase
+    private val favoritesUseCase: FavoritesUseCase,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FavoritesUiState())
     val uiState: StateFlow<FavoritesUiState> = _uiState.asStateFlow()
+
+    // Current signed-in user id, sourced directly from the auth/session layer so this
+    // feature doesn't depend on another feature's ViewModel (e.g. LoginViewModel).
+    fun getUserId(): Flow<String?> = authRepository.getUserId()
 
     fun removeFavorite(favoriteId: Int, userId: String) {
         viewModelScope.launch {

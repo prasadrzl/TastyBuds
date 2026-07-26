@@ -49,8 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.app.tastybuds.R
-import com.app.tastybuds.ui.login.LoginViewModel
+import com.app.tastybuds.feature.favorites.R
 import com.app.tastybuds.ui.theme.Spacing
 import com.app.tastybuds.ui.theme.badgeText
 import com.app.tastybuds.ui.theme.bodyMedium
@@ -95,12 +94,11 @@ object FavoritesDimensions {
 @Composable
 fun FavoriteScreen(
     viewModel: FavoritesViewModel = hiltViewModel(),
-    loginViewModel: LoginViewModel = hiltViewModel(),
     onRestaurantClick: (String) -> Unit = {},
     onMenuItemClick: (String) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val userIdFlow by loginViewModel.getUserId().collectAsState(initial = "")
+    val userIdFlow by viewModel.getUserId().collectAsState(initial = "")
     val userId = userIdFlow ?: ""
 
     LaunchedEffect(userIdFlow) {
@@ -226,7 +224,7 @@ fun FavoritesTabRow(
                 modifier = Modifier.padding(Spacing.medium)
             ) {
                 Text(
-                    text = stringResource(id = R.string.restaurants),
+                    text = stringResource(id = com.app.tastybuds.core.ui.R.string.restaurants),
                     style = if (selectedTabIndex == 1) subTitle() else bodyMedium(),
                     color = if (selectedTabIndex == 1) primaryColor() else textSecondaryColor()
                 )
@@ -392,14 +390,14 @@ fun FavoriteRestaurantCard(
         ) {
             GlideImage(
                 model = if (favorite.hasValidImage) favorite.imageUrl else null,
-                contentDescription = stringResource(R.string.cd_restaurant_image),
+                contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.cd_restaurant_image),
                 modifier = Modifier
                     .size(FavoritesDimensions.cardImageSize)
                     .clip(RoundedCornerShape(FavoritesDimensions.cardImageCornerRadius))
                     .testTag("restaurant_image_${favorite.id}"),
                 contentScale = ContentScale.Crop,
-                failure = placeholder(R.drawable.default_food),
-                loading = placeholder(R.drawable.default_food)
+                failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+                loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
             )
 
             Spacer(modifier = Modifier.width(FavoritesDimensions.cardSpacing))
@@ -433,7 +431,7 @@ fun FavoriteRestaurantCard(
                     if (favorite.rating > 0) {
                         Icon(
                             imageVector = Icons.Default.Star,
-                            contentDescription = stringResource(id = R.string.cd_rating_star),
+                            contentDescription = stringResource(id = com.app.tastybuds.core.ui.R.string.cd_rating_star),
                             modifier = Modifier.size(FavoritesDimensions.ratingIconSize),
                             tint = ratingColor()
                         )
@@ -476,7 +474,7 @@ fun FavoriteRestaurantCard(
             ) {
                 Icon(
                     imageVector = Icons.Default.Favorite,
-                    contentDescription = stringResource(R.string.remove_from_favorites),
+                    contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.remove_from_favorites),
                     tint = favoriteColor(),
                     modifier = Modifier.size(FavoritesDimensions.favoriteIconSize)
                 )
@@ -512,14 +510,14 @@ fun FavoriteMenuItemCard(
         ) {
             GlideImage(
                 model = if (favorite.hasValidImage) favorite.imageUrl else null,
-                contentDescription = stringResource(R.string.cd_food_image),
+                contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.cd_food_image),
                 modifier = Modifier
                     .size(FavoritesDimensions.cardImageSize)
                     .clip(RoundedCornerShape(FavoritesDimensions.cardImageCornerRadius))
                     .testTag("menu_item_image_${favorite.id}"),
                 contentScale = ContentScale.Crop,
-                failure = placeholder(R.drawable.default_food),
-                loading = placeholder(R.drawable.default_food)
+                failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+                loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
             )
 
             Spacer(modifier = Modifier.width(FavoritesDimensions.cardSpacing))
@@ -553,7 +551,7 @@ fun FavoriteMenuItemCard(
                     if (favorite.rating > 0) {
                         Icon(
                             imageVector = Icons.Default.Star,
-                            contentDescription = stringResource(R.string.cd_rating_star),
+                            contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.cd_rating_star),
                             modifier = Modifier.size(FavoritesDimensions.ratingIconSize),
                             tint = ratingColor()
                         )
@@ -587,7 +585,7 @@ fun FavoriteMenuItemCard(
             ) {
                 Icon(
                     imageVector = Icons.Default.Favorite,
-                    contentDescription = stringResource(R.string.remove_from_favorites),
+                    contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.remove_from_favorites),
                     tint = favoriteColor(),
                     modifier = Modifier.size(FavoritesDimensions.favoriteIconSize)
                 )
