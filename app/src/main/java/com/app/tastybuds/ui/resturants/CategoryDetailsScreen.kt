@@ -523,8 +523,8 @@ fun CategoryRestaurantCard(
                     .size(80.dp)
                     .clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop,
-                failure = placeholder(R.drawable.default_food),
-                loading = placeholder(R.drawable.default_food)
+                failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+                loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
             )
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -623,8 +623,8 @@ fun MenuItemCard(
                     .size(80.dp)
                     .clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop,
-                failure = placeholder(R.drawable.default_food),
-                loading = placeholder(R.drawable.default_food)
+                failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+                loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
             )
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -723,8 +723,8 @@ fun RegularRestaurantCard(
                     .size(80.dp)
                     .clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop,
-                failure = placeholder(R.drawable.default_food),
-                loading = placeholder(R.drawable.default_food)
+                failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+                loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
             )
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -890,8 +890,8 @@ fun FeaturedBannerCard(
                 contentDescription = banner.name,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
-                failure = placeholder(R.drawable.default_food),
-                loading = placeholder(R.drawable.default_food)
+                failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+                loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
             )
 
             Box(

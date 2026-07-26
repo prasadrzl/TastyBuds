@@ -24,7 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import com.app.tastybuds.R
+import com.app.tastybuds.core.ui.R
 import com.app.tastybuds.ui.theme.ComponentSizes
 import com.app.tastybuds.ui.theme.Spacing
 import com.app.tastybuds.ui.theme.backgroundColor

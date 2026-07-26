@@ -222,13 +222,13 @@ private fun RestaurantCard(
             ) {
                 GlideImage(
                     model = restaurant.imageUrl,
-                    contentDescription = stringResource(R.string.cd_restaurant_image),
+                    contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.cd_restaurant_image),
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop,
-                    failure = placeholder(R.drawable.default_food),
-                    loading = placeholder(R.drawable.default_food)
+                    failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+                    loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
                 )
             }
 
@@ -264,7 +264,7 @@ private fun RestaurantCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Star,
-                        contentDescription = stringResource(R.string.cd_rating_star),
+                        contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.cd_rating_star),
                         modifier = Modifier.size(14.dp),
                         tint = starRatingColor()
                     )
