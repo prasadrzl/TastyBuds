@@ -12,7 +12,6 @@ import com.app.tastybuds.ui.resturants.state.FoodDetailsUiState
 import com.app.tastybuds.util.Result
 import com.app.tastybuds.util.calculateTotalPrice
 import com.app.tastybuds.util.onError
-import com.app.tastybuds.util.onLoading
 import com.app.tastybuds.util.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -220,9 +219,6 @@ class FoodDetailsViewModel @Inject constructor(
                         it.copy(error = it.error)
                     }
                 }
-                    .onLoading {
-
-                    }
             }
         }
     }

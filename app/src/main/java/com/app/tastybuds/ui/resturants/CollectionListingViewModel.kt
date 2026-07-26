@@ -6,7 +6,6 @@ import com.app.tastybuds.domain.RestaurantUseCase
 import com.app.tastybuds.domain.model.Collection
 import com.app.tastybuds.domain.model.Restaurant
 import com.app.tastybuds.util.onError
-import com.app.tastybuds.util.onLoading
 import com.app.tastybuds.util.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,8 +39,6 @@ class CollectionListingViewModel @Inject constructor(
                             isLoading = false, error = errorMessage
                         )
                     }
-                }.onLoading {
-                    _uiState.update { it.copy(isLoading = true) }
                 }
             } catch (e: Exception) {
                 _uiState.update {
