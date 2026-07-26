@@ -6,7 +6,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.app.tastybuds.R
+import com.app.tastybuds.core.ui.R
 
 val Poppins = FontFamily(
     Font(R.font.poppins_bold, FontWeight.Bold),

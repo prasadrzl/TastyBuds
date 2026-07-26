@@ -6,7 +6,6 @@ import com.app.tastybuds.domain.model.Order
 import com.app.tastybuds.data.repo.AuthRepository
 import com.app.tastybuds.domain.OrderUseCase
 import com.app.tastybuds.util.onError
-import com.app.tastybuds.util.onLoading
 import com.app.tastybuds.util.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,10 +42,7 @@ class OrdersViewModel @Inject constructor(
                     loadUserOrdersInternal()
                 }.onError {
                     _uiState.update { it.copy(error = "Failed to load user data") }
-                }.onLoading {
-                    _uiState.update { it.copy(isLoading = true) }
                 }
-
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = "Failed to load user data") }
             }
