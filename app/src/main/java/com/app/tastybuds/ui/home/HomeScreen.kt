@@ -376,8 +376,8 @@ private fun DealBannerCard(
                     .size(80.dp)
                     .clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop,
-                failure = placeholder(R.drawable.default_food),
-                loading = placeholder(R.drawable.default_food)
+                failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+                loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
             )
         }
     }
@@ -544,8 +544,8 @@ private fun StaticCollectionCard(
                         .size(56.dp)
                         .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop,
-                    failure = placeholder(R.drawable.default_food),
-                    loading = placeholder(R.drawable.default_food)
+                    failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+                    loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
                 )
 
                 collection.badge?.let { badge ->
@@ -689,8 +689,8 @@ private fun RestaurantCard(
                         .fillMaxWidth()
                         .height(100.dp),
                     contentScale = ContentScale.Crop,
-                    failure = placeholder(R.drawable.default_food),
-                    loading = placeholder(R.drawable.default_food)
+                    failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+                    loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
                 )
 
                 restaurant.badge?.let { badge ->
@@ -825,8 +825,8 @@ private fun SaleCard(
                         .fillMaxWidth()
                         .height(100.dp),
                     contentScale = ContentScale.Crop,
-                    failure = placeholder(R.drawable.default_food),
-                    loading = placeholder(R.drawable.default_food)
+                    failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+                    loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
                 )
 
                 Row(

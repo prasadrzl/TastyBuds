@@ -303,8 +303,8 @@ fun FoodImageHeader(
             contentDescription = stringResource(R.string.food_image),
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
-            failure = placeholder(R.drawable.default_food),
-            loading = placeholder(R.drawable.default_food)
+            failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+            loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
         )
 
         Row(
@@ -341,7 +341,7 @@ fun FoodImageHeader(
                 Icon(
                     imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = if (isFavorite)
-                        stringResource(R.string.remove_from_favorites)
+                        stringResource(com.app.tastybuds.core.ui.R.string.remove_from_favorites)
                     else stringResource(
                         R.string.add_to_favorites
                     ),
