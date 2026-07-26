@@ -403,7 +403,7 @@ private fun OrderItemRow(item: OrderLineItem) {
                     contentDescription = item.name,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop,
-                    failure = placeholder(R.drawable.default_food)
+                    failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
                 )
             }
         }

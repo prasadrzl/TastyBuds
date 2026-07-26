@@ -37,7 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.onboarding.R
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)

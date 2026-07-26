@@ -295,7 +295,7 @@ private fun DeliveryAddressSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_back_arrow),
+                painter = painterResource(id = com.app.tastybuds.core.ui.R.drawable.ic_back_arrow),
                 contentDescription = stringResource(R.string.time),
                 tint = deliveryStatusColor(),
                 modifier = Modifier.size(20.dp)
@@ -372,8 +372,8 @@ private fun OrderItemCard(
                 .size(60.dp)
                 .clip(RoundedCornerShape(8.dp)),
             contentScale = ContentScale.Crop,
-            failure = placeholder(R.drawable.default_food),
-            loading = placeholder(R.drawable.default_food)
+            failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+            loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
         )
 
         Column(
@@ -525,8 +525,8 @@ private fun AlsoOrderedSection(
                                 .height(80.dp)
                                 .clip(RoundedCornerShape(6.dp)),
                             contentScale = ContentScale.Crop,
-                            failure = placeholder(R.drawable.default_food),
-                            loading = placeholder(R.drawable.default_food)
+                            failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+                            loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))

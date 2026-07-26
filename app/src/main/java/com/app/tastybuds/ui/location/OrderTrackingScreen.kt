@@ -128,7 +128,7 @@ fun OrderTrackingScreen(
 
                         Marker(
                             state = MarkerState(position = restaurantLatLng),
-                            title = stringResource(R.string.restaurants),
+                            title = stringResource(com.app.tastybuds.core.ui.R.string.restaurants),
                             snippet = stringResource(R.string.order_pickup_location),
                             icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)
                         )
@@ -196,7 +196,7 @@ private fun TopHeader(onBackClick: () -> Unit) {
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(R.string.back),
+                contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.back),
                 tint = onSurfaceColor()
             )
         }

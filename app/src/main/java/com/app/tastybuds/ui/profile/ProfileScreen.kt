@@ -41,10 +41,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.app.tastybuds.LocalThemeManager
+import com.app.tastybuds.util.ui.LocalThemeManager
 import com.app.tastybuds.R
 import com.app.tastybuds.domain.model.User
-import com.app.tastybuds.ui.login.LoginViewModel
 import com.app.tastybuds.ui.theme.backgroundColor
 import com.app.tastybuds.ui.theme.dividerColor
 import com.app.tastybuds.ui.theme.errorColor
@@ -68,12 +67,10 @@ fun ProfileScreen(
     onBackClick: () -> Unit = {},
     onSignOut: () -> Unit = {},
     onEditProfile: () -> Unit = {},
-    viewModel: ProfileViewModel = hiltViewModel(),
-    loginViewModel: LoginViewModel = hiltViewModel()
+    viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val loginUiState by loginViewModel.uiState.collectAsState()
-    val userIdFlow by loginViewModel.getUserId().collectAsState(initial = "user_001")
+    val userIdFlow by viewModel.getUserId().collectAsState(initial = "user_001")
 
     val themeManager = LocalThemeManager.current
     val isDarkMode by themeManager.isDarkMode.collectAsState(false)
@@ -86,9 +83,9 @@ fun ProfileScreen(
         }
     }
 
-    LaunchedEffect(loginUiState.logoutTriggered) {
-        if (loginUiState.logoutTriggered) {
-            loginViewModel.onLogoutNavigationHandled()
+    LaunchedEffect(uiState.loggedOut) {
+        if (uiState.loggedOut) {
+            viewModel.onLogoutHandled()
             onSignOut()
         }
     }
@@ -125,9 +122,7 @@ fun ProfileScreen(
                     },
                     onEditProfile = onEditProfile,
                     onLogout = {
-                        loginViewModel.onLogoutNavigationHandled()
-                        loginViewModel.logout()
-                        onSignOut()
+                        viewModel.logout()
                     }
                 )
             }
@@ -159,12 +154,12 @@ private fun ProfileContent(
                     .size(56.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop,
-                failure = placeholder(R.drawable.default_food),
-                loading = placeholder(R.drawable.default_food)
+                failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+                loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
             )
         } else {
             Image(
-                painter = painterResource(id = R.drawable.default_food),
+                painter = painterResource(id = com.app.tastybuds.core.ui.R.drawable.default_food),
                 contentDescription = "User Avatar",
                 modifier = Modifier
                     .size(56.dp)
