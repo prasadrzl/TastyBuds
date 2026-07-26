@@ -218,7 +218,7 @@ private fun DealGridItemCard(
                         .height(AllDealsDimensions.imageHeight)
                         .clip(RoundedCornerShape(AllDealsDimensions.cardCornerRadius)),
                     contentScale = ContentScale.Crop,
-                    failure = placeholder(R.drawable.default_food)
+                    failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
                 )
 
                 Row(
@@ -302,7 +302,7 @@ private fun DealGridItemCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Star,
-                        contentDescription = stringResource(R.string.cd_rating_star),
+                        contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.cd_rating_star),
                         modifier = Modifier.size(AllDealsDimensions.starIconSize),
                         tint = starRatingColor()
                     )

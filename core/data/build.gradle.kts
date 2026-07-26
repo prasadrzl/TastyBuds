@@ -27,6 +27,7 @@ dependencies {
     implementation(project(":core:common"))
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.kotlinx.coroutines.core)
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)

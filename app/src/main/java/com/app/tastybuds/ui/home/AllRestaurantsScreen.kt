@@ -233,13 +233,13 @@ private fun RestaurantImage(
     Box(modifier = modifier) {
         GlideImage(
             model = restaurant.imageUrl,
-            contentDescription = stringResource(R.string.cd_restaurant_image),
+            contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.cd_restaurant_image),
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(AllRestaurantsDimensions.imageCornerRadius)),
             contentScale = ContentScale.Crop,
-            failure = placeholder(R.drawable.default_food),
-            loading = placeholder(R.drawable.default_food)
+            failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+            loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
         )
 
         restaurant.badge?.let { badge ->
@@ -348,7 +348,7 @@ private fun RatingSection(
     ) {
         Icon(
             imageVector = Icons.Default.Star,
-            contentDescription = stringResource(R.string.cd_rating_star),
+            contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.cd_rating_star),
             modifier = Modifier.size(AllRestaurantsDimensions.ratingIconSize),
             tint = starRatingColor()
         )

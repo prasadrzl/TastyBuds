@@ -222,13 +222,13 @@ private fun CollectionImage(
     Box(modifier = modifier) {
         GlideImage(
             model = collection.imageUrl,
-            contentDescription = stringResource(R.string.cd_food_image),
+            contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.cd_food_image),
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(AllCollectionsDimensions.imageCornerRadius)),
             contentScale = ContentScale.Crop,
-            failure = placeholder(R.drawable.default_food),
-            loading = placeholder(R.drawable.default_food)
+            failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+            loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
         )
 
         collection.badge?.let { badge ->

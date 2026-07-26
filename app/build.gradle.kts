@@ -88,6 +88,8 @@ dependencies {
     // Multi-module migration in progress — see docs/adr/0001-adopt-multi-module-clean-architecture.md
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
+    implementation(project(":core:data"))
+    implementation(project(":feature:favorites"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
