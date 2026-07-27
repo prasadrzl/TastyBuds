@@ -52,7 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.home.R
 import com.app.tastybuds.domain.model.Banner
 import com.app.tastybuds.domain.model.Category
 import com.app.tastybuds.domain.model.Collection
@@ -114,7 +114,7 @@ fun HomeScreen(
 
             uiState.error != null -> {
                 ErrorScreen(
-                    title = uiState.error ?: stringResource(R.string.unknown_error),
+                    title = uiState.error ?: stringResource(com.app.tastybuds.core.ui.R.string.unknown_error),
                     onRetryClick = { viewModel.retry() }
                 )
             }
@@ -236,7 +236,7 @@ private fun VoucherSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_offer_percentage),
+                painter = painterResource(id = com.app.tastybuds.core.ui.R.drawable.ic_offer_percentage),
                 contentDescription = stringResource(R.string.vouchers),
                 modifier = Modifier.size(24.dp),
                 tint = primaryColor()
@@ -620,7 +620,7 @@ private fun SectionHeader(
 
         if (showViewAll) {
             Text(
-                text = stringResource(R.string.view_all),
+                text = stringResource(com.app.tastybuds.core.ui.R.string.view_all),
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Medium
                 ),
@@ -639,7 +639,7 @@ private fun RecommendedSection(
 ) {
     Column(modifier = Modifier.padding(bottom = 8.dp)) {
         SectionHeader(
-            title = stringResource(R.string.recommended_for_you),
+            title = stringResource(com.app.tastybuds.core.ui.R.string.recommended_for_you),
             showViewAll = true,
             onViewAllClick = onViewAllClick
         )
@@ -740,8 +740,8 @@ private fun RestaurantCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.material_starpurple500_sharp),
-                        contentDescription = stringResource(R.string.rating),
+                        painter = painterResource(id = com.app.tastybuds.core.ui.R.drawable.material_starpurple500_sharp),
+                        contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.rating),
                         modifier = Modifier.size(12.dp),
                         tint = starRatingColor()
                     )

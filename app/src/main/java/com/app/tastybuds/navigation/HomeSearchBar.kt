@@ -1,4 +1,4 @@
-package com.app.tastybuds.util.ui
+package com.app.tastybuds.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -49,7 +49,7 @@ fun HomeSearchBar(
             },
             leadingIcon = {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_search),
+                    painter = painterResource(id = com.app.tastybuds.core.ui.R.drawable.ic_search),
                     contentDescription = stringResource(R.string.search_icon),
                     tint = onSurfaceVariantColor()
                 )

@@ -1,4 +1,4 @@
-package com.app.tastybuds.util.ui
+package com.app.tastybuds.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -52,22 +52,22 @@ fun HomeTopBar(
             ) { onLocationClick() }
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_user_location),
-                contentDescription = stringResource(R.string.location),
+                painter = painterResource(id = com.app.tastybuds.core.ui.R.drawable.ic_user_location),
+                contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.location),
                 tint = onPrimaryColor(),
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = stringResource(R.string.home),
+                text = stringResource(com.app.tastybuds.core.ui.R.string.home),
                 style = MaterialTheme.typography.titleMedium,
                 color = onPrimaryColor()
             )
         }
 
         Icon(
-            painter = painterResource(id = R.drawable.ic_profile_setting),
-            contentDescription = stringResource(R.string.profile),
+            painter = painterResource(id = com.app.tastybuds.core.ui.R.drawable.ic_profile_setting),
+            contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.profile),
             tint = onPrimaryColor(),
             modifier = Modifier
                 .size(24.dp)
