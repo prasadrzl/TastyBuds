@@ -19,7 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.orders.R
 import com.app.tastybuds.ui.theme.Spacing
 import com.app.tastybuds.ui.theme.bodyMedium
 import com.app.tastybuds.ui.theme.buttonText
@@ -38,7 +38,7 @@ object AudioCallDimensions {
 
 @Composable
 fun AudioCallScreen(
-    driverName: String = stringResource(R.string.user_name),
+    driverName: String = stringResource(com.app.tastybuds.core.ui.R.string.user_name),
     callDuration: String = "00:29",
     onSpeakerToggle: () -> Unit = {},
     onMuteToggle: () -> Unit = {},

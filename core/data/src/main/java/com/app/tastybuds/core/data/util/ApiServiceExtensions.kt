@@ -1,4 +1,4 @@
-package com.app.tastybuds.util
+package com.app.tastybuds.core.data.util
 
 import com.app.tastybuds.common.TastyBudsApiService
 

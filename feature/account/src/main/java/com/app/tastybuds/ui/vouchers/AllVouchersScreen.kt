@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.account.R
 import com.app.tastybuds.domain.model.DiscountType
 import com.app.tastybuds.domain.model.Voucher
 import com.app.tastybuds.ui.theme.backgroundColor
@@ -61,7 +61,7 @@ import com.app.tastybuds.ui.theme.successColor
 import com.app.tastybuds.ui.theme.surfaceColor
 import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.app.tastybuds.util.ui.AppTopBar
-import com.app.tastybuds.util.ui.EmptyVouchersContent
+import com.app.tastybuds.feature.account.util.ui.EmptyVouchersContent
 import com.app.tastybuds.util.ui.LoadingScreen
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -234,7 +234,7 @@ fun VoucherCard(
                 ) {
                     Icon(
                         imageVector = getVoucherIcon(voucher.discountType),
-                        contentDescription = stringResource(R.string.voucher),
+                        contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.voucher),
                         modifier = Modifier.size(24.dp),
                         tint = if (voucher.isUsed) disabledTextColor() else onPrimaryColor()
                     )

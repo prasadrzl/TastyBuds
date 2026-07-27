@@ -1,4 +1,4 @@
-package com.app.tastybuds.util.ui
+package com.app.tastybuds.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,8 +28,8 @@ import com.app.tastybuds.ui.login.AuthCheckScreen
 import com.app.tastybuds.ui.login.LoginScreen
 import com.app.tastybuds.ui.onboarding.OnboardingScreen
 import com.app.tastybuds.ui.onboarding.OnboardingViewModel
-import com.app.tastybuds.ui.orders.CartViewModel
-import com.app.tastybuds.ui.orders.FoodDetailsScreen
+import com.app.tastybuds.ui.cart.CartViewModel
+import com.app.tastybuds.ui.resturants.FoodDetailsScreen
 import com.app.tastybuds.ui.orders.OrderDetailsScreen
 import com.app.tastybuds.ui.orders.OrderReviewScreen
 import com.app.tastybuds.ui.orders.OrdersScreen
@@ -49,7 +49,7 @@ import com.app.tastybuds.ui.vouchers.AllVouchersScreen
 import kotlinx.coroutines.launch
 
 val items = listOf(
-    BottomNavItem("home", "Home", R.drawable.ic_bn_home),
+    BottomNavItem("home", "Home", com.app.tastybuds.core.ui.R.drawable.ic_bn_home),
     BottomNavItem("orders", "My order", R.drawable.ic_bn_order),
     BottomNavItem("favorites", "Favorites", R.drawable.ic_bn_favorite),
     BottomNavItem("inbox", "Inbox", R.drawable.ic_bn_inbox)
