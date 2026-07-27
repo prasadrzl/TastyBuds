@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Allows cleartext HTTP only to the local development backend. The emulator reaches the
+  host machine via 10.0.2.2; localhost/127.0.0.1 covers on-device servers; the 192.168.x.x
+  entries cover a physical device hitting the dev machine's LAN IP. All other traffic stays
+  HTTPS-only. Remove this config (and the manifest reference) before shipping to production.
+-->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">127.0.0.1</domain>
+    </domain-config>
+</network-security-config>
