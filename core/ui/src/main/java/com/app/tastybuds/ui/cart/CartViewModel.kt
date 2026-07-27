@@ -1,4 +1,4 @@
-package com.app.tastybuds.ui.orders
+package com.app.tastybuds.ui.cart
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

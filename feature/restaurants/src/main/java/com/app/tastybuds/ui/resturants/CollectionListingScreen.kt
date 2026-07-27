@@ -41,7 +41,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.restaurants.R
 import com.app.tastybuds.domain.model.Restaurant
 import com.app.tastybuds.ui.theme.backgroundColor
 import com.app.tastybuds.ui.theme.cardBackgroundColor
@@ -86,7 +86,7 @@ fun CollectionListingScreen(
 
             uiState.error != null -> {
                 ErrorScreen(
-                    title = uiState.error ?: stringResource(R.string.unknown_error),
+                    title = uiState.error ?: stringResource(com.app.tastybuds.core.ui.R.string.unknown_error),
                     onRetryClick = {
                         viewModel.retry(restaurantIds)
                     }

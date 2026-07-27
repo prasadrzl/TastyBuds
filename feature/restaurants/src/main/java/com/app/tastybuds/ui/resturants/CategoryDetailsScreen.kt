@@ -54,7 +54,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.restaurants.R
 import com.app.tastybuds.domain.model.CategoryMenuItem
 import com.app.tastybuds.domain.model.CategoryRestaurant
 import com.app.tastybuds.domain.model.Restaurant
@@ -175,7 +175,7 @@ fun CategoryDetailsScreen(
 
             uiState.error != null -> {
                 ErrorScreen(
-                    title = uiState.error ?: stringResource(R.string.unknown_error),
+                    title = uiState.error ?: stringResource(com.app.tastybuds.core.ui.R.string.unknown_error),
                     onRetryClick = { viewModel.retry() }
                 )
             }
@@ -269,8 +269,8 @@ fun ErrorContent(
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_help),
-            contentDescription = stringResource(R.string.error),
+            painter = painterResource(id = com.app.tastybuds.core.ui.R.drawable.ic_help),
+            contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.error),
             tint = primaryColor(),
             modifier = Modifier.size(64.dp)
         )
@@ -319,8 +319,8 @@ fun EmptyContent(categoryName: String) {
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_search),
-            contentDescription = stringResource(R.string.empty),
+            painter = painterResource(id = com.app.tastybuds.core.ui.R.drawable.ic_search),
+            contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.empty),
             tint = textSecondaryColor(),
             modifier = Modifier.size(64.dp)
         )
@@ -415,7 +415,7 @@ fun CategoryContent(
             if (categoryDetails.recommendedRestaurants.isNotEmpty()) {
                 item {
                     Text(
-                        text = stringResource(R.string.recommended_for_you),
+                        text = stringResource(com.app.tastybuds.core.ui.R.string.recommended_for_you),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = onBackgroundColor(),
@@ -566,7 +566,7 @@ fun CategoryRestaurantCard(
 
                     Icon(
                         imageVector = Icons.Default.Star,
-                        contentDescription = stringResource(id = R.string.rating),
+                        contentDescription = stringResource(id = com.app.tastybuds.core.ui.R.string.rating),
                         modifier = Modifier.size(14.dp),
                         tint = starRatingColor()
                     )
@@ -668,7 +668,7 @@ fun MenuItemCard(
 
                     Icon(
                         imageVector = Icons.Default.Star,
-                        contentDescription = stringResource(id = R.string.rating),
+                        contentDescription = stringResource(id = com.app.tastybuds.core.ui.R.string.rating),
                         modifier = Modifier.size(12.dp),
                         tint = starRatingColor()
                     )
@@ -766,7 +766,7 @@ fun RegularRestaurantCard(
 
                     Icon(
                         imageVector = Icons.Default.Star,
-                        contentDescription = stringResource(id = R.string.rating),
+                        contentDescription = stringResource(id = com.app.tastybuds.core.ui.R.string.rating),
                         modifier = Modifier.size(14.dp),
                         tint = starRatingColor()
                     )
