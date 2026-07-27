@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="all_collections">All Collections</string>
+    <string name="all_deals">All deals</string>
+    <string name="all_restaurants">All Restaurants</string>
+    <string name="check_back_later_for_new_collections">Check back later for new collections</string>
+    <string name="check_back_later_for_new_deals">Check back later for new deals</string>
+    <string name="check_back_later_for_new_restaurants">Check back later for new restaurants</string>
+    <string name="collections">Collections</string>
+    <string name="loading_deals">Loading deals</string>
+    <string name="loading_restaurants">Loading restaurants</string>
+    <string name="no_collections_available">No collections available</string>
+    <string name="no_deals_available">No deals available</string>
+    <string name="sale_up_to_50">Sale up to 50%</string>
+    <string name="vouchers">Vouchers</string>
+    <string name="you_have_voucher_here">You have %1$s voucher here</string>
+</resources>

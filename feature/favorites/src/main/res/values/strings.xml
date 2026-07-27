@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorite_item_tab">Items</string>
+    <string name="no_favorite_items_yet">No favorite items yet</string>
+    <string name="no_favorite_restaurants_yet">No favorite restaurants yet</string>
+    <string name="no_favorites">No favorites yet</string>
+    <string name="start_adding_your_favorite_dishes_to_see_them_here">Start adding your favorite dishes to see them here!</string>
+    <string name="start_adding_your_favorite_restaurants_to_see_them_here">Start adding your favorite restaurants to see them here!</string>
+    <string name="error_remove_restaurant_failed">Failed to remove restaurant from favorites</string>
+    <string name="error_remove_menu_item_failed">Failed to remove item from favorites</string>
+    <string name="error_load_favorites_failed">Unable to load your favorites</string>
+    <string name="error_favorite_not_found">Favorite item not found</string>
+    <string name="error_network">Network error. Please check your connection.</string>
+    <string name="error_unknown">An unexpected error occurred</string>
+    <string name="error_with_details">%1$s: %2$s</string>
+</resources>

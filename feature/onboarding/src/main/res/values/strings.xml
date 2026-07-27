@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="get_started">Get Started</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="skip">Skip</string>
+    <string name="onboarding_desc_1">Explore thousands of delicious recipes and find your next favorite meal</string>
+    <string name="onboarding_desc_2">Get your favorite food delivered quickly to your doorstep</string>
+    <string name="onboarding_desc_3">Multiple payment options for your convenience</string>
+    <string name="onboarding_title_1">Discover Amazing Food</string>
+    <string name="onboarding_title_2">Fast Delivery</string>
+    <string name="onboarding_title_3">Easy Payment</string>
+</resources>
