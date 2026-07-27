@@ -1,4 +1,4 @@
-package com.app.tastybuds.util
+package com.app.tastybuds.core.data.util
 
 import okio.IOException
 import retrofit2.HttpException

@@ -9,7 +9,7 @@ import com.app.tastybuds.domain.model.Banner
 import com.app.tastybuds.domain.model.Category
 import com.app.tastybuds.domain.model.Deal
 import com.app.tastybuds.domain.model.Restaurant
-import com.app.tastybuds.util.ErrorHandler
+import com.app.tastybuds.core.data.util.ErrorHandler
 import com.app.tastybuds.util.Result
 import javax.inject.Inject
 import com.app.tastybuds.domain.model.Collection as FoodCollection

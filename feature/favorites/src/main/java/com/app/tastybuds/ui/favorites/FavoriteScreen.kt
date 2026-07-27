@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.feature.favorites.R
+import com.app.tastybuds.ui.theme.FavoritesDimensions
 import com.app.tastybuds.ui.theme.Spacing
 import com.app.tastybuds.ui.theme.badgeText
 import com.app.tastybuds.ui.theme.bodyMedium
@@ -71,25 +72,11 @@ import com.app.tastybuds.ui.theme.restaurantRating
 import com.app.tastybuds.ui.theme.subTitle
 import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.app.tastybuds.util.ui.LoadingScreen
-import com.app.tastybuds.util.ui.toLocalizedString
+import com.app.tastybuds.feature.favorites.util.ui.toLocalizedString
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 
-object FavoritesDimensions {
-    val cardImageSize = 60.dp
-    val cardCornerRadius = 12.dp
-    val cardElevation = 2.dp
-    val cardContentPadding = 12.dp
-    val cardImageCornerRadius = 8.dp
-    val cardSpacing = 12.dp
-    val emptyStateIconSize = 64.dp
-    val favoriteIconSize = 20.dp
-    val ratingIconSize = 12.dp
-    val favoriteButtonSize = 32.dp
-    val badgePaddingHorizontal = 6.dp
-    val badgePaddingVertical = 2.dp
-}
 
 @Composable
 fun FavoriteScreen(

@@ -1,4 +1,4 @@
-package com.app.tastybuds.ui.orders
+package com.app.tastybuds.ui.resturants
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -55,7 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.restaurants.R
 import com.app.tastybuds.domain.model.CartItem
 import com.app.tastybuds.domain.model.FoodDetails
 import com.app.tastybuds.domain.model.SizeOption
@@ -84,7 +84,8 @@ import com.app.tastybuds.ui.theme.radioButtonUnselectedColor
 import com.app.tastybuds.ui.theme.scrimColor
 import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.app.tastybuds.ui.theme.unfocusedBorderColor
-import com.app.tastybuds.util.createCartItemFromUiState
+import com.app.tastybuds.ui.cart.CartViewModel
+import com.app.tastybuds.feature.restaurants.util.createCartItemFromUiState
 import com.app.tastybuds.util.ui.ErrorScreen
 import com.app.tastybuds.util.ui.LoadingScreen
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -134,7 +135,7 @@ fun FoodDetailsScreen(
 
             uiState.error != null -> {
                 ErrorScreen(
-                    title = uiState.error ?: stringResource(R.string.unknown_error),
+                    title = uiState.error ?: stringResource(com.app.tastybuds.core.ui.R.string.unknown_error),
                     onRetryClick = { viewModel.retry() },
                 )
             }
@@ -421,7 +422,7 @@ fun SizeSelectionSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(R.string.size),
+                text = stringResource(com.app.tastybuds.core.ui.R.string.size),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = cardContentColor()
@@ -508,7 +509,7 @@ fun ToppingsSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(R.string.topping),
+                text = stringResource(com.app.tastybuds.core.ui.R.string.topping),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = cardContentColor()
@@ -574,7 +575,7 @@ fun SpicinessSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(R.string.spiciness),
+                text = stringResource(com.app.tastybuds.core.ui.R.string.spiciness),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = cardContentColor()
@@ -741,7 +742,7 @@ fun BottomControls(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            contentDescription = stringResource(R.string.add),
+                            contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.add),
                             tint = quantityButtonTextColor()
                         )
                     }
