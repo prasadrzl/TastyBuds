@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.androidx.baselineprofile)
     id("kotlin-kapt")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
@@ -85,12 +86,15 @@ configurations.all {
 }
 
 dependencies {
-    // Multi-module migration in progress — see docs/adr/0001-adopt-multi-module-clean-architecture.md
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
     implementation(project(":core:data"))
     implementation(project(":feature:favorites"))
     implementation(project(":feature:onboarding"))
+    implementation(project(":feature:account"))
+    implementation(project(":feature:home"))
+    implementation(project(":feature:restaurants"))
+    implementation(project(":feature:orders"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -139,6 +143,11 @@ dependencies {
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin)
     implementation(libs.retrofit.moshi)
+
+    // Baseline Profiles: profileinstaller applies the generated profile at runtime;
+    // the :baselineprofile module generates it. See baselineprofile/ for the generator.
+    implementation(libs.androidx.profileinstaller)
+    baselineProfile(project(":baselineprofile"))
 
     // DataStore for secure local storage
     implementation(libs.androidx.datastore.preferences)

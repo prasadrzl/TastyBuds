@@ -15,6 +15,12 @@ android {
         minSdk = 28
         targetSdk = 35
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Allow the StartupBenchmark to run on an emulator (no physical device available).
+        // NOTE: emulator timings are NOT representative of real devices — this is for
+        // demo/CI smoke runs only; use a physical device for accurate startup numbers.
+        // Does not affect baseline-profile *generation*, which is fine on emulators.
+        testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR"
     }
 
     compileOptions {

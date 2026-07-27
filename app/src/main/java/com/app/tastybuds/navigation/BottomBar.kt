@@ -1,4 +1,4 @@
-package com.app.tastybuds.util.ui
+package com.app.tastybuds.navigation
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar

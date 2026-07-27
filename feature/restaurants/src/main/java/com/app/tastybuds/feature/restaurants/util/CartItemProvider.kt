@@ -1,4 +1,4 @@
-package com.app.tastybuds.util
+package com.app.tastybuds.feature.restaurants.util
 
 import com.app.tastybuds.domain.model.CartItem
 import com.app.tastybuds.data.model.OrderItemSize
