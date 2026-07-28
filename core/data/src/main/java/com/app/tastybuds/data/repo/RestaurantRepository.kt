@@ -10,6 +10,7 @@ import com.app.tastybuds.domain.model.CategoryRestaurant
 import com.app.tastybuds.domain.model.Restaurant
 import javax.inject.Inject
 import com.app.tastybuds.util.*
+import com.app.tastybuds.core.data.util.*
 
 // `RestaurantRepository` interface now lives in :core:common (same package). Every method
 // is a single network call, not an ongoing observation — plain suspend functions returning

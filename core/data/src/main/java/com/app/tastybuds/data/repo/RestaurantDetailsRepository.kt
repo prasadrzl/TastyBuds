@@ -10,7 +10,7 @@ import com.app.tastybuds.domain.model.RestaurantMenuItem
 import com.app.tastybuds.domain.model.RestaurantReview
 import com.app.tastybuds.domain.model.RestaurantVoucher
 import com.app.tastybuds.data.model.mapper.toDomain
-import com.app.tastybuds.util.ErrorHandler
+import com.app.tastybuds.core.data.util.ErrorHandler
 import javax.inject.Inject
 import javax.inject.Singleton
 import com.app.tastybuds.util.Result

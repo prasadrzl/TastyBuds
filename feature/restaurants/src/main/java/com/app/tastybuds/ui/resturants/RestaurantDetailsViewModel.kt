@@ -20,8 +20,11 @@ import javax.inject.Inject
 @HiltViewModel
 class RestaurantDetailsViewModel @Inject constructor(
     private val restaurantDetailsUseCase: RestaurantDetailsUseCase,
-    private val favoritesUseCase: FavoritesUseCase
+    private val favoritesUseCase: FavoritesUseCase,
+    private val authRepository: com.app.tastybuds.data.repo.AuthRepository
 ) : ViewModel() {
+
+    fun getUserId(): kotlinx.coroutines.flow.Flow<String?> = authRepository.getUserId()
 
     private val _uiState = MutableStateFlow(RestaurantDetailsUiState())
     val uiState: StateFlow<RestaurantDetailsUiState> = _uiState.asStateFlow()

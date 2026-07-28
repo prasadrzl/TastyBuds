@@ -53,13 +53,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.restaurants.R
 import com.app.tastybuds.domain.model.RestaurantCombo
 import com.app.tastybuds.domain.model.RestaurantDetails
 import com.app.tastybuds.domain.model.RestaurantDetailsData
 import com.app.tastybuds.domain.model.RestaurantMenuItem
 import com.app.tastybuds.domain.model.RestaurantReview
-import com.app.tastybuds.ui.login.LoginViewModel
 import com.app.tastybuds.ui.theme.cardBackgroundColor
 import com.app.tastybuds.ui.theme.cardContentColor
 import com.app.tastybuds.ui.theme.dividerColor
@@ -86,12 +85,11 @@ fun RestaurantDetailsScreen(
     onViewAllClick: (String) -> Unit = {},
     onSellAllClick: (String) -> Unit = {},
     onViewAllReviews: (List<RestaurantReview>) -> Unit = {},
-    viewModel: RestaurantDetailsViewModel = hiltViewModel(),
-    loginViewModel: LoginViewModel = hiltViewModel()
+    viewModel: RestaurantDetailsViewModel = hiltViewModel()
 
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val userIdFlow by loginViewModel.getUserId().collectAsState(initial = "user_001")
+    val userIdFlow by viewModel.getUserId().collectAsState(initial = "user_001")
 
     LaunchedEffect(restaurantId, userIdFlow) {
         userIdFlow?.let { userId ->
@@ -109,7 +107,7 @@ fun RestaurantDetailsScreen(
 
             uiState.error != null -> {
                 ErrorScreen(
-                    title = uiState.error ?: stringResource(R.string.unknown_error),
+                    title = uiState.error ?: stringResource(com.app.tastybuds.core.ui.R.string.unknown_error),
                     onRetryClick = { viewModel.retry() }
                 )
             }
@@ -230,8 +228,8 @@ fun RestaurantImageHeader(
                 .fillMaxWidth()
                 .height(250.dp),
             contentScale = ContentScale.Crop,
-            failure = placeholder(R.drawable.default_food),
-            loading = placeholder(R.drawable.default_food)
+            failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+            loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
         )
 
         Row(
@@ -302,19 +300,19 @@ fun RestaurantImageHeader(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     InfoItem(
-                        icon = R.drawable.ic_bn_home,
+                        icon = com.app.tastybuds.core.ui.R.drawable.ic_bn_home,
                         text = restaurant.deliveryTime,
                         color = primaryColor()
                     )
 
                     InfoItem(
-                        icon = R.drawable.ic_user_location,
+                        icon = com.app.tastybuds.core.ui.R.drawable.ic_user_location,
                         text = restaurant.distance,
                         color = primaryColor()
                     )
 
                     InfoItem(
-                        icon = R.drawable.ic_offer_percentage,
+                        icon = com.app.tastybuds.core.ui.R.drawable.ic_offer_percentage,
                         text = restaurant.priceRange,
                         color = primaryColor()
                     )
@@ -360,7 +358,7 @@ fun RestaurantInfoRows(
     ) {
 
         InfoRow(
-            icon = R.drawable.ic_offer_percentage,
+            icon = com.app.tastybuds.core.ui.R.drawable.ic_offer_percentage,
             title = stringResource(R.string.discount_voucher_for_restaurant, voucherCount),
             iconColor = primaryColor(),
             showArrow = true,
@@ -374,7 +372,7 @@ fun RestaurantInfoRows(
         )
 
         InfoRow(
-            icon = R.drawable.material_starpurple500_sharp,
+            icon = com.app.tastybuds.core.ui.R.drawable.material_starpurple500_sharp,
             title = "${restaurant.rating} (${restaurant.reviewCount} reviews)",
             iconColor = starRatingColor(),
             showArrow = false,
@@ -388,7 +386,7 @@ fun RestaurantInfoRows(
         )
 
         InfoRow(
-            icon = R.drawable.ic_help,
+            icon = com.app.tastybuds.core.ui.R.drawable.ic_help,
             title = "Delivery on ${restaurant.deliveryTime}",
             iconColor = primaryColor(),
             showArrow = false,
@@ -466,7 +464,7 @@ fun ForYouSection(
                 onViewAllClick(restaurantId)
             }) {
                 Text(
-                    text = stringResource(id = R.string.view_all),
+                    text = stringResource(id = com.app.tastybuds.core.ui.R.string.view_all),
                     fontSize = 14.sp,
                     color = primaryColor()
                 )
@@ -516,8 +514,8 @@ fun ForYouItemCard(
                     .fillMaxWidth()
                     .height(100.dp),
                 contentScale = ContentScale.Crop,
-                failure = placeholder(R.drawable.default_food),
-                loading = placeholder(R.drawable.default_food)
+                failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+                loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
             )
             Column(
                 modifier = Modifier.padding(12.dp)
@@ -622,8 +620,8 @@ fun MenuItemCard(
                 .size(80.dp)
                 .clip(RoundedCornerShape(8.dp)),
             contentScale = ContentScale.Crop,
-            failure = placeholder(R.drawable.default_food),
-            loading = placeholder(R.drawable.default_food)
+            failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+            loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
         )
 
         Spacer(modifier = Modifier.width(16.dp))
@@ -705,7 +703,7 @@ fun ReviewsSection(
             // Only show "View All" if there are more than 3 reviews
             if (reviews.size > 3) {
                 Text(
-                    text = stringResource(id = R.string.view_all),
+                    text = stringResource(id = com.app.tastybuds.core.ui.R.string.view_all),
                     fontSize = 14.sp,
                     color = primaryColor(),
                     modifier = Modifier.clickable {
@@ -770,8 +768,8 @@ fun ReviewCard(review: RestaurantReview) {
                         .size(40.dp)
                         .clip(CircleShape),
                     contentScale = ContentScale.Crop,
-                    failure = placeholder(R.drawable.default_food),
-                    loading = placeholder(R.drawable.default_food)
+                    failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+                    loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
                 )
 
                 Spacer(modifier = Modifier.width(12.dp))
@@ -797,7 +795,7 @@ fun ReviewCard(review: RestaurantReview) {
                     repeat(5) { index ->
                         Icon(
                             imageVector = Icons.Default.Star,
-                            contentDescription = stringResource(R.string.star),
+                            contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.star),
                             modifier = Modifier.size(12.dp),
                             tint = if (index < review.rating) starRatingColor() else emptyStarColor()
                         )
@@ -864,8 +862,8 @@ fun ComboItemCard(
                 .size(80.dp)
                 .clip(RoundedCornerShape(8.dp)),
             contentScale = ContentScale.Crop,
-            failure = placeholder(R.drawable.default_food),
-            loading = placeholder(R.drawable.default_food)
+            failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+            loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
         )
 
         Spacer(modifier = Modifier.width(16.dp))
@@ -906,7 +904,7 @@ fun ComboItemCard(
 
                 Icon(
                     imageVector = Icons.Default.Star,
-                    contentDescription = stringResource(id = R.string.rating),
+                    contentDescription = stringResource(id = com.app.tastybuds.core.ui.R.string.rating),
                     modifier = Modifier.size(12.dp),
                     tint = starRatingColor()
                 )

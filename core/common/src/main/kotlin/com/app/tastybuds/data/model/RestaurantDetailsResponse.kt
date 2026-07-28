@@ -18,7 +18,9 @@ data class RestaurantDetailsResponse(
     @Json(name = "is_open") val isOpen: Boolean = true,
     @Json(name = "delivery_fee") val deliveryFee: Float = 0.0f,
     @Json(name = "minimum_order") val minimumOrder: Float? = null,
-    @Json(name = "phone") val phone: String = "",
-    @Json(name = "address") val address: String = "",
+    // Nullable: the backend may send an explicit `null` (Moshi's default only covers a
+    // *missing* key, not an explicit null). Coalesced to "" in the mapper.
+    @Json(name = "phone") val phone: String? = null,
+    @Json(name = "address") val address: String? = null,
     @Json(name = "is_favorite") val isFavorite: Boolean = false,
 )
