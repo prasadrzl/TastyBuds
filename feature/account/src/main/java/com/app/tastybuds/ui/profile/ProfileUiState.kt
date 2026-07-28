@@ -9,6 +9,7 @@ data class ProfileUiState(
     val isEditing: Boolean = false,
     val isUpdating: Boolean = false,
     val updateSuccess: Boolean = false,
+    val loggedOut: Boolean = false,
     val validationErrors: ValidationErrors = ValidationErrors()
 )
 

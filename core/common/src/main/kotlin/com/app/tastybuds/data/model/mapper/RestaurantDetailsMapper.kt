@@ -26,8 +26,8 @@ fun RestaurantDetailsResponse.toDomain() = RestaurantDetails(
     isOpen = isOpen,
     deliveryFee = deliveryFee,
     minimumOrder = minimumOrder,
-    phone = phone,
-    address = address,
+    phone = phone ?: "",
+    address = address ?: "",
     isFavorite = isFavorite
 )
 
