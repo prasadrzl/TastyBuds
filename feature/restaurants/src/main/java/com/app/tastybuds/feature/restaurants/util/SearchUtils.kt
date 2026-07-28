@@ -1,4 +1,4 @@
-package com.app.tastybuds.util
+package com.app.tastybuds.feature.restaurants.util
 
 fun isRestaurantNear(distance: String?): Boolean {
     if (distance.isNullOrBlank()) return false

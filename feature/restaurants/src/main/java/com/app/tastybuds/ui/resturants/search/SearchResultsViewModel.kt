@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.app.tastybuds.domain.model.SearchResult
 import com.app.tastybuds.domain.SearchResultsUseCase
 import com.app.tastybuds.ui.resturants.state.SearchUiState
-import com.app.tastybuds.util.isRestaurantNear
+import com.app.tastybuds.feature.restaurants.util.isRestaurantNear
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -182,7 +182,7 @@ class SearchResultsViewModel @Inject constructor(
 
     fun getCurrentSortDisplayText(sortOptions: List<SortOption>): Int {
         return sortOptions.find { it.id == _uiState.value.selectedSortId }?.displayTextRes
-            ?: com.app.tastybuds.R.string.sort_by
+            ?: com.app.tastybuds.feature.restaurants.R.string.sort_by
     }
 
     fun resetSearch() {

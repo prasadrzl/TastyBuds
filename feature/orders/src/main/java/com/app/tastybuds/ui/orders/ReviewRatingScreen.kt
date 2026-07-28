@@ -50,7 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.orders.R
 import com.app.tastybuds.ui.theme.addToCartButtonColor
 import com.app.tastybuds.ui.theme.addToCartButtonTextColor
 import com.app.tastybuds.ui.theme.backgroundColor
@@ -79,7 +79,7 @@ fun ReviewRatingScreen(
 
     Scaffold(
         topBar = {
-            AppTopBar(title = stringResource(R.string.rating), onBackClick = onBackClick)
+            AppTopBar(title = stringResource(com.app.tastybuds.core.ui.R.string.rating), onBackClick = onBackClick)
         },
         containerColor = backgroundColor()
     ) { paddingValues ->
@@ -121,7 +121,7 @@ fun ReviewRatingScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             val starIcon: ImageVector =
-                ImageVector.vectorResource(id = R.drawable.material_starpurple500_sharp)
+                ImageVector.vectorResource(id = com.app.tastybuds.core.ui.R.drawable.material_starpurple500_sharp)
 
             Row {
                 repeat(5) { index ->

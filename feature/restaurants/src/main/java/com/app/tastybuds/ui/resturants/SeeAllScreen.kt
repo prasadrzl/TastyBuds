@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.restaurants.R
 import com.app.tastybuds.domain.model.CategoryMenuItem
 import com.app.tastybuds.domain.model.CategoryRestaurant
 import com.app.tastybuds.ui.theme.backgroundColor

@@ -67,7 +67,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.restaurants.R
 import com.app.tastybuds.domain.model.MenuItem
 import com.app.tastybuds.domain.model.SearchRestaurant
 import com.app.tastybuds.domain.model.SearchResult
@@ -265,8 +265,8 @@ private fun SearchHeader(
         ) {
             IconButton(onClick = onBackClick) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_back_arrow),
-                    contentDescription = stringResource(R.string.back),
+                    painter = painterResource(id = com.app.tastybuds.core.ui.R.drawable.ic_back_arrow),
+                    contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.back),
                     tint = onSurfaceColor(),
                     modifier = Modifier.size(SearchDimensions.backButtonSize)
                 )
@@ -529,7 +529,7 @@ private fun RestaurantHeader(
                 .size(SearchDimensions.restaurantImageSize)
                 .clip(RoundedCornerShape(SearchDimensions.restaurantImageCornerRadius)),
             contentScale = ContentScale.Crop,
-            failure = placeholder(R.drawable.default_food)
+            failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
         )
 
         Spacer(modifier = Modifier.width(Spacing.medium))
@@ -564,7 +564,7 @@ private fun RestaurantHeader(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Star,
-                        contentDescription = stringResource(R.string.star),
+                        contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.star),
                         tint = ratingColor(),
                         modifier = Modifier.size(SearchDimensions.ratingIconSize)
                     )
@@ -653,7 +653,7 @@ private fun MenuItemRow(
                 .size(SearchDimensions.menuItemImageSize)
                 .clip(RoundedCornerShape(SearchDimensions.restaurantImageCornerRadius)),
             contentScale = ContentScale.Crop,
-            failure = placeholder(R.drawable.default_food)
+            failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
         )
     }
 }
@@ -717,7 +717,7 @@ private fun ErrorContent(
             verticalArrangement = Arrangement.spacedBy(Spacing.medium)
         ) {
             Text(
-                text = stringResource(R.string.error_place_holder, error),
+                text = stringResource(com.app.tastybuds.core.ui.R.string.error_place_holder, error),
                 style = errorText(),
                 color = errorColor()
             )
@@ -763,7 +763,7 @@ private fun EmptyResultsContent(searchText: String) {
             )
 
             Text(
-                text = stringResource(R.string.delicious_food_delivered_fast),
+                text = stringResource(com.app.tastybuds.core.ui.R.string.delicious_food_delivered_fast),
                 style = bodyMedium(),
                 color = textSecondaryColor()
             )
