@@ -37,7 +37,7 @@ class OnboardingManager @Inject constructor(
         return try {
             val prefs = getOnboardingPrefs()
             !prefs.contains(KEY_FIRST_LAUNCH)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             true
         }
     }
@@ -115,7 +115,7 @@ class OnboardingManager @Inject constructor(
 
             try {
                 runBlocking {
-                    kotlinx.coroutines.withTimeout(1000) {
+                    kotlinx.coroutines.withTimeout(timeMillis = 1000) {
                         userDataStore.edit { preferences ->
                             preferences[IS_LOGGED_IN_KEY] = false
                             preferences[USER_EMAIL_KEY] = ""
@@ -124,7 +124,7 @@ class OnboardingManager @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
-                Log.w(TAG, "DataStore clear timed out during first launch, continuing...")
+                Log.w(TAG, "DataStore clear timed out during first launch, continuing...", e)
             }
 
         } catch (e: Exception) {

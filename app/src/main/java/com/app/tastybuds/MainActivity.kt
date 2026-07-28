@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -21,22 +20,19 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.app.tastybuds.ui.theme.SetSystemBarColor
 import com.app.tastybuds.ui.theme.TastyBudsTheme
-import com.app.tastybuds.util.ui.AppNavGraph
-import com.app.tastybuds.util.ui.BottomBar
-import com.app.tastybuds.util.ui.HomeSearchBar
-import com.app.tastybuds.util.ui.HomeTopBar
+import com.app.tastybuds.navigation.AppNavGraph
+import com.app.tastybuds.navigation.BottomBar
+import com.app.tastybuds.navigation.HomeSearchBar
+import com.app.tastybuds.navigation.HomeTopBar
+import com.app.tastybuds.util.ui.LocalThemeManager
 import com.app.tastybuds.util.ui.ThemeManager
-import com.app.tastybuds.util.ui.getNavigationBarColor
-import com.app.tastybuds.util.ui.getStatusBarColor
-import com.app.tastybuds.util.ui.shouldHideTopBar
-import com.app.tastybuds.util.ui.shouldShowBottomBar
-import com.app.tastybuds.util.ui.shouldShowHomeTopBar
+import com.app.tastybuds.navigation.getNavigationBarColor
+import com.app.tastybuds.navigation.getStatusBarColor
+import com.app.tastybuds.navigation.shouldHideTopBar
+import com.app.tastybuds.navigation.shouldShowBottomBar
+import com.app.tastybuds.navigation.shouldShowHomeTopBar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-
-val LocalThemeManager = compositionLocalOf<ThemeManager> {
-    error("ThemeManager not provided")
-}
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

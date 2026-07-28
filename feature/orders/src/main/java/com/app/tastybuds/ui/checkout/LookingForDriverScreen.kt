@@ -29,7 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.orders.R
 import com.app.tastybuds.ui.theme.primaryColor
 import com.app.tastybuds.ui.theme.Spacing
 import com.app.tastybuds.ui.theme.ComponentSizes
@@ -47,7 +47,7 @@ fun LookingForDriverScreen(onCancel: () -> Unit, onHelp: () -> Unit) {
         stringResource(R.string.confirm_order),
         stringResource(R.string.look_for_driver),
         stringResource(R.string.prepare_food),
-        stringResource(R.string.deliver),
+        stringResource(com.app.tastybuds.core.ui.R.string.deliver),
         stringResource(R.string.arrived)
     )
     val currentStage = 1
