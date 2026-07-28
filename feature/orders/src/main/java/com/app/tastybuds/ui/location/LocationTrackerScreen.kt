@@ -54,7 +54,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.orders.R
 import com.app.tastybuds.ui.theme.ComponentSizes
 import com.app.tastybuds.ui.theme.Spacing
 import com.app.tastybuds.ui.theme.backgroundColor
@@ -215,7 +215,7 @@ fun UserLocationMapView(
                             state = MarkerState(position = it),
                             icon = bitmapDescriptorFromVector(
                                 context,
-                                R.drawable.ic_user_location
+                                com.app.tastybuds.core.ui.R.drawable.ic_user_location
                             ),
                             title = "Selected Location"
                         )
@@ -257,7 +257,7 @@ private fun PermissionRequiredContent() {
             verticalArrangement = Arrangement.Center
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_user_location),
+                painter = painterResource(id = com.app.tastybuds.core.ui.R.drawable.ic_user_location),
                 contentDescription = null,
                 modifier = Modifier.size(ComponentSizes.iconLarge),
                 tint = primaryColor()
@@ -362,7 +362,7 @@ private fun AddressTextField(
         trailingIcon = {
             Icon(
                 imageVector = Icons.Default.Edit,
-                contentDescription = stringResource(R.string.edit),
+                contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.edit),
                 tint = primaryColor()
             )
         },
@@ -383,7 +383,7 @@ private fun LocationTypeSelector(
     onTypeSelected: (String) -> Unit
 ) {
     val locationTypes = listOf(
-        stringResource(R.string.home),
+        stringResource(com.app.tastybuds.core.ui.R.string.home),
         stringResource(R.string.work),
         stringResource(R.string.other)
     )

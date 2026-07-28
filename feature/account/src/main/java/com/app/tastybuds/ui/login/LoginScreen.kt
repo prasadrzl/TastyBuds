@@ -47,7 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.account.R
 import com.app.tastybuds.ui.theme.backgroundColor
 import com.app.tastybuds.ui.theme.cardBackgroundColor
 import com.app.tastybuds.ui.theme.cardContentColor
@@ -126,7 +126,7 @@ fun LoginScreen(
                 )
 
                 Text(
-                    text = stringResource(R.string.email),
+                    text = stringResource(com.app.tastybuds.core.ui.R.string.email),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = cardContentColor(),
@@ -148,7 +148,7 @@ fun LoginScreen(
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Email,
-                            contentDescription = stringResource(R.string.email),
+                            contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.email),
                             tint = onSurfaceVariantColor()
                         )
                     },
@@ -173,7 +173,7 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
-                    text = stringResource(R.string.password),
+                    text = stringResource(com.app.tastybuds.core.ui.R.string.password),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = cardContentColor(),
@@ -195,19 +195,19 @@ fun LoginScreen(
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Lock,
-                            contentDescription = stringResource(R.string.password),
+                            contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.password),
                             tint = onSurfaceVariantColor()
                         )
                     },
                     trailingIcon = {
                         IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
                             val painter =
-                                if (isPasswordVisible) R.drawable.ic_hide else R.drawable.ic_show
+                                if (isPasswordVisible) com.app.tastybuds.core.ui.R.drawable.ic_hide else com.app.tastybuds.core.ui.R.drawable.ic_show
                             Icon(
                                 painter = painterResource(painter),
                                 contentDescription = if (isPasswordVisible)
-                                    stringResource(R.string.hide_password)
-                                else stringResource(R.string.show_password),
+                                    stringResource(com.app.tastybuds.core.ui.R.string.hide_password)
+                                else stringResource(com.app.tastybuds.core.ui.R.string.show_password),
                                 tint = onSurfaceVariantColor()
                             )
                         }
