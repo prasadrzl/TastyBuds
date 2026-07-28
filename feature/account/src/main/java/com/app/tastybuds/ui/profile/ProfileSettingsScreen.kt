@@ -47,8 +47,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.app.tastybuds.R
-import com.app.tastybuds.ui.login.LoginViewModel
+import com.app.tastybuds.feature.account.R
 import com.app.tastybuds.ui.theme.*
 import com.app.tastybuds.util.ui.LoadingScreen
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -58,12 +57,11 @@ import com.bumptech.glide.integration.compose.placeholder
 @Composable
 fun ProfileSettingsScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
-    loginViewModel: LoginViewModel = hiltViewModel(),
     onDismiss: () -> Unit = {},
     onSaveChanges: () -> Unit = {}
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
-    val userIdFlow by loginViewModel.getUserId().collectAsState(initial = "user_001")
+    val userIdFlow by viewModel.getUserId().collectAsState(initial = "user_001")
     val uiState by viewModel.uiState.collectAsState()
     val formState by viewModel.formState.collectAsState()
 
@@ -131,7 +129,7 @@ fun ProfileSettingsScreen(
                     Column {
                         Text(
                             text = stringResource(
-                                R.string.error_place_holder,
+                                com.app.tastybuds.core.ui.R.string.error_place_holder,
                                 uiState.error ?: "error"
                             ),
                             color = errorColor(),
@@ -148,7 +146,7 @@ fun ProfileSettingsScreen(
                             )
                         ) {
                             Text(
-                                text = stringResource(R.string.retry),
+                                text = stringResource(com.app.tastybuds.core.ui.R.string.retry),
                                 color = onPrimaryColor()
                             )
                         }
@@ -215,8 +213,8 @@ private fun ProfileSettingsContent(
                     .size(120.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop,
-                failure = placeholder(R.drawable.default_food),
-                loading = placeholder(R.drawable.default_food)
+                failure = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food),
+                loading = placeholder(com.app.tastybuds.core.ui.R.drawable.default_food)
             )
 
             Box(
@@ -284,7 +282,7 @@ private fun ProfileSettingsContent(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = stringResource(R.string.email),
+            text = stringResource(com.app.tastybuds.core.ui.R.string.email),
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
             color = dialogContentColor(),
@@ -324,7 +322,7 @@ private fun ProfileSettingsContent(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = stringResource(R.string.password),
+            text = stringResource(com.app.tastybuds.core.ui.R.string.password),
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
             color = dialogContentColor(),
@@ -349,10 +347,10 @@ private fun ProfileSettingsContent(
                 IconButton(onClick = onPasswordVisibilityToggle) {
                     Icon(
                         painter = painterResource(
-                            id = if (isPasswordVisible) R.drawable.ic_hide else R.drawable.ic_show
+                            id = if (isPasswordVisible) com.app.tastybuds.core.ui.R.drawable.ic_hide else com.app.tastybuds.core.ui.R.drawable.ic_show
                         ),
-                        contentDescription = if (isPasswordVisible) stringResource(R.string.hide_password)
-                        else stringResource(R.string.show_password),
+                        contentDescription = if (isPasswordVisible) stringResource(com.app.tastybuds.core.ui.R.string.hide_password)
+                        else stringResource(com.app.tastybuds.core.ui.R.string.show_password),
                         tint = textSecondaryColor()
                     )
                 }
@@ -377,7 +375,7 @@ private fun ProfileSettingsContent(
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.cancel),
+                    text = stringResource(com.app.tastybuds.core.ui.R.string.cancel),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(vertical = 4.dp)

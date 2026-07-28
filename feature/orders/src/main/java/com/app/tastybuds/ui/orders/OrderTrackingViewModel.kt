@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.app.tastybuds.domain.model.Order
 import com.app.tastybuds.domain.model.OrderStatus
 import com.app.tastybuds.domain.OrderUseCase
-import com.app.tastybuds.util.LocationUtils.calculateDistance
+import com.app.tastybuds.feature.orders.util.LocationUtils.calculateDistance
 import com.app.tastybuds.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

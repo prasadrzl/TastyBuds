@@ -48,7 +48,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.orders.R
 import com.app.tastybuds.domain.model.Order
 import com.app.tastybuds.domain.model.OrderStatus
 import com.app.tastybuds.ui.theme.backgroundColor
@@ -72,7 +72,7 @@ import com.app.tastybuds.ui.theme.successContainerColor
 import com.app.tastybuds.ui.theme.surfaceColor
 import com.app.tastybuds.ui.theme.warningContainerColor
 import com.app.tastybuds.util.formatOrderDate
-import com.app.tastybuds.util.ui.EmptyOrdersContent
+import com.app.tastybuds.feature.orders.util.ui.EmptyOrdersContent
 import com.app.tastybuds.util.ui.ErrorScreen
 import com.app.tastybuds.util.ui.LoadingScreen
 import kotlinx.coroutines.delay
@@ -272,7 +272,7 @@ private fun OrderCard(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = order.restaurantId ?: stringResource(R.string.restaurant),
+                text = order.restaurantId ?: stringResource(com.app.tastybuds.core.ui.R.string.restaurant),
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Medium
                 ),

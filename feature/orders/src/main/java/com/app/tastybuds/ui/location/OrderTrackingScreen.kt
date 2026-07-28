@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.orders.R
 import com.app.tastybuds.ui.orders.OrderTrackingUiState
 import com.app.tastybuds.ui.orders.OrderTrackingViewModel
 import com.app.tastybuds.ui.theme.bottomSheetBackgroundColor
@@ -95,7 +95,7 @@ fun OrderTrackingScreen(
 
             uiState.error != null -> {
                 ErrorScreen(
-                    title = uiState.error ?: stringResource(R.string.unknown_error),
+                    title = uiState.error ?: stringResource(com.app.tastybuds.core.ui.R.string.unknown_error),
                     onRetryClick = { viewModel.retry(orderId) },
 
                 )
@@ -159,7 +159,7 @@ fun OrderTrackingScreen(
                         val defaultLocation = LatLng(1.3521, 103.8198)
                         Marker(
                             state = MarkerState(position = defaultLocation),
-                            title = stringResource(R.string.loading),
+                            title = stringResource(com.app.tastybuds.core.ui.R.string.loading),
                             snippet = stringResource(R.string.fetching_order_location)
                         )
                     }
@@ -239,7 +239,7 @@ private fun DeliveryTrackingBottomSheet(
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(
-                        text = stringResource(R.string.delivery_time),
+                        text = stringResource(com.app.tastybuds.core.ui.R.string.delivery_time),
                         fontSize = 14.sp,
                         color = textSecondaryColor()
                     )
@@ -261,7 +261,7 @@ private fun DeliveryTrackingBottomSheet(
             ) {
                 Icon(
                     imageVector = Icons.Default.LocationOn,
-                    contentDescription = stringResource(R.string.location),
+                    contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.location),
                     tint = deliveryStatusColor(),
                     modifier = Modifier.size(24.dp)
                 )
@@ -397,7 +397,7 @@ private fun DriverInfoSection(
             Column {
                 Text(
                     text = customerName.ifEmpty {
-                        stringResource(R.string.loading)
+                        stringResource(com.app.tastybuds.core.ui.R.string.loading)
                     },
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,

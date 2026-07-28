@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.util.ui.LocalThemeManager
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.account.R
 import com.app.tastybuds.domain.model.User
 import com.app.tastybuds.ui.theme.backgroundColor
 import com.app.tastybuds.ui.theme.dividerColor
@@ -98,7 +98,7 @@ fun ProfileScreen(
             .background(backgroundColor())
     ) {
 
-        AppTopBar(title = stringResource(R.string.profile), onBackClick = onBackClick)
+        AppTopBar(title = stringResource(com.app.tastybuds.core.ui.R.string.profile), onBackClick = onBackClick)
 
         when {
             uiState.isLoading -> {
@@ -172,7 +172,7 @@ private fun ProfileContent(
 
         Column {
             Text(
-                text = user?.name ?: stringResource(R.string.user_name),
+                text = user?.name ?: stringResource(com.app.tastybuds.core.ui.R.string.user_name),
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
                 color = onSurfaceColor()
@@ -191,7 +191,7 @@ private fun ProfileContent(
     HorizontalDivider(color = dividerColor())
 
     ProfileOption(
-        icon = loadVector(R.drawable.ic_profile_setting),
+        icon = loadVector(com.app.tastybuds.core.ui.R.drawable.ic_profile_setting),
         label = stringResource(R.string.edit_profile),
         onClick = { onEditProfile() }
     )
@@ -239,7 +239,7 @@ private fun ProfileContent(
     HorizontalDivider(color = dividerColor())
 
     ProfileOption(
-        icon = loadVector(R.drawable.ic_help),
+        icon = loadVector(com.app.tastybuds.core.ui.R.drawable.ic_help),
         label = stringResource(R.string.help_support),
         onClick = { context.showDevelopmentToast() }
     )
@@ -249,7 +249,7 @@ private fun ProfileContent(
         onClick = { context.showDevelopmentToast() }
     )
     ProfileOption(
-        icon = loadVector(R.drawable.ic_help),
+        icon = loadVector(com.app.tastybuds.core.ui.R.drawable.ic_help),
         label = stringResource(R.string.help_center),
         onClick = { context.showDevelopmentToast() }
     )
