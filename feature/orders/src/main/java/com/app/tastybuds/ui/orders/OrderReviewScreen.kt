@@ -51,7 +51,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.orders.R
 import com.app.tastybuds.data.model.OrderItemSize
 import com.app.tastybuds.data.model.OrderItemSpiceLevel
 import com.app.tastybuds.data.model.OrderItemTopping
@@ -61,7 +61,7 @@ import com.app.tastybuds.domain.model.AvailableVoucher
 import com.app.tastybuds.domain.model.CartItem
 import com.app.tastybuds.ui.theme.*
 import com.app.tastybuds.util.ui.AppTopBar
-import com.app.tastybuds.util.ui.EmptyCartContent
+import com.app.tastybuds.feature.orders.util.ui.EmptyCartContent
 import com.app.tastybuds.util.ui.LoadingScreen
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -276,7 +276,7 @@ private fun DeliveryAddressSection(
         ) {
             Icon(
                 imageVector = Icons.Default.LocationOn,
-                contentDescription = stringResource(R.string.location),
+                contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.location),
                 tint = deliveryStatusColor(),
                 modifier = Modifier.size(20.dp)
             )
@@ -430,7 +430,7 @@ private fun OrderItemCard(
         ) {
             Icon(
                 imageVector = Icons.Default.Edit,
-                contentDescription = stringResource(R.string.edit),
+                contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.edit),
                 modifier = Modifier
                     .size(20.dp)
                     .clickable { onEdit() },

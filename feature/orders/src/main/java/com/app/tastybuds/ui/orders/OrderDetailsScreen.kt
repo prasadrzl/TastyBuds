@@ -46,7 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.orders.R
 import com.app.tastybuds.domain.model.Order
 import com.app.tastybuds.domain.model.OrderLineItem
 import com.app.tastybuds.domain.model.OrderStatus
@@ -116,7 +116,7 @@ fun OrderDetailsScreen(
 
                 uiState.error != null -> {
                     ErrorScreen(
-                        title = uiState.error ?: stringResource(R.string.unknown_error),
+                        title = uiState.error ?: stringResource(com.app.tastybuds.core.ui.R.string.unknown_error),
                         onRetryClick = { viewModel.loadOrderDetails(orderId) }
                     )
                 }
@@ -225,7 +225,7 @@ private fun OrderHeaderCard(order: Order) {
             ) {
                 InfoItem(
                     icon = Icons.Default.ShoppingCart,
-                    label = stringResource(R.string.items),
+                    label = stringResource(com.app.tastybuds.core.ui.R.string.items),
                     value = "${order.orderItems.size}"
                 )
 
@@ -260,7 +260,7 @@ private fun RestaurantInfoCard(
             modifier = Modifier.padding(20.dp)
         ) {
             Text(
-                text = stringResource(R.string.restaurant),
+                text = stringResource(com.app.tastybuds.core.ui.R.string.restaurant),
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold
                 ),
@@ -282,7 +282,7 @@ private fun RestaurantInfoCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.ShoppingCart,
-                        contentDescription = stringResource(R.string.restaurant),
+                        contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.restaurant),
                         tint = onSurfaceVariantColor(),
                         modifier = Modifier.size(30.dp)
                     )
@@ -311,7 +311,7 @@ private fun RestaurantInfoCard(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Star,
-                            contentDescription = stringResource(R.string.rating),
+                            contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.rating),
                             tint = starRatingColor(),
                             modifier = Modifier.size(16.dp)
                         )
@@ -393,7 +393,7 @@ private fun OrderItemRow(item: OrderLineItem) {
             if (item.image.isNullOrEmpty()) {
                 Icon(
                     imageVector = Icons.Default.ShoppingCart,
-                    contentDescription = stringResource(R.string.food),
+                    contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.food),
                     tint = onSurfaceVariantColor(),
                     modifier = Modifier.size(30.dp)
                 )

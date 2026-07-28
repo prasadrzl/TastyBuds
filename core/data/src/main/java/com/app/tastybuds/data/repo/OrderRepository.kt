@@ -13,12 +13,12 @@ import com.app.tastybuds.domain.model.AvailableVoucher
 import com.app.tastybuds.domain.model.Order
 import com.app.tastybuds.domain.model.OrderStatus
 import com.app.tastybuds.domain.model.UserAddress
-import com.app.tastybuds.util.ErrorHandler
+import com.app.tastybuds.core.data.util.ErrorHandler
 import com.app.tastybuds.util.Result
-import com.app.tastybuds.util.getGlobalVouchersExt
-import com.app.tastybuds.util.getOrderByExt
-import com.app.tastybuds.util.getUserAddressesExt
-import com.app.tastybuds.util.getUserOrdersExt
+import com.app.tastybuds.core.data.util.getGlobalVouchersExt
+import com.app.tastybuds.core.data.util.getOrderByExt
+import com.app.tastybuds.core.data.util.getUserAddressesExt
+import com.app.tastybuds.core.data.util.getUserOrdersExt
 import javax.inject.Inject
 import javax.inject.Singleton
 
