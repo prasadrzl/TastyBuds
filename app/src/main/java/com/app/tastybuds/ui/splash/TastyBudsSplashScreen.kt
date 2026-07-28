@@ -318,7 +318,7 @@ fun TastyBudsSplashScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = stringResource(R.string.delicious_food_delivered_fast),
+                text = stringResource(com.app.tastybuds.core.ui.R.string.delicious_food_delivered_fast),
                 fontSize = 14.sp,
                 color = SplashColors.Cream,
                 textAlign = TextAlign.Center

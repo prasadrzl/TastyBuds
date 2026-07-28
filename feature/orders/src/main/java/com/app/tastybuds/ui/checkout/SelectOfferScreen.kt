@@ -1,5 +1,7 @@
 package com.app.tastybuds.ui.checkout
 
+import com.app.tastybuds.ui.theme.OfferScreenDimensions
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,7 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.orders.R
 import com.app.tastybuds.ui.theme.primaryColor
 import com.app.tastybuds.ui.theme.primaryContainerColor
 import com.app.tastybuds.ui.theme.surfaceColor
@@ -57,13 +59,6 @@ import com.app.tastybuds.ui.theme.buttonText
 import com.app.tastybuds.ui.theme.inputLabel
 import com.app.tastybuds.util.ui.AppTopBar
 
-object OfferScreenDimensions {
-    val offerIconSize = 60.dp
-    val offerItemCornerRadius = 8.dp
-    val offerItemSpacing = 6.dp
-    val offerItemContentPadding = 16.dp
-    val offerIconSpacing = 12.dp
-}
 
 @Composable
 fun SelectOfferScreen(
@@ -150,7 +145,7 @@ fun SelectOfferScreen(
                     ) {
                         Image(
                             painter = painterResource(id = offer.iconRes),
-                            contentDescription = stringResource(R.string.voucher),
+                            contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.voucher),
                             modifier = Modifier.size(OfferScreenDimensions.offerIconSize)
                         )
 
@@ -209,7 +204,7 @@ data class OfferItem(
 @Composable
 fun PreviewSelectOfferScreen() {
     val offers = listOf(
-        OfferItem("1", "- 10%", R.drawable.ic_offer_percentage, true),
+        OfferItem("1", "- 10%", com.app.tastybuds.core.ui.R.drawable.ic_offer_percentage, true),
         OfferItem("2", "-$1 shipping fee", R.drawable.ic_shiping_fee, true),
         OfferItem("3", "-10% for E-wallet", R.drawable.ic_ewallet, true),
         OfferItem("4", "- 30% for bill over $50", R.drawable.ic_more_offer_percentage, false),
