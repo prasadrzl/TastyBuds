@@ -6,31 +6,31 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class Voucher(
     @Json(name = "id")
-    val id: String,
+    val id: String = "",
     @Json(name = "user_id")
-    val userId: String?,
+    val userId: String? = null,
     @Json(name = "title")
-    val title: String,
+    val title: String = "",
     @Json(name = "description")
-    val description: String?,
+    val description: String? = null,
     @Json(name = "discount_type")
-    val discountType: String,
+    val discountType: String = "",
     @Json(name = "discount_value")
-    val discountValue: Double,
+    val discountValue: Double = 0.0,
     @Json(name = "minimum_order")
-    val minimumOrder: Double?,
+    val minimumOrder: Double? = null,
     @Json(name = "max_discount")
-    val maxDiscount: Double?,
+    val maxDiscount: Double? = null,
     @Json(name = "restaurant_id")
-    val restaurantId: String?,
+    val restaurantId: String? = null,
     @Json(name = "valid_from")
-    val validFrom: String?,
+    val validFrom: String? = null,
     @Json(name = "valid_until")
-    val validUntil: String?,
+    val validUntil: String? = null,
     @Json(name = "is_used")
-    val isUsed: Boolean,
+    val isUsed: Boolean = false,
     @Json(name = "terms_conditions")
-    val termsConditions: String?
+    val termsConditions: String? = null
 ) {
     fun calculateDiscount(subtotal: Double): Double {
         if (minimumOrder != null && subtotal < minimumOrder) return 0.0

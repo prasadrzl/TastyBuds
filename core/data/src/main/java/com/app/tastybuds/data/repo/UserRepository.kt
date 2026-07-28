@@ -7,7 +7,7 @@ import com.app.tastybuds.data.model.mapper.toUpdateUserDataModel
 import com.app.tastybuds.data.model.mapper.toUserDomainModel
 import com.app.tastybuds.data.model.UpdateUserRequest
 import com.app.tastybuds.domain.model.User
-import com.app.tastybuds.util.ErrorHandler
+import com.app.tastybuds.core.data.util.ErrorHandler
 import com.app.tastybuds.util.Result
 import javax.inject.Inject
 import javax.inject.Singleton

@@ -6,33 +6,33 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class UserAddress(
     @Json(name = "id")
-    val id: String,
+    val id: String = "",
     @Json(name = "user_id")
-    val userId: String,
+    val userId: String = "",
     @Json(name = "address_line")
-    val addressLine: String,
+    val addressLine: String = "",
     @Json(name = "street")
-    val street: String?,
+    val street: String? = null,
     @Json(name = "city")
-    val city: String?,
+    val city: String? = null,
     @Json(name = "state")
-    val state: String?,
+    val state: String? = null,
     @Json(name = "postal_code")
-    val postalCode: String?,
+    val postalCode: String? = null,
     @Json(name = "country")
-    val country: String?,
+    val country: String? = null,
     @Json(name = "latitude")
-    val latitude: Double?,
+    val latitude: Double? = null,
     @Json(name = "longitude")
-    val longitude: Double?,
+    val longitude: Double? = null,
     @Json(name = "address_type")
-    val addressType: String?,
+    val addressType: String? = null,
     @Json(name = "address_label")
-    val addressLabel: String?,
+    val addressLabel: String? = null,
     @Json(name = "is_default")
-    val isDefault: Boolean,
+    val isDefault: Boolean = false,
     @Json(name = "delivery_instructions")
-    val deliveryInstructions: String?,
+    val deliveryInstructions: String? = null,
     @Json(name = "created_at")
-    val createdAt: String?
+    val createdAt: String? = null
 )

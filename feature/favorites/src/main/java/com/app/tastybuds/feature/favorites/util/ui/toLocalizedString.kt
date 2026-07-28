@@ -1,9 +1,9 @@
-package com.app.tastybuds.util.ui
+package com.app.tastybuds.feature.favorites.util.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.app.tastybuds.R
+import com.app.tastybuds.feature.favorites.R
 import com.app.tastybuds.ui.favorites.FavoriteError
 
 @Composable

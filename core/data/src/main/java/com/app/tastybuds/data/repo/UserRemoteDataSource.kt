@@ -3,9 +3,9 @@ package com.app.tastybuds.data.repo
 import com.app.tastybuds.common.TastyBudsApiService
 import com.app.tastybuds.data.model.mapper.toUserDomainModel
 import com.app.tastybuds.domain.model.User
-import com.app.tastybuds.util.ErrorHandler
+import com.app.tastybuds.core.data.util.ErrorHandler
 import com.app.tastybuds.util.Result
-import com.app.tastybuds.util.getUserBy
+import com.app.tastybuds.core.data.util.getUserBy
 import javax.inject.Inject
 import javax.inject.Singleton
 
