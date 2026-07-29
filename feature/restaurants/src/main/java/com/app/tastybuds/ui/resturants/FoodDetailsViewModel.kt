@@ -3,7 +3,7 @@ package com.app.tastybuds.ui.resturants
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.tastybuds.data.repo.AuthRepository
+import com.app.tastybuds.domain.repository.AuthRepository
 import com.app.tastybuds.domain.FavoritesUseCase
 import com.app.tastybuds.domain.FoodDetailsUseCase
 import com.app.tastybuds.domain.model.FoodCustomization

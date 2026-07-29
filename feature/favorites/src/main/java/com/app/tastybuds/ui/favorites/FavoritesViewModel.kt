@@ -2,7 +2,7 @@ package com.app.tastybuds.ui.favorites
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.tastybuds.data.repo.AuthRepository
+import com.app.tastybuds.domain.repository.AuthRepository
 import com.app.tastybuds.domain.FavoritesUseCase
 import com.app.tastybuds.domain.model.FavoriteMenuItem
 import com.app.tastybuds.domain.model.FavoriteRestaurant
