@@ -1,6 +1,7 @@
 package com.app.tastybuds.data.repo
 
 import com.app.tastybuds.domain.model.User
+import com.app.tastybuds.domain.repository.AuthRepository
 import com.app.tastybuds.util.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -8,12 +9,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AuthRepository @Inject constructor(
+class AuthRepositoryImpl @Inject constructor(
     private val localDataSource: UserLocalDataSource,
     private val userRemoteDataSource: UserRemoteDataSource
-) {
+) : AuthRepository {
 
-    suspend fun login(email: String, password: String): Result<User> {
+    override suspend fun login(email: String, password: String): Result<User> {
         return try {
             val isPasswordValid = localDataSource.validatePassword(email, password)
             if (!isPasswordValid) {
@@ -38,15 +39,15 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    fun isLoggedIn(): Flow<Boolean> = localDataSource.isLoggedIn()
+    override fun isLoggedIn(): Flow<Boolean> = localDataSource.isLoggedIn()
 
-    fun getUserId(): Flow<String?> = localDataSource.getUserId()
+    override fun getUserId(): Flow<String?> = localDataSource.getUserId()
 
-    suspend fun logout() {
+    override suspend fun logout() {
         localDataSource.clearLoginState()
     }
 
-    suspend fun getCurrentUser(): Result<User> {
+    override suspend fun getCurrentUser(): Result<User> {
         return try {
             val userId = localDataSource.getUserId()
             userRemoteDataSource.getUserById(userId.first() ?: "")

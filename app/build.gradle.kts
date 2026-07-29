@@ -113,11 +113,6 @@ dependencies {
     implementation(libs.androidx.compose.foundation)
     implementation(libs.accompanist.swiperefresh)
 
-    // Koin
-    implementation(libs.koin.core)
-    implementation(libs.koin.android)
-    implementation(libs.koin.compose)
-
     // Hilt
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
@@ -125,7 +120,6 @@ dependencies {
 
     // Retrofit & OkHttp
     implementation(libs.retrofit)
-    implementation(libs.retrofit.rxjava)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
     implementation(libs.maps.compose)

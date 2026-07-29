@@ -38,6 +38,7 @@ dependencies {
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin)
     implementation(libs.retrofit.moshi)
+    kapt(libs.moshi.kotlin.codegen)
 
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.datastore.preferences.core)

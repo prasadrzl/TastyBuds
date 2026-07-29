@@ -1,6 +1,5 @@
 plugins {
     id("tastybuds.jvm.library")
-    id("kotlin-kapt")
 }
 
 // NOTE: the `libs` version-catalog type-safe accessor is not resolvable in build scripts
@@ -16,14 +15,6 @@ dependencies {
     // transitively via Dagger/Hilt; this plain JVM module needs it declared directly.
     implementation("javax.inject:javax.inject:1")
 
-    // Needed because several repository interfaces here still return raw API DTOs
-    // (data/model/*) instead of domain models — a pre-existing layering issue, not
-    // something this migration introduces. See migration notes: repo interfaces for
-    // Favorites/Order/RestaurantDetails/Search leak Moshi-annotated response types.
-    implementation(libs.findLibrary("moshi").get())
-    implementation(libs.findLibrary("moshi-kotlin").get())
-    kapt(libs.findLibrary("moshi-kotlin-codegen").get())
-    kapt(libs.findLibrary("moshi").get())
 
     testImplementation(libs.findLibrary("junit-jupiter").get())
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
