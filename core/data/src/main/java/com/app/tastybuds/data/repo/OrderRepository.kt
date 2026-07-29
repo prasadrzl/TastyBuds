@@ -6,7 +6,6 @@ import android.content.ContentValues.TAG
 import android.util.Log
 import com.app.tastybuds.common.TastyBudsApiService
 import com.app.tastybuds.common.toApiString
-import com.app.tastybuds.data.model.CreateOrderRequest
 import com.app.tastybuds.data.model.UpdateOrderStatusRequest
 import com.app.tastybuds.data.model.mapper.toDomain
 import com.app.tastybuds.domain.model.AvailableVoucher
@@ -14,6 +13,8 @@ import com.app.tastybuds.domain.model.Order
 import com.app.tastybuds.domain.model.OrderStatus
 import com.app.tastybuds.domain.model.UserAddress
 import com.app.tastybuds.core.data.util.ErrorHandler
+import com.app.tastybuds.domain.model.PlaceOrderData
+import com.app.tastybuds.data.model.mapper.toCreateOrderRequest
 import com.app.tastybuds.util.Result
 import com.app.tastybuds.core.data.util.getGlobalVouchersExt
 import com.app.tastybuds.core.data.util.getOrderByExt
@@ -45,9 +46,9 @@ class OrderRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun createOrder(orderRequest: CreateOrderRequest): Result<Order> {
+    override suspend fun createOrder(orderData: PlaceOrderData): Result<Order> {
         return try {
-            val response = apiService.createOrder(orderRequest)
+            val response = apiService.createOrder(orderData.toCreateOrderRequest())
             if (response.isSuccessful) {
                 val orders = response.body() ?: emptyList()
                 if (orders.isNotEmpty()) {

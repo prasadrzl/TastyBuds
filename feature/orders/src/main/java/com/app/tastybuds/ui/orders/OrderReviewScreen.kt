@@ -52,9 +52,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.feature.orders.R
-import com.app.tastybuds.data.model.OrderItemSize
-import com.app.tastybuds.data.model.OrderItemSpiceLevel
-import com.app.tastybuds.data.model.OrderItemTopping
+import com.app.tastybuds.domain.model.OrderItemSize
+import com.app.tastybuds.domain.model.OrderItemSpiceLevel
+import com.app.tastybuds.domain.model.OrderItemTopping
 import com.app.tastybuds.domain.model.RestaurantMenuItem
 import com.app.tastybuds.domain.model.UserAddress
 import com.app.tastybuds.domain.model.AvailableVoucher

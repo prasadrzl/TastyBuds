@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.tastybuds.domain.model.UserAddress
-import com.app.tastybuds.data.repo.AuthRepository
+import com.app.tastybuds.domain.repository.AuthRepository
 import com.app.tastybuds.domain.OrderUseCase
 import com.app.tastybuds.domain.model.CartItem
 import com.app.tastybuds.util.Result
