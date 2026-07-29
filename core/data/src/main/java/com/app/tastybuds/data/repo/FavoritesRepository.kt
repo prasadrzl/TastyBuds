@@ -4,7 +4,6 @@ import com.app.tastybuds.domain.repository.FavoritesRepository
 
 import com.app.tastybuds.common.TastyBudsApiService
 import com.app.tastybuds.data.model.AddFavoriteRequest
-import com.app.tastybuds.data.model.FavoriteResponse
 import com.app.tastybuds.data.model.mapper.toDomain
 import com.app.tastybuds.domain.model.FavoriteMenuItem
 import com.app.tastybuds.domain.model.FavoriteRestaurant
@@ -20,18 +19,6 @@ class FavoritesRepositoryImpl @Inject constructor(
     private val apiService: TastyBudsApiService
 ) : FavoritesRepository {
 
-    override suspend fun getUserFavorites(userId: String): Result<List<FavoriteResponse>> {
-        return try {
-            val response = apiService.getUserFavorites(userId)
-            if (response.isSuccessful) {
-                Result.Success(response.body() ?: emptyList())
-            } else {
-                Result.Error("Failed to get favorites: ${response.message()}")
-            }
-        } catch (e: Exception) {
-            Result.Error("Network error: ${e.message}")
-        }
-    }
 
     override suspend fun addFavorite(
         userId: String,
