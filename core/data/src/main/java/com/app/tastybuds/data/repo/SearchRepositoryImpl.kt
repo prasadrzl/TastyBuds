@@ -6,10 +6,6 @@ import com.app.tastybuds.common.TastyBudsApiService
 import com.app.tastybuds.data.model.mapper.SearchResultsMapper
 import com.app.tastybuds.domain.model.SearchResult
 import javax.inject.Inject
-
-// `SearchRepository` interface now lives in :core:common (same package). DTO->domain
-// mapping happens here (data layer) instead of in the UseCase, per Clean Architecture.
-
 class SearchRepositoryImpl @Inject constructor(
     private val apiService: TastyBudsApiService,
     private val searchResultsMapper: SearchResultsMapper

@@ -10,10 +10,6 @@ import com.app.tastybuds.domain.model.FavoriteRestaurant
 import javax.inject.Inject
 import javax.inject.Singleton
 import com.app.tastybuds.util.Result
-
-// `FavoritesRepository` interface now lives in :core:common (same package, no import
-// needed here since :app depends on :core:common).
-
 @Singleton
 class FavoritesRepositoryImpl @Inject constructor(
     private val apiService: TastyBudsApiService

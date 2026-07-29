@@ -12,10 +12,6 @@ import com.app.tastybuds.data.model.mapper.toVoucherDomainModelList
 import com.app.tastybuds.util.Result
 import javax.inject.Inject
 import javax.inject.Singleton
-
-// `VouchersRepository` interface now lives in :core:common (same package). Every method is
-// a single network call, not an ongoing observation — plain suspend functions, not Flow.
-
 @Singleton
 class VouchersRepositoryImpl @Inject constructor(
     private val apiService: TastyBudsApiService

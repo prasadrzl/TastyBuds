@@ -2,10 +2,6 @@ package com.app.tastybuds.core.data.util
 
 import com.app.tastybuds.common.TastyBudsApiService
 
-// Thin convenience wrappers over the API service. With the clean Spring Boot REST backend
-// these just forward plain values (the old versions injected Supabase/PostgREST operators
-// like "eq." / "ilike." / category jsonb filters, which the server now handles itself).
-
 suspend fun TastyBudsApiService.getPopularMenuItems(
     categoryId: String,
     limit: Int = 6
@@ -33,14 +29,6 @@ suspend fun TastyBudsApiService.searchRestaurantsByName(
     query: String
 ) = searchRestaurants(
     nameQuery = query
-)
-
-suspend fun TastyBudsApiService.getFilteredRestaurants(
-    categoryId: String,
-    isFreeShip: Boolean? = null
-) = getFilteredRestaurants(
-    categoryId = categoryId,
-    freeship = isFreeShip
 )
 
 suspend fun TastyBudsApiService.getTopCategoryRestaurants(

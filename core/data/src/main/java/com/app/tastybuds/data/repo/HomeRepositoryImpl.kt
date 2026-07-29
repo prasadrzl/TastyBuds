@@ -13,11 +13,6 @@ import com.app.tastybuds.core.data.util.ErrorHandler
 import com.app.tastybuds.util.Result
 import javax.inject.Inject
 import com.app.tastybuds.domain.model.Collection as FoodCollection
-
-// `HomeRepository` interface now lives in :core:common (same package). Every method is a
-// single network call, not an ongoing observation — plain suspend functions returning
-// Result<T>, not Flow<T>.
-
 class HomeRepositoryImpl @Inject constructor(
     private val tastyBudsApiService: TastyBudsApiService
 ) : HomeRepository {

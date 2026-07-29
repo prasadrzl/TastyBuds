@@ -11,11 +11,6 @@ import com.app.tastybuds.domain.model.FoodDetailsData
 import com.app.tastybuds.util.Result
 import javax.inject.Inject
 import javax.inject.Singleton
-
-// `FoodDetailsRepository` interface now lives in :core:common (same package). Every method
-// is one-shot (getFoodDetailsData just sequences two suspend calls), not Flow<Result<T>> —
-// suspend Retrofit calls already don't block the calling thread, so no flowOn(IO) is needed.
-
 @Singleton
 class FoodDetailsRepositoryImpl @Inject constructor(
     private val apiService: TastyBudsApiService

@@ -47,7 +47,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tastybuds.feature.favorites.R
 import com.app.tastybuds.ui.theme.FavoritesDimensions
@@ -72,7 +71,7 @@ import com.app.tastybuds.ui.theme.restaurantRating
 import com.app.tastybuds.ui.theme.subTitle
 import com.app.tastybuds.ui.theme.textSecondaryColor
 import com.app.tastybuds.util.ui.LoadingScreen
-import com.app.tastybuds.feature.favorites.util.ui.toLocalizedString
+import com.app.tastybuds.utils.toLocalizedString
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder

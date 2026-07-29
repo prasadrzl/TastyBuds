@@ -2,6 +2,7 @@ package com.app.tastybuds.di
 
 import android.util.Log
 import com.app.tastybuds.common.TastyBudsApiService
+import com.app.tastybuds.core.data.BuildConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -32,7 +33,6 @@ object NetworkModule {
         val customInterceptor = { chain: okhttp3.Interceptor.Chain ->
             val originalRequest = chain.request()
 
-            // Local Spring Boot backend needs no Supabase apikey/Authorization/Prefer headers.
             val modifiedRequest = originalRequest.newBuilder()
                 .addHeader("Content-Type", "application/json")
                 .build()
@@ -58,13 +58,14 @@ object NetworkModule {
             timeUnit = TimeUnit.MINUTES
         )
 
+        val timeoutSeconds = BuildConfig.NETWORK_TIMEOUT_SECONDS
         val client = OkHttpClient.Builder()
             .connectionPool(connectionPool)
             .addInterceptor(loggingInterceptor)
             .addInterceptor(customInterceptor)
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
+            .connectTimeout(timeoutSeconds, TimeUnit.SECONDS)
+            .readTimeout(timeoutSeconds, TimeUnit.SECONDS)
+            .writeTimeout(timeoutSeconds, TimeUnit.SECONDS)
             .retryOnConnectionFailure(true)
             .build()
 
@@ -82,12 +83,9 @@ object NetworkModule {
     @Singleton
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit {
-        // Local Spring Boot backend. 10.0.2.2 is the Android emulator's alias for the host
-        // machine's localhost. For a physical device, replace with your machine's LAN IP
-        // (e.g. http://192.168.1.20:8080/api/v1/) and ensure both are on the same network.
-        val baseUrl = "http://10.0.2.2:8080/api/v1/"
+        // Base URL comes from config.properties via BuildConfig (see :core:data build).
         val retrofit = Retrofit.Builder()
-            .baseUrl(baseUrl)
+            .baseUrl(BuildConfig.API_BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()

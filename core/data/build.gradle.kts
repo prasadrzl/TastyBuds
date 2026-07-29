@@ -1,9 +1,20 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.hilt)
     id("kotlin-kapt")
 }
+
+// App configuration read from config.properties at the repo root (with safe fallbacks),
+// then surfaced to code via BuildConfig — no hardcoded URLs/timeouts in source.
+val appConfig = Properties().apply {
+    val configFile = rootProject.file("config.properties")
+    if (configFile.exists()) FileInputStream(configFile).use { load(it) }
+}
+fun config(key: String, default: String): String = appConfig.getProperty(key, default)
 
 android {
     namespace = "com.app.tastybuds.core.data"
@@ -12,6 +23,15 @@ android {
     defaultConfig {
         minSdk = 24
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "API_BASE_URL",
+            "\"${config("API_BASE_URL", "http://10.0.2.2:8080/api/v1/")}\"")
+        buildConfigField("long", "NETWORK_TIMEOUT_SECONDS",
+            "${config("NETWORK_TIMEOUT_SECONDS", "30")}L")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     compileOptions {

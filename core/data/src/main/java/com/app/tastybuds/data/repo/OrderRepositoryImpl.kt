@@ -23,11 +23,6 @@ import com.app.tastybuds.core.data.util.getUserOrdersExt
 import javax.inject.Inject
 import javax.inject.Singleton
 
-// `OrderRepository` interface now lives in :core:common (same package). Every method here
-// is a single network call with no genuine ongoing observation, so these are plain suspend
-// functions returning Result<T> — not Flow<Result<T>>. Loading state is the ViewModel's job
-// to set before calling, not something the repository broadcasts.
-
 @Singleton
 class OrderRepositoryImpl @Inject constructor(
     private val apiService: TastyBudsApiService

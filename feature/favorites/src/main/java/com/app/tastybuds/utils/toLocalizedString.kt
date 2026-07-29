@@ -1,4 +1,4 @@
-package com.app.tastybuds.feature.favorites.util.ui
+package com.app.tastybuds.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext

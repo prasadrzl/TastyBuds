@@ -12,11 +12,6 @@ import javax.inject.Inject
 import com.app.tastybuds.util.*
 import com.app.tastybuds.core.data.util.*
 
-// `RestaurantRepository` interface now lives in :core:common (same package). Every method
-// is a single network call, not an ongoing observation — plain suspend functions returning
-// Result<T>, not Flow<T>. The old Flow<T> + .catch { emit(emptyList()) } shape silently
-// turned network failures into "no results," indistinguishable from an empty response.
-
 class RestaurantRepositoryImpl @Inject constructor(
     private val tastyBudsApiService: TastyBudsApiService
 ) : RestaurantRepository {

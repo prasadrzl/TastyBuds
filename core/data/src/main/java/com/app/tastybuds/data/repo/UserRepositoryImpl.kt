@@ -10,9 +10,6 @@ import com.app.tastybuds.core.data.util.ErrorHandler
 import com.app.tastybuds.util.Result
 import javax.inject.Inject
 import javax.inject.Singleton
-
-// `UserRepository` interface now lives in :core:common (same package).
-
 @Singleton
 class UserRepositoryImpl @Inject constructor(
     private val apiService: TastyBudsApiService

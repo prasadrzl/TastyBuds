@@ -14,10 +14,6 @@ import com.app.tastybuds.core.data.util.ErrorHandler
 import javax.inject.Inject
 import javax.inject.Singleton
 import com.app.tastybuds.util.Result
-
-// `RestaurantDetailsRepository` interface now lives in :core:common (same package). Every
-// method is one-shot, not Flow<Result<T>>.
-
 @Singleton
 class RestaurantDetailsRepositoryImpl @Inject constructor(
     private val apiService: TastyBudsApiService
