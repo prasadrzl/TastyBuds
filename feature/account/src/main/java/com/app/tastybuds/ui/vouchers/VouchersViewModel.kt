@@ -3,7 +3,7 @@ package com.app.tastybuds.ui.vouchers
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.tastybuds.data.repo.AuthRepository
+import com.app.tastybuds.domain.repository.AuthRepository
 import com.app.tastybuds.domain.VouchersUseCase
 import com.app.tastybuds.util.onError
 import com.app.tastybuds.util.onSuccess
