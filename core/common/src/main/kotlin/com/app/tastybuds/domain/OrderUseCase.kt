@@ -1,8 +1,7 @@
 package com.app.tastybuds.domain
 
 import com.app.tastybuds.domain.model.CartItem
-import com.app.tastybuds.data.model.CreateOrderRequest
-import com.app.tastybuds.data.model.DeliveryAddress
+import com.app.tastybuds.domain.model.PlaceOrderData
 import com.app.tastybuds.domain.model.AvailableVoucher
 import com.app.tastybuds.domain.model.Order
 import com.app.tastybuds.domain.model.UserAddress
@@ -45,33 +44,21 @@ class OrderUseCase @Inject constructor(
 
             val restaurantId = cartItems.firstOrNull()?.restaurantId
 
-            val orderRequest = CreateOrderRequest(
+            val orderData = PlaceOrderData(
                 userId = userId,
                 restaurantId = restaurantId,
-                orderItems = cartItems.map { it.toOrderItemRequest() },
+                items = cartItems,
                 subtotal = subtotal,
                 deliveryFee = deliveryFee,
                 promotionDiscount = promotionDiscount,
                 totalAmount = totalAmount,
                 paymentMethod = "e-wallet",
-                deliveryAddress = DeliveryAddress(
-                    addressLine = deliveryAddress.addressLine,
-                    street = deliveryAddress.street,
-                    city = deliveryAddress.city,
-                    state = deliveryAddress.state,
-                    postalCode = deliveryAddress.postalCode,
-                    country = deliveryAddress.country ?: "Singapore",
-                    latitude = deliveryAddress.latitude,
-                    longitude = deliveryAddress.longitude,
-                    deliveryInstructions = deliveryAddress.deliveryInstructions
-                ),
-                deliveryLat = deliveryAddress.latitude,
-                deliveryLng = deliveryAddress.longitude,
+                deliveryAddress = deliveryAddress,
                 estimatedDeliveryTime = calculateEstimatedDeliveryTime(deliveryAddress),
                 specialNotes = specialNotes
             )
 
-            repository.createOrder(orderRequest)
+            repository.createOrder(orderData)
         } catch (e: Exception) {
             Result.Error("Failed to create order: ${e.message}")
         }

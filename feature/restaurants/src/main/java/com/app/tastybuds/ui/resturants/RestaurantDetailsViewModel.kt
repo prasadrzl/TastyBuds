@@ -21,7 +21,7 @@ import javax.inject.Inject
 class RestaurantDetailsViewModel @Inject constructor(
     private val restaurantDetailsUseCase: RestaurantDetailsUseCase,
     private val favoritesUseCase: FavoritesUseCase,
-    private val authRepository: com.app.tastybuds.data.repo.AuthRepository
+    private val authRepository: com.app.tastybuds.domain.repository.AuthRepository
 ) : ViewModel() {
 
     fun getUserId(): kotlinx.coroutines.flow.Flow<String?> = authRepository.getUserId()

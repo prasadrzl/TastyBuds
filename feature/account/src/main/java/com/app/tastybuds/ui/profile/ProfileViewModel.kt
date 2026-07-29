@@ -2,9 +2,9 @@ package com.app.tastybuds.ui.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.tastybuds.data.repo.AuthRepository
+import com.app.tastybuds.domain.repository.AuthRepository
 import com.app.tastybuds.domain.UserUseCase
-import com.app.tastybuds.data.model.UpdateUserRequest
+import com.app.tastybuds.domain.model.UpdateProfileRequest
 import com.app.tastybuds.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -132,7 +132,7 @@ class ProfileViewModel @Inject constructor(
                 )
             }
 
-            val updateRequest = UpdateUserRequest(
+            val updateRequest = UpdateProfileRequest(
                 name = if (currentForm.name != currentUser?.name) currentForm.name else null,
                 email = if (currentForm.email != currentUser?.email) currentForm.email else null,
                 profileUrl = if (currentForm.profileUrl != (currentUser?.profileUrl
