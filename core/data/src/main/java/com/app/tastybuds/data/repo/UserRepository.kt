@@ -3,9 +3,8 @@ package com.app.tastybuds.data.repo
 import com.app.tastybuds.domain.repository.UserRepository
 
 import com.app.tastybuds.common.TastyBudsApiService
-import com.app.tastybuds.data.model.mapper.toUpdateUserDataModel
 import com.app.tastybuds.data.model.mapper.toUserDomainModel
-import com.app.tastybuds.data.model.UpdateUserRequest
+import com.app.tastybuds.domain.model.UpdateProfileRequest
 import com.app.tastybuds.domain.model.User
 import com.app.tastybuds.core.data.util.ErrorHandler
 import com.app.tastybuds.util.Result
@@ -39,11 +38,11 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun updateUser(
         userId: String,
-        updateRequest: UpdateUserRequest
+        updateRequest: UpdateProfileRequest
     ): Result<User> {
         return try {
             val response =
-                apiService.updateUser(userId, updateRequest.toUpdateUserDataModel())
+                apiService.updateUser(userId, updateRequest)
             if (response.isSuccessful) {
                 val updatedUser = response.body()?.firstOrNull()
                 if (updatedUser != null) {

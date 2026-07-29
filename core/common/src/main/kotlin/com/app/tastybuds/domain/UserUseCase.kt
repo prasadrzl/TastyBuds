@@ -2,7 +2,7 @@ package com.app.tastybuds.domain
 
 import com.app.tastybuds.domain.repository.UserRepository
 import com.app.tastybuds.domain.model.User
-import com.app.tastybuds.data.model.UpdateUserRequest
+import com.app.tastybuds.domain.model.UpdateProfileRequest
 import com.app.tastybuds.util.Result
 import javax.inject.Inject
 
@@ -14,7 +14,7 @@ class UserUseCase @Inject constructor(
         return userRepository.getUser(userId)
     }
 
-    suspend fun updateUser(userId: String, updateRequest: UpdateUserRequest): Result<User> {
+    suspend fun updateUser(userId: String, updateRequest: UpdateProfileRequest): Result<User> {
         return if (isValidUpdateRequest(updateRequest)) {
             userRepository.updateUser(userId, updateRequest)
         } else {
@@ -22,7 +22,7 @@ class UserUseCase @Inject constructor(
         }
     }
 
-    private fun isValidUpdateRequest(updateRequest: UpdateUserRequest): Boolean {
+    private fun isValidUpdateRequest(updateRequest: UpdateProfileRequest): Boolean {
         val hasUpdate = updateRequest.name != null ||
                 updateRequest.email != null ||
                 updateRequest.profileUrl != null
