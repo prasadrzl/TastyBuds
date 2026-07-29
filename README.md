@@ -45,7 +45,35 @@ A modern, feature-rich food delivery Android application built with Jetpack Comp
 
 ## 🏗️ Architecture
 
-TastyBuds follows **Clean Architecture** with MVVM pattern, ensuring separation of concerns and maintainability.
+TastyBuds is a **multi-module** app following **Clean Architecture** + MVVM. `:app` is a thin shell (~11 files: `Application`, `MainActivity`, navigation, splash); every feature is its own Gradle module, and shared code lives in three `:core` modules.
+
+> Visual diagrams: [`docs/module-architecture.html`](docs/module-architecture.html) (module dependency graph) and [`docs/clean-architecture-flow.html`](docs/clean-architecture-flow.html) (request/response flow for a feature).
+
+### Module structure
+
+| Module | Type | Responsibility |
+|---|---|---|
+| `:app` | app | Application, `MainActivity`, navigation graph, splash — orchestration only |
+| `:core:common` | **pure Kotlin/JVM** | Domain layer — models, use cases, repository **interfaces**, `Result`. No Android, no Moshi. |
+| `:core:data` | android lib | Data layer — Retrofit API service, repository **implementations**, DTOs + mappers, DI modules, `DataStore`/secure storage |
+| `:core:ui` | android lib | Shared UI — theme, fonts, common components (`LoadingScreen`, `ErrorScreen`, `AppTopBar`), `ThemeManager`, shared `CartViewModel` |
+| `:feature:home` `:feature:restaurants` `:feature:orders` `:feature:favorites` `:feature:account` `:feature:onboarding` | android feature libs | Self-contained feature slices (screens, ViewModels, feature-only resources) |
+| `:baselineprofile` | test | Generates the startup Baseline Profile + macrobenchmark |
+
+### Dependency rules (enforced)
+
+- **Downward only:** `:app` → `:feature:*` → `:core:*`. Dependencies never point sideways or up.
+- **Zero feature→feature dependencies** — features share only through `:core`.
+- **Domain is pure:** `:core:common` depends on nothing (no Android, no Moshi). DTOs live in `:core:data`; the domain exposes only domain models and repository interfaces.
+- **Dependency inversion:** each `RepositoryImpl` (data) implements a repository interface (domain); Hilt binds them, so ViewModels never see Retrofit/Moshi.
+
+### Layered flow (every feature follows this)
+
+```
+UI (Compose) → ViewModel → UseCase → Repository«interface» → RepositoryImpl → ApiService → backend
+        ▲ StateFlow / UI model      (domain, :core:common)   (data, :core:data)
+```
+Data crosses each boundary in the right shape: **DTO** (`FavoriteResponse`) → `.toDomain()` → **domain model** (`FavoriteRestaurant`, wrapped in `Result`) → `.toUi()` → **UI model** (`FavoriteRestaurantUi`).
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -80,7 +108,7 @@ TastyBuds follows **Clean Architecture** with MVVM pattern, ensuring separation 
 │  │ Repository Impl │  │   Data Sources  │  │ API Services │ │
 │  │                 │  │                 │  │              │ │
 │  │• HomeRepoImpl   │  │ • Remote Data   │  │ • Retrofit   │ │
-│  │• CartRepoImpl   │  │ • Local Storage │  │ • Supabase   │ │
+│  │• CartRepoImpl   │  │ • Local Storage │  │ • Spring Boot│ │
 │  │• ProfileRepoImpl│  │ • Secure Prefs  │  │ • OkHttp     │ │
 │  │• AuthRepoImpl   │  │ • DataStore     │  │ • Moshi      │ │
 │  └─────────────────┘  └─────────────────┘  └──────────────┘ │
@@ -92,9 +120,10 @@ TastyBuds follows **Clean Architecture** with MVVM pattern, ensuring separation 
 ### Core Technologies
 - **Language**: Kotlin 100%
 - **UI Framework**: Jetpack Compose BOM 2024.02.00
-- **Architecture**: MVVM + Clean Architecture
+- **Architecture**: Multi-module + Clean Architecture + MVVM
 - **Dependency Injection**: Hilt (Dagger) 2.48
-- **Build System**: Gradle with Kotlin DSL (AGP 8.5.2)
+- **Build System**: Gradle with Kotlin DSL (AGP 8.5.2), version catalog + `build-logic` convention plugins
+- **Performance**: Baseline Profiles + Macrobenchmark (`:baselineprofile`, Gradle Managed Device)
 
 ### Jetpack Components
 - **Navigation**: Navigation Compose 2.7.7
@@ -106,9 +135,9 @@ TastyBuds follows **Clean Architecture** with MVVM pattern, ensuring separation 
 
 ### Networking & Data
 - **HTTP Client**: Retrofit 2.11.0 + OkHttp 4.12.0
-- **JSON Parsing**: Moshi 1.15.0 with Kotlin adapters
-- **Backend**: Supabase (PostgreSQL)
-- **Base URL**: `https://qnuxcpnaakojtmxtrkyg.supabase.co/rest/v1/`
+- **JSON Parsing**: Moshi 1.15.0 with Kotlin adapters (in `:core:data`)
+- **Backend**: Self-hosted **Spring Boot** REST API over **PostgreSQL** (runs locally via Docker; migrated off Supabase)
+- **Base URL**: configured in `config.properties` → `BuildConfig.API_BASE_URL` (default `http://10.0.2.2:8080/api/v1/` for the emulator) — no hardcoded URLs in source
 - **Image Loading**: Glide 4.16.0 with Compose integration
 
 ### Maps & Location
@@ -175,35 +204,50 @@ android {
     minSdk = 24
     
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 ```
+> Requires **JDK 17** to build (Gradle 8.7 / Kotlin 1.9.22 toolchain).
 
 ### Network Configuration
 
-#### Authentication Headers
-```kotlin
-private fun provideAuthInterceptor(): Interceptor {
-    return Interceptor { chain ->
-        val request = chain.request().newBuilder()
-            .addHeader("apikey", BuildConfig.SUPABASE_ANON_KEY)
-            .addHeader("Authorization", "Bearer ${BuildConfig.SUPABASE_ANON_KEY}")
-            .addHeader("Content-Type", "application/json")
-            .build()
-        chain.proceed(request)
-    }
-}
+App config is externalized in `config.properties` (repo root), read in `:core:data/build.gradle.kts` and surfaced via `BuildConfig` — no hardcoded URLs or timeouts in source:
+
+```properties
+# config.properties
+API_BASE_URL=http://10.0.2.2:8080/api/v1/   # 10.0.2.2 = emulator's alias for host localhost
+NETWORK_TIMEOUT_SECONDS=30
 ```
+```kotlin
+// core/data/build.gradle.kts
+buildConfigField("String", "API_BASE_URL", "\"${config("API_BASE_URL", ...)}\"")
+buildConfigField("long", "NETWORK_TIMEOUT_SECONDS", "${config("NETWORK_TIMEOUT_SECONDS", "30")}L")
+
+// NetworkModule.kt (:core:data)
+Retrofit.Builder().baseUrl(BuildConfig.API_BASE_URL) …
+```
+Point it at a physical device or a deployed backend by editing `config.properties` (e.g. `API_BASE_URL=http://192.168.1.20:8080/api/v1/`) — no code change.
 
 ### Installation
 
-**Setup API keys**
+**1. Start the local backend** (Spring Boot API + PostgreSQL):
 ```bash
-# Add to local.properties
-echo "MAPS_API_KEY=your_maps_api_key" >> local.properties
-echo "SUPABASE_ANON_KEY=your_supabase_key" >> local.properties
+cd db && docker compose up -d          # PostgreSQL, seeded from the schema dump
+# then run the Spring Boot API (tastybuds-api) on :8080
+```
+
+**2. Configure the app**:
+```bash
+echo "MAPS_API_KEY=your_maps_api_key" >> local.properties   # Google Maps key
+# API base URL is in config.properties (defaults to the emulator alias)
+```
+
+**3. Build / run**:
+```bash
+./gradlew :app:assembleDebug     # APK
+./gradlew :app:bundleRelease     # AAB (Play)
 ```
 
 ## 📱 Key Features Implementation
@@ -231,7 +275,7 @@ echo "SUPABASE_ANON_KEY=your_supabase_key" >> local.properties
 
 - [Jetpack Compose](https://developer.android.com/jetpack/compose) - Modern toolkit for native UI
 - [Material Design 3](https://m3.material.io/) - Design system and guidelines
-- [Supabase](https://supabase.io/) - Open source Firebase alternative
+- [Spring Boot](https://spring.io/projects/spring-boot) - Self-hosted REST backend over PostgreSQL
 - [Google Maps](https://developers.google.com/maps) - Maps and location services
 - [Hilt](https://dagger.dev/hilt/) - Dependency injection for Android
 - [Retrofit](https://square.github.io/retrofit/) - Type-safe HTTP client
