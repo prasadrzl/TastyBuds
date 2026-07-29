@@ -2,7 +2,7 @@ package com.app.tastybuds.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.tastybuds.data.repo.AuthRepository
+import com.app.tastybuds.domain.repository.AuthRepository
 import com.app.tastybuds.domain.model.User
 import com.app.tastybuds.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
