@@ -1,9 +1,9 @@
 package com.app.tastybuds.feature.restaurants.util
 
 import com.app.tastybuds.domain.model.CartItem
-import com.app.tastybuds.data.model.OrderItemSize
-import com.app.tastybuds.data.model.OrderItemSpiceLevel
-import com.app.tastybuds.data.model.OrderItemTopping
+import com.app.tastybuds.domain.model.OrderItemSize
+import com.app.tastybuds.domain.model.OrderItemSpiceLevel
+import com.app.tastybuds.domain.model.OrderItemTopping
 import com.app.tastybuds.domain.model.FoodDetailsData
 import com.app.tastybuds.ui.resturants.state.FoodDetailsUiState
 
