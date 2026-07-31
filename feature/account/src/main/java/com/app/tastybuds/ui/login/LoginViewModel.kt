@@ -34,8 +34,6 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun getUserId(): Flow<String?> = authRepository.getUserId()
-
     fun login(email: String, password: String) {
         if (email.isBlank() || password.isBlank()) {
             _uiState.value = _uiState.value.copy(errorMessage = "Please fill all fields")
@@ -81,10 +79,6 @@ class LoginViewModel @Inject constructor(
 
     fun clearError() {
         _uiState.value = _uiState.value.copy(errorMessage = null)
-    }
-
-    fun onLogoutNavigationHandled() {
-        _uiState.update { it.copy(logoutTriggered = false) }
     }
 }
 

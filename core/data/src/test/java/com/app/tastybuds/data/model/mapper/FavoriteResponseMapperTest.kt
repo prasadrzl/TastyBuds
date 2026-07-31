@@ -5,8 +5,8 @@ import com.app.tastybuds.data.model.FavoriteWithRestaurantResponse
 import com.app.tastybuds.data.model.MenuItemWithRestaurantResponse
 import com.app.tastybuds.data.model.RestaurantDetailsResponse
 import com.app.tastybuds.data.model.RestaurantResponse
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
 // Field-by-field DTO -> domain mapping coverage. This used to be verified indirectly
 // through FavoritesUseCase before the mapping moved into the data layer
