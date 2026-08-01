@@ -68,6 +68,13 @@ class TastyBudsAndroidFeatureConventionPlugin : Plugin<Project> {
                 add("implementation", libs.findLibrary("androidx-lifecycle-runtime-ktx").get())
                 add("implementation", libs.findLibrary("androidx-lifecycle-runtime-compose-android").get())
                 add("debugImplementation", libs.findLibrary("androidx-ui-tooling").get())
+
+                // Unit-test toolkit shared by every feature module (ViewModel tests).
+                add("testImplementation", libs.findLibrary("junit").get())
+                add("testImplementation", libs.findLibrary("coroutines-test").get())
+                add("testImplementation", libs.findLibrary("mockk").get())
+                add("testImplementation", libs.findLibrary("turbine").get())
+                add("testImplementation", libs.findLibrary("androidx-arch-core-testing").get())
             }
         }
     }
