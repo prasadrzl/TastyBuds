@@ -41,6 +41,12 @@ class TastyBudsAndroidFeatureConventionPlugin : Plugin<Project> {
                 composeOptions {
                     kotlinCompilerExtensionVersion = "1.5.8"
                 }
+
+                testOptions {
+                    // ViewModels call android.util.Log; return defaults so JVM unit tests
+                    // don't blow up on the un-mocked android.jar stubs.
+                    unitTests.isReturnDefaultValues = true
+                }
             }
 
             tasks.withType<KotlinCompile>().configureEach {
