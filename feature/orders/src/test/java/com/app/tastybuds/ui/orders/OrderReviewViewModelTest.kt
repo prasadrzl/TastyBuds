@@ -113,4 +113,122 @@ class OrderReviewViewModelTest {
 
         assertEquals("20 mins", viewModel.getEstimatedDeliveryTime())
     }
+
+    @Test
+    fun `updateItemQuantity recalculates the cart`() = runTest {
+        every { authRepository.getUserId() } returns flowOf(null)
+        val viewModel = build()
+        viewModel.loadOrderReviewData(listOf(cartItem("m1", qty = 1)))
+
+        viewModel.updateItemQuantity(cartItem("m1", qty = 1), 3)
+
+        assertEquals(3, viewModel.uiState.value.cartItems.first().quantity)
+    }
+
+    @Test
+    fun `updateItemQuantity to zero removes the item`() = runTest {
+        every { authRepository.getUserId() } returns flowOf(null)
+        val viewModel = build()
+        viewModel.loadOrderReviewData(listOf(cartItem("m1"), cartItem("m2")))
+
+        viewModel.updateItemQuantity(cartItem("m1"), 0)
+
+        assertEquals(listOf("m2"), viewModel.uiState.value.cartItems.map { it.menuItemId })
+    }
+
+    @Test
+    fun `clearError resets the error`() = runTest {
+        every { authRepository.getUserId() } returns flowOf(null)
+        val viewModel = build()
+        viewModel.createOrder()   // sets "Cart is empty"
+
+        viewModel.clearError()
+
+        assertEquals(null, viewModel.uiState.value.error)
+    }
+
+    @Test
+    fun `resetOrderCreatedState clears the created flags`() = runTest {
+        every { authRepository.getUserId() } returns flowOf("u1")
+        val address = mockk<UserAddress>(relaxed = true) { every { isDefault } returns true }
+        coEvery { orderUseCase.getUserAddresses("u1") } returns Result.Success(listOf(address))
+        coEvery { orderUseCase.getAvailableVouchers("u1") } returns Result.Success(emptyList())
+        coEvery { orderUseCase.createOrder(any(), any(), any(), any(), any()) } returns
+                Result.Success(mockk { every { id } returns "ORD1" })
+        val viewModel = build()
+        viewModel.loadOrderReviewData(listOf(cartItem()))
+        viewModel.createOrder()
+
+        viewModel.resetOrderCreatedState()
+
+        assertEquals(false, viewModel.uiState.value.orderCreated)
+        assertEquals(null, viewModel.uiState.value.createdOrderId)
+    }
+
+    @Test
+    fun `loadOrderReviewData selects the first address when none is default`() = runTest {
+        every { authRepository.getUserId() } returns flowOf("u1")
+        val addr = mockk<UserAddress>(relaxed = true) { every { isDefault } returns false }
+        coEvery { orderUseCase.getUserAddresses("u1") } returns Result.Success(listOf(addr))
+        coEvery { orderUseCase.getAvailableVouchers("u1") } returns Result.Success(emptyList())
+        val viewModel = build()
+
+        viewModel.loadOrderReviewData(listOf(cartItem()))
+
+        assertEquals(addr, viewModel.uiState.value.userAddress)
+    }
+
+    @Test
+    fun `loadOrderReviewData falls back to a demo address when the user has none`() = runTest {
+        every { authRepository.getUserId() } returns flowOf("u1")
+        coEvery { orderUseCase.getUserAddresses("u1") } returns Result.Success(emptyList())
+        coEvery { orderUseCase.getAvailableVouchers("u1") } returns Result.Success(emptyList())
+        val viewModel = build()
+
+        viewModel.loadOrderReviewData(listOf(cartItem()))
+
+        assertEquals(1, viewModel.uiState.value.availableAddresses.size)
+        assertEquals("123 Sengkang Street 45", viewModel.uiState.value.userAddress?.addressLine)
+    }
+
+    @Test
+    fun `loadOrderReviewData falls back to a demo address when address lookup fails`() = runTest {
+        every { authRepository.getUserId() } returns flowOf("u1")
+        coEvery { orderUseCase.getUserAddresses("u1") } returns Result.Error("boom")
+        coEvery { orderUseCase.getAvailableVouchers("u1") } returns Result.Success(emptyList())
+        val viewModel = build()
+
+        viewModel.loadOrderReviewData(listOf(cartItem()))
+
+        assertEquals(null, viewModel.uiState.value.userAddress?.addressLine?.let { null })
+        assertTrue(viewModel.uiState.value.userAddress != null)
+    }
+
+    @Test
+    fun `loadOrderReviewData populates available vouchers`() = runTest {
+        every { authRepository.getUserId() } returns flowOf("u1")
+        val addr = mockk<UserAddress>(relaxed = true) { every { isDefault } returns true }
+        coEvery { orderUseCase.getUserAddresses("u1") } returns Result.Success(listOf(addr))
+        coEvery { orderUseCase.getAvailableVouchers("u1") } returns Result.Success(listOf(mockk(relaxed = true)))
+        val viewModel = build()
+
+        viewModel.loadOrderReviewData(listOf(cartItem()))
+
+        assertEquals(1, viewModel.uiState.value.availableVouchers.size)
+    }
+
+    @Test
+    fun `createOrder maps a repository error`() = runTest {
+        every { authRepository.getUserId() } returns flowOf("u1")
+        val address = mockk<UserAddress>(relaxed = true) { every { isDefault } returns true }
+        coEvery { orderUseCase.getUserAddresses("u1") } returns Result.Success(listOf(address))
+        coEvery { orderUseCase.getAvailableVouchers("u1") } returns Result.Success(emptyList())
+        coEvery { orderUseCase.createOrder(any(), any(), any(), any(), any()) } returns Result.Error("declined")
+        val viewModel = build()
+        viewModel.loadOrderReviewData(listOf(cartItem()))
+
+        viewModel.createOrder()
+
+        assertEquals("declined", viewModel.uiState.value.error)
+    }
 }

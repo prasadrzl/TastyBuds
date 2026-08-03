@@ -127,4 +127,54 @@ class FoodDetailsViewModelTest {
 
         assertTrue(viewModel.uiState.value.foodDetailsData!!.foodDetails.isFavorite)
     }
+
+    @Test
+    fun `updateSelectedSize recomputes the total price`() = runTest {
+        stubSuccess()
+        viewModel.loadFoodDetails("f1")
+
+        viewModel.updateSelectedSize("s1")   // +2 over base
+
+        assertEquals("s1", viewModel.uiState.value.selectedSize)
+        assertEquals(13.0f, viewModel.uiState.value.totalPrice)  // 10 + 2 + 1 topping
+    }
+
+    @Test
+    fun `updateSelectedToppings recomputes the total price`() = runTest {
+        stubSuccess()
+        viewModel.loadFoodDetails("f1")
+
+        viewModel.updateSelectedToppings(emptyList())  // drop the default topping
+
+        assertEquals(emptyList<String>(), viewModel.uiState.value.selectedToppings)
+        assertEquals(12.0f, viewModel.uiState.value.totalPrice)  // 10 + 2 size only
+    }
+
+    @Test
+    fun `updateSelectedSpiceLevel and updateSpecialNote update state`() = runTest {
+        stubSuccess()
+        viewModel.loadFoodDetails("f1")
+
+        viewModel.updateSelectedSpiceLevel("hot")
+        viewModel.updateSpecialNote("extra spicy")
+
+        assertEquals("hot", viewModel.uiState.value.selectedSpiceLevel)
+        assertEquals("extra spicy", viewModel.uiState.value.specialNote)
+    }
+
+    @Test
+    fun `retry reloads the last food item`() = runTest {
+        stubSuccess()
+        viewModel.loadFoodDetails("f1")
+
+        viewModel.retry()
+
+        assertNotNull(viewModel.uiState.value.foodDetailsData)
+    }
+
+    @Test
+    fun `retry without a prior load reports an error`() = runTest {
+        viewModel.retry()
+        assertNotNull(viewModel.uiState.value.error)
+    }
 }
