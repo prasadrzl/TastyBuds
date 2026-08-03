@@ -1,0 +1,22 @@
+# Codecov configuration — https://docs.codecov.com/docs/codecov-yaml
+coverage:
+  status:
+    project:
+      default:
+        target: 75%        # fail the check if overall coverage drops below 75%
+        threshold: 1%      # allow a 1% dip without failing
+    patch:
+      default:
+        target: 75%        # new/changed code must be at least 75% covered
+
+comment:
+  layout: "reach, diff, files"
+  behavior: default
+
+# Coverage is measured on the logic layer (ViewModels, use cases, repositories,
+# pure utils). Generated code, Compose UI, DTOs and Kotlin compiler synthetics are
+# excluded in the JaCoCo aggregation task (see root build.gradle.kts).
+ignore:
+  - "**/*Screen*"
+  - "**/di/**"
+  - "**/theme/**"

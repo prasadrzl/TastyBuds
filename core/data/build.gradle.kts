@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.hilt)
     id("kotlin-kapt")
+    id("jacoco")  // unit-test coverage; aggregated by :jacocoAggregatedReport
 }
 
 // App configuration read from config.properties at the repo root (with safe fallbacks),
@@ -40,6 +41,12 @@ android {
     }
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    testOptions {
+        // Repositories call android.util.Log; return defaults so JVM unit tests
+        // don't blow up on the un-mocked android.jar stubs.
+        unitTests.isReturnDefaultValues = true
     }
 }
 
