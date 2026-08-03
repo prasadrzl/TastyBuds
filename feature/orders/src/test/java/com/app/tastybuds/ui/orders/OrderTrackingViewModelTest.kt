@@ -38,7 +38,7 @@ class OrderTrackingViewModelTest {
         viewModel = OrderTrackingViewModel(orderUseCase)
     }
 
-    private fun order(status: OrderStatus) = Order(
+    private fun order(status: OrderStatus = OrderStatus.CONFIRMED) = Order(
         id = "o1", userId = "user123456", restaurantId = "r1", status = status,
         orderItems = emptyList(), subtotal = 0.0, deliveryFee = 0.0, promotionDiscount = 0.0,
         totalAmount = 0.0, paymentMethod = "card", paymentStatus = "paid",
