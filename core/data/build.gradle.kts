@@ -29,6 +29,8 @@ android {
             "\"${config("API_BASE_URL", "http://10.0.2.2:8080/api/v1/")}\"")
         buildConfigField("long", "NETWORK_TIMEOUT_SECONDS",
             "${config("NETWORK_TIMEOUT_SECONDS", "30")}L")
+        buildConfigField("String", "WS_BASE_URL",
+            "\"${config("WS_BASE_URL", "ws://10.0.2.2:8080")}\"")
     }
 
     buildFeatures {

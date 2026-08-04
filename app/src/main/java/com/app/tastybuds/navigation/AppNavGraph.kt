@@ -17,6 +17,8 @@ import com.app.tastybuds.R
 import com.app.tastybuds.domain.model.RestaurantReview
 import com.app.tastybuds.domain.model.SearchResultType.FOOD_ITEM
 import com.app.tastybuds.domain.model.SearchResultType.RESTAURANT
+import com.app.tastybuds.ui.cart.CartViewModel
+import com.app.tastybuds.ui.chat.ChatScreen
 import com.app.tastybuds.ui.favorites.FavoriteScreen
 import com.app.tastybuds.ui.home.AllDealsScreen
 import com.app.tastybuds.ui.home.AllRestaurantsScreen
@@ -28,18 +30,16 @@ import com.app.tastybuds.ui.login.AuthCheckScreen
 import com.app.tastybuds.ui.login.LoginScreen
 import com.app.tastybuds.ui.onboarding.OnboardingScreen
 import com.app.tastybuds.ui.onboarding.OnboardingViewModel
-import com.app.tastybuds.ui.cart.CartViewModel
-import com.app.tastybuds.ui.resturants.FoodDetailsScreen
 import com.app.tastybuds.ui.orders.OrderDetailsScreen
 import com.app.tastybuds.ui.orders.OrderReviewScreen
 import com.app.tastybuds.ui.orders.OrdersScreen
 import com.app.tastybuds.ui.orders.ReviewRatingScreen
 import com.app.tastybuds.ui.profile.ProfileScreen
 import com.app.tastybuds.ui.profile.ProfileSettingsScreen
-import com.app.tastybuds.ui.profile.ProfileViewModel
 import com.app.tastybuds.ui.resturants.AllReviewsScreen
 import com.app.tastybuds.ui.resturants.CategoryDetailsScreen
 import com.app.tastybuds.ui.resturants.CollectionListingScreen
+import com.app.tastybuds.ui.resturants.FoodDetailsScreen
 import com.app.tastybuds.ui.resturants.MenuListScreen
 import com.app.tastybuds.ui.resturants.RestaurantDetailsScreen
 import com.app.tastybuds.ui.resturants.SeeAllScreen
@@ -439,7 +439,21 @@ fun AppNavGraph(navController: NavHostController) {
                 },
                 onRatingClick = {
                     navController.navigate("rating_review")
+                },
+                onChatClick = {
+                    navController.navigate("chat/$orderId")
                 }
+            )
+        }
+
+        composable(
+            "chat/{orderId}",
+            arguments = listOf(navArgument("orderId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
+            ChatScreen(
+                orderId = orderId,
+                onBackClick = { navController.popBackStack() }
             )
         }
 

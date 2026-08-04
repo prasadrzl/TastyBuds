@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Star
@@ -75,6 +76,7 @@ fun OrderTrackingScreen(
     orderId: String,
     onBackClick: () -> Unit = {},
     onRatingClick: (String) -> Unit,
+    onChatClick: () -> Unit = {},
     viewModel: OrderTrackingViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -165,7 +167,7 @@ fun OrderTrackingScreen(
                     }
                 }
 
-                TopHeader(onBackClick = onBackClick)
+                TopHeader(onBackClick = onBackClick, onChatClick = onChatClick)
 
                 DeliveryTrackingBottomSheet(
                     uiState = uiState,
@@ -180,7 +182,7 @@ fun OrderTrackingScreen(
 }
 
 @Composable
-private fun TopHeader(onBackClick: () -> Unit) {
+private fun TopHeader(onBackClick: () -> Unit, onChatClick: () -> Unit = {}) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -197,6 +199,21 @@ private fun TopHeader(onBackClick: () -> Unit) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.back),
+                tint = onSurfaceColor()
+            )
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        IconButton(
+            onClick = onChatClick,
+            modifier = Modifier
+                .background(surfaceColor(), CircleShape)
+                .size(48.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Email,
+                contentDescription = "Chat with driver",
                 tint = onSurfaceColor()
             )
         }
