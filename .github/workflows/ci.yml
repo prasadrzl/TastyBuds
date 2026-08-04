@@ -20,6 +20,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # local.properties is git-ignored (holds the local SDK path + Maps API key), but the
+      # Maps secrets-gradle-plugin reads it at configuration time. Recreate it on the runner:
+      # sdk.dir points AGP at the preinstalled SDK; the Maps key can come from a repo secret.
+      - name: Create local.properties
+        run: |
+          echo "sdk.dir=$ANDROID_HOME" > local.properties
+          echo "MAPS_API_KEY=${{ secrets.MAPS_API_KEY }}" >> local.properties
+          echo "MAPS_MAP_ID=${{ secrets.MAPS_MAP_ID }}" >> local.properties
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
