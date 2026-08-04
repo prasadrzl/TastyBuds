@@ -2,8 +2,11 @@ package com.app.tastybuds.domain
 
 import com.app.tastybuds.domain.model.AvailableVoucher
 import com.app.tastybuds.domain.model.CartItem
+import com.app.tastybuds.domain.model.DeliveryAddress
+import com.app.tastybuds.domain.model.Order
 import com.app.tastybuds.domain.model.OrderItemSize
 import com.app.tastybuds.domain.model.OrderItemTopping
+import com.app.tastybuds.domain.model.OrderStatus
 import com.app.tastybuds.domain.model.PlaceOrderData
 import com.app.tastybuds.domain.model.UserAddress
 import com.app.tastybuds.domain.repository.OrderRepository
@@ -149,5 +152,95 @@ class OrderUseCaseTest {
 
         assertEquals(vouchers, (result as Result.Success).data)
         coVerify { repository.getAvailableVouchers("u1") }
+    }
+
+    @Test
+    fun `getUserAddresses delegates to the repository`() = runTest {
+        coEvery { repository.getUserAddresses("u1") } returns Result.Success(listOf(address()))
+
+        assertTrue(useCase.getUserAddresses("u1") is Result.Success)
+        coVerify { repository.getUserAddresses("u1") }
+    }
+
+    @Test
+    fun `createOrder maps a repository exception to an error`() = runTest {
+        coEvery { repository.createOrder(any()) } throws RuntimeException("db down")
+
+        val result = useCase.createOrder("u1", listOf(cartItem()), address())
+
+        assertTrue(result is Result.Error)
+    }
+
+    @Test
+    fun `createOrder derives estimated delivery time per city bucket`() = runTest {
+        val slot = slot<PlaceOrderData>()
+        coEvery { repository.createOrder(capture(slot)) } returns Result.Success(mockk(relaxed = true))
+
+        useCase.createOrder("u1", listOf(cartItem()), address(city = "marina bay"))
+        assertEquals(15, slot.captured.estimatedDeliveryTime)
+
+        useCase.createOrder("u1", listOf(cartItem()), address(city = "sengkang"))
+        assertEquals(20, slot.captured.estimatedDeliveryTime)
+
+        useCase.createOrder("u1", listOf(cartItem()), address(city = "jurong west"))
+        assertEquals(30, slot.captured.estimatedDeliveryTime)
+
+        useCase.createOrder("u1", listOf(cartItem()), address(city = "woodlands"))
+        assertEquals(35, slot.captured.estimatedDeliveryTime)
+
+        useCase.createOrder("u1", listOf(cartItem()), address(city = "nowhere"))
+        assertEquals(20, slot.captured.estimatedDeliveryTime)
+    }
+
+    @Test
+    fun `getRestaurantLocation covers all known ids`() {
+        assertEquals(Pair(1.3966, 103.9072), useCase.getRestaurantLocation("rest_001"))
+        assertEquals(Pair(1.3914, 103.8946), useCase.getRestaurantLocation("rest_003"))
+        assertEquals(Pair(1.3966, 103.9072), useCase.getRestaurantLocation(null))
+    }
+
+    // ---------- order fetch + normalization ----------
+
+    private fun order(restaurantName: String? = null) = Order(
+        id = "o1", userId = "u1", restaurantId = "rest_001", status = OrderStatus.PENDING,
+        orderItems = emptyList(), subtotal = 0.0, deliveryFee = 0.0, promotionDiscount = 0.0,
+        totalAmount = 0.0, paymentMethod = "e-wallet", paymentStatus = "paid",
+        deliveryAddress = DeliveryAddress(
+            addressLine = "1 Test St", street = null, city = null, state = null,
+            postalCode = null, latitude = null, longitude = null, deliveryInstructions = null
+        ),
+        deliveryLat = null, deliveryLng = null, estimatedDeliveryTime = 20,
+        actualDeliveryTime = null, specialNotes = null, createdAt = "", updatedAt = null,
+        restaurantName = restaurantName
+    )
+
+    @Test
+    fun `getUserOrders defaults a missing restaurant name to Unknown Restaurant`() = runTest {
+        coEvery { repository.getUserOrders("u1") } returns Result.Success(listOf(order(restaurantName = null)))
+
+        val result = useCase.getUserOrders("u1")
+
+        assertEquals("Unknown Restaurant", (result as Result.Success).data.first().restaurantName)
+    }
+
+    @Test
+    fun `getUserOrders propagates a repository error`() = runTest {
+        coEvery { repository.getUserOrders("u1") } returns Result.Error("boom")
+        assertTrue(useCase.getUserOrders("u1") is Result.Error)
+    }
+
+    @Test
+    fun `getOrderById keeps an existing restaurant name`() = runTest {
+        coEvery { repository.getOrderById("o1") } returns Result.Success(order(restaurantName = "Pizza Place"))
+
+        val result = useCase.getOrderById("o1")
+
+        assertEquals("Pizza Place", (result as Result.Success).data.restaurantName)
+    }
+
+    @Test
+    fun `getOrderById propagates a repository error`() = runTest {
+        coEvery { repository.getOrderById("o1") } returns Result.Error("not found")
+        assertTrue(useCase.getOrderById("o1") is Result.Error)
     }
 }

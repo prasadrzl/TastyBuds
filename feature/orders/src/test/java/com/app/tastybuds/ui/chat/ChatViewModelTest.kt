@@ -43,7 +43,7 @@ class ChatViewModelTest {
     )
 
     @Test
-    fun `connect loads the user id and streams connection state plus messages`() = runTest {
+    fun `connect loads the user id and streams connection state plus messages`() {
         every { authRepository.getUserId() } returns flowOf("cust1")
         every { chatUseCase.connect("o1", "cust1") } returns flowOf(
             ChatEvent.ConnectionChanged(ChatConnectionState.CONNECTED),
@@ -60,7 +60,7 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `connect is idempotent and only subscribes once`() = runTest {
+    fun `connect is idempotent and only subscribes once`()  {
         every { authRepository.getUserId() } returns flowOf("cust1")
         every { chatUseCase.connect(any(), any()) } returns flowOf()
 
