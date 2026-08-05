@@ -56,4 +56,38 @@ class VouchersViewModelTest {
 
         assertNotNull(viewModel.uiState.value.error)
     }
+
+    private fun loadedViewModel(): VouchersViewModel {
+        every { authRepository.getUserId() } returns flowOf("u1")
+        coEvery { vouchersUseCase.getActiveVouchers("u1") } returns Result.Success(listOf(mockk<Voucher>()))
+        coEvery { vouchersUseCase.getUsedVouchers("u1") } returns Result.Success(emptyList())
+        return VouchersViewModel(vouchersUseCase, authRepository)
+    }
+
+    @Test
+    fun `selectTab updates the selected tab`() = runTest {
+        val viewModel = loadedViewModel()
+        viewModel.selectTab(1)
+        assertEquals(1, viewModel.uiState.value.selectedTab)
+    }
+
+    @Test
+    fun `clearError resets the error`() = runTest {
+        every { authRepository.getUserId() } returns flowOf(null)
+        val viewModel = VouchersViewModel(vouchersUseCase, authRepository)
+
+        viewModel.clearError()
+
+        assertNull(viewModel.uiState.value.error)
+    }
+
+    @Test
+    fun `refreshVouchers reloads without error`() = runTest {
+        val viewModel = loadedViewModel()
+        coEvery { vouchersUseCase.refreshVouchers("u1") } returns Result.Success(emptyList())
+
+        viewModel.refreshVouchers()
+
+        assertNull(viewModel.uiState.value.error)
+    }
 }

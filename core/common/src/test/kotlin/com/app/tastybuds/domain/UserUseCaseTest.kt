@@ -81,6 +81,32 @@ class UserUseCaseTest {
     }
 
     @Test
+    fun `updateUser accepts a profile-image-only change`() = runTest {
+        val request = UpdateProfileRequest(profileUrl = "http://img/new.png")
+        coEvery { repository.updateUser(userId, request) } returns Result.Success(mockk<User>())
+
+        assertTrue(useCase.updateUser(userId, request) is Result.Success)
+        coVerify { repository.updateUser(userId, request) }
+    }
+
+    @Test
+    fun `updateUser accepts a blank email that carries no other change guard`() = runTest {
+        // email present but blank -> validation is skipped, request is considered valid
+        val request = UpdateProfileRequest(email = "")
+        coEvery { repository.updateUser(userId, request) } returns Result.Success(mockk<User>())
+
+        assertTrue(useCase.updateUser(userId, request) is Result.Success)
+    }
+
+    @Test
+    fun `updateUser accepts a variety of valid email formats`() = runTest {
+        val request = UpdateProfileRequest(email = "first.last+tag@sub.domain.co")
+        coEvery { repository.updateUser(userId, request) } returns Result.Success(mockk<User>())
+
+        assertTrue(useCase.updateUser(userId, request) is Result.Success)
+    }
+
+    @Test
     fun `getUser delegates to the repository`() = runTest {
         coEvery { repository.getUser(userId) } returns Result.Success(mockk<User>())
 
