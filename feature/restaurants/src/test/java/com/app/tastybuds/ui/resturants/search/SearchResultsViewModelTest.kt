@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -40,20 +41,25 @@ class SearchResultsViewModelTest {
         id: String,
         rating: Float = 0f,
         isFavorite: Boolean = false,
-        menuCount: Int = 0
+        menuCount: Int = 0,
+        distance: String = "1 km",
+        deliveryTime: String = "20",
+        badges: List<String> = emptyList()
     ): SearchResult {
         val restaurant = mockk<SearchRestaurant> {
             every { this@mockk.rating } returns rating
             every { this@mockk.isFavorite } returns isFavorite
-            every { badges } returns emptyList()
+            every { this@mockk.badges } returns badges
             every { deliveryFee } returns 5.0
-            every { distance } returns "1 km"
-            every { deliveryTime } returns "20"
+            every { this@mockk.distance } returns distance
+            every { this@mockk.deliveryTime } returns deliveryTime
         }
         return mockk {
             every { this@mockk.id } returns id
             every { this@mockk.restaurant } returns restaurant
-            every { menuItemList } returns List(menuCount) { mockk<MenuItem>() }
+            every { menuItemList } returns List(menuCount) {
+                mockk<MenuItem> { every { price } returns (it + 1).toDouble() }
+            }
         }
     }
 
@@ -110,5 +116,110 @@ class SearchResultsViewModelTest {
         viewModel.searchMenuItems("")
 
         assertEquals(5, viewModel.getMenuItemsCount())
+    }
+
+    private fun searchWith(vararg results: SearchResult) {
+        every { searchResultsUseCase.searchMenuItemsGroupedByRestaurant("") } returns flowOf(results.toList())
+        viewModel.searchMenuItems("")
+    }
+
+    @Test
+    fun `updateSortOption distance orders nearest first`() = runTest {
+        searchWith(result("far", distance = "9 km"), result("near", distance = "1 km"))
+        viewModel.updateSortOption(SortOptionIds.DISTANCE)
+        assertEquals(listOf("near", "far"), viewModel.uiState.value.filteredAndSortedResults.map { it.id })
+    }
+
+    @Test
+    fun `updateSortOption delivery time orders fastest first`() = runTest {
+        searchWith(result("slow", deliveryTime = "40"), result("fast", deliveryTime = "10"))
+        viewModel.updateSortOption(SortOptionIds.DELIVERY_TIME)
+        assertEquals(listOf("fast", "slow"), viewModel.uiState.value.filteredAndSortedResults.map { it.id })
+    }
+
+    @Test
+    fun `toggleFilter adds then removes a filter`() = runTest {
+        searchWith(result("a"))
+        viewModel.toggleFilter("freeship")
+        assertTrue(viewModel.uiState.value.selectedFilters.contains("freeship"))
+        viewModel.toggleFilter("freeship")
+        assertFalse(viewModel.uiState.value.selectedFilters.contains("freeship"))
+    }
+
+    @Test
+    fun `near_you filter keeps only nearby restaurants`() = runTest {
+        searchWith(result("near", distance = "1 km"), result("far", distance = "9 km"))
+        viewModel.toggleFilter("near_you")
+        assertEquals(listOf("near"), viewModel.uiState.value.filteredAndSortedResults.map { it.id })
+    }
+
+    @Test
+    fun `clearAllFilters resets filters and sort`() = runTest {
+        searchWith(result("a"))
+        viewModel.toggleFilter("freeship")
+        viewModel.updateSortOption(SortOptionIds.RATING)
+
+        viewModel.clearAllFilters()
+
+        assertTrue(viewModel.uiState.value.selectedFilters.isEmpty())
+        assertEquals(SortOptionIds.RELEVANCE, viewModel.uiState.value.selectedSortId)
+    }
+
+    @Test
+    fun `resetSearch clears state`() = runTest {
+        searchWith(result("a", menuCount = 2))
+        viewModel.resetSearch()
+        assertTrue(viewModel.uiState.value.searchResults.isEmpty())
+    }
+
+    @Test
+    fun `clearError removes the error`() = runTest {
+        searchWith(result("a"))
+        viewModel.clearError()
+        assertNull(viewModel.uiState.value.error)
+    }
+
+    @Test
+    fun `getAvailableFilters returns distinct sorted badges`() = runTest {
+        searchWith(result("a", badges = listOf("Partner", "Freeship")), result("b", badges = listOf("Partner")))
+        assertEquals(listOf("Freeship", "Partner"), viewModel.getAvailableFilters())
+    }
+
+    @Test
+    fun `price sort orders by cheapest menu item`() = runTest {
+        searchWith(result("pricey", menuCount = 3), result("cheap", menuCount = 1))
+        viewModel.updateSortOption(SortOptionIds.PRICE_LOW_TO_HIGH)
+        // "cheap" has a single item priced 1.0; "pricey" cheapest is also 1.0 -> stable, both kept
+        assertEquals(2, viewModel.uiState.value.filteredAndSortedResults.size)
+    }
+
+    @Test
+    fun `freeship filter keeps restaurants tagged freeship`() = runTest {
+        searchWith(
+            result("free", badges = listOf("Freeship")),
+            result("paid", badges = emptyList())
+        )
+        viewModel.toggleFilter("freeship")
+        assertEquals(listOf("free"), viewModel.uiState.value.filteredAndSortedResults.map { it.id })
+    }
+
+    @Test
+    fun `partner filter keeps verified or partner restaurants`() = runTest {
+        searchWith(
+            result("partner", badges = listOf("Partner")),
+            result("plain", badges = emptyList())
+        )
+        viewModel.toggleFilter("partner")
+        assertEquals(listOf("partner"), viewModel.uiState.value.filteredAndSortedResults.map { it.id })
+    }
+
+    @Test
+    fun `generic badge filter matches by normalized badge id`() = runTest {
+        searchWith(
+            result("has", badges = listOf("Best Seller")),
+            result("no", badges = emptyList())
+        )
+        viewModel.toggleFilter("best_seller")
+        assertEquals(listOf("has"), viewModel.uiState.value.filteredAndSortedResults.map { it.id })
     }
 }

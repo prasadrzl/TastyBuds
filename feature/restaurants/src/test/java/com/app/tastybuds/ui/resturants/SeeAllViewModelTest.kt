@@ -58,6 +58,25 @@ class SeeAllViewModelTest {
     }
 
     @Test
+    fun `loadItems loads recommended restaurants`() = runTest {
+        coEvery { restaurantUseCase.getRecommendedRestaurantsByCategory("c1") } returns
+                Result.Success(listOf(mockk<CategoryRestaurant>()))
+
+        viewModel.loadItems("c1", "recommended_restaurants")
+
+        assertEquals(1, viewModel.uiState.value.restaurants.size)
+    }
+
+    @Test
+    fun `retry re-runs the load`() = runTest {
+        coEvery { restaurantUseCase.getTopRestaurantsByCategory("c1") } returns Result.Success(emptyList())
+
+        viewModel.retry("c1", "restaurants")
+
+        assertFalse(viewModel.uiState.value.isLoading)
+    }
+
+    @Test
     fun `loadItems rejects an unknown type`() = runTest {
         viewModel.loadItems("c1", "widgets")
 
