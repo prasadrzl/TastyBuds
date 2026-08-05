@@ -16,6 +16,7 @@ class TastyBudsJvmLibraryConventionPlugin : Plugin<Project> {
             with(pluginManager) {
                 apply("org.jetbrains.kotlin.jvm")
                 apply("kotlin-kapt")
+                apply("jacoco")  // unit-test coverage; aggregated by :jacocoAggregatedReport
             }
 
             // Forces Kotlin compilation onto a JDK 17 toolchain (auto-downloaded via the

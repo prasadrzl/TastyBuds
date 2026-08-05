@@ -19,6 +19,7 @@ class TastyBudsAndroidFeatureConventionPlugin : Plugin<Project> {
                 apply("org.jetbrains.kotlin.android")
                 apply("com.google.dagger.hilt.android")
                 apply("kotlin-kapt")
+                apply("jacoco")  // unit-test coverage; aggregated by :jacocoAggregatedReport
             }
 
             extensions.configure<LibraryExtension> {
