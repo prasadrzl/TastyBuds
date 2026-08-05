@@ -100,4 +100,38 @@ class ProfileViewModelTest {
 
         assertEquals("u1", viewModel.getUserId().first())
     }
+
+    @Test
+    fun `StartEditing enters edit mode`() {
+        viewModel.handleEvent(ProfileEvent.StartEditing)
+        assertTrue(viewModel.uiState.value.isEditing)
+    }
+
+    @Test
+    fun `CancelEditing leaves edit mode`() {
+        viewModel.handleEvent(ProfileEvent.StartEditing)
+        viewModel.handleEvent(ProfileEvent.CancelEditing)
+        assertFalse(viewModel.uiState.value.isEditing)
+    }
+
+    @Test
+    fun `UpdateEmail and UpdateProfileImage update the form state`() {
+        viewModel.handleEvent(ProfileEvent.UpdateEmail("new@example.com"))
+        viewModel.handleEvent(ProfileEvent.UpdateProfileImage("http://new/img"))
+
+        assertEquals("new@example.com", viewModel.formState.value.email)
+        assertEquals("http://new/img", viewModel.formState.value.profileUrl)
+    }
+
+    @Test
+    fun `DismissError and DismissSuccess clear their flags`() = runTest {
+        coEvery { userUseCase.getUser("u1") } returns Result.Error("boom")
+        viewModel.initialize("u1")
+
+        viewModel.handleEvent(ProfileEvent.DismissError)
+        assertEquals(null, viewModel.uiState.value.error)
+
+        viewModel.handleEvent(ProfileEvent.DismissSuccess)
+        assertFalse(viewModel.uiState.value.updateSuccess)
+    }
 }

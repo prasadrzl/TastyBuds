@@ -12,6 +12,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.MockKAnnotations
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -98,5 +99,32 @@ class RestaurantDetailsViewModelTest {
         viewModel.toggleMenuItemFavorite("m1")
 
         assertTrue(viewModel.allMenuItems.value.first { it.id == "m1" }.isFavorite)
+    }
+
+    @Test
+    fun `toggleFavorite delegates to the favorites use case`() = runTest {
+        stubDetailsWithMenu(emptyList())
+        viewModel.loadRestaurantDetails("r1", "u1")
+        coEvery { favoritesUseCase.toggleRestaurantFavorite("u1", "r1") } returns Result.Success(true)
+
+        viewModel.toggleFavorite()
+
+        io.mockk.coVerify { favoritesUseCase.toggleRestaurantFavorite("u1", "r1") }
+    }
+
+    @Test
+    fun `getUserId delegates to the auth repository`() = runTest {
+        io.mockk.every { authRepository.getUserId() } returns kotlinx.coroutines.flow.flowOf("u1")
+        assertEquals("u1", viewModel.getUserId().first())
+    }
+
+    @Test
+    fun `retry reloads the restaurant details`() = runTest {
+        stubDetailsWithMenu(emptyList())
+        viewModel.loadRestaurantDetails("r1", "u1")
+
+        viewModel.retry()
+
+        io.mockk.coVerify(atLeast = 2) { restaurantDetailsUseCase.invoke("r1", "u1") }
     }
 }
