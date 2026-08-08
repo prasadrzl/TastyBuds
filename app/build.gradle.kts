@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.androidx.baselineprofile)
     id("kotlin-kapt")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -37,6 +38,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // Required app-wide so the final dex includes the desugared java.time.* APIs used by :core:data.
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "17"
@@ -95,6 +98,14 @@ dependencies {
     implementation(project(":feature:home"))
     implementation(project(":feature:restaurants"))
     implementation(project(":feature:orders"))
+
+    // Firebase Cloud Messaging (push notifications). The SDK compiles without config;
+    // to actually receive pushes, add app/google-services.json and enable the
+    // google-services plugin in the plugins block above.
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
+
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

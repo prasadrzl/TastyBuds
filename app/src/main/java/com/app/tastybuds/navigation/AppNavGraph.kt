@@ -23,7 +23,7 @@ import com.app.tastybuds.ui.favorites.FavoriteScreen
 import com.app.tastybuds.ui.home.AllDealsScreen
 import com.app.tastybuds.ui.home.AllRestaurantsScreen
 import com.app.tastybuds.ui.home.HomeScreen
-import com.app.tastybuds.ui.inbox.ChatBoxScreen
+import com.app.tastybuds.ui.inbox.InboxScreen
 import com.app.tastybuds.ui.location.LocationTrackerScreen
 import com.app.tastybuds.ui.location.OrderTrackingScreen
 import com.app.tastybuds.ui.login.AuthCheckScreen
@@ -223,7 +223,7 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
 
-        composable("inbox") { ChatBoxScreen() }
+        composable("inbox") { InboxScreen() }
 
         composable("profile") {
             val scope = rememberCoroutineScope()
