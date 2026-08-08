@@ -240,6 +240,13 @@ interface TastyBudsApiService {
         @Path("restaurantId") restaurantId: String
     ): Response<List<VoucherApiResponse>>
 
+    // ---------- Devices / Push ----------
+
+    @POST("devices")
+    suspend fun registerDevice(
+        @Body request: com.app.tastybuds.data.model.DeviceRegistrationRequest
+    ): Response<Unit>
+
     // ---------- Favorites ----------
 
     @POST("favorites")

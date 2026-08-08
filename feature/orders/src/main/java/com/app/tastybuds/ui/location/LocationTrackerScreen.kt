@@ -1,5 +1,6 @@
 package com.app.tastybuds.ui.location
 
+import android.annotation.SuppressLint
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
@@ -102,6 +103,9 @@ fun LocationTrackerScreen(
     UserLocationMapView(onConfirm)
 }
 
+// getCurrentLocation is only reached inside `if (permissionGranted.value)`, after an explicit
+// checkSelfPermission + runtime request — lint can't trace that through the LaunchedEffect/state.
+@SuppressLint("MissingPermission")
 @Composable
 fun UserLocationMapView(
     onConfirm: (String, String, String) -> Unit
