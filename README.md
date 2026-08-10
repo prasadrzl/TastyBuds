@@ -1,11 +1,13 @@
 # TastyBuds 🍔 - Food Delivery Android App
 
+[![CI](https://github.com/prasadrzl/TastyBuds/actions/workflows/ci.yml/badge.svg)](https://github.com/prasadrzl/TastyBuds/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/prasadrzl/TastyBuds/branch/main/graph/badge.svg)](https://codecov.io/gh/prasadrzl/TastyBuds)
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.22-blue.svg)](https://kotlinlang.org)
 [![Android](https://img.shields.io/badge/Android-API%2024+-green.svg)](https://android.com)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-2024.02.00-orange.svg)](https://developer.android.com/jetpack/compose)
 [![AGP](https://img.shields.io/badge/AGP-8.5.2-green.svg)](https://developer.android.com/studio/releases/gradle-plugin)
 
-A modern, feature-rich food delivery Android application built with Jetpack Compose and following Clean Architecture principles. TastyBuds offers a seamless food ordering experience with restaurant discovery, real-time tracking, secure data storage, and intuitive user interface.
+A modern, feature-rich food delivery Android application built with Jetpack Compose and following Clean Architecture principles. TastyBuds offers a seamless food ordering experience with restaurant discovery, real-time order tracking, **real-time customer↔driver chat**, **push notifications with an in-app inbox**, secure data storage, and an intuitive UI — backed by ~330 unit tests and CI.
 
 ## 📱 Features
 
@@ -17,6 +19,8 @@ A modern, feature-rich food delivery Android application built with Jetpack Comp
 - **User Profile**: Profile management and preferences with secure data storage
 - **Favorites**: Save favorite restaurants and menu items
 - **Vouchers & Deals**: Access to promotional offers and discounts
+- **Real-time Chat**: Live customer ↔ delivery-driver messaging over a WebSocket, opened from Order Tracking
+- **Push Notifications + Inbox**: Firebase Cloud Messaging pushes, persisted offline in a Room-backed Inbox tab (unread state, mark-as-read)
 
 ### UI/UX Features
 - **Modern Design**: Material 3 design system with custom orange theme
@@ -55,9 +59,9 @@ TastyBuds is a **multi-module** app following **Clean Architecture** + MVVM. `:a
 |---|---|---|
 | `:app` | app | Application, `MainActivity`, navigation graph, splash — orchestration only |
 | `:core:common` | **pure Kotlin/JVM** | Domain layer — models, use cases, repository **interfaces**, `Result`. No Android, no Moshi. |
-| `:core:data` | android lib | Data layer — Retrofit API service, repository **implementations**, DTOs + mappers, DI modules, `DataStore`/secure storage |
+| `:core:data` | android lib | Data layer — Retrofit API service, repository **implementations**, DTOs + mappers, DI modules, `DataStore`/secure storage, **Room** inbox DB, **OkHttp WebSocket** chat data source |
 | `:core:ui` | android lib | Shared UI — theme, fonts, common components (`LoadingScreen`, `ErrorScreen`, `AppTopBar`), `ThemeManager`, shared `CartViewModel` |
-| `:feature:home` `:feature:restaurants` `:feature:orders` `:feature:favorites` `:feature:account` `:feature:onboarding` | android feature libs | Self-contained feature slices (screens, ViewModels, feature-only resources) |
+| `:feature:home` `:feature:restaurants` `:feature:orders` `:feature:favorites` `:feature:account` `:feature:onboarding` | android feature libs | Self-contained feature slices (screens, ViewModels, feature-only resources). `:feature:orders` also hosts the **Chat** and **Inbox** screens. |
 | `:baselineprofile` | test | Generates the startup Baseline Profile + macrobenchmark |
 
 ### Dependency rules (enforced)
@@ -136,9 +140,16 @@ Data crosses each boundary in the right shape: **DTO** (`FavoriteResponse`) → 
 ### Networking & Data
 - **HTTP Client**: Retrofit 2.11.0 + OkHttp 4.12.0
 - **JSON Parsing**: Moshi 1.15.0 with Kotlin adapters (in `:core:data`)
+- **Local DB**: Room 2.6.1 (offline-first notifications inbox)
 - **Backend**: Self-hosted **Spring Boot** REST API over **PostgreSQL** (runs locally via Docker; migrated off Supabase)
 - **Base URL**: configured in `config.properties` → `BuildConfig.API_BASE_URL` (default `http://10.0.2.2:8080/api/v1/` for the emulator) — no hardcoded URLs in source
 - **Image Loading**: Glide 4.16.0 with Compose integration
+- **Java 8+ APIs on minSdk 24**: core library desugaring (`desugar_jdk_libs` 2.1.3) for `java.time.*`
+
+### Real-time & Messaging
+- **Chat transport**: raw **OkHttp WebSocket** (`WebSocketListener` bridged to a cold `Flow` via `callbackFlow`) — reuses the shared `OkHttpClient`; backend served by a Spring `WebSocketHandler` at `ws://…/ws/chat`
+- **Push notifications**: **Firebase Cloud Messaging** (`firebase-bom` 33.7.0) — `FirebaseMessagingService` persists each push to the Room inbox and shows a system-tray notification
+- **Config**: WebSocket URL in `config.properties` → `BuildConfig.WS_BASE_URL`; `POST_NOTIFICATIONS` requested at runtime (Android 13+)
 
 ### Maps & Location
 - **Maps**: Google Maps Compose 4.3.3
@@ -154,12 +165,13 @@ Data crosses each boundary in the right shape: **DTO** (`FavoriteResponse`) → 
 - **System UI**: Accompanist System UI Controller 0.32.0
 - **Refresh**: Accompanist Swipe Refresh 0.32.0
 
-### Testing & Development (WIP)
-- **Unit Testing**: JUnit 5.10.0, MockK 1.13.10
-- **Coroutines Testing**: Kotlinx Coroutines Test 1.8.0
-- **Flow Testing**: Turbine 1.1.0
+### Testing & Quality
+- **~330 unit tests**, all green — every ViewModel, use case, repository, mapper, and pure-logic helper
+- **Unit Testing**: JUnit 4 + MockK 1.13.10 (100% Kotlin mocking)
+- **Coroutines/Flow Testing**: Kotlinx Coroutines Test 1.8.0 + Turbine 1.1.0
+- **Coverage**: JaCoCo aggregated report — **~78% line / ~76% instruction** on the logic layer (`./gradlew jacocoAggregatedReport`)
+- **CI**: GitHub Actions runs tests + coverage on every push/PR, uploads to **Codecov** (75% gate); see the badges at the top
 - **UI Testing**: Compose Testing, Espresso 3.6.1
-- **Android Testing**: JUnit 1.1.5
 
 ## 📊 Application Flow
 
@@ -219,6 +231,7 @@ App config is externalized in `config.properties` (repo root), read in `:core:da
 # config.properties
 API_BASE_URL=http://10.0.2.2:8080/api/v1/   # 10.0.2.2 = emulator's alias for host localhost
 NETWORK_TIMEOUT_SECONDS=30
+WS_BASE_URL=ws://10.0.2.2:8080              # WebSocket base for real-time chat (/ws/chat)
 ```
 ```kotlin
 // core/data/build.gradle.kts
@@ -241,13 +254,20 @@ cd db && docker compose up -d          # PostgreSQL, seeded from the schema dump
 **2. Configure the app**:
 ```bash
 echo "MAPS_API_KEY=your_maps_api_key" >> local.properties   # Google Maps key
-# API base URL is in config.properties (defaults to the emulator alias)
+# API + WebSocket base URLs are in config.properties (default to the emulator alias)
 ```
 
-**3. Build / run**:
+**3. Enable push notifications (optional — for FCM)**:
+- Create a Firebase project, add an Android app with package `com.app.tastybuds`, and drop **`app/google-services.json`** in place.
+- For the backend to *send* pushes, set `GOOGLE_APPLICATION_CREDENTIALS` to your Firebase service-account JSON before running `tastybuds-api`.
+- Test instantly from **Firebase Console → Messaging → Send test message** (grab the device token from Logcat, filter `TastyBudsFCM`).
+
+**4. Build / run**:
 ```bash
 ./gradlew :app:assembleDebug     # APK
 ./gradlew :app:bundleRelease     # AAB (Play)
+./gradlew test                   # ~330 unit tests
+./gradlew jacocoAggregatedReport # coverage → build/reports/jacoco/aggregated/html/index.html
 ```
 
 ## 📱 Key Features Implementation
@@ -271,12 +291,33 @@ echo "MAPS_API_KEY=your_maps_api_key" >> local.properties   # Google Maps key
 - **Map Integration**: Visual tracking on Google Maps
 - **Delivery Estimation**: Accurate delivery time predictions
 
+### Real-time Chat (Customer ↔ Driver)
+- **Transport**: raw **OkHttp WebSocket**; the callback API is bridged into a cold `Flow` with `callbackFlow`, keeping the socket lifecycle tied to collection.
+- **Layering**: `ChatWebSocketDataSource` (pure transport, emits `SocketFrame`s) → `ChatRepositoryImpl` (JSON ↔ domain, connection-state mapping) → `ChatUseCase` → `ChatViewModel` → `ChatScreen`. Opened from the Order Tracking screen (`chat/{orderId}` route).
+- **Backend**: a Spring `ChatWebSocketHandler` at `/ws/chat?orderId=&userId=` groups sessions into per-order "rooms" and broadcasts a message to every *other* participant (the sender renders its own message optimistically).
+
+### Push Notifications & Inbox
+```
+Backend  ──POST /api/v1/notifications/send──▶  FCM (data message)  ──▶  device
+   ▲                                                                      │
+App onNewToken ──POST /api/v1/devices──▶ device_tokens        onMessageReceived
+                                                          ├─ save → Room inbox
+                                                          └─ show → system tray
+                                                                     │
+                                                          Inbox tab (Room-observed)
+```
+- **Delivery**: **Firebase Cloud Messaging**; `TastyBudsMessagingService` handles each push in all app states.
+- **Persistence**: incoming notifications are saved to a **Room** DB, so the **Inbox** tab shows full history (unread dots, mark-as-read) even when the app was closed at delivery time.
+- **Token registration**: the app registers its FCM token with the backend (`POST /api/v1/devices`); the backend targets a user's devices via the FCM Admin SDK (HTTP v1).
+
 ## 🙏 Acknowledgments
 
 - [Jetpack Compose](https://developer.android.com/jetpack/compose) - Modern toolkit for native UI
 - [Material Design 3](https://m3.material.io/) - Design system and guidelines
-- [Spring Boot](https://spring.io/projects/spring-boot) - Self-hosted REST backend over PostgreSQL
+- [Spring Boot](https://spring.io/projects/spring-boot) - Self-hosted REST + WebSocket backend over PostgreSQL
+- [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging) - Push notification delivery
+- [Room](https://developer.android.com/training/data-storage/room) - Offline-first inbox persistence
 - [Google Maps](https://developers.google.com/maps) - Maps and location services
 - [Hilt](https://dagger.dev/hilt/) - Dependency injection for Android
-- [Retrofit](https://square.github.io/retrofit/) - Type-safe HTTP client
+- [Retrofit](https://square.github.io/retrofit/) + [OkHttp](https://square.github.io/okhttp/) - Type-safe HTTP client + WebSocket transport
 - [Glide](https://bumptech.github.io/glide/) - Image loading and caching
