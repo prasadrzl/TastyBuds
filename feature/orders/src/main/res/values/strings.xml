@@ -100,4 +100,32 @@
     <string name="no_orders">No Orders\n</string>
     <string name="no_orders_yet">No orders yet</string>
     <string name="when_you_place_your_first_order_it_will_appear_here">When you place your first order, it will appear here</string>
+
+    <!-- Chat -->
+    <string name="chat_title">Delivery chat</string>
+    <string name="chat_status_connecting">Connecting…</string>
+    <string name="chat_status_online">Online</string>
+    <string name="chat_status_offline">Offline</string>
+    <string name="chat_status_error">Connection error</string>
+    <string name="chat_message_hint">Message the driver…</string>
+    <string name="chat_send">Send</string>
+
+    <!-- Inbox -->
+    <string name="inbox_title">Inbox</string>
+    <plurals name="inbox_unread_count">
+        <item quantity="one">%1$d unread</item>
+        <item quantity="other">%1$d unread</item>
+    </plurals>
+    <string name="inbox_all_caught_up">You\'re all caught up</string>
+    <string name="inbox_mark_all_read">Mark all read</string>
+    <string name="inbox_empty_title">No notifications yet</string>
+    <string name="inbox_empty_subtitle">Order updates, offers and messages will show up here.</string>
+    <string name="notif_type_order">ORDER</string>
+    <string name="notif_type_promo">PROMO</string>
+    <string name="notif_type_chat">CHAT</string>
+    <string name="notif_type_update">UPDATE</string>
+    <string name="time_just_now">just now</string>
+    <string name="time_minutes_ago">%1$dm ago</string>
+    <string name="time_hours_ago">%1$dh ago</string>
+    <string name="time_days_ago">%1$dd ago</string>
 </resources>

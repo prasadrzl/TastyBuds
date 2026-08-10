@@ -16,6 +16,19 @@
 # debugging stack traces.
 #-keepattributes SourceFile,LineNumberTable
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Keep line numbers + source file for readable release crash reports (used by Crashlytics).
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
+
+-keep class com.app.tastybuds.data.model.** { *; }
+-keepclassmembers class com.app.tastybuds.data.model.** { *; }
+-keepclassmembers class kotlin.Metadata { *; }
+
+# Enums used via valueOf()/values() (e.g. OrderStatus, SenderType)
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+# Retrofit / OkHttp / Moshi / Room / Hilt / Firebase / Glide all ship their own consumer
+# ProGuard rules, so no extra keeps are needed for them.
