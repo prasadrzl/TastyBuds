@@ -6,6 +6,7 @@ plugins {
     id("kotlin-kapt")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -28,7 +29,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -104,6 +106,8 @@ dependencies {
     // google-services plugin in the plugins block above.
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
+    implementation(libs.firebase.crashlytics)   // crash reporting (auto-initializes)
+    implementation(libs.firebase.analytics)     // basic analytics (auto-initializes)
 
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 

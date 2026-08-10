@@ -32,9 +32,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.app.tastybuds.feature.orders.R
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.domain.model.ChatConnectionState
@@ -96,16 +98,20 @@ private fun ChatHeader(connectionState: ChatConnectionState, onBackClick: () -> 
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = onBackClick) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = onPrimaryColor())
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(com.app.tastybuds.core.ui.R.string.back),
+                tint = onPrimaryColor()
+            )
         }
         Column(modifier = Modifier.weight(1f)) {
-            Text("Delivery chat", color = onPrimaryColor(), fontSize = 18.sp)
+            Text(stringResource(R.string.chat_title), color = onPrimaryColor(), fontSize = 18.sp)
             Text(
                 text = when (connectionState) {
-                    ChatConnectionState.CONNECTING -> "Connecting…"
-                    ChatConnectionState.CONNECTED -> "Online"
-                    ChatConnectionState.DISCONNECTED -> "Offline"
-                    ChatConnectionState.ERROR -> "Connection error"
+                    ChatConnectionState.CONNECTING -> stringResource(R.string.chat_status_connecting)
+                    ChatConnectionState.CONNECTED -> stringResource(R.string.chat_status_online)
+                    ChatConnectionState.DISCONNECTED -> stringResource(R.string.chat_status_offline)
+                    ChatConnectionState.ERROR -> stringResource(R.string.chat_status_error)
                 },
                 color = onPrimaryColor(),
                 fontSize = 12.sp
@@ -162,7 +168,7 @@ private fun MessageInput(
             onValueChange = onValueChange,
             modifier = Modifier.weight(1f),
             enabled = enabled,
-            placeholder = { Text("Message the driver…") },
+            placeholder = { Text(stringResource(R.string.chat_message_hint)) },
             maxLines = 4,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
             keyboardActions = KeyboardActions(onSend = { onSend() })
@@ -171,7 +177,7 @@ private fun MessageInput(
         IconButton(onClick = onSend, enabled = enabled && value.isNotBlank()) {
             Icon(
                 Icons.AutoMirrored.Filled.Send,
-                contentDescription = "Send",
+                contentDescription = stringResource(R.string.chat_send),
                 tint = if (enabled && value.isNotBlank()) primaryColor() else onSurfaceVariantColor()
             )
         }

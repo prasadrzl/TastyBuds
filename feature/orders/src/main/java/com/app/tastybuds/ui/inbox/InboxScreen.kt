@@ -35,11 +35,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.app.tastybuds.feature.orders.R
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tastybuds.domain.model.NotificationItem
 import com.app.tastybuds.ui.theme.backgroundColor
@@ -89,19 +92,27 @@ private fun InboxHeader(unread: Int, onMarkAllRead: () -> Unit) {
     ) {
         Column(Modifier.weight(1f)) {
             Text(
-                text = "Inbox",
+                text = stringResource(R.string.inbox_title),
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                 color = onSurfaceColor()
             )
             Text(
-                text = if (unread > 0) "$unread unread" else "You're all caught up",
+                text = if (unread > 0) {
+                    pluralStringResource(R.plurals.inbox_unread_count, unread, unread)
+                } else {
+                    stringResource(R.string.inbox_all_caught_up)
+                },
                 style = MaterialTheme.typography.bodySmall,
                 color = onSurfaceVariantColor()
             )
         }
         if (unread > 0) {
             TextButton(onClick = onMarkAllRead) {
-                Text("Mark all read", color = primaryColor(), style = MaterialTheme.typography.labelLarge)
+                Text(
+                    stringResource(R.string.inbox_mark_all_read),
+                    color = primaryColor(),
+                    style = MaterialTheme.typography.labelLarge
+                )
             }
         }
     }
@@ -203,13 +214,13 @@ private fun EmptyInbox() {
         }
         Spacer(Modifier.height(16.dp))
         Text(
-            "No notifications yet",
+            stringResource(R.string.inbox_empty_title),
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             color = onSurfaceColor()
         )
         Spacer(Modifier.height(4.dp))
         Text(
-            "Order updates, offers and messages will show up here.",
+            stringResource(R.string.inbox_empty_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = onSurfaceVariantColor()
         )
@@ -225,19 +236,20 @@ private data class NotificationStyle(
 
 @Composable
 private fun styleFor(type: String): NotificationStyle = when (type.uppercase()) {
-    "ORDER" -> NotificationStyle(Icons.Filled.ShoppingCart, "ORDER", infoContainerColor(), onInfoContainerColor())
-    "PROMO" -> NotificationStyle(Icons.Filled.Star, "PROMO", offerBackgroundColor(), offerTextColor())
-    "CHAT" -> NotificationStyle(Icons.Filled.Email, "CHAT", successContainerColor(), onSuccessContainerColor())
-    else -> NotificationStyle(Icons.Filled.Notifications, "UPDATE", infoContainerColor(), onInfoContainerColor())
+    "ORDER" -> NotificationStyle(Icons.Filled.ShoppingCart, stringResource(R.string.notif_type_order), infoContainerColor(), onInfoContainerColor())
+    "PROMO" -> NotificationStyle(Icons.Filled.Star, stringResource(R.string.notif_type_promo), offerBackgroundColor(), offerTextColor())
+    "CHAT" -> NotificationStyle(Icons.Filled.Email, stringResource(R.string.notif_type_chat), successContainerColor(), onSuccessContainerColor())
+    else -> NotificationStyle(Icons.Filled.Notifications, stringResource(R.string.notif_type_update), infoContainerColor(), onInfoContainerColor())
 }
 
+@Composable
 private fun relativeTime(timestamp: Long): String {
     val diff = System.currentTimeMillis() - timestamp
     return when {
-        diff < 60_000 -> "just now"
-        diff < 3_600_000 -> "${diff / 60_000}m ago"
-        diff < 86_400_000 -> "${diff / 3_600_000}h ago"
-        diff < 604_800_000 -> "${diff / 86_400_000}d ago"
+        diff < 60_000 -> stringResource(R.string.time_just_now)
+        diff < 3_600_000 -> stringResource(R.string.time_minutes_ago, diff / 60_000)
+        diff < 86_400_000 -> stringResource(R.string.time_hours_ago, diff / 3_600_000)
+        diff < 604_800_000 -> stringResource(R.string.time_days_ago, diff / 86_400_000)
         else -> SimpleDateFormat("MMM d", Locale.getDefault()).format(Date(timestamp))
     }
 }
