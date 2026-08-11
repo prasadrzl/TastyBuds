@@ -3,6 +3,8 @@ package com.app.tastybuds.di
 import android.util.Log
 import com.app.tastybuds.common.TastyBudsApiService
 import com.app.tastybuds.core.data.BuildConfig
+import com.app.tastybuds.data.repo.AuthInterceptor
+import com.app.tastybuds.data.repo.AuthTokenStore
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -23,7 +25,9 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(
+        authTokenStore: AuthTokenStore
+    ): OkHttpClient {
 
         val loggingInterceptor = HttpLoggingInterceptor { message ->
         }.apply {
@@ -61,6 +65,7 @@ object NetworkModule {
         val timeoutSeconds = BuildConfig.NETWORK_TIMEOUT_SECONDS
         val client = OkHttpClient.Builder()
             .connectionPool(connectionPool)
+            .addInterceptor(AuthInterceptor(authTokenStore))
             .addInterceptor(loggingInterceptor)
             .addInterceptor(customInterceptor)
             .connectTimeout(timeoutSeconds, TimeUnit.SECONDS)

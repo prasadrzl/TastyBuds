@@ -27,6 +27,8 @@ import com.app.tastybuds.domain.model.UpdateProfileRequest
 import com.app.tastybuds.data.model.UserResponse
 import com.app.tastybuds.data.model.FoodCustomizationResponse
 import com.app.tastybuds.data.model.FoodDetailsResponse
+import com.app.tastybuds.data.model.LoginRequest
+import com.app.tastybuds.data.model.LoginResponse
 import com.app.tastybuds.data.model.VoucherApiResponse
 import com.app.tastybuds.data.model.VoucherUsageRequest
 import retrofit2.Response
@@ -239,6 +241,13 @@ interface TastyBudsApiService {
         @Path("id") userId: String,
         @Path("restaurantId") restaurantId: String
     ): Response<List<VoucherApiResponse>>
+
+    // ---------- Auth ----------
+
+    @POST("auth/login")
+    suspend fun login(
+        @Body request: LoginRequest
+    ): Response<LoginResponse>
 
     // ---------- Devices / Push ----------
 
