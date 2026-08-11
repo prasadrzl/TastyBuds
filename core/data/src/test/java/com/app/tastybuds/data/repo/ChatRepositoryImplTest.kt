@@ -23,8 +23,9 @@ class ChatRepositoryImplTest {
     @Before
     fun setUp() {
         dataSource = mockk(relaxed = true)
+        val tokenStore = mockk<AuthTokenStore>(relaxed = true)
         val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-        repository = ChatRepositoryImpl(dataSource, moshi)
+        repository = ChatRepositoryImpl(dataSource, tokenStore, moshi)
     }
 
     @Test
