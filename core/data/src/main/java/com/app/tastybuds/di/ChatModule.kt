@@ -1,5 +1,6 @@
 package com.app.tastybuds.di
 
+import com.app.tastybuds.data.repo.AuthTokenStore
 import com.app.tastybuds.data.repo.ChatRepositoryImpl
 import com.app.tastybuds.data.repo.ChatWebSocketDataSource
 import com.app.tastybuds.domain.ChatUseCase
@@ -19,8 +20,9 @@ object ChatModule {
     @Provides
     fun provideChatRepository(
         dataSource: ChatWebSocketDataSource,
+        tokenStore: AuthTokenStore,
         moshi: Moshi
-    ): ChatRepository = ChatRepositoryImpl(dataSource, moshi)
+    ): ChatRepository = ChatRepositoryImpl(dataSource, tokenStore, moshi)
 
     @Provides
     fun provideChatUseCase(chatRepository: ChatRepository): ChatUseCase =

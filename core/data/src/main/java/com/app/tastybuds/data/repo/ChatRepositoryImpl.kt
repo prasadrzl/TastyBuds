@@ -18,6 +18,7 @@ import javax.inject.Singleton
 @Singleton
 class ChatRepositoryImpl @Inject constructor(
     private val dataSource: ChatWebSocketDataSource,
+    private val tokenStore: AuthTokenStore,
     moshi: Moshi
 ) : ChatRepository {
 
@@ -28,7 +29,8 @@ class ChatRepositoryImpl @Inject constructor(
     override fun connect(orderId: String, userId: String): Flow<ChatEvent> {
         this.orderId = orderId
         this.userId = userId
-        val url = "${BuildConfig.WS_BASE_URL}/ws/chat?orderId=$orderId&userId=$userId"
+        val token = tokenStore.getToken().orEmpty()
+        val url = "${BuildConfig.WS_BASE_URL}/ws/chat?orderId=$orderId&userId=$userId&token=$token"
 
         return dataSource.connect(url)
             .mapNotNull { frame -> frame.toChatEventOrNull() }
