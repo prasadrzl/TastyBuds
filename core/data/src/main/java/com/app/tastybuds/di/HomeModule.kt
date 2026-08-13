@@ -2,6 +2,7 @@ package com.app.tastybuds.di
 
 import com.app.tastybuds.common.TastyBudsApiService
 import com.app.tastybuds.domain.repository.HomeRepository
+import com.app.tastybuds.data.repo.HomeCache
 import com.app.tastybuds.data.repo.HomeRepositoryImpl
 import dagger.Module
 import dagger.Provides
@@ -15,7 +16,10 @@ object HomeModule {
 
     @Singleton
     @Provides
-    fun provideHomeRepository(homeApiService: TastyBudsApiService): HomeRepository {
-        return HomeRepositoryImpl(homeApiService)
+    fun provideHomeRepository(
+        homeApiService: TastyBudsApiService,
+        homeCache: HomeCache
+    ): HomeRepository {
+        return HomeRepositoryImpl(homeApiService, homeCache)
     }
 }
