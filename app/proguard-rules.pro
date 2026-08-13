@@ -24,6 +24,10 @@
 -keepclassmembers class com.app.tastybuds.data.model.** { *; }
 -keepclassmembers class kotlin.Metadata { *; }
 
+# Domain models are serialized reflectively by Moshi for the offline cache (HomeCache).
+-keep class com.app.tastybuds.domain.model.** { *; }
+-keepclassmembers class com.app.tastybuds.domain.model.** { *; }
+
 # Enums used via valueOf()/values() (e.g. OrderStatus, SenderType)
 -keepclassmembers enum * {
     public static **[] values();
