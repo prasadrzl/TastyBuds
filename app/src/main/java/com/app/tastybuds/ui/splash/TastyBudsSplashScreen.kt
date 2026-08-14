@@ -48,10 +48,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.app.tastybuds.R
 import com.app.tastybuds.ui.theme.SetSystemBarColor
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 object SplashColors {
     val BrandOrange = Color(0xFFFF7700)
@@ -179,7 +179,7 @@ fun TastyBudsSplashScreen(
     )
 
     LaunchedEffect(Unit) {
-        delay(3000)
+        delay(3000.milliseconds)
         onSplashComplete()
     }
 
